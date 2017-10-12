@@ -1,0 +1,46 @@
+.widget-catalogsale-products-carousel .new-slider{  
+	border:1px solid #ddd;
+	position:relative;
+	width:1000px;
+	padding:20px 30px;
+	margin:10px auto;
+}
+.widget-catalogsale-products-carousel .box-top {
+	overflow:hidden;
+	position:relative; 
+	left:0;
+	float:left;
+	width:986px;
+	height:220px;
+	margin-left:5px;
+}
+.widget-catalogsale-products-carousel .box-top ul {
+	list-style:none;
+	padding:0; 
+	}
+.widget-catalogsale-products-carousel .box-top ul li {  
+	display:block; 
+	float:left;
+	position:relative; 
+	width:220px;
+	margin-right:25px;
+	text-align:center;
+	overflow:hidden;
+}
+.widget-catalogsale-products-carousel #left, #right{ cursor:pointer}
+.widget-catalogsale-products-carousel .box-left,
+.widget-catalogsale-products-carousel .box-right { 
+	position:absolute; 
+	top:84px; 
+	width:21px; 
+	height:35px; 
+	cursor:pointer;
+}
+.widget-catalogsale-products-carousel .box-left {
+	left:0px; 
+	background:#000;
+	}
+.widget-catalogsale-products-carousel .box-right {
+	right:0px;
+	background:#000;
+	}
