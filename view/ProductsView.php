@@ -135,10 +135,9 @@ class ProductsView extends View
 		if(isset($_SESSION['user_id']) && $user = $this->users->get_user(intval($_SESSION['user_id'])))
 			$discount = $user->discount;
 			
-		// Товары 
-		$products = array();
-		foreach($this->products->get_products($filter) as $p)
-			$products[$p->id] = $p;
+		// Товары получаем их сразу массивом
+		$products = $this->products->get_products($filter);
+
 			
 		// Если искали товар и найден ровно один - перенаправляем на него
 		if(!empty($keyword) && $products_count == 1)
@@ -173,7 +172,6 @@ class ProductsView extends View
 				if(isset($product->images[0]))
 					$product->image = $product->images[0];
 			}
-				
 	
 			/*
 			$properties = $this->features->get_options(array('product_id'=>$products_ids));

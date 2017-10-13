@@ -142,7 +142,7 @@ class Products extends Simpla
 
 		$this->db->query($query);
 
-		return $this->db->results();
+		return $this->db->results(null, 'id');
 	}
 
 	/**

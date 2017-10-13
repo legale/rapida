@@ -140,24 +140,24 @@ class Database extends Simpla
 	/**
 	 * Возвращает результаты запроса. Необязательный второй аргумент указывает какую колонку возвращать вместо всего массива колонок
 	 */
-	public function results($field = null)
-	{
+	public function results(string $field = null, string $group_field = null) {
 		$results = array();
-		if(!$this->res)
-		{
-			trigger_error($this->mysqli->error, E_USER_WARNING); 
-			return false;
+	
+		if(empty($this->res) || $this->res->num_rows == 0){
+			return $results;
 		}
-
-		if($this->res->num_rows == 0)
-			return array();
-
-		while($row = $this->res->fetch_object())
-		{
-			if(!empty($field) && isset($row->$field))
-				array_push($results, $row->$field);				
-			else
+		if($field !== null){
+			while($row = $this->res->fetch_object()){
+				array_push($results, $row->$field);
+			}
+		}elseif($group_field !== null){
+			while($row = $this->res->fetch_object()){
+				$results[$row->$group_field] = $row;
+			}
+		}else{
+			while($row = $this->res->fetch_object()){
 				array_push($results, $row);
+			}
 		}
 		return $results;
 	}
