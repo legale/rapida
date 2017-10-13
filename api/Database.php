@@ -138,7 +138,8 @@ class Database extends Simpla
 	
 
 	/**
-	 * Возвращает результаты запроса. Необязательный второй аргумент указывает какую колонку возвращать вместо всего массива колонок
+	 * Возвращает результаты запроса. Необязательный второй аргумент указывает какую колонку возвращать 
+	 * вместо всего массива колонок
 	 */
 	public function results(string $field = null, string $group_field = null) {
 		$results = array();
@@ -162,20 +163,43 @@ class Database extends Simpla
 		return $results;
 	}
 
+
+	/**
+	 * Возвращает результаты запроса в виде объекта. Если указан параметр, то 
+	 * результат будет собран в объект с ключом по указанному в параметре столбцу
+	 */
+	public function results_object(string $group_field = null) {
+		$results = new stdClass();
+	
+		if(empty($this->res) || $this->res->num_rows == 0){
+			return $results;
+		}
+
+		if($group_field !== null){
+			while($row = $this->res->fetch_object()){
+				$results->{$row->$group_field} = $row;
+			}
+		}else{
+			$i = 0;
+			while($row = $this->res->fetch_object()){
+				$results->{$i} = $row;
+				$i++;
+			}
+		}
+		return $results;
+	}
+
 	/**
 	 * Возвращает результаты запроса ассоциативным массивом
 	 */
-	public function results_array(string $field = null, string $group_field = null) {
+	public function results_array(string $group_field = null) {
 		$results = array();
 	
 		if(empty($this->res) || $this->res->num_rows == 0){
 			return $results;
 		}
-		if($field !== null){
-			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
-				array_push($results, $row[$field]);
-			}
-		}elseif($group_field !== null){
+		
+		if($group_field !== null){
 			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
 				$results[$row[$group_field]] = $row;
 			}

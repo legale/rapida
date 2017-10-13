@@ -46,22 +46,20 @@ class Cart extends Simpla
 					$products_ids[] = $variant->product_id;
 				}
 	
-				$products = array();
-				foreach($this->products->get_products(array('id'=>$products_ids, 'limit' => count($products_ids))) as $p)
-					$products[$p->id]=$p;
+				$products = $this->products->get_products(array('id'=>$products_ids, 'limit' => count($products_ids)));
 				
 				$images = $this->products->get_images(array('product_id'=>$products_ids));
 				foreach($images as $image)
-					$products[$image->product_id]->images[$image->id] = $image;
+					$products->{$image->product_id}->images[$image->id] = $image;
 			
 				
 				foreach($items as $variant_id=>$item)
 				{	
 					$purchase = null;
-					if(!empty($products[$item->variant->product_id]))
+					if(!empty($products->{$item->variant->product_id}))
 					{
 						$purchase = new stdClass();
-						$purchase->product = $products[$item->variant->product_id];						
+						$purchase->product = $products->{$item->variant->product_id};						
 						$purchase->variant = $item->variant;
 						$purchase->amount = $item->amount;
 
@@ -100,6 +98,9 @@ class Cart extends Simpla
 					{
 						unset($_SESSION['coupon_code']);
 					}
+				} else {
+					//выведем пустой купон
+					$cart->coupon = $this->coupons->get_coupon();
 				}
 				
 			}

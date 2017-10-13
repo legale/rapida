@@ -8,6 +8,9 @@ class ProductsAdmin extends Simpla
 	{		
 
 		$filter = array();
+		//добавим в фильтр параметр, чтобы получить данные без кеша
+	 	$filter['force_no_cache'] = true;
+	 	
 		$filter['page'] = max(1, $this->request->get('page', 'integer'));
 			
 		$filter['limit'] = $this->settings->products_num_admin;
@@ -224,16 +227,15 @@ class ProductsAdmin extends Simpla
 	 	$this->design->assign('pages_count', $pages_count);
 	 	$this->design->assign('current_page', $filter['page']);
 	 	
-		$products = array();
-		foreach($this->products->get_products($filter) as $p)
-			$products[$p->id] = $p;
+	 	
+		$products = $this->products->get_products($filter);
 	 	
 	
 		if(!empty($products))
 		{
 		  	
 			// Товары 
-			$products_ids = array_keys($products);
+			$products_ids = array_keys((array)$products);
 			foreach($products as &$product)
 			{
 				$product->variants = array();
@@ -246,12 +248,12 @@ class ProductsAdmin extends Simpla
 		 
 			foreach($variants as &$variant)
 			{
-				$products[$variant->product_id]->variants[] = $variant;
+				$products->{$variant->product_id}->variants[] = $variant;
 			}
 		
 			$images = $this->products->get_images(array('product_id'=>$products_ids));
 			foreach($images as $image)
-				$products[$image->product_id]->images[$image->id] = $image;
+				$products->{$image->product_id}->images[$image->id] = $image;
 		}
 	 
 		$this->design->assign('products', $products);

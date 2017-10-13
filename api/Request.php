@@ -148,19 +148,22 @@ class Request extends Simpla
 
 	
 	/**
-	* URL
+	* Функция URL формирует ссылку из параметров, заданных в виде массива.
 	*/
     public function url($params = array())
     {
 		$url = @parse_url($_SERVER["REQUEST_URI"]);
-		parse_str($url['query'], $query);
 		
-		if(get_magic_quotes_gpc())
-			foreach($query as &$v)
-			{
-				if(!is_array($v))
-					$v = stripslashes(urldecode($v));
+		if(isset($url['query'])){
+			parse_str($url['query'], $query);
+			if(get_magic_quotes_gpc()){
+				foreach($query as &$v)
+				{
+					if(!is_array($v))
+						$v = stripslashes(urldecode($v));
+				}
 			}
+		}
 
 		foreach($params as $name=>$value)
 			$query[$name] = $value;

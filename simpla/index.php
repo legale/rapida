@@ -22,6 +22,7 @@ Header("Pragma: no-cache");
 $_SESSION['admin'] = 'admin';
 
 $backend = new IndexAdmin();
+$simpla = new Simpla();
 
 // Проверка сессии для защиты от xss
 if(!$backend->request->check_session())
@@ -34,17 +35,14 @@ if(!$backend->request->check_session())
 print $backend->fetch();
 
 // Отладочная информация
-if($backend->config->debug)
+if(1)
 {
-	print "<!--\r\n";
-	$i = 0;
-	$sql_time = 0;
-	foreach($page->db->queries as $q)
-	{
-		$i++;
-		print "$i.\t$q->exec_time sec\r\n$q->sql\r\n\r\n";
-		$sql_time += $q->exec_time;
+	//показываем отладочную информацию из dtimer
+	if($simpla->config->dtimer_disabled === false){
+		dtimer::show();
 	}
+	
+	print "<!--\r\n";
   
 	$time_end = microtime(true);
 	$exec_time = $time_end-$time_start;
@@ -52,7 +50,5 @@ if($backend->config->debug)
   	if(function_exists('memory_get_peak_usage'))
 		print "memory peak usage: ".memory_get_peak_usage()." bytes\r\n";  
 	print "page generation time: ".$exec_time." seconds\r\n";  
-	print "sql queries time: ".$sql_time." seconds\r\n";  
-	print "php run time: ".($exec_time-$sql_time)." seconds\r\n";  
 	print "-->";
 }

@@ -65,17 +65,17 @@ class ExportAjax extends Simpla
 		}
 		
 		// Все товары
-		$products = array();
- 		foreach($this->products->get_products(array('page'=>$page, 'limit'=>$this->products_count)) as $p)
+		$products = $this->products->get_products(array('page'=>$page, 'limit'=>$this->products_count));
+ 		foreach($products as $p)
  		{
- 			$products[$p->id] = (array)$p;
+ 			$products->{$p->id} = $p;
  			
 	 		// Свойства товаров
 	 		$options = $this->features->get_product_options($p->id);
 	 		foreach($options as $option)
 	 		{
-	 			if(!isset($products[$option->product_id][$option->name]))
-					$products[$option->product_id][$option->name] = str_replace(',', '.', trim($option->value));
+	 			if(!isset($products->{$option->product_id}->{$option->name}))
+					$products->{$option->product_id}->{$option->name} = str_replace(',', '.', trim($option->value));
 	 		}
 
  			
@@ -102,25 +102,25 @@ class ExportAjax extends Simpla
 	 				$categories[] = implode('/', $path);
  				}
 	 		}
-	 		$product['category'] = implode(', ', $categories);
+	 		$product->category = implode(', ', $categories);
  		}
  		
  		// Изображения товаров
- 		$images = $this->products->get_images(array('product_id'=>array_keys($products)));
+ 		$images = $this->products->get_images(array('product_id'=>array_keys((array)$products)));
  		foreach($images as $image)
  		{
- 			// Добавляем изображения к товару чезер запятую
- 			if(empty($products[$image->product_id]['images']))
- 				$products[$image->product_id]['images'] = $image->filename;
+ 			// Добавляем изображения к товару через запятую
+ 			if(empty($products->{$image->product_id}->images))
+ 				$products->{$image->product_id}->images = $image->filename;
  			else
- 				$products[$image->product_id]['images'] .= ', '.$image->filename;
+ 				$products->{$image->product_id}->images .= ', '.$image->filename;
  		}
  
- 		$variants = $this->variants->get_variants(array('product_id'=>array_keys($products)));
+ 		$variants = $this->variants->get_variants(array('product_id'=>array_keys((array)$products)));
 
 		foreach($variants as $variant)
  		{
- 			if(isset($products[$variant->product_id]))
+ 			if(isset($products->{$variant->product_id}))
  			{
 	 			$v                    = array();
 	 			$v['variant']         = $variant->name;
@@ -130,14 +130,14 @@ class ExportAjax extends Simpla
 	 			$v['stock']           = $variant->stock;
 	 			if($variant->infinity)
 	 				$v['stock']           = '';
-				$products[$variant->product_id]['variants'][] = $v;
+				$products->{$variant->product_id}->variants[] = $v;
 	 		}
 		}
 		
 		foreach($products as &$product)
  		{
- 			$variants = $product['variants'];
- 			unset($product['variants']);
+ 			$variants = $product->variants;
+ 			unset($product->variants);
  			
  			if(isset($variants))
  			foreach($variants as $variant)
@@ -145,12 +145,12 @@ class ExportAjax extends Simpla
  				$result = array();
  				$result =  $product;
  				foreach($variant as $name=>$value)
- 					$result[$name]=$value;
+ 					$result->{$name}=$value;
 
 	 			foreach($this->columns_names as $internal_name=>$column_name)
 	 			{
-	 				if(isset($result[$internal_name]))
-		 				$res[$internal_name] = $result[$internal_name];
+	 				if(isset($result->{$internal_name}))
+		 				$res[$internal_name] = $result->{$internal_name};
 	 				else
 		 				$res[$internal_name] = '';
 	 			}

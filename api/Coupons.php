@@ -21,8 +21,12 @@ class Coupons extends Simpla
 	* @param $id id или code купона
 	*
 	*/
-	public function get_coupon($id)
+	public function get_coupon($id = null)
 	{
+		//выдадим пустой купон, если id = null
+		if(is_null($id)){
+			return (object)Array('id'=>'', 'code'=>'', 'value'=>'', 'type'=>'', 'expire'=>'', 'min_order_price'=>'', 'single'=>'', 'usages'=>'', 'valid'=>'');
+		}
 		if(gettype($id) == 'string')
 			$where = $this->db->placehold('WHERE c.code=? ', $id);
 		else

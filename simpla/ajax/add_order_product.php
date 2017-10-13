@@ -24,18 +24,18 @@
 	                    GROUP BY p.id
 	                    ORDER BY p.name LIMIT ?', $limit);
 	foreach($simpla->db->results() as $product)
-		$products[$product->id] = $product;
+		$products->{$product->id} = $product;
 	
 	$variants = array();
 	if(!empty($products))
 	{
-		$simpla->db->query('SELECT v.id, v.name, v.sku, v.price, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.product_id FROM __variants v WHERE v.product_id in(?@) AND (v.stock IS NULL OR v.stock>0) AND v.price>0 ORDER BY v.position', $simpla->settings->max_order_amount, array_keys($products));
+		$simpla->db->query('SELECT v.id, v.name, v.sku, v.price, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.product_id FROM __variants v WHERE v.product_id in(?@) AND (v.stock IS NULL OR v.stock>0) AND v.price>0 ORDER BY v.position', $simpla->settings->max_order_amount, array_keys((array)$products));
 		$variants = $simpla->db->results();
 	}
 	
 	foreach($variants as $variant)
-		if(isset($products[$variant->product_id]))
-			$products[$variant->product_id]->variants[] = $variant;
+		if(isset($products->{$variant->product_id}))
+			$products->{$variant->product_id}->variants[] = $variant;
 	
 	$suggestions = array();
 	foreach($products as $product)

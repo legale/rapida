@@ -47,7 +47,7 @@ class ProductView extends View
 		$product->features = $this->features->get_product_options(array('product_id'=>$product->id));
 	
 		// Автозаполнение имени для формы комментария
-		if(!empty($this->user)){
+		if(!empty($this->user->name)){
 			$this->design->assign('comment_name', $this->user->name);
 		}else{
 			$this->design->assign('comment_name', '');
@@ -116,19 +116,18 @@ class ProductView extends View
 		}
 		if(!empty($related_ids))
 		{
-			foreach($this->products->get_products(array('id'=>$related_ids, 'in_stock'=>1, 'visible'=>1)) as $p)
-				$related_products[$p->id] = $p;
+			$related_products = $this->products->get_products(array('id'=>$related_ids, 'in_stock'=>1, 'visible'=>1));
 			
-			$related_products_images = $this->products->get_images(array('product_id'=>array_keys($related_products)));
+			$related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products)));
 			foreach($related_products_images as $related_product_image)
-				if(isset($related_products[$related_product_image->product_id]))
-					$related_products[$related_product_image->product_id]->images[] = $related_product_image;
-			$related_products_variants = $this->variants->get_variants(array('product_id'=>array_keys($related_products), 'in_stock'=>1));
+				if(isset($related_products->{$related_product_image->product_id}))
+					$related_products->{$related_product_image->product_id}->images[] = $related_product_image;
+			$related_products_variants = $this->variants->get_variants(array('product_id'=>array_keys((array)$related_products), 'in_stock'=>1));
 			foreach($related_products_variants as $related_product_variant)
 			{
-				if(isset($related_products[$related_product_variant->product_id]))
+				if(isset($related_products->{$related_product_variant->product_id}))
 				{
-					$related_products[$related_product_variant->product_id]->variants[] = $related_product_variant;
+					$related_products->{$related_product_variant->product_id}->variants[] = $related_product_variant;
 				}
 			}
 			foreach($related_products as $id=>$r)

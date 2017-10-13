@@ -71,6 +71,9 @@ class View extends Simpla
 					$this->group = $this->users->get_group($this->user->group_id);
 				
 				}
+			} else {
+				$this->user = new stdClass;
+				$this->user->discount = null;
 			}
 
 			// Текущая страница (если есть)
@@ -138,22 +141,20 @@ class View extends Simpla
 			if(isset($params['limit']))
 				$browsed_products_ids = array_slice($browsed_products_ids, 0, $params['limit']);
 
-			$products = array();
-			foreach($this->products->get_products(array('id'=>$browsed_products_ids, 'visible'=>1)) as $p)
-				$products[$p->id] = $p;
+			$products = $this->products->get_products(array('id'=>$browsed_products_ids, 'visible'=>1));
 			
 			$browsed_products_images = $this->products->get_images(array('product_id'=>$browsed_products_ids));
 			foreach($browsed_products_images as $browsed_product_image)
-				if(isset($products[$browsed_product_image->product_id]))
-					$products[$browsed_product_image->product_id]->images[] = $browsed_product_image;
+				if(isset($products->{$browsed_product_image->product_id}))
+					$products->{$browsed_product_image->product_id}->images[] = $browsed_product_image;
 			
 			foreach($browsed_products_ids as $id)
 			{	
-				if(isset($products[$id]))
+				if(isset($products->{$id}))
 				{
-					if(isset($products[$id]->images[0]))
-						$products[$id]->image = $products[$id]->images[0];
-					$result[] = $products[$id];
+					if(isset($products->{$id}->images[0]))
+						$products->{$id}->image = $products->{$id}->images[0];
+					$result[] = $products->{$id};
 				}
 			}
 			$smarty->assign($params['var'], $result);
@@ -168,13 +169,12 @@ class View extends Simpla
 		$params['featured'] = 1;
 		if(!empty($params['var']))
 		{
-			foreach($this->products->get_products($params) as $p)
-				$products[$p->id] = $p;
+			$products = $this->products->get_products($params);
 
 			if(!empty($products))
 			{
 				// id выбраных товаров
-				$products_ids = array_keys($products);
+				$products_ids = array_keys((array)$products);
 		
 				// Выбираем варианты товаров
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
@@ -183,13 +183,13 @@ class View extends Simpla
 				foreach($variants as &$variant)
 				{
 					// добавляем вариант в соответствующий товар
-					$products[$variant->product_id]->variants[] = $variant;
+					$products->{$variant->product_id}->variants[] = $variant;
 				}
 				
 				// Выбираем изображения товаров
 				$images = $this->products->get_images(array('product_id'=>$products_ids));
 				foreach($images as $image)
-					$products[$image->product_id]->images[] = $image;
+					$products->{$image->product_id}->images[] = $image;
 	
 				foreach($products as &$product)
 				{
@@ -214,13 +214,12 @@ class View extends Simpla
 			$params['sort'] = 'created';
 		if(!empty($params['var']))
 		{
-			foreach($this->products->get_products($params) as $p)
-				$products[$p->id] = $p;
+			$products = $this->products->get_products($params);
 
 			if(!empty($products))
 			{
 				// id выбраных товаров
-				$products_ids = array_keys($products);
+				$products_ids = array_keys((array)$products);
 		
 				// Выбираем варианты товаров
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
@@ -229,13 +228,13 @@ class View extends Simpla
 				foreach($variants as &$variant)
 				{
 					// добавляем вариант в соответствующий товар
-					$products[$variant->product_id]->variants[] = $variant;
+					$products->{$variant->product_id}->variants[] = $variant;
 				}
 				
 				// Выбираем изображения товаров
 				$images = $this->products->get_images(array('product_id'=>$products_ids));
 				foreach($images as $image)
-					$products[$image->product_id]->images[] = $image;
+					$products->{$image->product_id}->images[] = $image;
 	
 				foreach($products as &$product)
 				{
@@ -259,13 +258,12 @@ class View extends Simpla
 		$params['discounted'] = 1;
 		if(!empty($params['var']))
 		{
-			foreach($this->products->get_products($params) as $p)
-				$products[$p->id] = $p;
+			$products = $this->products->get_products($params);
 
 			if(!empty($products))
 			{
 				// id выбраных товаров
-				$products_ids = array_keys($products);
+				$products_ids = array_keys((array)$products);
 		
 				// Выбираем варианты товаров
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
@@ -274,13 +272,13 @@ class View extends Simpla
 				foreach($variants as &$variant)
 				{
 					// добавляем вариант в соответствующий товар
-					$products[$variant->product_id]->variants[] = $variant;
+					$products->{$variant->product_id}->variants[] = $variant;
 				}
 				
 				// Выбираем изображения товаров
 				$images = $this->products->get_images(array('product_id'=>$products_ids));
 				foreach($images as $image)
-					$products[$image->product_id]->images[] = $image;
+					$products->{$image->product_id}->images[] = $image;
 	
 				foreach($products as &$product)
 				{

@@ -42,7 +42,7 @@ class BlogView extends View
 			return false;
 		
 		// Автозаполнение имени для формы комментария
-		if(!empty($this->user))
+		if(!empty($this->user->name))
 			$this->design->assign('comment_name', $this->user->name);
 
 		

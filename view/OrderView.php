@@ -76,25 +76,23 @@ class OrderView extends View
 			$products_ids[] = $purchase->product_id;
 			$variants_ids[] = $purchase->variant_id;
 		}
-		$products = array();
-		foreach($this->products->get_products(array('id'=>$products_ids)) as $p)
-			$products[$p->id] = $p;
+		$products = $this->products->get_products(array('id'=>$products_ids));
 		
 		$images = $this->products->get_images(array('product_id'=>$products_ids));
 		foreach($images as $image)
-			$products[$image->product_id]->images[] = $image;
+			$products->{$image->product_id}->images[] = $image;
 		
 		$variants = array();
 		foreach($this->variants->get_variants(array('id'=>$variants_ids)) as $v)
 			$variants[$v->id] = $v;
 			
 		foreach($variants as $variant)
-			$products[$variant->product_id]->variants[] = $variant;
+			$products->{$variant->product_id}->variants[] = $variant;
 
 		foreach($purchases as &$purchase)
 		{
-			if(!empty($products[$purchase->product_id]))
-				$purchase->product = $products[$purchase->product_id];
+			if(!empty($products->{$purchase->product_id}))
+				$purchase->product = $products->{$purchase->product_id};
 			if(!empty($variants[$purchase->variant_id]))
 			{
 				$purchase->variant = $variants[$purchase->variant_id];

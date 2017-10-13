@@ -39,6 +39,10 @@ class CartView extends View
 			header('location: '.$this->config->root_url.'/cart/');
 	}
 	
+	//выводим пустой coupon_error, чтобы в шаблоне не было ошибки
+	$this->design->assign('coupon_error', '');
+	$this->design->assign('error', '');
+	
     // Если нажали оформить заказ
     if(isset($_POST['checkout']))
     {
@@ -175,7 +179,7 @@ class CartView extends View
 		$this->design->assign('deliveries', $deliveries);
 		
 		// Данные пользователя
-		if($this->user)
+		if(isset($this->user->id))
 		{
 			$last_order = $this->orders->get_orders(array('user_id'=>$this->user->id, 'limit'=>1));
 			$last_order = reset($last_order);

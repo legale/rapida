@@ -76,9 +76,7 @@ class CommentsAdmin extends Simpla
   		if($comment->type == 'blog')
   			$posts_ids[] = $comment->object_id;
   	}
-	$products = array();
-	foreach($this->products->get_products(array('id'=>$products_ids)) as $p)
-		$products[$p->id] = $p;
+	$products = $this->products->get_products(array('id'=>$products_ids));
 
   	$posts = array();
   	foreach($this->blog->get_posts(array('id'=>$posts_ids)) as $p)
@@ -86,8 +84,8 @@ class CommentsAdmin extends Simpla
   		
   	foreach($comments as &$comment)
   	{
-  		if($comment->type == 'product' && isset($products[$comment->object_id]))
-  			$comment->product = $products[$comment->object_id];
+  		if($comment->type == 'product' && isset($products->{$comment->object_id}))
+  			$comment->product = $products->{$comment->object_id};
   		if($comment->type == 'blog' && isset($posts[$comment->object_id]))
   			$comment->post = $posts[$comment->object_id];
   	}

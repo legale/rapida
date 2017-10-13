@@ -223,9 +223,13 @@ allow from 127.0.0.1";
 	 * @param $value
 	 * @return mixed
 	 */
-	private function decode($value)
+	private function decode(string $value, bool $as_array = null)
 	{
-		$x = @json_decode($value, TRUE);
+		if (is_null($as_array)) {
+			$as_array = true;
+		}
+		
+		$x = @json_decode($value, $as_array);
 		if ($x === null) {
 			return false;
 		} else {
@@ -299,8 +303,13 @@ allow from 127.0.0.1";
 	 * @return mixed|null
 	 * @throws \Exception
 	 */
-	public function get_cache_nosql($keyword)
+	public function get_cache_nosql(string $keyword, bool $as_array = null)
 	{
+		if (is_null($as_array)) {
+			$as_array = true;
+		}
+		
+		
 		dtimer::log( __METHOD__ .' '. __LINE__ . ' driver_get start ');
 		dtimer::log(__METHOD__ .' '. __LINE__ . ' keyword '.$keyword);
 		$file_path = $this->getFilePath($keyword);
@@ -318,7 +327,7 @@ allow from 127.0.0.1";
 		}
 
 		dtimer::log(__METHOD__. ' '. __LINE__ . " after iconv $file_path first 5 sym ' " . mb_substr($content , 0, 5) . " '");
-		$array = $this->decode($content);
+		$array = $this->decode($content, $as_array);
 
 		dtimer::log(__METHOD__. ' '. __LINE__ . " before driver_get return");
 		return $array;

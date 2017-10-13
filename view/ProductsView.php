@@ -137,7 +137,9 @@ class ProductsView extends View
 			
 		// Товары получаем их сразу массивом
 		$products = $this->products->get_products($filter);
-
+		//~ print "<pre>";
+		//~ print_r($products);
+		//~ print "</pre>";
 			
 		// Если искали товар и найден ровно один - перенаправляем на него
 		if(!empty($keyword) && $products_count == 1)
@@ -145,7 +147,7 @@ class ProductsView extends View
 		
 		if(!empty($products))
 		{
-			$products_ids = array_keys($products);
+			$products_ids = array_keys((array)$products);
 			foreach($products as &$product)
 			{
 				$product->variants = array();
@@ -158,12 +160,12 @@ class ProductsView extends View
 			foreach($variants as &$variant)
 			{
 				//$variant->price *= (100-$discount)/100;
-				$products[$variant->product_id]->variants[] = $variant;
+				$products->{$variant->product_id}->variants[] = $variant;
 			}
 	
 			$images = $this->products->get_images(array('product_id'=>$products_ids));
 			foreach($images as $image)
-				$products[$image->product_id]->images[] = $image;
+				$products->{$image->product_id}->images[] = $image;
 
 			foreach($products as &$product)
 			{

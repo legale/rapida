@@ -83,7 +83,9 @@ class ProductAdmin extends Simpla
 				}
 				$related_products = $rp;
 			}
-				
+			//пустой message_error, чтобы не было ошибки
+			$this->design->assign('message_error', '');
+
 			// Не допустить пустое название товара.
 			if(empty($product->name))
 			{			
@@ -337,16 +339,11 @@ class ProductAdmin extends Simpla
 			
 		if(!empty($related_products))
 		{
-			foreach($related_products as &$r_p)
-				$r_products[$r_p->related_id] = &$r_p;
-			$temp_products = $this->products->get_products(array('id'=>array_keys($r_products)));
-			foreach($temp_products as $temp_product)
-				$r_products[$temp_product->id] = $temp_product;
-		
-			$related_products_images = $this->products->get_images(array('product_id'=>array_keys($r_products)));
-			foreach($related_products_images as $image)
-			{
-				$r_products[$image->product_id]->images[] = $image;
+			$related_products = $this->products->get_products(array('id'=>array_keys($related_products)));
+			
+			$related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products)));
+			foreach($related_products_images as $image){
+				$related_products->{$image->product_id}->images[] = $image; 
 			}
 		}
 			

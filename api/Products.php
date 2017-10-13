@@ -27,6 +27,48 @@ class Products extends Simpla
 	*/
 	public function get_products($filter = array())
 	{		
+		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+		$filter_ = $filter;
+		dtimer::log("get_products start filter: " . var_export($filter_, true));
+		unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
+		if (isset($filter_['force_no_cache'])){
+			$force_no_cache = true;
+			unset($filter_['force_no_cache']);
+		}
+		
+		
+		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+		ksort($filter_);
+		$filter_string = var_export($filter_, true);
+		$keyhash =  hash('md4', 'get_products'. $filter_string);
+
+		//если запуск был не из очереди - пробуем получить из кеша
+		if(!isset($force_no_cache)){
+			dtimer::log("get_products normal run keyhash: $keyhash");
+			$res = $this->cache->get_cache_nosql($keyhash, false);
+		
+		
+		
+			//запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+			//функция выполнялась полностью
+			$filter_['force_no_cache'] = true;
+			$filter_string = var_export($filter_, true);
+			dtimer::log("get_products add task force_no_cache keyhash: $keyhash");
+
+			$task = '$this->products->get_products(';
+			$task .= $filter_string;
+			$task .= ');';
+			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+		}		
+		
+		if(isset($res) && !empty_($res) ){
+			dtimer::log("get_cache get_products HIT! res count: " . count($res));
+			return $res;
+		}		
+		
+		
+		
+		
 		// По умолчанию
 		$limit = 100;
 		$page = 1;
@@ -141,8 +183,11 @@ class Products extends Simpla
 					$sql_limit";
 
 		$this->db->query($query);
+		$res = $this->db->results_object('id');
 
-		return $this->db->results(null, 'id');
+		dtimer::log("set_cache_nosql key: $keyhash");
+		$this->cache->set_cache_nosql($keyhash, $res);
+		return $res;
 	}
 
 	/**
@@ -461,7 +506,8 @@ class Products extends Simpla
 					");
 		
 		$this->db->query($query);
-		return $this->db->results();
+		$res = $this->db->results(null, 'related_id');
+		return $res;
 	}
 	
 	// Функция возвращает связанные товары
@@ -495,19 +541,26 @@ class Products extends Simpla
 		return $this->db->results();
 	}
 	
+	/* Метод для добавления изображений
+	 * позиция изображения (поле position) устанавливается по порядку
+	 */
 	public function add_image($product_id, $filename, $name = '')
 	{
-		$query = $this->db->placehold("SELECT id FROM __images WHERE product_id=? AND filename=?", $product_id, $filename);
+		$query = $this->db->placehold("SELECT max(position) as position FROM __images WHERE product_id=?", $product_id);
 		$this->db->query($query);
-		$id = $this->db->result('id');
-		if(empty($id))
-		{
-			$query = $this->db->placehold("INSERT INTO __images SET product_id=?, filename=?", $product_id, $filename);
-			$this->db->query($query);
-			$id = $this->db->insert_id();
-			$query = $this->db->placehold("UPDATE __images SET position=id WHERE id=?", $id);
-			$this->db->query($query);
+		$res = $this->db->result();
+		
+		//Если кол-во затронутых строк больше 0, берем макс. позицию и прибавляем к ней 1, иначе 0
+		if($this->db->affected_rows() > 0){
+			$pos = $res->position + 1;
+		} else {
+			$pos = 0;
 		}
+		
+		$query = $this->db->placehold("INSERT INTO __images SET product_id=?, filename=?, position=?", $product_id, $filename, $pos);
+		dtimer::log(__METHOD__." query: '$query'");
+		$this->db->query($query);		
+		$id = $this->db->insert_id();
 		return($id);
 	}
 	
