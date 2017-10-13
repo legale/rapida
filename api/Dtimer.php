@@ -30,6 +30,10 @@ class dtimer
  
     public static function show()
     {
+		if(self::$disabled === true){
+			return false;
+		}
+		
         $oldtime = 0;
  
         echo '
