@@ -163,31 +163,6 @@ class Database extends Simpla
 	}
 
 	/**
-	 * Возвращает результаты запроса ассоциативным массивом
-	 */
-	public function results_array(string $field = null, string $group_field = null) {
-		$results = array();
-	
-		if(empty($this->res) || $this->res->num_rows == 0){
-			return $results;
-		}
-		if($field !== null){
-			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
-				array_push($results, $row[$field]);
-			}
-		}elseif($group_field !== null){
-			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
-				$results[$row[$group_field]] = $row;
-			}
-		}else{
-			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
-				array_push($results, $row);
-			}
-		}
-		return $results;
-	}
-
-	/**
 	 * Возвращает первый результат запроса. Необязательный второй аргумент указывает какую колонку возвращать вместо всего массива колонок
 	 */
 	public function result($field = null)
