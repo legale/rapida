@@ -20,7 +20,7 @@ error_reporting(E_ALL);
 <body>
 <div style='width:100%; height:100%;'>
   <div class="maindiv">
-    <h1>Установка Rapida 0.0.4</h1>
+    <h1>Установка Rapida</h1>
     <?PHP install(); ?>
   </div>
 </div>
@@ -67,6 +67,8 @@ function install()
 //
 function hello_screen()
 {
+	$readme = file_get_contents('README.md');
+	print "<textarea style='width:800; height:500;'>$readme</textarea>";
 	print "<p><form method=get><input type='hidden' name='step' value='test'><input type='submit' value='Начать установку →'></form></p>";
 }
 
