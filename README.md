@@ -1,4 +1,4 @@
-RAPIDA 0.0.3 ecommerce CMS SimplaCMS 2.3.8 fork
+RAPIDA 0.0.4 ecommerce CMS SimplaCMS 2.3.8 fork
 
 ****************
 Changelog
