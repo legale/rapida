@@ -67,6 +67,7 @@ function install()
 //
 function hello_screen()
 {
+	print "<p><form method=get><input type='hidden' name='step' value='test'><input type='submit' value='Начать установку →'></form></p>";
 }
 
 
