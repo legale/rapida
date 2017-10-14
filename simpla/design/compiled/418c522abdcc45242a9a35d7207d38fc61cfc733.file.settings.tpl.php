@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-11 14:27:26
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-14 12:35:41
          compiled from "simpla\design\html\settings.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:33070975859de001e2190c3-37715588%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '418c522abdcc45242a9a35d7207d38fc61cfc733' => 
     array (
       0 => 'simpla\\design\\html\\settings.tpl',
-      1 => 1492712116,
+      1 => 1507973731,
       2 => 'file',
     ),
   ),
@@ -15,6 +15,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   'function' => 
   array (
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59de001e5b6e10_83883612',
   'variables' => 
   array (
     'manager' => 0,
@@ -23,11 +25,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'config' => 0,
     'settings' => 0,
     'currency' => 0,
-    'managers' => 0,
   ),
   'has_nocache_code' => false,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59de001e5b6e10_83883612',
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_59de001e5b6e10_83883612')) {function content_59de001e5b6e10_83883612($_smarty_tpl) {?><?php if (!is_callable('smarty_function_math')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\function.math.php';
 ?><?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
@@ -166,30 +165,6 @@ if ($_smarty_tpl->parent != null) $_smarty_tpl->parent->tpl_vars['meta_title'] =
 " /> %</li>
 				<li><label class=property>Резкость изображений (рекомендуется 20%)</label><input name="images_sharpen" class="simpla_inp" type="text" value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['settings']->value->images_sharpen, ENT_QUOTES, 'UTF-8', true);?>
 " /> %</li>
-			</ul>
-		</div>
-		<!-- Параметры (The End)-->
-
-		
-		<!-- Параметры -->
-		<div class="block layer">
-			<h2>Интеграция с <a href="http://prostiezvonki.ru">простыми звонками</a></h2>
-			<ul>
-				<li><label class=property>Сервер</label><input name="pz_server" class="simpla_inp" type="text" value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['settings']->value->pz_server, ENT_QUOTES, 'UTF-8', true);?>
-" /></li>
-				<li><label class=property>Пароль</label><input name="pz_password" class="simpla_inp" type="text" value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['settings']->value->pz_password, ENT_QUOTES, 'UTF-8', true);?>
-" /></li>
-				<li><label class=property>Телефоны менеджеров:</label></li>
-				<?php  $_smarty_tpl->tpl_vars['manager'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['manager']->_loop = false;
- $_from = $_smarty_tpl->tpl_vars['managers']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
-foreach ($_from as $_smarty_tpl->tpl_vars['manager']->key => $_smarty_tpl->tpl_vars['manager']->value) {
-$_smarty_tpl->tpl_vars['manager']->_loop = true;
-?>
-				<li><label class=property><?php echo $_smarty_tpl->tpl_vars['manager']->value->login;?>
-</label><input name="pz_phones[<?php echo $_smarty_tpl->tpl_vars['manager']->value->login;?>
-]" class="simpla_inp" type="text" value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['settings']->value->pz_phones[$_smarty_tpl->tpl_vars['manager']->value->login], ENT_QUOTES, 'UTF-8', true);?>
-" /></li>
-				<?php } ?>
 			</ul>
 		</div>
 		<!-- Параметры (The End)-->

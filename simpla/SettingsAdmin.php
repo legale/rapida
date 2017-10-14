@@ -33,11 +33,7 @@ class SettingsAdmin extends Simpla
 			$this->settings->max_order_amount = $this->request->post('max_order_amount');	
 			$this->settings->units = $this->request->post('units');	
 			
-			// Простые звонки
-			$this->settings->pz_server = $this->request->post('pz_server');
-			$this->settings->pz_password = $this->request->post('pz_password');
-			$this->settings->pz_phones = $this->request->post('pz_phones');
-			
+
 			
 			// Водяной знак
 			$clear_image_cache = false;
