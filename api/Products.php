@@ -30,7 +30,7 @@ class Products extends Simpla
 		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
 		$filter_ = $filter;
 		dtimer::log("get_products start filter: " . var_export($filter_, true));
-		unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
+		unset($filter_['method']);
 		if (isset($filter_['force_no_cache'])){
 			$force_no_cache = true;
 			unset($filter_['force_no_cache']);

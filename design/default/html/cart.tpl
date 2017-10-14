@@ -57,7 +57,7 @@
 			
 </tr>
 {/foreach}
-{if $user->discount}
+{if isset($user->discount)}
 <tr>
 	<th class="image"></th>
 	<th class="name">скидка</th>

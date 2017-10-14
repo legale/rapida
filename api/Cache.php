@@ -1,24 +1,35 @@
 <?php
 
 require_once('Simpla.php');
-
+/* Класс для работы с кешем
+ */
 class Cache extends Simpla {
 	
 
 	private $tmp = array();
 
-	public static $config = array(
-		"storage" => "", // blank for auto
+	static private $config = array();
+	
+	
+
+	// Конструктор
+	public function __construct()
+	{
+		// загружаем настройки кеша, если они еще не были загружены
+		$config = array(
 		"default_chmod" => '0666', // 0777 , 0666, 0644
-		"securityKey" => "sevenlight.ru", //
-		"htaccess" => true,
-		"path" => "",
-		"JSON_UNESCAPED" => true,
-		"codepage" => "cp1251",
-
-	);
-
-
+		"securityKey" => "", // directory to store cache
+		"htaccess" => true, // create htaccess file
+		"path" => "auto", // cache root path
+		"JSON_UNESCAPED" => true, //parameter to json_encode cache->encode method 
+		"codepage" => "cp1251" //codepage to store cache data on disk
+		);
+		
+		$ini_config = $this->config->vars_sections['cache'];
+		
+		self::$config = array_merge($config, $ini_config);
+		
+	}
 
 
 
@@ -82,7 +93,7 @@ class Cache extends Simpla {
 	public function getPath($skip_create_path = false)
 	{
 
-		if (!isset(self::$config[ 'path' ]) || self::$config[ 'path' ] == '') {
+		if (!isset(self::$config[ 'path' ]) || self::$config[ 'path' ] == '' || self::$config[ 'path' ] == 'auto') {
 
 			$tmp_dir = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
 			$path = $tmp_dir;
@@ -92,9 +103,7 @@ class Cache extends Simpla {
 		}
 
 		$securityKey = array_key_exists('securityKey', self::$config) ? self::$config[ 'securityKey' ] : "";
-		  dtimer::log('$config[ securityKey ]: '.self::$config['securityKey']);
-		  dtimer::log('$config: '.print_r(self::$config, true));
-		  dtimer::log('$securitykey: '.$securityKey);
+		  dtimer::log('$config: '.var_export(self::$config, true));
 		if ($securityKey == "" || $securityKey == "auto") {
 			$securityKey = self::$config[ 'securityKey' ];
 			if ($securityKey == "auto" || $securityKey == "") {
@@ -214,7 +223,7 @@ allow from 127.0.0.1";
 		if($unescaped === true){
 			return json_encode($data, JSON_UNESCAPED_UNICODE);
 		}else{
-			return json_encode($data, $param);
+			return json_encode($data);
 		}
 	}
 

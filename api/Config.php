@@ -15,22 +15,33 @@ require_once('Simpla.php');
 
 class Config
 {
-	public $version = '2.3.8';
+	public $version = '0.0.5';
 	
 	// Файл для хранения настроек
 	public $config_file = 'config/config.ini';
 
 	private $vars = array();
+	public $vars_sections = array();
 	
 	// В конструкторе записываем настройки файла в переменные этого класса
 	// для удобного доступа к ним. Например: $simpla->config->db_user
 	public function __construct()
 	{		
-		// Читаем настройки из дефолтного файла
-		$ini = parse_ini_file(dirname(dirname(__FILE__)).'/'.$this->config_file, false, INI_SCANNER_TYPED);
+		// Читаем настройки из дефолтного файла с секциями
+		//$ini = parse_ini_file(dirname(dirname(__FILE__)).'/'.$this->config_file, false, INI_SCANNER_TYPED);
+		
+		$ini = parse_ini_file(dirname(dirname(__FILE__)).'/'.$this->config_file, true, INI_SCANNER_TYPED);
 		// Записываем настройку как переменную класса
-		foreach($ini as $var=>$value)
-			$this->vars[$var] = $value;
+		
+		$this->vars_sections = $ini;
+		//~ var_dump($ini);
+		if(is_array($ini)){
+			foreach($ini as $section){
+				$this->vars = array_merge($this->vars, $section);
+			}
+		}
+		 
+		
 		//~ print_r($this->vars);
 		
 		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое

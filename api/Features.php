@@ -16,6 +16,7 @@ class Features extends Simpla
 	
 	function get_features($filter = array())
 	{
+		dtimer::log(__METHOD__ . 'get_features start');
 		$category_id_filter = '';	
 		if(isset($filter['category_id']))
 			$category_id_filter = $this->db->placehold('AND id in(SELECT feature_id FROM __categories_features AS cf WHERE cf.category_id in(?@))', (array)$filter['category_id']);
@@ -34,7 +35,8 @@ class Features extends Simpla
 									$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
 		$this->db->query($query);
 		dtimer::log(__METHOD__ . " query: '$query'");
-		$res = $this->db->results(null, 'id');
+		$res = $this->db->results_object('id');
+		dtimer::log(__METHOD__ . 'get_features return');
 		return $res;
 	}
 		
@@ -141,6 +143,46 @@ class Features extends Simpla
 
 	public function get_options($filter = array())
 	{
+		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+		$filter_ = $filter;
+		dtimer::log("get_options start filter: " . var_export($filter_, true));
+		unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
+		if (isset($filter_['force_no_cache'])){
+			$force_no_cache = true;
+			unset($filter_['force_no_cache']);
+		}
+		
+		
+		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+		ksort($filter_);
+		$filter_string = var_export($filter_, true);
+		$keyhash =  hash('md4', 'get_products'. $filter_string);
+
+		//если запуск был не из очереди - пробуем получить из кеша
+		if(!isset($force_no_cache)){
+			dtimer::log("get_options normal run keyhash: $keyhash");
+			$res = $this->cache->get_cache_nosql($keyhash, false);
+		
+		
+		
+			//запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+			//функция выполнялась полностью
+			$filter_['force_no_cache'] = true;
+			$filter_string = var_export($filter_, true);
+			dtimer::log("get_options add task force_no_cache keyhash: $keyhash");
+
+			$task = '$this->features->get_options(';
+			$task .= $filter_string;
+			$task .= ');';
+			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+		}		
+		
+		if(isset($res) && !empty_($res) ){
+			dtimer::log(__METHOD__ . "get_options return cache res count: " . count($res));
+			return $res;
+		}		
+		
+		
 		$feature_id_filter = '';
 		$product_id_filter = '';
 		$category_id_filter = '';
@@ -184,7 +226,13 @@ class Features extends Simpla
 			WHERE 1 $feature_id_filter $product_id_filter $brand_id_filter $features_filter GROUP BY po.feature_id, po.value ORDER BY value=0, -value DESC, value");
 
 		$this->db->query($query);
-		return $this->db->results();
+		
+		$res = $this->db->results_object();
+
+		dtimer::log("set_cache_nosql key: $keyhash");
+		$this->cache->set_cache_nosql($keyhash, $res);
+		dtimer::log(__METHOD__ . 'get_options return db');
+		return $res;
 	}
 	
 	public function get_product_options($product_id)

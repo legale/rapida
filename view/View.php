@@ -71,9 +71,6 @@ class View extends Simpla
 					$this->group = $this->users->get_group($this->user->group_id);
 				
 				}
-			} else {
-				$this->user = new stdClass;
-				$this->user->discount = null;
 			}
 
 			// Текущая страница (если есть)

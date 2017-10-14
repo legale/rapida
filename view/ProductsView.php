@@ -81,8 +81,8 @@ class ProductsView extends View
 
 			$options_filter['visible'] = 1;
 			
-			if(is_array($features)){
-				$features_ids = array_keys($features);
+			if(!empty($features)){
+				$features_ids = array_keys((array)$features);
 			}
 			
 			if(!empty($features_ids))
@@ -97,15 +97,15 @@ class ProductsView extends View
 
 			foreach($options as $option)
 			{
-				if(isset($features[$option->feature_id]))
-					$features[$option->feature_id]->options[] = $option;
+				if(isset($features->{$option->feature_id}))
+					$features->{$option->feature_id}->options[] = $option;
 			}
 			
 			if(!empty($features)){
 				foreach($features as $i=>&$feature)
 				{ 
 					if(empty($feature->options))
-						unset($features[$i]);
+						unset($features->{$i});
 				}
 			}
 

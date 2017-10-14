@@ -198,8 +198,11 @@ class CartView extends View
 		}
 		
 		// Если существуют валидные купоны, нужно вывести инпут для купона
-		if($this->coupons->count_coupons(array('valid'=>1))>0)
+		if($this->coupons->count_coupons(array('valid'=>1))>0){
 			$this->design->assign('coupon_request', true);
+		}else{
+			$this->design->assign('coupon_request', false);
+		}
 
 		// Выводим корзину
 		return $this->design->fetch('cart.tpl');

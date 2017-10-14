@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-11 14:27:19
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-15 01:35:56
          compiled from "simpla\design\html\index.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:134016197159ddfea09f1908-44913352%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'f7a07d5d722e36f6c251f204c3c631bb4cfd9eae' => 
     array (
       0 => 'simpla\\design\\html\\index.tpl',
-      1 => 1507721237,
+      1 => 1508020304,
       2 => 'file',
     ),
   ),
@@ -25,7 +25,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'new_orders_counter' => 0,
     'new_comments_counter' => 0,
     'content' => 0,
-    'settings' => 0,
   ),
   'has_nocache_code' => false,
 ),false); /*/%%SmartyHeaderCode%%*/?>
@@ -150,7 +149,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	
 	<!-- Подвал сайта -->
 	<div id="footer">
-	&copy; 2017 <a href='#'>Simpla <?php echo $_smarty_tpl->tpl_vars['config']->value->version;?>
+	&copy; 2017 <a href='#'>Rapida <?php echo $_smarty_tpl->tpl_vars['config']->value->version;?>
 </a>
 
 	Вы вошли как <?php echo $_smarty_tpl->tpl_vars['manager']->value->login;?>
@@ -166,96 +165,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 </body>
 </html>
 
-
-<?php if ($_smarty_tpl->tpl_vars['settings']->value->pz_server&&$_smarty_tpl->tpl_vars['settings']->value->pz_phones[$_smarty_tpl->tpl_vars['manager']->value->login]) {?>
-<script src="design/js/prostiezvonki/prostiezvonki.min.js"></script>
-<script>
-var pz_type = 'simpla';
-var pz_password = '<?php echo $_smarty_tpl->tpl_vars['settings']->value->pz_password;?>
-';
-var pz_server = '<?php echo $_smarty_tpl->tpl_vars['settings']->value->pz_server;?>
-';
-var pz_phone = '<?php echo $_smarty_tpl->tpl_vars['settings']->value->pz_phones[$_smarty_tpl->tpl_vars['manager']->value->login];?>
-';
-
-function NotificationBar(message)
-{
-	ttop = $('body').height()-110;
-	var HTMLmessage = "<div class='notification-message' style='  text-align:center; line-height: 40px;'> " + message + " </div>";
-	if ($('#notification-bar').size() == 0)
-	{
-		$('body').prepend("<div id='notification-bar' style='-moz-border-radius: 5px 5px 5px 5px; -webkit-border-radius: 5px 5px 5px 5px; display:none;  height: 40px; padding: 20px; background-color: #fff; position: fixed; top:"+ttop+"px; right:30px; z-index: 100; color: #000;border: 1px solid #cccccc;'>" + HTMLmessage + "</div>");
-	}
-	else
-    {
-    	$('#notification-bar').html(HTMLmessage);
-    }
-    $('#notification-bar').slideDown();
-}
-
-$(window).on("blur focus", function (e) {
-    if ($(this).data('prevType') !== e.type) {
-        $(this).data('prevType', e.type);
-
-        switch (e.type) {
-        case 'focus':
-            if (!pz.isConnected()) {
-				pz.connect({
-				            client_id: pz_password,
-				            client_type: pz_type,
-				            host: pz_server
-				});
-            }
-            break;
-        }
-    }
-});
-
-$(function() {
-	// Простые звонки
-	pz.setUserPhone(pz_phone);
-	pz.connect({
-                client_id: pz_password,
-                client_type: pz_type,
-                host: pz_server
-	});
-    pz.onConnect(function () {
-        $(".ip_call").addClass('phone');
-    });
-    pz.onDisconnect(function () {
-        $(".ip_call").removeClass('phone');
-    });
-	
-    $(".ip_call").click( function() {
-        var phone = $(this).attr('data-phone').trim();
-        pz.call(phone);
-        return false;
-    });
-
-    pz.onEvent(function (event) {
-        if (event.isIncoming()) {
-			$.ajax({
-				type: "GET",
-				url: "ajax/search_orders.php",
-				data: { keyword: event.from, limit:"1"},
-				dataType: 'json'
-			}).success(function(data){
-				if(event.to == pz_phone)
-				if(data.length>0)
-				{
-					NotificationBar('<img src="design/images/phone_sound.png" align=absmiddle> Звонит <a href="index.php?module=OrderAdmin&id='+data[0].id+'">'+data[0].name+'</a>');
-				}
-				else
-				{
-					NotificationBar('<img src="design/images/phone_sound.png" align=absmiddle> Звонок с '+event.from+'. <a href="index.php?module=OrderAdmin&phone='+event.from+'">Создать заказ</a>');
-				}
-			});        	     
-        }
-    });
-
-});
-</script>
-<?php }?>
 
 
 <script>
