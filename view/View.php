@@ -177,11 +177,13 @@ class View extends Simpla
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
 				
 				// Для каждого варианта
-				foreach($variants as &$variant)
-				{
-					// добавляем вариант в соответствующий товар
-					if(isset($products->{$variant->product_id})){
-						$products->{$variant->product_id}->variants[] = $variant;
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products->{$variant->product_id})){
+							$products->{$variant->product_id}->variants[] = $variant;
+						}
 					}
 				}
 				
@@ -226,19 +228,19 @@ class View extends Simpla
 			{
 				// id выбраных товаров
 				$products_ids = array_keys((array)$products);
-		
 				// Выбираем варианты товаров
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
-				
+
 				// Для каждого варианта
-				foreach($variants as &$variant)
-				{
-					// добавляем вариант в соответствующий товар
-					if(isset($products->{$variant->product_id})){
-						$products->{$variant->product_id}->variants[] = $variant;
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products->{$variant->product_id})){
+							$products->{$variant->product_id}->variants[] = $variant;
+						}
 					}
 				}
-				
 				// Выбираем изображения товаров
 				$images = $this->products->get_images(array('product_id'=>$products_ids));
 				foreach($images as $image){
@@ -285,11 +287,13 @@ class View extends Simpla
 				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
 				
 				// Для каждого варианта
-				foreach($variants as &$variant)
-				{
-					// добавляем вариант в соответствующий товар
-					if(isset($products->{$variant->product_id})){
-						$products->{$variant->product_id}->variants[] = $variant;
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products->{$variant->product_id})){
+							$products->{$variant->product_id}->variants[] = $variant;
+						}
 					}
 				}
 				
