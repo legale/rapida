@@ -33,7 +33,9 @@ class Features extends Simpla
 									WHERE 1
 									$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
 		$this->db->query($query);
-		return $this->db->results();
+		dtimer::log(__METHOD__ . " query: '$query'");
+		$res = $this->db->results(null, 'id');
+		return $res;
 	}
 		
 	function get_feature($id)

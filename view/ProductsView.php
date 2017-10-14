@@ -69,17 +69,22 @@ class ProductsView extends View
 		// Свойства товаров
 		if(!empty($category))
 		{
-			$features = array();
-			foreach($this->features->get_features(array('category_id'=>$category->id, 'in_filter'=>1)) as $feature)
-			{ 
-				$features[$feature->id] = $feature;
-				if(($val = strval($this->request->get($feature->id)))!='')
-					$filter['features'][$feature->id] = $val;	
+			$features = $this->features->get_features(array('category_id'=>$category->id, 'in_filter'=>1));
+			if(!empty($features)){
+				foreach($features as $feature)
+				{ 
+					if(($val = strval($this->request->get($feature->id)))!='')
+						$filter['features'][$feature->id] = $val;	
+				}
 			}
-			
+
+
 			$options_filter['visible'] = 1;
 			
-			$features_ids = array_keys($features);
+			if(is_array($features)){
+				$features_ids = array_keys($features);
+			}
+			
 			if(!empty($features_ids))
 				$options_filter['feature_id'] = $features_ids;
 			$options_filter['category_id'] = $category->children;
@@ -96,10 +101,12 @@ class ProductsView extends View
 					$features[$option->feature_id]->options[] = $option;
 			}
 			
-			foreach($features as $i=>&$feature)
-			{ 
-				if(empty($feature->options))
-					unset($features[$i]);
+			if(!empty($features)){
+				foreach($features as $i=>&$feature)
+				{ 
+					if(empty($feature->options))
+						unset($features[$i]);
+				}
 			}
 
 			$this->design->assign('features', $features);

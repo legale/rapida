@@ -165,6 +165,7 @@ class Products extends Simpla
 					p.meta_description, 
 					b.name as brand,
 					b.url as brand_url
+					
 				FROM __products p		
 				$category_id_filter 
 				LEFT JOIN __brands b ON p.brand_id = b.id

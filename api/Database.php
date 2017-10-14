@@ -142,11 +142,11 @@ class Database extends Simpla
 	 * вместо всего массива колонок
 	 */
 	public function results(string $field = null, string $group_field = null) {
-		$results = array();
-	
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return $results;
+			return null;
 		}
+		$results = array();
+
 		if($field !== null){
 			while($row = $this->res->fetch_object()){
 				array_push($results, $row->$field);
@@ -169,11 +169,11 @@ class Database extends Simpla
 	 * результат будет собран в объект с ключом по указанному в параметре столбцу
 	 */
 	public function results_object(string $group_field = null) {
-		$results = new stdClass();
-	
+		
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return $results;
+			return null;
 		}
+		$results = new stdClass();
 
 		if($group_field !== null){
 			while($row = $this->res->fetch_object()){
@@ -193,11 +193,10 @@ class Database extends Simpla
 	 * Возвращает результаты запроса ассоциативным массивом
 	 */
 	public function results_array(string $group_field = null) {
-		$results = array();
-	
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return $results;
+			return null;
 		}
+		$results = array();
 		
 		if($group_field !== null){
 			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){

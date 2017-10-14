@@ -108,11 +108,13 @@ class ProductView extends View
 		
 		// Связанные товары
 		$related_ids = array();
-		$related_products = array();
-		foreach($this->products->get_related_products($product->id) as $p)
-		{
-			$related_ids[] = $p->related_id;
-			$related_products[$p->related_id] = null;
+		$related_products = $this->products->get_related_products($product->id);
+		if(!empty($related_products)){
+			foreach($related_products as $p)
+			{
+				$related_ids[] = $p->related_id;
+				$related_products[$p->related_id] = null;
+			}
 		}
 		if(!empty($related_ids))
 		{
