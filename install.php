@@ -387,7 +387,7 @@ function mysqlrestore($mysqli, $filename)
       // If it has a semicolon at the end, it's the end of the query
       if (substr(trim($line), -1, 1) == ';') {
         // Perform the query
-        $mysqli->query($templine) or print('Error performing query \'<b>' . $templine . '</b>\': ' . $mysqli->error() . '<br /><br />');
+        $mysqli->query($templine) or print('Error performing query \'<b>' . $templine . '</b>\': ' . $mysqli->error . '<br /><br />');
         // Reset temp variable to empty
         $templine = '';
       }
