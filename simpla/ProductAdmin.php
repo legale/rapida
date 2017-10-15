@@ -347,13 +347,6 @@ class ProductAdmin extends Simpla
 			}
 		}
 			
-		if(is_array($options))
-		{
-			$temp_options = array();
-			foreach($options as $option)
-				$temp_options[$option->feature_id] = $option;
-			$options = $temp_options;
-		}
 			
 
 		$this->design->assign('product', $product);

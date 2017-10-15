@@ -1,17 +1,17 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-11 23:56:38
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-15 13:40:43
          compiled from "simpla\design\html\product.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:75546706559de8586216a27-60474237%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:135672170259e339f2b08045-69999607%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     '3f18dfe5f48ef059e152ab919b3f13338168bbfc' => 
     array (
       0 => 'simpla\\design\\html\\product.tpl',
-      1 => 1492708202,
+      1 => 1508064037,
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '75546706559de8586216a27-60474237',
+  'nocache_hash' => '135672170259e339f2b08045-69999607',
   'function' => 
   array (
     'category_select' => 
@@ -23,6 +23,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       'compiled' => '',
     ),
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59e339f2d713d7_86349656',
   'variables' => 
   array (
     'product' => 0,
@@ -53,10 +55,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'related_product' => 0,
   ),
   'has_nocache_code' => 0,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59de8586766169_81836778',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_59de8586766169_81836778')) {function content_59de8586766169_81836778($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_replace')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.replace.php';
+<?php if ($_valid && !is_callable('content_59e339f2d713d7_86349656')) {function content_59e339f2d713d7_86349656($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_replace')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.replace.php';
 if (!is_callable('smarty_modifier_truncate')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.truncate.php';
 ?><?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
 	<li class="active"><a href="<?php echo $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['url'][0][0]->url_modifier(array('module'=>'ProductsAdmin','category_id'=>$_smarty_tpl->tpl_vars['product']->value->category_id,'return'=>null,'brand_id'=>null,'id'=>null),$_smarty_tpl);?>
@@ -813,7 +813,7 @@ $_smarty_tpl->tpl_vars['feature']->_loop = true;
 					<li feature_id=<?php echo $_smarty_tpl->tpl_vars['feature_id']->value;?>
 ><label class=property><?php echo $_smarty_tpl->tpl_vars['feature']->value->name;?>
 </label><input class="simpla_inp" type="text" name=options[<?php echo $_smarty_tpl->tpl_vars['feature_id']->value;?>
-] value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['options']->value[$_smarty_tpl->tpl_vars['feature_id']->value]->value, ENT_QUOTES, 'UTF-8', true);?>
+] value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['options']->value->{$_smarty_tpl->tpl_vars['feature_id']->value}->value, ENT_QUOTES, 'UTF-8', true);?>
 " /></li>
 				<?php } ?>
 			</ul>

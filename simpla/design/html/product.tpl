@@ -643,7 +643,7 @@ overflow-y: auto;
 			<ul class="prop_ul">
 				{foreach $features as $feature}
 					{assign var=feature_id value=$feature->id}
-					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] value="{$options.$feature_id->value|escape}" /></li>
+					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] value="{$options->$feature_id->value|escape}" /></li>
 				{/foreach}
 			</ul>
 			<!-- Новые свойства -->
