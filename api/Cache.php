@@ -21,7 +21,7 @@ class Cache extends Simpla {
 		"securityKey" => "", // directory to store cache
 		"htaccess" => true, // create htaccess file
 		"path" => "auto", // cache root path
-		"JSON_UNESCAPED" => true, //parameter to json_encode cache->encode method 
+		"JSON_UNESCAPED_UNICODE" => true, //parameter to json_encode cache->encode method 
 		"codepage" => "cp1251" //codepage to store cache data on disk
 		);
 		
@@ -40,11 +40,9 @@ class Cache extends Simpla {
 	private function cleanFileName($filename)
 	{
 		$regex = array(
-		  '/[\?\[\]\/\\\=\<\>\:\;\,\'\"\&\$\#\*\(\)\|\~\`\!\{\}]/',
-		  '/\.$/',
-		  '/^\./',
+		  '/[^\.\w\d\_]/',
 		);
-		$replace = array('-', '', '');
+		$replace = array('');
 		return preg_replace($regex, $replace, $filename);
 	}
 
@@ -99,7 +97,7 @@ class Cache extends Simpla {
 			$path = $tmp_dir;
 
 		} else {
-			$path = self::$config[ 'path' ];
+			$path = dirname(__FILE__) . '/../' . self::$config[ 'path' ];
 		}
 
 		$securityKey = array_key_exists('securityKey', self::$config) ? self::$config[ 'securityKey' ] : "";
@@ -262,7 +260,7 @@ allow from 127.0.0.1";
 		dtimer::log(__METHOD__. ' driver_set start ');
 		$file_path = $this->getFilePath($keyword);
 		$tmp_path = $file_path . ".tmp";
-		$data = $this->encode($value, self::$config['JSON_UNESCAPED']);
+		$data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
 
 		$toWrite = true;
 
