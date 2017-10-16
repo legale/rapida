@@ -258,7 +258,7 @@
 	
 	<!-- Футер -->
 	<div id="footer">
-		<a href="http://simplacms.ru">Скрипт интернет-магазина Simpla</a>
+		<a href="#">Скрипт интернет-магазина Rapida {$config->version}</a>
 	</div>
 	<!-- Футер (The End)--> 
 	

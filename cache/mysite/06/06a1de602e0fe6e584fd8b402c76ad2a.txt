@@ -1,0 +1,1 @@
+{"0":{"product_id":"1","feature_id":"4","value":"iOS 5","count":"1"},"1":{"product_id":"1","feature_id":"5","value":"классический","count":"1"},"2":{"product_id":"1","feature_id":"2","value":"смартфон\/коммуникатор","count":"1"}}
