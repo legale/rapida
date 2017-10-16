@@ -216,14 +216,8 @@ allow from 127.0.0.1";
 	 * @param $data
 	 * @return string
 	 */
-	private function encode( $data, $unescaped = true)
+	private function encode($data, $unescaped = true)
 	{
-		if( ( is_object($data) || is_array($data) ) && is_bool($unescaped) ){
-		} else {
-			trigger_error(__METHOD__ . ' ' . __LINE__ . ' wrong argument type ' . gettype($data).' '.gettype($unescaped));
-			return false;
-		}
-		
 		if($unescaped === true){
 			return json_encode($data, JSON_UNESCAPED_UNICODE);
 		}else{
@@ -236,7 +230,7 @@ allow from 127.0.0.1";
 	 * @param $value
 	 * @return mixed
 	 */
-	private function decode($value, $as_array = null)
+	private function decode(string $value, bool $as_array = null)
 	{
 		if (is_null($as_array)) {
 			$as_array = true;
@@ -316,14 +310,12 @@ allow from 127.0.0.1";
 	 * @return mixed|null
 	 * @throws \Exception
 	 */
-	public function get_cache_nosql($keyword, $as_array = true)
+	public function get_cache_nosql(string $keyword, bool $as_array = null)
 	{
-		//проверка типов аргументов
-		if( is_string($keyword) && is_bool($as_array)){
-		} else {
-			trigger_error(__METHOD__ . ' ' . __LINE__ . ' wrong argument type ' . gettype($keyword).' '.gettype($as_array));
-			return false;
+		if (is_null($as_array)) {
+			$as_array = true;
 		}
+		
 		
 		dtimer::log( __METHOD__ .' '. __LINE__ . ' driver_get start ');
 		dtimer::log(__METHOD__ .' '. __LINE__ . ' keyword '.$keyword);

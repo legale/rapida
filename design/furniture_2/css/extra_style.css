@@ -1,0 +1,33 @@
+h4, h5, h6,
+h1, h2, h3 {margin-top: 0;}
+ul, ol {margin: 0;}
+p {margin: 0;}
+.main-container label {font-weight: normal;}
+.page .label {
+	color: inherit;
+	font-size: 100%;
+	border-radius: 0;
+	display: inline-block;
+	text-align: left;
+	white-space:normal;
+	line-height: normal;
+}
+.main-container .data-table .label {display: table-cell;}
+.main-container .radio, .main-container .checkbox {display: inline-block; margin-top: 0;}
+@media (min-width: 1200px) { 
+   .container {
+    max-width: 1200px;
+  }
+}
+@media only screen and (min-width: 768px) {
+    span.toggle {display: none;}
+    .footer-col-content,
+    .block .block-content,
+    .box-collateral-content {
+      height: 100% !important;
+      display: block !important;
+      opacity: 1!important;
+    }
+}
+
+
