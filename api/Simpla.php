@@ -1,10 +1,5 @@
 <?php
 
-// отладчик ошибок
-require_once(dirname(__FILE__) .'/Dtimer.php');
-
-
-
 //нужная функция empty_ работает иначе чем нативная empty
 //нативная empty(0) выдает true, наша функция empty(0) выдает - false
 function empty_($var){
@@ -14,6 +9,12 @@ function empty_($var){
 		return true;
 	}
 }
+
+// отладчик ошибок
+require_once(dirname(__FILE__) .'/Dtimer.php');
+
+
+
 
 //*****************************************************************************
 
@@ -60,6 +61,9 @@ class Simpla
 		'queue'      => 'Queue'
 	);
 	
+	//первое обращение к классу будет хранится тут
+	private static $virgin = true;
+	
 	// Созданные объекты
 	private static $objects = array();
 	
@@ -68,12 +72,21 @@ class Simpla
 	 */
 	public function __construct()
 	{
-		//уровень отображения ошибок
-		error_reporting($this->config->error_reporting);
-		//выключатель отладчика
-		dtimer::$disabled = $this->config->dtimer_disabled;
-		//локаль
-		setlocale(LC_ALL, $this->config->locale);
+		if(self::$virgin === true) {
+			
+			//убираем флаг, чтобы код ниже заводился только 1 раз
+			
+			self::$virgin = false;
+
+			//уровень отображения ошибок
+			error_reporting($this->config->error_reporting);
+			dtimer::log('error_reporting config.ini ' . var_export($this->config->error_reporting, true ) );
+			//выключатель отладчика
+			dtimer::$disabled = $this->config->dtimer_disabled;
+			//локаль
+			setlocale(LC_ALL, $this->config->locale);
+		}
+
 	}
 
 	/**
