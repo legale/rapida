@@ -224,9 +224,10 @@ class View extends Simpla
 			$params['sort'] = 'created';
 		if(!empty($params['var']))
 		{
+			//~ print_r($params);
 			$products = $this->products->get_products($params);
 
-			if(!empty($products))
+			if(isset($products) && !empty_($products))
 			{
 				// id выбраных товаров
 				$products_ids = array_keys((array)$products);

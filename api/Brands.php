@@ -91,7 +91,7 @@ class Brands extends Simpla
 			}
 		}
 
-		if(empty_($brand['url'])){
+		if(!isset($brand['url']) || empty_($brand['url'])){
 			$brand['url'] = preg_replace("/[\s]+/ui", '_', $brand['name']);
 			$brand['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $brand['url']));
 		}	

@@ -95,7 +95,7 @@ class Categories extends Simpla
 			}
 		}
 
-		if(empty_($category['url'])){
+		if( !isset($category['url']) || empty_($category['url']) ){
 			$category['url'] = preg_replace("/[\s]+/ui", '_', $category['name']);
 			$category['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $category['url']));
 		}	

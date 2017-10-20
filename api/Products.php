@@ -401,7 +401,7 @@ class Products extends Simpla
 		$this->db->query($query);
 		
 		if($res = $this->db->results_object(null,'id') ) {
-			dtimer::log("set_cache_nosql key: $keyhash");
+			dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
 			$this->cache->set_cache_nosql($keyhash, $res);
 			return $res;
 		} else {

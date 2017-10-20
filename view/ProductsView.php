@@ -95,10 +95,12 @@ class ProductsView extends View
 			}
 			$options = $this->features->get_options($options_filter);
 			//~ print_r($options);
-
-			foreach($features as $k=>&$feature) {
-				if( isset($options->{$k}) ){
-					$feature->options = $options->{$k};
+			
+			if(isset($features) && !empty_($features)){
+				foreach($features as $k=>&$feature) {
+					if( isset($options->{$k}) ){
+						$feature->options = $options->{$k};
+					}
 				}
 			}
 			
