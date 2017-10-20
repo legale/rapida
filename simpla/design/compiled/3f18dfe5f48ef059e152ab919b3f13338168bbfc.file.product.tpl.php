@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-15 13:40:43
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-19 01:55:00
          compiled from "simpla\design\html\product.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:135672170259e339f2b08045-69999607%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '3f18dfe5f48ef059e152ab919b3f13338168bbfc' => 
     array (
       0 => 'simpla\\design\\html\\product.tpl',
-      1 => 1508064037,
+      1 => 1508367297,
       2 => 'file',
     ),
   ),
@@ -47,8 +47,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'variant' => 0,
     'settings' => 0,
     'features' => 0,
-    'feature' => 0,
     'feature_id' => 0,
+    'feature' => 0,
     'options' => 0,
     'image' => 0,
     'related_products' => 0,
@@ -802,18 +802,18 @@ $_smarty_tpl->tpl_vars['variant']->_loop = true;
 			<h2>Свойства товара
 			<a href="#" id=properties_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
-			
 			<ul class="prop_ul">
 				<?php  $_smarty_tpl->tpl_vars['feature'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['feature']->_loop = false;
+ $_smarty_tpl->tpl_vars['feature_id'] = new Smarty_Variable;
  $_from = $_smarty_tpl->tpl_vars['features']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
 foreach ($_from as $_smarty_tpl->tpl_vars['feature']->key => $_smarty_tpl->tpl_vars['feature']->value) {
 $_smarty_tpl->tpl_vars['feature']->_loop = true;
+ $_smarty_tpl->tpl_vars['feature_id']->value = $_smarty_tpl->tpl_vars['feature']->key;
 ?>
-					<?php $_smarty_tpl->tpl_vars['feature_id'] = new Smarty_variable($_smarty_tpl->tpl_vars['feature']->value->id, null, 0);?>
 					<li feature_id=<?php echo $_smarty_tpl->tpl_vars['feature_id']->value;?>
 ><label class=property><?php echo $_smarty_tpl->tpl_vars['feature']->value->name;?>
 </label><input class="simpla_inp" type="text" name=options[<?php echo $_smarty_tpl->tpl_vars['feature_id']->value;?>
-] value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['options']->value->{$_smarty_tpl->tpl_vars['feature_id']->value}->value, ENT_QUOTES, 'UTF-8', true);?>
+] value="<?php echo htmlspecialchars($_smarty_tpl->tpl_vars['options']->value[$_smarty_tpl->tpl_vars['feature_id']->value], ENT_QUOTES, 'UTF-8', true);?>
 " /></li>
 				<?php } ?>
 			</ul>

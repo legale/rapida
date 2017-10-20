@@ -22,8 +22,8 @@ class ProductAdmin extends Simpla
 			$product = new stdClass;
 			$product->id = $this->request->post('id', 'integer');
 			$product->name = $this->request->post('name');
-			$product->visible = $this->request->post('visible', 'boolean');
-			$product->featured = $this->request->post('featured');
+			$product->visible = $this->request->post('visible', 'integer');
+			$product->featured = $this->request->post('featured', 'integer');
 			$product->brand_id = $this->request->post('brand_id', 'integer');
 
 			$product->url = trim($this->request->post('url', 'string'));
@@ -61,16 +61,7 @@ class ProductAdmin extends Simpla
 
 			// Свойства товара
    	    	$options = $this->request->post('options');
-			if(is_array($options))
-			{
-				foreach($options as $f_id=>$val)
-				{
-					$po[$f_id] = new stdClass;
-					$po[$f_id]->feature_id = $f_id;
-					$po[$f_id]->value = $val;
-				}
-				$options = $po;
-			}
+
 
 			// Связанные товары
 			if(is_array($this->request->post('related_products')))
@@ -233,31 +224,29 @@ class ProductAdmin extends Simpla
 					}
 					$images = $this->products->get_images(array('product_id'=>$product->id));
 	
-	   	    		// Характеристики товара
-	   	    		
-	   	    		// Удалим все из товара
-					foreach($this->features->get_product_options($product->id) as $po)
-						$this->features->delete_option($product->id, $po->feature_id);
-						
+					// Характеристики товара
+					
+					
 					// Свойства текущей категории
 					$category_features = array();
-					foreach($this->features->get_features(array('category_id'=>$product_categories[0])) as $f)
-						$category_features[] = $f->id;
+					if ( $cf = $this->features->get_features(array('category_id'=>$product_categories[0])) ){
+						foreach($cf as $f) {
+							$category_features[] = $f->id;
+						}
+					}
 	
-	  	    		if(is_array($options))
-					foreach($options as $option)
-					{
-						if(in_array($option->feature_id, $category_features))
-							$this->features->update_option($product->id, $option->feature_id, $option->value);
+	  	    		if( is_array($options) ) {
+						foreach($options as $feature_id=>$option) {
+							if(in_array($feature_id, $category_features))
+								$this->features->update_option($product->id, $feature_id, $option);
+						}
 					}
 					
 					// Новые характеристики
 					$new_features_names = $this->request->post('new_features_names');
 					$new_features_values = $this->request->post('new_features_values');
-					if(is_array($new_features_names) && is_array($new_features_values))
-					{
-						foreach($new_features_names as $i=>$name)
-						{
+					if(is_array($new_features_names) && is_array($new_features_values)) {
+						foreach($new_features_names as $i=>$name) {
 							$value = trim($new_features_values[$i]);
 							if(!empty($name) && !empty($value))
 							{
@@ -277,8 +266,8 @@ class ProductAdmin extends Simpla
 					}
 					
 					// Связанные товары
-	   	    		$query = $this->db->placehold('DELETE FROM __related_products WHERE product_id=?', $product->id);
-	   	    		$this->db->query($query);
+					$query = $this->db->placehold('DELETE FROM __related_products WHERE product_id=?', $product->id);
+					$this->db->query($query);
 	 	  		    if(is_array($related_products))
 		  		    {
 		  		    	$pos = 0;
@@ -295,8 +284,7 @@ class ProductAdmin extends Simpla
 			$id = $this->request->get('id', 'integer');
 			$product = $this->products->get_product(intval($id));
 
-			if($product)
-			{
+			if($product) {
 				
 				// Категории товара
 				$product_categories = $this->categories->get_categories(array('product_id'=>$product->id));
@@ -308,13 +296,21 @@ class ProductAdmin extends Simpla
 				$images = $this->products->get_images(array('product_id'=>$product->id));
 				
 				// Свойства товара
-				$options = $this->features->get_options(array('product_id'=>$product->id));
+				$options = $this->features->get_product_options($product->id);
+				$options_uniq = $this->features->get_options_uniq(null, true);
+				//~ print_r($options);
+				
+				if( !empty($options) ) {
+					foreach($options as &$o){
+						if($o !== null){
+							$o = $options_uniq[$o]['val'];
+						}
+					}
+				}
 				
 				// Связанные товары
 				$related_products = $this->products->get_related_products(array('product_id'=>$product->id));
-			}
-			else
-			{
+			} else {
 				// Сразу активен
 				$product = new stdClass;
 				$product->visible = 1;			
@@ -322,23 +318,22 @@ class ProductAdmin extends Simpla
 		}
 		
 		
-		if(empty($variants))
+		if(empty($variants)){
 			$variants = array(1);
-			
-		if(empty($product_categories))
-		{
-			if($category_id = $this->request->get('category_id'))
-				$product_categories[0]->id = $category_id;		
-			else
-				$product_categories = array(1);
 		}
-		if(empty($product->brand_id) && $brand_id=$this->request->get('brand_id'))
-		{
+			
+		if(empty($product_categories)){
+			if($category_id = $this->request->get('category_id')){
+				$product_categories[0]->id = $category_id;		
+			}else{
+				$product_categories = array(1);
+			}
+		}
+		if(empty($product->brand_id) && $brand_id=$this->request->get('brand_id')) {
 			$product->brand_id = $brand_id;
 		}
 			
-		if(!empty($related_products))
-		{
+		if(!empty($related_products)) {
 			$related_products = $this->products->get_products(array('id'=>array_keys($related_products)));
 			
 			$related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products)));

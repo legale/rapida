@@ -86,21 +86,46 @@ class Database extends Simpla
 	 * При указании других аргументов автоматически выполняется placehold() для запроса с подстановкой этих аргументов
 	 */
 	public function query() {
+		
+		//получаем переданные аргументы
+		$args = func_get_args();
+		//считаем аргументы и проверяем тип 1 аргумента (должна быть строка)
+		$cnt = count($args);
+		if($cnt < 1 || !is_string($args[0]) ){
+			$this->error_msg = "Query error - empty query";
+			return false;
+		} elseif ($cnt > 1){
+			$q = call_user_func_array(array($this, 'placehold'), $args);
+		}else{
+			$q = $args[0];
+		}
+
+		
 		//для долгих перерывов между запросами обновляем соединение с БД
 		if (time() - $this->started > 45 ){
 			//trigger_error("Mysql ping сработал", E_USER_WARNING);
 			$this->connect(true);
 		}
 		
-		if(is_object($this->res))
+		//освобождаем память от предыдущего запроса. 
+		if(is_object($this->res)){
 			$this->res->free();
-
-		$args = func_get_args();
-		$q = call_user_func_array(array($this, 'placehold'), $args);
+		}
+		
+		$q = $this->placehold($q);
 		
 		//обновляем время с последнего запроса
 		$this->started = time();
-		return $this->res = $this->mysqli->query($q);
+		$this->res = $this->mysqli->query($q);
+		
+		if($this->mysqli->affected_rows == -1){
+			$this->error_msg = "Query error $q ";
+			dtimer::log(__METHOD__ . " query error: $q ");
+			return false;
+		}else{
+			dtimer::log(__METHOD__ . " query completed: $q ");
+			return true;
+		}
 	}
 
 	/**
@@ -141,10 +166,15 @@ class Database extends Simpla
 	 * Возвращает результаты запроса. Необязательный второй аргумент указывает какую колонку возвращать 
 	 * вместо всего массива колонок
 	 */
-	public function results(string $field = null, string $group_field = null) {
+	public function results($field = null, $group_field = null) {
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return null;
+			return false;
 		}
+		
+		if(!is_object($this->res)){
+			$this->error_msg = "exec query first!";
+		}
+		
 		$results = array();
 
 		if($field !== null){
@@ -165,25 +195,38 @@ class Database extends Simpla
 
 
 	/**
-	 * Возвращает результаты запроса в виде объекта. Если указан параметр, то 
-	 * результат будет собран в объект с ключом по указанному в параметре столбцу
+	 * Возвращает результаты запроса в виде объекта. Если указан 1 аргумент, то будет выведен одномерный объект
+	 * с ключами 1,2,3,4 и значения указанного в аргументе столбца. Если указан 2 аргумент, то 
+	 * результат будет собран в объект с ключами по указанному в аргументе столбцу
 	 */
-	public function results_object(string $group_field = null) {
+	public function results_object($field = null, $group_field = null, $unsetkey = false) {
 		
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return null;
+			return false;
 		}
+		
+		if(!is_object($this->res)){
+			$this->error_msg = "exec query first!";
+		}
+		
 		$results = new stdClass();
 
-		if($group_field !== null){
+		if($field !== null){
+			for($i = 0; $row = $this->res->fetch_object(); $i++){
+				$results->{$i} = $row->{$field};
+			}
+		}
+		elseif($group_field !== null){
 			while($row = $this->res->fetch_object()){
-				$results->{$row->$group_field} = $row;
+				$key = $row->$group_field;
+				if($unsetkey === true){
+					unset($row->$group_field);
+				}
+				$results->$key = $row;
 			}
 		}else{
-			$i = 0;
-			while($row = $this->res->fetch_object()){
+			for($i = 0; $row = $this->res->fetch_object(); $i++){
 				$results->{$i} = $row;
-				$i++;
 			}
 		}
 		return $results;
@@ -191,16 +234,31 @@ class Database extends Simpla
 
 	/**
 	 * Возвращает результаты запроса ассоциативным массивом
+	 * может вывести только 1 конкретное поле одномерным массивом, для этого указывается 1 аргумент (string),
+	 * также может вывести массив с ключами из указанного поля БД, для этого указывается 2 аргумент (string)
 	 */
-	public function results_array(string $group_field = null) {
+	public function results_array($field = null, $group_field = null, $unsetkey = false) {
 		if(empty($this->res) || $this->res->num_rows == 0){
-			return null;
+			return false;
 		}
+		
+		if(!is_object($this->res)){
+			$this->error_msg = "exec query first!";
+		}
+		
 		$results = array();
 		
-		if($group_field !== null){
+		if($field !== null){
 			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
-				$results[$row[$group_field]] = $row;
+				array_push($results, $row[$field]);
+			}
+		}elseif($group_field !== null){
+			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
+				$key = $row[$group_field];
+				if($unsetkey === true){
+					unset($row[$group_field]);
+				}
+				$results[$key] = $row;
 			}
 		}else{
 			while($row = $this->res->fetch_array(MYSQLI_ASSOC)){
@@ -218,8 +276,7 @@ class Database extends Simpla
 		$result = array();
 		if(!$this->res)
 		{
-			$this->error_msg = "Could not execute query to database";
-			return 0;
+			return false;
 		}
 		$row = $this->res->fetch_object();
 		if(!empty($field) && isset($row->$field))
@@ -228,6 +285,25 @@ class Database extends Simpla
 			return false;
 		else
 			return $row;
+	}
+
+	/**
+	 * Возвращает первый результат запроса в виде массива
+	 */
+	public function result_array($field = null)
+	{
+		if(!is_object($this->res)){
+			$this->error_msg = "exec query first!";
+			return false;
+		}
+		
+		$row = $this->res->fetch_array(MYSQLI_ASSOC);
+		
+		if( isset($field) ){
+			return $row[$field];
+		} else {
+			return $row;
+		}
 	}
 
 	/**
@@ -268,7 +344,7 @@ class Database extends Simpla
 			// Определяем тип placeholder-а. 
 			switch ($c = substr($tmpl, ++$p, 1))
 			{ 
-				case '%': case '@': case '#': 
+				case '!': case '%': case '^': case '&': case '@': case '#': 
 					$type = $c; ++$p; break; 
 				default: 
 					$type = ''; break; 
@@ -312,8 +388,8 @@ class Database extends Simpla
 			$args = @$args[0]; 
 	
 		// Выполняем все замены в цикле. 
-		$p	 = 0;				// текущее положение в строке 
-		$out = '';			// результирующая строка 
+		$p	 = 0;		// текущее положение в строке 
+		$out = '';		// результирующая строка 
 		$error = false; // были ошибки? 
 	
 		foreach ($compiled as $num=>$e)
@@ -343,59 +419,89 @@ class Database extends Simpla
 				} 
 				// Вставляем значение в соответствии с типом placeholder-а. 
 				$a = $args[$key]; 
+				
+				//Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
 				if ($type === '')
 				{ 
 					// Скалярный placeholder. 
-					if (is_array($a))
+					if (!is_scalar($a))
 					{ 
 						$error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key"; 
 						break; 
 					} 
-					$repl = is_int($a) || is_float($a) ? str_replace(',', '.', $a) : "'".addslashes($a)."'"; 
+					$repl = is_int($a) || is_float($a) ? str_replace(',', '.', $a) : "'".$this->db->escape($a)."'"; 
 					break; 
-				} 
-				// Иначе это массив или список.
-				if(is_object($a))
-					$a = get_object_vars($a);
+				}
 				
+				//Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
+				if ($type === '!')
+				{ 
+					// Скалярный placeholder. 
+					if (!is_scalar($a))
+					{ 
+						$error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key"; 
+						break; 
+					} 
+					$repl = "`".$this->db->escape($a)."`"; 
+					break; 
+				}
+				 
+				// Если это объект - сделаем его массивом
+				if(is_object($a)){
+					$a = (array)$a;
+				}
+				//Если в итоге не получился массив - покажем ошибку
 				if (!is_array($a))
 				{ 
-					$error = $errmsg = "NOT_AN_ARRAY_PLACEHOLDER_$key"; 
+					$error = $errmsg = "NOT_AN_ARRAY/OBJECT_PLACEHOLDER_$key"; 
 					break; 
 				} 
+				// Это список со значениями полей. 
 				if ($type === '@')
 				{ 
-					// Это список. 
 					foreach ($a as $v)
 					{
 						if(is_null($v))
 							$r = "NULL";
 						else
-							$r = "'".@addslashes($v)."'";
+							$r = "'".$this->db->escape($v)."'";
+
+						$repl .= ($repl===''? "" : ",").$r; 
+					}
+				// Это список с названиями столбцов
+				}elseif ($type === '^')
+				{ 
+					foreach ($a as $v)
+					{
+						if(is_null($v))
+							$r = "NULL";
+						else
+							$r = "'".$this->db->escape($v)."'";
 
 						$repl .= ($repl===''? "" : ",").$r; 
 					}
 				}
+				// Это набор пар `название поля` = 'значение поля' для конструкции SET
 				elseif ($type === '%')
 				{ 
-					// Это набор пар ключ=>значение. 
 					$lerror = array(); 
 					foreach ($a as $k=>$v)
 					{ 
-						if (!is_string($k))
-							$lerror[$k] = "NOT_A_STRING_KEY_{$k}_FOR_PLACEHOLDER_$key"; 
-						else 
-							$k = preg_replace('/[^a-zA-Z0-9_]/', '_', $k); 
-
+						if (!is_string($k) && !is_int($k)){
+							$lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key"; 
+						}else{ 
+							$k = '`'.$this->db->escape($k).'`'; 
+						}
+						
 						if(is_null($v))
 							$r = "=NULL";
 						else
-							$r = "='".@addslashes($v)."'";
+							$r = "='".$this->db->escape($v)."'";
 
 						$repl .= ($repl===''? "" : ", ").$k.$r; 
-					} 
+					}  
 					// Если была ошибка, составляем сообщение. 
-					if (count($lerror))
+					if (count($lerror) > 0)
 					{ 
 						$repl = ''; 
 						foreach ($a as $k=>$v)
@@ -406,7 +512,45 @@ class Database extends Simpla
 							}
 							else
 							{ 
-								$k = preg_replace('/[^a-zA-Z0-9_-]/', '_', $k); 
+								$k = $this->db->escape($k); 
+								$repl .= ($repl===''? "" : ", ").$k."=?"; 
+							} 
+						} 
+						$error = $errmsg = $repl; 
+					} 
+				} 
+				// Это набор пар `название поля` = 'значение поля' для конструкции WHERE
+				elseif ($type === '&')
+				{ 
+					$lerror = array(); 
+					foreach ($a as $k=>$v)
+					{ 
+						if (!is_string($k) && !is_int($k)){
+							$lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key"; 
+						}else{ 
+							$k = '`'.$this->db->escape($k).'`'; 
+						}
+						
+						if(is_null($v))
+							$r = "=NULL";
+						else
+							$r = "='".$this->db->escape($v)."'";
+
+						$repl .= ($repl===''? "" : " AND ").$k.$r; 
+					}  
+					// Если была ошибка, составляем сообщение. 
+					if (count($lerror) > 0)
+					{ 
+						$repl = ''; 
+						foreach ($a as $k=>$v)
+						{ 
+							if (isset($lerror[$k]))
+							{ 
+								$repl .= ($repl===''? "" : ", ").$lerror[$k]; 
+							}
+							else
+							{ 
+								$k = $this->db->escape($k); 
 								$repl .= ($repl===''? "" : ", ").$k."=?"; 
 							} 
 						} 

@@ -153,7 +153,7 @@ class Users extends Simpla
 		// Выбираем группы
 		$query = $this->db->placehold("SELECT g.id, g.name, g.discount FROM __groups AS g ORDER BY g.discount");
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results(null, 'id');
 	}	
 	
 	function get_group($id)

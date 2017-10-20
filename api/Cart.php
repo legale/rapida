@@ -25,7 +25,6 @@ class Cart extends Simpla
 		$cart->purchases = array();
 		$cart->total_price = 0;
 		$cart->total_products = 0;
-		$cart->coupon = null;
 		$cart->discount = 0;
 		$cart->coupon_discount = 0;
 
@@ -98,10 +97,7 @@ class Cart extends Simpla
 					{
 						unset($_SESSION['coupon_code']);
 					}
-				} else {
-					//выведем пустой купон
-					$cart->coupon = $this->coupons->get_coupon();
-				}
+				} 
 				
 			}
 		}

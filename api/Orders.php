@@ -14,23 +14,27 @@ require_once('Simpla.php');
 class Orders extends Simpla
 {
 
-	public function get_order($id)
-	{
-		if(is_int($id))
-			$where = $this->db->placehold(' WHERE o.id=? ', intval($id));
-		else
-			$where = $this->db->placehold(' WHERE o.url=? ', $id);
-		
+	public function get_order($id){
+		if( is_int($id) ) {
+			$id = "o.id = '$id'";
+		} elseif (is_string($id) ) {
+			$id = "o.url = '$id'";
+		} else {
+			dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ");
+			return false;
+		}
+				
 		$query = $this->db->placehold("SELECT  o.id, o.delivery_id, o.delivery_price, o.separate_delivery,
 										o.payment_method_id, o.paid, o.payment_date, o.closed, o.discount, o.coupon_code, o.coupon_discount,
 										o.date, o.user_id, o.name, o.address, o.phone, o.email, o.comment, o.status,
 										o.url, o.total_price, o.note, o.ip
-										FROM __orders o $where LIMIT 1");
+										FROM __orders o WHERE 1 AND $id LIMIT 1");
 
-		if($this->db->query($query))
+		if($this->db->query($query)){
 			return $this->db->result();
-		else
-			return false; 
+		}else{
+			return false;
+		} 
 	}
 	
 	function get_orders($filter = array())
@@ -86,10 +90,8 @@ class Orders extends Simpla
 									WHERE 1
 									$id_filter $status_filter $user_filter $keyword_filter $label_filter $modified_since_filter GROUP BY o.id ORDER BY status, id DESC $sql_limit", "%Y-%m-%d");
 		$this->db->query($query);
-		$orders = array();
-		foreach($this->db->results() as $order)
-			$orders[$order->id] = $order;
-		return $orders;
+
+		return $this->db->results(null, 'id');
 	}
 
 	function count_orders($filter = array())
@@ -150,15 +152,21 @@ class Orders extends Simpla
 	
 	public function add_order($order)
 	{
+		dtimer::log(__METHOD__ . " order: ". print_r($order, true));
 		$order = (object)$order;
 		$order->url = md5(uniqid($this->config->salt, true));
 		$set_curr_date = '';
 		if(empty($order->date))
 			$set_curr_date = ', date=now()';
 		$query = $this->db->placehold("INSERT INTO __orders SET ?%$set_curr_date", $order);
-		$this->db->query($query);
-		$id = $this->db->insert_id();		
-		return $id;
+		dtimer::log(__METHOD__ . " query: $query");
+		
+		//Если запрос на добавление заказа сработал, вернем id записи, иначе вернем false
+		if($this->db->query($query)){
+			return $this->db->insert_id();
+		} else {
+			return false;
+		}
 	}
 
 	public function get_label($id)

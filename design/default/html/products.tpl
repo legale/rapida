@@ -79,7 +79,7 @@
 	<td class="feature_values">
 		<a href="{url params=[$f->id=>null, page=>null]}" {if !$smarty.get.$key}class="selected"{/if}>Все</a>
 		{foreach $f->options as $o}
-		<a href="{url params=[$f->id=>$o->value, page=>null]}" {if $smarty.get.$key == $o->value}class="selected"{/if}>{$o->value|escape}</a>
+		<a href="{url params=[$f->id=>$o->vid, page=>null]}" {if $smarty.get.$key == $o->value}class="selected"{/if}>{$o->value|escape}</a>
 		{/foreach}
 	</td>
 	</tr>

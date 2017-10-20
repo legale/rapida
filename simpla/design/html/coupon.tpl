@@ -50,8 +50,9 @@ $(function() {
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">
-		{if $message_error == 'code_exists'}Купон с таким кодом уже существует{/if}
-		{if $message_error == 'code_empty'}Заполните название купона{/if}
+		{if $message_error == 'code_exists'}Купон с таким кодом уже существует
+		{elseif $message_error == 'code_empty'}Заполните название купона
+		{elseif $message_error == 'add_error'}Ошибка добавления купона{/if}
 	</span>
 	<a class="button" href="">Вернуться</a>
 </div>

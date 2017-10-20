@@ -33,9 +33,12 @@ class CouponAdmin extends Simpla
 			{
 				if(empty($coupon->id))
 				{ 
-	  				$coupon->id = $this->coupons->add_coupon($coupon);
-	  				$coupon = $this->coupons->get_coupon($coupon->id);
-					$this->design->assign('message_success', 'added');
+	  				if ( $coupon->id = $this->coupons->add_coupon($coupon) ) {
+						$coupon = $this->coupons->get_coupon($coupon->id);
+						$this->design->assign('message_success', 'added');
+					} else {
+						$this->design->assign('message_error', 'add_error');
+					}
 	  			}
   	    		else
   	    		{

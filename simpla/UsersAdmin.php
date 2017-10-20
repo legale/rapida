@@ -37,9 +37,8 @@ class UsersAdmin extends Simpla
 			    }
 			}		
 		}  
-
-		foreach($this->users->get_groups() as $g)
-			$groups[$g->id] = $g;
+		
+		$groups = $this->users->get_groups();
 		
 		
 		$group = null;
@@ -52,6 +51,8 @@ class UsersAdmin extends Simpla
 		{
 			$group = $this->users->get_group($group_id);
 			$filter['group_id'] = $group->id;
+		} else {
+			$group = array();
 		}
 		
 		// Поиск

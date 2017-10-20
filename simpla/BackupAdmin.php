@@ -31,7 +31,9 @@ class BackupAdmin extends Simpla
 					{
 						trigger_error('Не могу заархивировать '.$zip->errorInfo(true));
 					}
-					$this->design->assign('message_success', 'created');		
+					@unlink($dir.'simpla.sql');
+					$this->design->assign('message_success', 'created');
+							
 	
 					break;
 			    }
@@ -132,7 +134,7 @@ function myPostExtractCallBack($p_event, &$p_header)
 function myCallBack($p_event, &$p_header)
 {
 	$fname = $p_header['stored_filename'];
-	if(preg_match('/^files\/products\/.+/i', $fname))
+	if(preg_match('/^files\/products\/[^\.]+/i', $fname))
 		return 0;
 	return 1;
 }

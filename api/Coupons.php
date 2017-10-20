@@ -25,7 +25,7 @@ class Coupons extends Simpla
 	{
 		//выдадим пустой купон, если id = null
 		if(is_null($id)){
-			return (object)Array('id'=>'', 'code'=>'', 'value'=>'', 'type'=>'', 'expire'=>'', 'min_order_price'=>'', 'single'=>'', 'usages'=>'', 'valid'=>'');
+			return (object)Array('id'=>'', 'code'=>'', 'value'=>0, 'type'=>'', 'expire'=>'', 'min_order_price'=>0, 'single'=>'', 'usages'=>'', 'valid'=>'');
 		}
 		if(gettype($id) == 'string')
 			$where = $this->db->placehold('WHERE c.code=? ', $id);

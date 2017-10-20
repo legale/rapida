@@ -25,10 +25,11 @@ class CurrencyAdmin extends Simpla
 			$currencies_ids = array();
 			foreach($currencies as $currency)
 			{
-				if($currency->id)
+				if( !empty_($currency->id) ) {
 					$this->money->update_currency($currency->id, $currency);
-				else
+				} else {
 					$currency->id = $this->money->add_currency($currency);
+				}
 		 		$currencies_ids[] = $currency->id;
 			}
 
@@ -39,7 +40,8 @@ class CurrencyAdmin extends Simpla
 			// Пересчитать курсы
 			$old_currency = $this->money->get_currency();
 			$new_currency = reset($currencies);
-			if($old_currency->id != $new_currency->id)
+			
+			if( isset($old_currency->id) && $old_currency->id != $new_currency->id)
 			{
 				$coef = $new_currency->rate_from/$new_currency->rate_to;
 

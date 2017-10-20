@@ -124,11 +124,25 @@ class Payment extends Simpla
 			$this->db->query("INSERT INTO __delivery_payment SET payment_method_id=?, delivery_id=?", $id, $d_id);
 	}		
 	
-	public function add_payment_method($payment_method)
+	public function add_payment_method($pm)
 	{	
+		if( is_object($pm) ){
+			$pm = (array)$pm;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($pm['id']) ){
+			unset($pm['id']);
+		}
+		
+		foreach ($pm as $k=>$e){
+			if( empty_($e) ){
+				unset($pm[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold('INSERT INTO __payment_methods
 		SET ?%',
-		$payment_method);
+		$pm);
 
 		if(!$this->db->query($query))
 			return false;

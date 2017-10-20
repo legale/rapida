@@ -17,42 +17,42 @@ class FeaturesAdmin extends Simpla
 			if(is_array($ids))
 			switch($this->request->post('action'))
 			{
-			    case 'set_in_filter':
-			    {
-			    	$this->features->update_feature($ids, array('in_filter'=>1));    
+				case 'set_in_filter':
+				{
+					$this->features->update_feature($ids, array('in_filter'=>1));    
 					break;
-			    }
-			    case 'unset_in_filter':
-			    {
-			    	$this->features->update_feature($ids, array('in_filter'=>0));    
+				}
+				case 'unset_in_filter':
+				{
+					$this->features->update_feature($ids, array('in_filter'=>0));    
 					break;
-			    }
-			    case 'delete':
-			    {
-			    	$current_cat = $this->request->get('category_id', 'integer');
-			    	foreach($ids as $id)
-			    	{
-			    		// текущие категории
-			    		$cats = $this->features->get_feature_categories($id);
-			    		
-			    		// В каких категориях оставлять
-			    		$diff = array_diff($cats, (array)$current_cat);
-			    		if(!empty($current_cat) && !empty($diff))
-			    		{
-			    			$this->features->update_feature_categories($id, $diff);
-			    		}
-			    		else
-			    		{
-			    			$this->features->delete_feature($id); 
-			    		}
+				}
+				case 'delete':
+				{
+					$current_cat = $this->request->get('category_id', 'integer');
+					foreach($ids as $id)
+					{
+						// текущие категории
+						// В каких категориях оставлять
+						if( $cats = $this->features->get_feature_categories($id) ){
+							$diff = array_diff($cats, (array)$current_cat);
+						}
+						if(!empty_($current_cat) && !empty_($diff))
+						{
+							$this->features->update_feature_categories($id, $diff);
+						}
+						else
+						{
+							$this->features->delete_feature($id); 
+						}
 					}
-			        break;
-			    }
+					break;
+				}
 			}		
-	  	
+		
 			// Сортировка
 			$positions = $this->request->post('positions');
-	 		$ids = array_keys($positions);
+			$ids = array_keys($positions);
 			sort($positions);
 			foreach($positions as $i=>$position)
 				$this->features->update_feature($ids[$i], array('position'=>$position)); 

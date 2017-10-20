@@ -140,13 +140,15 @@ class View extends Simpla
 
 			$products = $this->products->get_products(array('id'=>$browsed_products_ids, 'visible'=>1));
 			
-			$browsed_products_images = $this->products->get_images(array('product_id'=>$browsed_products_ids));
-			foreach($browsed_products_images as $browsed_product_image)
-				if(isset($products->{$browsed_product_image->product_id}))
-					$products->{$browsed_product_image->product_id}->images[] = $browsed_product_image;
+			if ( $browsed_products_images = $this->products->get_images(array('product_id'=>$browsed_products_ids)) ) {
+				foreach($browsed_products_images as $browsed_product_image) {
+					if(isset($products->{$browsed_product_image->product_id})) {
+						$products->{$browsed_product_image->product_id}->images[] = $browsed_product_image;
+					}
+				}
+			}
 			
-			foreach($browsed_products_ids as $id)
-			{	
+			foreach($browsed_products_ids as $id) {	
 				if(isset($products->{$id}))
 				{
 					if(isset($products->{$id}->images[0]))
@@ -242,17 +244,19 @@ class View extends Simpla
 					}
 				}
 				// Выбираем изображения товаров
-				$images = $this->products->get_images(array('product_id'=>$products_ids));
-				foreach($images as $image){
-					if(isset($products->{$image->product_id})){
-						$products->{$image->product_id}->images[] = $image;
+				if( $images = $this->products->get_images(array('product_id'=>$products_ids)) ){
+				
+					foreach($images as $image){
+						if(isset($products->{$image->product_id})){
+							$products->{$image->product_id}->images[] = $image;
+						}
 					}
 				}
 	
 				foreach($products as $k=>&$product)
 				{
 					if(!isset($product->variants)){
-						unset($products[$k]);
+						unset($products->{$k});
 					}elseif(isset($product->variants[0])){
 						$product->variant = $product->variants[0];
 					}
@@ -298,17 +302,18 @@ class View extends Simpla
 				}
 				
 				// Выбираем изображения товаров
-				$images = $this->products->get_images(array('product_id'=>$products_ids));
-				foreach($images as $image){
-					if(isset($products->{$image->product_id})){
-						$products->{$image->product_id}->images[] = $image;
+				if ( $images = $this->products->get_images(array('product_id'=>$products_ids)) ) {
+					foreach($images as $image){
+						if(isset($products->{$image->product_id})){
+							$products->{$image->product_id}->images[] = $image;
+						}
 					}
 				}
 	
 				foreach($products as $k=>&$product)
 				{
 					if(!isset($product->variants)){
-						unset($products[$k]);
+						unset($products->$k);
 					}elseif(isset($product->variants[0])){
 						$product->variant = $product->variants[0];
 					}

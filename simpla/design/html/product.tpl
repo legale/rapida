@@ -639,11 +639,9 @@ overflow-y: auto;
 			<h2>Свойства товара
 			<a href="#" id=properties_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
-			
 			<ul class="prop_ul">
-				{foreach $features as $feature}
-					{assign var=feature_id value=$feature->id}
-					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] value="{$options->$feature_id->value|escape}" /></li>
+				{foreach $features as $feature_id=>$feature}
+					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] value="{$options[$feature_id]|escape}" /></li>
 				{/foreach}
 			</ul>
 			<!-- Новые свойства -->

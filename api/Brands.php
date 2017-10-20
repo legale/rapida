@@ -52,12 +52,18 @@ class Brands extends Simpla
 	*/
 	public function get_brand($id)
 	{
-		if(is_int($id))			
-			$filter = $this->db->placehold('b.id = ?', $id);
-		else
-			$filter = $this->db->placehold('b.url = ?', $id);
+		if( is_int($id) ) {
+			$id = "b.id = '$id'";
+		} elseif (is_string($id) ) {
+			$id = "b.url = '$id'";
+		} else {
+			dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ");
+			return false;
+		}
+			
+			
 		$query = "SELECT b.id, b.name, b.url, b.meta_title, b.meta_keywords, b.meta_description, b.description, b.image
-								 FROM __brands b WHERE $filter LIMIT 1";
+								 FROM __brands b WHERE $id LIMIT 1";
 		$this->db->query($query);
 		return $this->db->result();
 	}
@@ -70,12 +76,26 @@ class Brands extends Simpla
 	*/
 	public function add_brand($brand)
 	{
-		$brand = (array)$brand;
-		if(empty($brand['url']))
-		{
+		
+		if( is_object($brand) ){
+			$brand = (array)$brand;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($brand['id']) ){
+			unset($brand['id']);
+		}
+		
+		foreach ($brand as $k=>$e){
+			if( empty_($e) ){
+				unset($brand[$k]);
+			}
+		}
+
+		if(empty_($brand['url'])){
 			$brand['url'] = preg_replace("/[\s]+/ui", '_', $brand['name']);
 			$brand['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $brand['url']));
-		}
+		}	
+
 	
 		$this->db->query("INSERT INTO __brands SET ?%", $brand);
 		return $this->db->insert_id();

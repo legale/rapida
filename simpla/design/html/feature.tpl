@@ -46,8 +46,8 @@ $(function() {
 <form method=post id=product>
 
 	<div id="name">
-		<input class="name" name=name type="text" value="{$feature->name|escape}"/> 
-		<input name=id type="hidden" value="{$feature->id|escape}"/> 
+		<input class="name" name="name" type="text" value="{$feature->name|escape}"/> 
+		<input name="id" type="hidden" value="{$feature->id|escape}"/> 
 	</div> 
 
 	<!-- Левая колонка свойств товара -->
@@ -77,7 +77,8 @@ $(function() {
 		<div class="block">
 			<h2>Настройки свойства</h2>
 			<ul>
-				<li><input type=checkbox name=in_filter id=in_filter {if $feature->in_filter}checked{/if} value="1"> <label for=in_filter>Использовать в фильтре</label></li>
+				<li><input type="text" name="uri" value="{$feature->uri|escape}"><label>uri для адресной строки</label></li>
+				<li><input type="checkbox" name="in_filter" {if $feature->in_filter}checked{/if} value="1"><label>Использовать в фильтре</label></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->

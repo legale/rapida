@@ -50,8 +50,11 @@ class Request extends Simpla
     public function get($name, $type = null)
     {
     	$val = null;
-    	if(isset($_GET[$name]))
+    	if(isset($_GET[$name])){
     		$val = $_GET[$name];
+		} else {
+			return null;
+		}
     		
     	if(!empty($type) && is_array($val))
     		$val = reset($val);
@@ -76,10 +79,13 @@ class Request extends Simpla
     public function post($name = null, $type = null)
     {
     	$val = null;
-    	if(!empty($name) && isset($_POST[$name]))
+    	if(!empty($name) && isset($_POST[$name])){
     		$val = $_POST[$name];
-    	elseif(empty($name))
+    	}elseif(empty($name)){
     		$val = file_get_contents('php://input');
+		}else{
+			return null;
+		}
     		
     	if($type == 'string')
     		return strval(preg_replace('/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', '', $val));

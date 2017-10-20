@@ -16,6 +16,7 @@ class IndexAdmin extends Simpla
 		'BrandAdmin'          => 'brands',
 		'FeaturesAdmin'       => 'features',
 		'FeatureAdmin'        => 'features',
+		'FeatureAdmin2'        => 'features',
 		'OrdersAdmin'         => 'orders',
 		'OrderAdmin'          => 'orders',
 		'OrdersLabelsAdmin'   => 'labels',

@@ -80,11 +80,22 @@ class Categories extends Simpla
 	}
 	
 	// Добавление категории
-	public function add_category($category)
-	{
-		$category = (array)$category;
-		if(empty($category['url']))
-		{
+	public function add_category($category) {
+		if( is_object($category) ){
+			$category = (array)$category;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($category['id']) ){
+			unset($category['id']);
+		}
+		
+		foreach ($category as $k=>$e){
+			if( empty_($e) ){
+				unset($category[$k]);
+			}
+		}
+
+		if(empty_($category['url'])){
 			$category['url'] = preg_replace("/[\s]+/ui", '_', $category['name']);
 			$category['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $category['url']));
 		}	
@@ -158,18 +169,19 @@ class Categories extends Simpla
 		$query = $this->db->placehold("SELECT image FROM __categories WHERE id in(?@)", $categories_ids);
 		$this->db->query($query);
 		$filenames = $this->db->results('image');
-		if(!empty($filenames))
+		if(!empty_($filenames))
 		{
 			$query = $this->db->placehold("UPDATE __categories SET image=NULL WHERE id in(?@)", $categories_ids);
 			$this->db->query($query);
 			foreach($filenames as $filename)
 			{
-				$query = $this->db->placehold("SELECT count(*) as count FROM __categories WHERE image=?", $filename);
-				$this->db->query($query);
-				$count = $this->db->result('count');
-				if($count == 0)
-				{			
-					@unlink($this->config->root_dir.$this->config->categories_images_dir.$filename);		
+				if(!empty_($filename) ) {
+					$query = $this->db->placehold("SELECT count(*) as count FROM __categories WHERE image=?", $filename);
+					$this->db->query($query);
+					$count = $this->db->result('count');
+					if($count == 0){			
+						@unlink($this->config->root_dir.$this->config->categories_images_dir.$filename);		
+					}
 				}
 			}
 			unset($this->categories_tree);

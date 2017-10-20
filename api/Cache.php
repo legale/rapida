@@ -117,9 +117,9 @@ class Cache extends Simpla {
 
 		$full_path = $path . "/" . $securityKey;
 		$full_pathx = hash('md4', $full_path);
-		dtimer::log(__METHOD__ . __LINE__ . "getPath: '$path' '$securityKey'");
-		dtimer::log(__METHOD__ . __LINE__ . "getPath full_path: '$full_path'");
-		dtimer::log(__METHOD__ . __LINE__ . "getPath realpath: ". var_export(realpath($full_path), true) );
+		dtimer::log(__METHOD__ . "getPath: '$path' '$securityKey'");
+		dtimer::log(__METHOD__ . "getPath full_path: '$full_path'");
+		dtimer::log(__METHOD__ . "getPath realpath: ". var_export(realpath($full_path), true) );
 
 		if ($skip_create_path !== true && !isset($this->tmp[$full_pathx])) {
 
@@ -179,9 +179,9 @@ allow from 127.0.0.1";
 	private function getFilePath($keyword, $skip = false)
 	{
 		$path = $this->getPath();
-		dtimer::log(__METHOD__ . __LINE__ . "getFilePath: '$path'");
+		dtimer::log(__METHOD__ . "getFilePath: '$path'");
 		if(empty($path)){
-			dtimer::log(__METHOD__ . __LINE__ . "getPath empty!");
+			dtimer::log(__METHOD__ . "getPath empty!");
 		}
 		
 		$filename = $this->encodeFilename($keyword);
@@ -218,9 +218,9 @@ allow from 127.0.0.1";
 	 */
 	private function encode( $data, $unescaped = true)
 	{
-		if( ( is_object($data) || is_array($data) ) && is_bool($unescaped) ){
+		if( ( is_object($data) || is_array($data) || is_null($data) ) && is_bool($unescaped)){
 		} else {
-			trigger_error(__METHOD__ . ' ' . __LINE__ . ' wrong argument type ' . gettype($data).' '.gettype($unescaped));
+			trigger_error(__METHOD__ . ' wrong argument type ' . gettype($data).' '.gettype($unescaped));
 			return false;
 		}
 		
@@ -321,30 +321,30 @@ allow from 127.0.0.1";
 		//проверка типов аргументов
 		if( is_string($keyword) && is_bool($as_array)){
 		} else {
-			trigger_error(__METHOD__ . ' ' . __LINE__ . ' wrong argument type ' . gettype($keyword).' '.gettype($as_array));
+			trigger_error(__METHOD__ . ' wrong argument type ' . gettype($keyword).' '.gettype($as_array));
 			return false;
 		}
 		
-		dtimer::log( __METHOD__ .' '. __LINE__ . ' driver_get start ');
-		dtimer::log(__METHOD__ .' '. __LINE__ . ' keyword '.$keyword);
+		dtimer::log( __METHOD__ .' driver_get start ');
+		dtimer::log(__METHOD__ . ' keyword '.$keyword);
 		$file_path = $this->getFilePath($keyword);
-		dtimer::log(__METHOD__ .' '. __LINE__ . ' file_path '.$file_path);
+		dtimer::log(__METHOD__ . ' file_path '.$file_path);
 		if(!file_exists($file_path)) {
 			dtimer::log(__METHOD__. ' file_exists check. not found '.$file_path);
 			return null;
 		}
 
 		$content = file_get_contents($file_path);
-		dtimer::log(__METHOD__. ' '. __LINE__ . " before iconv $file_path first 5 sym ' " . mb_substr($content , 0, 5) . " '");
+		dtimer::log(__METHOD__ . " before iconv $file_path first 5 sym ' " . mb_substr($content , 0, 5) . " '");
 		// check if codepage isset transcode from codepage to utf8
 		if (!empty(self::$config['codepage'])) {
 			$content = iconv(self::$config['codepage'], "utf-8", $content);
 		}
 
-		dtimer::log(__METHOD__. ' '. __LINE__ . " after iconv $file_path first 5 sym ' " . mb_substr($content , 0, 5) . " '");
+		dtimer::log(__METHOD__. " after iconv $file_path first 5 sym ' " . mb_substr($content , 0, 5) . " '");
 		$array = $this->decode($content, $as_array);
 
-		dtimer::log(__METHOD__. ' '. __LINE__ . " before driver_get return");
+		dtimer::log(__METHOD__. " before driver_get return");
 		return $array;
 	}
 

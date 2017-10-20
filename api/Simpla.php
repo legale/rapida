@@ -10,6 +10,36 @@ function empty_($var){
 	}
 }
 
+
+function translit($string, $reverse = false) {
+	if(!is_string($string)){
+		trigger_error(__METHOD__ . 'argument type error');
+		return false;
+	}
+	$converter = array(
+		'а' => 'a',   'б' => 'b',   'в' => 'v',
+		'г' => 'g',   'д' => 'd',   'е' => 'e',
+		'ё' => 'e',   'ж' => 'zh',  'з' => 'z',
+		'и' => 'i',   'й' => 'j',   'к' => 'k',
+		'л' => 'l',   'м' => 'm',   'н' => 'n',
+		'о' => 'o',   'п' => 'p',   'р' => 'r',
+		'с' => 's',   'т' => 't',   'у' => 'u',
+		'ф' => 'f',   'х' => 'h',   'ц' => 'c',
+		'ч' => 'ch',  'ш' => 'sh',  'щ' => 'sch',
+		'ь' => '\'',  'ы' => 'y',   'ъ' => '\'\'',
+		'э' => 'e',   'ю' => 'yu',  'я' => 'ya'
+	);
+	if($reverse === true){
+		uasort($converter, function($a,$b){return strlen($b) - strlen($a);});
+		$converter = array_flip($converter);
+	}
+	$string = mb_strtolower($string);
+	
+	return strtr($string, $converter);
+}
+    
+
+
 // отладчик ошибок
 require_once(dirname(__FILE__) .'/Dtimer.php');
 

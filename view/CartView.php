@@ -22,7 +22,7 @@ class CartView extends View
   public function __construct()
   {
 	parent::__construct();
-
+	
     // Если передан id варианта, добавим его в корзину
     if($variant_id = $this->request->get('variant', 'integer'))
     {
@@ -61,12 +61,11 @@ class CartView extends View
 		$cart = $this->cart->get_cart();
 		$order->discount = $cart->discount;
 		
-		if($cart->coupon)
-		{
+		if(isset($cart->coupon)){
 			$order->coupon_discount = $cart->coupon_discount;
 			$order->coupon_code = $cart->coupon->code;
 		}
-		//
+		
     	
     	if(!empty($this->user->id))
 	    	$order->user_id = $this->user->id;
@@ -87,37 +86,48 @@ class CartView extends View
     	{
 	    	// Добавляем заказ в базу
 	    	$order_id = $this->orders->add_order($order);
+	    	
+			//что-то пошло не так на этапе создания заказа
+	    	if($order_id === false){
+				dtimer::log(__METHOD__ . " add_order return false");
+				trigger_error(__METHOD__ . " add_order return false");
+			}
 	    	$_SESSION['order_id'] = $order_id;
 	    	
 	    	// Если использовали купон, увеличим количество его использований
-	    	if($cart->coupon)
-	    		$this->coupons->update_coupon($cart->coupon->id, array('usages'=>$cart->coupon->usages+1));
+	    	if(isset($cart->coupon)) {
+				//~ print_r($cart->coupon);
+	    		$this->coupons->update_coupon($cart->coupon->id, array('usages'=>$usages));
+			}
 	    	
 	    	// Добавляем товары к заказу
 	    	foreach($this->request->post('amounts') as $variant_id=>$amount)
 	    	{
 	    		$this->orders->add_purchase(array('order_id'=>$order_id, 'variant_id'=>intval($variant_id), 'amount'=>intval($amount)));
 	    	}
-	    	$order = $this->orders->get_order($order_id);
 	    	
-	    	// Стоимость доставки
-			$delivery = $this->delivery->get_delivery($order->delivery_id);
-	    	if(!empty($delivery) && $delivery->free_from > $order->total_price)
-	    	{
-	    		$this->orders->update_order($order->id, array('delivery_price'=>$delivery->price, 'separate_delivery'=>$delivery->separate_payment));
-	    	}
-			
-			// Отправляем письмо пользователю
-			$this->notify->email_order_user($order->id);
-	    	
-			// Отправляем письмо администратору
-			$this->notify->email_order_admin($order->id);
-	    	
-	    	// Очищаем корзину (сессию)
-			$this->cart->empty_cart();
-						
-			// Перенаправляем на страницу заказа
-			header('Location: '.$this->config->root_url.'/order/'.$order->url);
+	    	if ( $order = $this->orders->get_order($order_id) ) {
+				// Стоимость доставки
+				$delivery = $this->delivery->get_delivery($order->delivery_id);
+				if(!empty($delivery) && $delivery->free_from > $order->total_price)
+				{
+					$this->orders->update_order($order->id, array('delivery_price'=>$delivery->price, 'separate_delivery'=>$delivery->separate_payment));
+				}
+				
+				// Отправляем письмо пользователю
+				$this->notify->email_order_user($order->id);
+				
+				// Отправляем письмо администратору
+				$this->notify->email_order_admin($order->id);
+				
+				// Очищаем корзину (сессию)
+				$this->cart->empty_cart();
+							
+				// Перенаправляем на страницу заказа
+				header('Location: '.$this->config->root_url.'/order/'.$order->url);
+			} else {
+				dtimer::log(__METHOD__ . " unable to get_order ");
+			}
 		}
     }   
     else
@@ -203,7 +213,7 @@ class CartView extends View
 		}else{
 			$this->design->assign('coupon_request', false);
 		}
-
+		
 		// Выводим корзину
 		return $this->design->fetch('cart.tpl');
 	}

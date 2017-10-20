@@ -41,12 +41,14 @@ class ImportAjax extends Simpla
 		if(!$this->managers->access('import'))
 			return false;
 
-		// Для корректной работы установим локаль UTF-8
-		// Локаль устанавливается в конструкторе api/Simpla.php
-		//~ setlocale(LC_ALL, 'ru_RU.UTF-8');
-		
+		//сюда будем писать результат импорта
 		$result = new stdClass;
-		
+
+		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
+		// должно значительное ускорить импорт
+		$_GLOBALS['options_uniq'] = $this->features->get_options_uniq();
+
+
 		// Определяем колонки из первой строки файла
 		$f = fopen($this->import_files_dir.$this->import_file, 'r');
 		$this->columns = fgetcsv($f, null, $this->column_delimiter);
@@ -301,8 +303,15 @@ class ImportAjax extends Simpla
 						if(!$feature_id = $this->db->result('id'))
 							$feature_id = $this->features->add_feature(array('name'=>$feature_name));
 							
-						$this->features->add_feature_category($feature_id, $category_id);				
-						$this->features->update_option($product_id, $feature_id, $feature_value);
+						$this->features->add_feature_category($feature_id, $category_id);
+						
+						//Если у нас уже есть id значения опции, пользуемся быстрой функцией
+						if ( isset($_GLOBALS['options_uniq'][$feature_value]) ){
+							$this->features->update_option_direct($product_id, $feature_id, $_GLOBALS['options_uniq'][$feature_value]['id']);
+						} else {
+							//иначе пользуемся обычной функцией, а результат записываем в наш суперглобальный массив
+							$_GLOBALS['options_uniq'][$feature_value] =  array( 'id' => $this->features->update_option($product_id, $feature_id, $feature_value) );
+						}
 					}
 					
 	 			}

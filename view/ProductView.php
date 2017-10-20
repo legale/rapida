@@ -39,12 +39,27 @@ class ProductView extends View
 		$product->variants = $variants;
 		
 		// Вариант по умолчанию
-		if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id]))
+		if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id])) {
 			$product->variant = $variants[$v_id];
-		else
+		} else {
 			$product->variant = reset($variants);
-					
-		$product->features = $this->features->get_product_options(array('product_id'=>$product->id));
+		}
+		// Свойства товара
+		$features = $this->features->get_features();
+		$options = $this->features->get_product_options($product->id);
+		$options_uniq = $this->features->get_options_uniq(null, true);
+
+		//перебираем все значения свойств и собираем $product->features для шаблона
+		foreach($options as $fid=>$vid){
+			if($vid !== null){
+				$product->features[] = (object)array(
+					'fid' => $fid,
+					'name' => $features->{$fid}->name,
+					'vid' => $vid, 
+					'value' => $options_uniq[$vid]['val']
+				);
+			}
+		}
 	
 		// Автозаполнение имени для формы комментария
 		if(!empty($this->user->name)){

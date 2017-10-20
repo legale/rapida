@@ -79,8 +79,20 @@ class Money extends Simpla
 	}
 	
 	
-	public function add_currency($currency)
-	{	
+	public function add_currency($currency){
+		if( is_object($currency) ){
+			$currency = (array)$currency;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($currency['id']) ){
+			unset($currency['id']);
+		}
+		foreach ($currency as $k=>$e){
+			if( empty_($e) ){
+				unset($currency[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold('INSERT INTO __currencies
 		SET ?%',
 		$currency);

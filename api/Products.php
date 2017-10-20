@@ -13,6 +13,218 @@ require_once('Simpla.php');
 
 class Products extends Simpla
 {
+	public function get_products_new($filter = array()) {
+
+		// По умолчанию
+		$limit = 100;
+		$page = 1;
+		//~ $images_filter = '';
+		$category_id_filter = '';
+		$brand_id_filter = '';
+		$product_id_filter = '';
+		$features_filter = '';
+		$keyword_filter = '';
+		$visible_filter = '';
+		$featured_filter = '';
+		$discounted_filter = '';
+		$stock_filter = '';
+		//~ $has_images_filter = '';
+		$yandex_filter = '';
+		$order = 'p.stock=0, p.position DESC';
+		$options_join_flag = false;
+		//~ $images_join_flag = true;
+		$brands_join_flag = false;
+		
+		$options_join = '';
+		$category_join = '';
+		//~ $images_join = '';
+		$brands_join = '';
+		$select = '';
+		
+		
+		//~ if(isset($filter['images_join_flag'])) {
+			//~ $images_join_flag = $filter['images_join_flag'];
+		//~ }
+		
+		if(isset($filter['limit'])) {
+			$limit = max(1, intval($filter['limit']));
+		}
+		
+		if(isset($filter['page'])) {
+			$page = max(1, intval($filter['page']));
+		}
+		
+		$sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page-1)*$limit, $limit);
+		
+		if(!empty($filter['id'])) {
+			$product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
+		}
+		
+		if(!empty($filter['category_id'])) {
+			$category_id_filter = $this->db->placehold('AND p.id in (SELECT DISTINCT product_id FROM __products_categories WHERE category_id in(?@)) ', (array)$filter['category_id']);
+		}
+		
+		if(!empty($filter['brand_id'])) {
+			$brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
+		}
+		if(!empty($filter['brands_join'])) {
+			$brands_join_flag = true;
+		}
+			
+		if(isset($filter['featured'])) {
+			$featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
+		}
+		
+		if(isset($filter['discounted'])) {
+			$discounted_filter = $this->db->placehold('AND p.price_old > p.price', intval($filter['discounted']));
+		}
+		
+		if(isset($filter['in_stock'])) {
+			$stock_filter = $this->db->placehold('AND p.stock != 0', intval($filter['in_stock']));
+		}
+
+		//больше не используется
+		//~ if(isset($filter['has_images'])) {
+			//~ $has_images_filter = $this->db->placehold('AND (SELECT count(*)>0 FROM __images pi WHERE pi.product_id=p.id LIMIT 1) = ?', intval($filter['has_images']));
+		//~ }
+		
+		$price_filter = '';
+		
+
+		if(isset($filter['price'])) {
+			if(isset($filter['price']['min'])) {
+				$price_filter .= $this->db->placehold(" AND p.price>= ? ", $this->db->escape(trim($filter['price']['min'])));
+			}
+			if(isset($filter['price']['max'])) {
+				$price_filter .= $this->db->placehold(" AND p.price<= ? ", $this->db->escape(trim($filter['price']['max'])));
+			}
+		}
+		
+		if(isset($filter['visible'])) {
+			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
+		}
+		
+		if(!empty($filter['sort'])) {
+			switch ($filter['sort']) {
+				case 'position':
+					$order = ' p.position DESC';
+					break;
+				case 'name':
+					$order = ' p.name ASC';
+					break;
+				case 'name_desc':
+					$order = ' p.name DESC';
+					break;
+				case 'created':
+					$order = ' p.created DESC';
+					break;
+				case 'price':
+					$order = "p.price ASC";
+					break;
+				case 'price_desc':
+					$order = "p.price ASC";
+					break;
+					case 'click':
+					$order = 'p.click ASC, p.position DESC';
+					break;
+					case 'click_desc':
+					$order = 'p.click DESC, p.position DESC';
+					break;
+					case 'random':
+					$order = 'rand()';
+					break;                    
+			}
+		}
+		
+		if(!empty($filter['keyword'])) {
+			$keywords = explode(' ', $filter['keyword']);
+			foreach($keywords as $keyword) {
+				$kw = $this->db->escape(trim($keyword));
+				if($kw!=='') {
+					$keyword_filter .= $this->db->placehold("AND (
+						p.name LIKE '%$kw%' 
+						OR p.meta_keywords LIKE '%$kw%' 
+						OR p.sku LIKE '%$kw%')");
+				}
+			}
+		}
+		
+		if(isset($filter['features']) && !empty($filter['features'])) {
+			$options_join_flag = true;
+			foreach($filter['features'] as $feature_id=>$value) {
+				$features_filter .= $this->db->placehold(' AND `o`.?! in(?@)', $feature_id, (array)$value);
+			}
+		}
+		
+		if($options_join_flag === true){
+			$options_join = "LEFT JOIN __options o on p.id = o.product_id";
+		}
+
+		//больше не используется
+		//~ if($images_join_flag === true){
+			//~ $select .= "i.filename as image, ";
+			//~ $images_filter = "AND (i.position = 0 OR i.position is null)";
+			//~ $images_join = "LEFT JOIN __images i on i.product_id = p.id";
+		//~ }
+		
+		if($brands_join_flag === true) {
+			$select .= "b.name as brand_name, ";
+			$brands_join = "LEFT JOIN __brands b on b.id = p.brand_id";
+		}
+
+		$select .= "p.id,
+				p.url,
+				p.brand_id,
+				p.position,
+				p.created as created,
+				p.visible,
+				p.featured,
+				p.name";
+
+
+		$query = "SELECT $select
+			FROM __products p
+			$brands_join
+			$options_join
+			
+			WHERE
+				1
+				$category_id_filter
+				$product_id_filter
+				$brand_id_filter
+				$features_filter
+				$keyword_filter
+				$featured_filter
+				$discounted_filter
+				$stock_filter
+				$visible_filter
+				$price_filter
+				$yandex_filter
+			ORDER BY $order
+			$sql_limit
+			";
+			
+		$query = $this->db->placehold($query);
+
+		$nolock = "SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;";
+		$lock = "SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ  ;";
+
+		$this->db->query($nolock);
+		dtimer::log(__METHOD__ . ' get_products2 before run query '.$query. ' ' . __LINE__);
+		$this->db->query($query);
+
+		if(!empty($filter['group_field'])) {
+			$get_products = $this->db->results_array(null, $filter['group_field']);
+		}else{
+			$get_products = $this->db->results_array();
+		}
+		$this->db->query($lock);
+
+		return $get_products;
+	}
+	
+
+
 	/**
 	* Функция возвращает товары
 	* Возможные значения фильтра:
@@ -145,11 +357,11 @@ class Products extends Simpla
 			}
 		}
 
-		if(!empty($filter['features']) && !empty($filter['features']))
-			foreach($filter['features'] as $feature=>$value)
-				$features_filter .= $this->db->placehold('AND p.id in (SELECT product_id FROM __options WHERE feature_id=? AND value=? ) ', $feature, $value);
-
-		$query = "SELECT  
+		//фильтрация по свойствам товаров
+		if( !empty($filter['features']) ){
+			$features_filter = $this->db->placehold(' AND p.id in (SELECT product_id FROM __options WHERE ?& ) ', $filter['features']);
+		}
+		$query = $this->db->placehold("SELECT  
 					p.id,
 					p.url,
 					p.brand_id,
@@ -181,14 +393,20 @@ class Products extends Simpla
 					$visible_filter
 				$group_by
 				ORDER BY $order
-					$sql_limit";
+					$sql_limit");
 
+		dtimer::log(__METHOD__ . " query: $query ");
+		//~ dtimer::show();
+		//~ die;
 		$this->db->query($query);
-		$res = $this->db->results_object('id');
-
-		dtimer::log("set_cache_nosql key: $keyhash");
-		$this->cache->set_cache_nosql($keyhash, $res);
-		return $res;
+		
+		if($res = $this->db->results_object(null,'id') ) {
+			dtimer::log("set_cache_nosql key: $keyhash");
+			$this->cache->set_cache_nosql($keyhash, $res);
+			return $res;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -284,9 +502,10 @@ class Products extends Simpla
 			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
 		
 		
-		if(!empty($filter['features']) && !empty($filter['features']))
-			foreach($filter['features'] as $feature=>$value)
-				$features_filter .= $this->db->placehold('AND p.id in (SELECT product_id FROM __options WHERE feature_id=? AND value=? ) ', $feature, $value);
+		//фильтрация по свойствам товаров
+		if( !empty($filter['features']) ){
+			$features_filter = $this->db->placehold(' AND p.id in (SELECT product_id FROM __options WHERE ?& ) ', $filter['features']);
+		}
 		
 		$query = "SELECT count(distinct p.id) as count
 				FROM __products AS p
@@ -565,12 +784,22 @@ class Products extends Simpla
 		return($id);
 	}
 	
+	/*
+	 * Обновляем изображение в таблице изображений
+	 * Изображение с минимальной позицией, заносим в таблицу _products, чтобы не делать join
+	 * для получения изображений
+	 */
 	public function update_image($id, $image)
 	{
-	
-		$query = $this->db->placehold("UPDATE __images SET ?% WHERE id=?", $image, $id);
-		$this->db->query($query);
+		$id = (int)$id;
+		$this->db->query("UPDATE __images SET ?% WHERE id=?", $image, $id);
+		$this->db->query("SELECT `product_id` as `pid` FROM __images WHERE id=?", $id);
+		$pid = (int)$this->db->result('pid');
+		$this->db->query("SELECT `filename` FROM __images WHERE `product_id`='$pid' ORDER BY `position` ASC LIMIT 1");
+		$filename = $this->db->result('filename');
+		$this->db->query("UPDATE __products SET `image` = '$filename' WHERE `id`='$pid'");
 		
+		//зачем тут id, надо посмотреть где используется.
 		return($id);
 	}
 	

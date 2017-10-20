@@ -30,8 +30,7 @@ class ProductsView extends View
 		$filter['visible'] = 1;	
 
 		// Если задан бренд, выберем его из базы
-		if (!empty($brand_url))
-		{
+		if (  (!empty($brand_url)) ) {
 			$brand = $this->brands->get_brand((string)$brand_url);
 			if (empty($brand))
 				return false;
@@ -40,8 +39,7 @@ class ProductsView extends View
 		}
 		
 		// Выберем текущую категорию
-		if (!empty($category_url))
-		{
+		if (  (!empty($category_url)) ) {
 			$category = $this->categories->get_category((string)$category_url);
 			if (empty($category) || (!$category->visible && empty($_SESSION['admin'])))
 				return false;
@@ -51,8 +49,7 @@ class ProductsView extends View
 
 		// Если задано ключевое слово
 		$keyword = $this->request->get('keyword');
-		if (!empty($keyword))
-		{
+		if (  (!empty($keyword)) ) {
 			$this->design->assign('keyword', $keyword);
 			$filter['keyword'] = $keyword;
 		}
@@ -67,45 +64,49 @@ class ProductsView extends View
 		$this->design->assign('sort', $filter['sort']);
 		
 		// Свойства товаров
-		if(!empty($category))
-		{
+		if ( (!empty($category))  ) {
 			$features = $this->features->get_features(array('category_id'=>$category->id, 'in_filter'=>1));
-			if(!empty($features)){
-				foreach($features as $feature)
-				{ 
-					if(($val = strval($this->request->get($feature->id)))!='')
-						$filter['features'][$feature->id] = $val;	
+			//~ print_r($features);
+			if (  ( !empty($features) )  ) {
+				foreach($features as $feature) { 
+					if(($val = strval($this->request->get($feature->id)))!='') {
+						$filter['features'][$feature->id] = $val;
+					}
 				}
 			}
+			//~ print_r($features);
 
 
 			$options_filter['visible'] = 1;
 			
-			if(!empty($features)){
+			if (  ( !empty($features) )  ) {
 				$features_ids = array_keys((array)$features);
 			}
 			
-			if(!empty($features_ids))
+			if(!empty($features_ids)){
 				$options_filter['feature_id'] = $features_ids;
+			}
 			$options_filter['category_id'] = $category->children;
-			if(isset($filter['features']))
+			if( isset($filter['features']) ){
 				$options_filter['features'] = $filter['features'];
-			if(!empty($brand))
+			}
+			if(!empty($brand)) {
 				$options_filter['brand_id'] = $brand->id;
-			
+			}
 			$options = $this->features->get_options($options_filter);
+			//~ print_r($options);
 
-			foreach($options as $option)
-			{
-				if(isset($features->{$option->feature_id}))
-					$features->{$option->feature_id}->options[] = $option;
+			foreach($features as $k=>&$feature) {
+				if( isset($options->{$k}) ){
+					$feature->options = $options->{$k};
+				}
 			}
 			
-			if(!empty($features)){
-				foreach($features as $i=>&$feature)
-				{ 
-					if(empty($feature->options))
+			if (  ( !empty($features) )  ) {
+				foreach($features as $i=>&$feature) { 
+					if ( (empty($feature->options))  ) {
 						unset($features->{$i});
+					}
 				}
 			}
 
@@ -147,12 +148,13 @@ class ProductsView extends View
 		//~ print "<pre>";
 		//~ print_r($products);
 		//~ print "</pre>";
+		//~ die;
 			
 		// Если искали товар и найден ровно один - перенаправляем на него
 		if(!empty($keyword) && $products_count == 1)
 			header('Location: '.$this->config->root_url.'/products/'.$p->url);
 		
-		if(!empty($products))
+		if( !empty($products) )
 		{
 			$products_ids = array_keys((array)$products);
 			foreach($products as &$product)

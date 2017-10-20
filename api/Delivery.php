@@ -48,6 +48,20 @@ class Delivery extends Simpla
 	
 	public function add_delivery($delivery)
 	{	
+		if( is_object($delivery) ){
+			$delivery = (array)$delivery;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($delivery['id']) ){
+			unset($delivery['id']);
+		}
+		
+		foreach ($delivery as $k=>$e){
+			if( empty_($e) ){
+				unset($delivery[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold('INSERT INTO __delivery
 		SET ?%',
 		$delivery);

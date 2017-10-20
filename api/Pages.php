@@ -70,6 +70,20 @@ class Pages extends Simpla
 	*/	
 	public function add_page($page)
 	{	
+		if( is_object($page) ){
+			$page = (array)$page;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($page['id']) ){
+			unset($page['id']);
+		}
+		
+		foreach ($page as $k=>$e){
+			if( empty_($e) ){
+				unset($page[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold('INSERT INTO __pages SET ?%', $page);
 		if(!$this->db->query($query))
 			return false;

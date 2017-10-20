@@ -108,9 +108,9 @@ function unzip()
 	pclzipdefines();
 
 	$current_dir = dirname(__FILE__);
-	//@clean_dir($current_dir, array('install.php', 'simpla_source.zip'));
+	//@clean_dir($current_dir, array('install.php', 'rapida_source.zip'));
 
-	$filename =	 $current_dir.'/simpla_source.zip';
+	$filename =	 $current_dir.'/rapida_source.zip';
 	if(!is_file($filename))
 	{
 		print "<p>Файл simpla_source.zip не найден.<br>Скопируйте файл simpla_source.zip в папку<br><code>$current_dir</code></p>";

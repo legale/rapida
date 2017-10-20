@@ -81,7 +81,7 @@ class Blog extends Simpla
 		                                      ORDER BY date DESC, id DESC $sql_limit");
 		
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results(null, 'id');
 	}
 	
 	
@@ -127,11 +127,21 @@ class Blog extends Simpla
 	*/	
 	public function add_post($post)
 	{	
-		if(!isset($post->date))
-			$date_query = ', date=NOW()';
-		else
-			$date_query = '';
-		$query = $this->db->placehold("INSERT INTO __blog SET ?% $date_query", $post);
+		if( is_object($post) ){
+			$post = (array)$post;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($post['id']) ){
+			unset($post['id']);
+		}
+		
+		foreach ($post as $k=>$e){
+			if( empty_($e) ){
+				unset($post[$k]);
+			}
+		}
+				
+		$query = $this->db->placehold("INSERT INTO __blog SET ?% ", $post);
 		
 		if(!$this->db->query($query))
 			return false;

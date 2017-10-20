@@ -11,6 +11,7 @@ class FeatureAdmin extends Simpla
 		{
 			$feature->id = $this->request->post('id', 'integer');
 			$feature->name = $this->request->post('name');
+			$feature->uri = $this->request->post('uri');
 			$feature->in_filter = intval($this->request->post('in_filter'));
 			$feature_categories = $this->request->post('feature_categories');
 
