@@ -650,9 +650,11 @@ class Database extends Simpla
 			fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
 			$this->db2->query("SHOW CREATE TABLE `$table`;");
 			$create = $this->db2->result_array('Create Table');
+			fwrite($h, "/* Create table $table */\n");
 			fwrite($h, "$create;\n");
-			fwrite($h, "/* Data for table $table */\n");
+			fwrite($h, "/* Clear table $table */\n");
 			fwrite($h, "TRUNCATE TABLE `$table`;\n");
+			fwrite($h, "/* Data for table $table */\n");
 			
 			$num_rows = $result->num_rows;
 			$num_fields = $this->mysqli->field_count;
