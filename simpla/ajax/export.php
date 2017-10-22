@@ -42,7 +42,7 @@ class ExportAjax extends Simpla
 		 * соответствовало столбцам в options
 		 * Если функция возвращает false, значит что-то пошло не так, останавливаемся
 		 */
-		if ( !$this->features->sync_options() ) {
+		if ( !$this->sys->sync_options() ) {
 			print "ERROR SYNC FEATURES AND OPTIONS!";
 			die;
 		}

@@ -113,8 +113,10 @@ class System extends Simpla {
 		if ( $this->db->query($q) ){
 			$fnames = $this->db->results_array('f');
 			//перебираем список и скачиваем эти файлы
-			foreach($fnames as $f){
-				$this->image->download_image($f);
+			if( $fnames ) {
+				foreach($fnames as $f){
+					$this->image->download_image($f);
+				}
 			}
 			return true;
 		} else {
