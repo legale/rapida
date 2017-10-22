@@ -92,6 +92,9 @@ if ($v_list == 0)
 	trigger_error('Не могу заархивировать '.$zip->errorInfo(true));
 }
 
+//удаляет файл архива для дистрибутива
+@unlink('rapida_source.zip');
+
 //удаляет файл БД
 //~ @unlink($dir.$dbfile);
 
