@@ -14,6 +14,60 @@ require_once('Simpla.php');
 class Features extends Simpla
 {	
 	
+	/*
+	 * Это метод для синхронизации таблицы features и options
+	 * Удаляет лишние и добавляет недостающие столбцы в таблицу options на основе id из таблицы features 
+	 */
+	public function sync_options(){
+		$fids = array();
+		$cols = array();
+		
+		//получим нужные нам id свойств из features
+		if ( $this->db->query("SELECT id FROM __features") ) {
+			$fids = $this->db->results_array('id');
+		} else {
+			return false;
+		}
+		//получим столбцы из таблицы options
+		if ( $this->db->query("SHOW COLUMNS FROM __options") ) {
+			if( $cols = $this->db->results_array('Field') ){
+				$cols = array_combine($cols, $cols);
+			}
+		} else {
+			return false;
+		}
+		
+		//Уберем product_id из массива - это поле проверять не нужно
+		if ( isset($cols['product_id']) ) {
+			unset($cols['product_id']);
+		} else {
+			return false;
+		}
+		
+		//проверим все свойства на предмет их наличия в таблице options
+		if( is_array($fids) ){
+			foreach($fids as $fid){
+				//Если столбца нет - добавим его
+				if( !array_key_exists($fid, $cols) ) {
+					$this->db->query("ALTER TABLE __options ADD `$fid` MEDIUMINT NULL");
+				} else {
+				//если он есть, уберем его из массива $cols
+					unset($cols[$fid]);
+				}
+			}
+		}
+		//Если у нас что-то осталось в массиве $cols - надо удалить это оттуда
+		if( count($cols) > 0 ) {
+			foreach( $cols as $col ){
+				$this->db->query("ALTER TABLE __options DROP `$col`");
+			}
+		}
+		
+		return true;
+		
+	}
+	
+	
 	function get_features($filter = array())
 	{
 		dtimer::log(__METHOD__ . 'get_features start');
@@ -457,8 +511,11 @@ class Features extends Simpla
 	}
 	
 
-
-	public function get_product_options($product_id) {
+	/* 
+	 * Этот метод предназначен для получения данных о свойствах напрямую из таблицы options. 
+	 * Т.е. возвращает не сами значения свойств товаров, а только id этих значений.
+	 */ 
+	public function get_product_options_direct($product_id) {
 		
 		if(!isset($product_id) ){
 			return false;
@@ -474,5 +531,36 @@ class Features extends Simpla
 		} else {
 			return false;
 		}
+	}
+
+	public function get_product_options($product_id) {
+		
+		if(!isset($product_id) ){
+			return false;
+		} else {
+			$product_id = (int)$product_id;
+		}
+		
+		!$this->db->query("SELECT * FROM __options WHERE 1 AND `product_id` = ?", $product_id ) ;
+		$options = $this->db->result_array();
+		
+		//Если ничего не нашлось - возвращаем false
+		if(isset($options['product_id']) ){
+			unset($options['product_id']);
+		} else {
+			return false;
+		}
+		//выбираем значений опций из соответствующей таблицы
+		if ($this->db->query("SELECT id, val FROM __options_uniq WHERE id in (?@)", $options) ) {
+			$vals = $this->db->results_array(null, 'id' , true);
+			foreach($options as $fid=>&$option){
+				if(!empty_($option)){
+					$option = array('fid' => $fid, 'vid' => $option, 'val' => $vals[$option]['val']);
+				}
+			}
+			return $options;
+		} 
+		//если не получилось вернуть $options, вернем false
+		return false;
 	}
 }

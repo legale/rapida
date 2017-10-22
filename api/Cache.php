@@ -125,7 +125,7 @@ class Cache extends Simpla {
 
 			if (!@file_exists($full_path) || !@is_writable($full_path)) {
 				if (!@file_exists($full_path)) {
-					@mkdir($full_path);
+					@mkdir($full_path, null, true);
 				}
 				if (!@is_writable($full_path)) {
 					@chmod($full_path, self::$config['default_chmod']);

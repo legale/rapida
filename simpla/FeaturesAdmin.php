@@ -9,7 +9,15 @@ class FeaturesAdmin extends Simpla
 {
 	function fetch()
 	{	
-	
+		
+		/* синхронизируем таблицы features и options, чтобы количество свойств из feautures 
+		 * соответствовало столбцам в options
+		 * Если функция возвращает false, выведем предупреждение об этом в шаблон
+		 */
+		if ( !$this->features->sync_options() ) {
+			$this->design->assign('message_error', 'Не удалась синхронизация таблиц options и features, проверьте БД!');
+		}
+		
 		if($this->request->method('post'))
 		{  	
 			// Действия с выбранными

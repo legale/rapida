@@ -47,7 +47,6 @@ class ProductView extends View
 		// Свойства товара
 		$features = $this->features->get_features();
 		$options = $this->features->get_product_options($product->id);
-		$options_uniq = $this->features->get_options_uniq(null, true);
 
 		//перебираем все значения свойств и собираем $product->features для шаблона
 		foreach($options as $fid=>$vid){
@@ -55,8 +54,8 @@ class ProductView extends View
 				$product->features[] = (object)array(
 					'fid' => $fid,
 					'name' => $features->{$fid}->name,
-					'vid' => $vid, 
-					'value' => $options_uniq[$vid]['val']
+					'vid' => $vid['vid'], 
+					'value' => $vid['val']
 				);
 			}
 		}

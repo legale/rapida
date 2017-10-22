@@ -9,6 +9,17 @@
 {* Title *}
 {$meta_title='Свойства' scope=parent}
 
+
+{if $message_error}
+<!-- Системное сообщение -->
+<div class="message message_error">
+	<span class="text">{$message_error}</span>
+	<a class="button" href="">Вернуться</a>
+</div>
+<!-- Системное сообщение (The End)-->
+{/if}
+
+
 {* Заголовок *}
 <div id="header">
 	<h1>Свойства</h1> 

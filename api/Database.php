@@ -601,10 +601,10 @@ class Database extends Simpla
 		$h = fopen($filename, 'w');
 		$q = $this->placehold("SHOW FULL TABLES LIKE '__%';");		
 		$result = $this->mysqli->query($q);
-		while($row = $result->fetch_row())
-		{
-			if($row[1] == 'BASE TABLE')
+		while($row = $result->fetch_row()){
+			if($row[1] == 'BASE TABLE'){
 				$this->dump_table($row[0], $h);
+			}
 		}
 	    fclose($h);
 	}
@@ -646,6 +646,11 @@ class Database extends Simpla
 		$result = $this->mysqli->query($sql);
 		if($result)
 		{
+			fwrite($h, "/* Drop for table $table */\n");
+			fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
+			$this->db2->query("SHOW CREATE TABLE `$table`;");
+			$create = $this->db2->result_array('Create Table');
+			fwrite($h, "$create;\n");
 			fwrite($h, "/* Data for table $table */\n");
 			fwrite($h, "TRUNCATE TABLE `$table`;\n");
 			

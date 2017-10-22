@@ -297,16 +297,10 @@ class ProductAdmin extends Simpla
 				
 				// Свойства товара
 				$options = $this->features->get_product_options($product->id);
-				$options_uniq = $this->features->get_options_uniq(null, true);
+				//$options_uniq = $this->features->get_options_uniq(null, true);
 				//~ print_r($options);
 				
-				if( !empty($options) ) {
-					foreach($options as &$o){
-						if($o !== null){
-							$o = $options_uniq[$o]['val'];
-						}
-					}
-				}
+
 				
 				// Связанные товары
 				$related_products = $this->products->get_related_products(array('product_id'=>$product->id));

@@ -641,7 +641,7 @@ overflow-y: auto;
 			</h2>
 			<ul class="prop_ul">
 				{foreach $features as $feature_id=>$feature}
-					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] value="{$options[$feature_id]|escape}" /></li>
+					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] vid="{$options[$feature_id]['vid']|escape}"  value="{$options[$feature_id]['val']|escape}" /></li>
 				{/foreach}
 			</ul>
 			<!-- Новые свойства -->
@@ -663,7 +663,7 @@ overflow-y: auto;
 				<li><input id="exp_goog" type="checkbox" /> <label for="exp_goog">Google Base</label> </li>
 			</ul>
 		</div>
-		<!-- Свойства товара (The End)-->
+		<!-- Экспорт (The End)-->
 		*}
 			
 	</div>

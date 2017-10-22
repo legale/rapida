@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-17 16:44:42
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-21 23:47:59
          compiled from "simpla\design\html\features.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:137200108559e6094a7823a2-74080911%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'fa12df0d10e64acb3944a731168d8ee18802f8a9' => 
     array (
       0 => 'simpla\\design\\html\\features.tpl',
-      1 => 1492708202,
+      1 => 1508618834,
       2 => 'file',
     ),
   ),
@@ -22,9 +22,12 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       'compiled' => '',
     ),
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59e6094a995822_56639033',
   'variables' => 
   array (
     'manager' => 0,
+    'message_error' => 0,
     'features' => 0,
     'feature' => 0,
     'categories' => 0,
@@ -32,8 +35,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'c' => 0,
   ),
   'has_nocache_code' => 0,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59e6094a995822_56639033',
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_59e6094a995822_56639033')) {function content_59e6094a995822_56639033($_smarty_tpl) {?>
 <?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
@@ -51,6 +52,18 @@ if (!empty($_capture_buffer)) {
 
 <?php $_smarty_tpl->tpl_vars['meta_title'] = new Smarty_variable('Свойства', null, 1);
 if ($_smarty_tpl->parent != null) $_smarty_tpl->parent->tpl_vars['meta_title'] = clone $_smarty_tpl->tpl_vars['meta_title'];?>
+
+
+<?php if ($_smarty_tpl->tpl_vars['message_error']->value) {?>
+<!-- Системное сообщение -->
+<div class="message message_error">
+	<span class="text"><?php echo $_smarty_tpl->tpl_vars['message_error']->value;?>
+</span>
+	<a class="button" href="">Вернуться</a>
+</div>
+<!-- Системное сообщение (The End)-->
+<?php }?>
+
 
 
 <div id="header">
@@ -262,4 +275,5 @@ $(function() {
 	
 });
 </script>
+
 <?php }} ?>

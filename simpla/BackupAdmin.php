@@ -134,9 +134,10 @@ function myPostExtractCallBack($p_event, &$p_header)
 function myCallBack($p_event, &$p_header)
 {
 	$fname = $p_header['stored_filename'];
-	if(preg_match('/^files\/products\/[^\.]+/i', $fname))
-		return 0;
-	return 1;
+	if(preg_match('/^files\/products\/[^\.]/i', $fname)){
+		return false;
+	}
+	return true;
 }
 
 

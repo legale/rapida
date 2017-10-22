@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
   <meta http-equiv="Content-Language" content="ru" />
-  <title>Установка Simpla</title>
+  <title>Установка Rapida</title>
 </head>
 <style>
   h1{font-size:26px; font-weight:normal}
@@ -189,15 +189,15 @@ function dbconfig()
 		if(!@$mysqli->query('SET NAMES utf8'))
 			$error = 'Не могу соединиться с базой. Проверьте логин и пароль';
 
-		if(!is_readable('simpla.sql'))
-			$error = 'Файл simpla.sql не найден';
+		if(!is_readable('rapida.sql'))
+			$error = 'Файл rapida.sql не найден';
 
 		if(!is_writable('config/config.ini'))
 			$error = 'Поставьте права на запись для файла config/config.ini';
 
 		if(empty($error))
 		{
-			mysqlrestore($mysqli, 'simpla.sql');
+			mysqlrestore($mysqli, 'rapida.sql');
 
 			# Запишем конфиги с базой
 			$conf = file_get_contents('config/config.ini');
@@ -296,18 +296,18 @@ function adminconf()
 //
 function finalstep()
 {
-	//~ @unlink('simpla_source.zip');
-	//~ @unlink('simpla.sql');
+	//~ @unlink('rapida_source.zip');
+	//~ @unlink('rapida.sql');
 	//~ @unlink('install.php');
 
 	if(is_file('install.php'))
-		$error = 'Обязательно удалите файлы install.php, simpla_source.zip и simpla.sql';
+		$error = 'Обязательно удалите файлы install.php, rapida_source.zip и rapida.sql';
 
 	$url = rtrim('http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['REQUEST_URI']), '/');
 	print "<p>Установка завершена успешно</p>";
 	print "<p>Адрес вашего сайта: <a href='$url'>$url</a></p>";
 	print "<p>Панель управления: <a href='$url/simpla'>$url/simpla</a></p>";
-	print "<p>Приятной работы с Simpla!</p>";
+	print "<p>Приятной работы с Rapida!</p>";
 	if(!empty($error))
 		print "<p class=error>$error</p>";
 }

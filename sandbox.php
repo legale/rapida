@@ -13,8 +13,10 @@ if(isset($_SESSION['admin'])){
 	//~ $res = $simpla->db->insert_id();
 	
 	$order_id = 8;
-	$res = $simpla->orders->get_order($order_id);
-
+	$pid = 10;
+	//~ $res = $simpla->orders->get_order($order_id);
+	//~ $res = $simpla->features->get_product_options($pid);
+	$res = $simpla->features->sync_options();
 	print "HELLO!\n";
 	print_r($res);
 	print "</PRE>";
