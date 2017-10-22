@@ -31,6 +31,9 @@ function precheck($p_event, &$p_header){
 	
 	//это точно исключаем
 	$exclude = array(
+		'/^sandbox\.php$/i',
+		'/^create_distro\.php$/i',
+		'/^install\.php$/i',
 		'/rapida.*?\.zip$/i',
 		'/\.gitignore$/i',
 		'/^\.git\/.*/i',
@@ -74,12 +77,23 @@ $simpla->db->dump($dir.$dbfile);
 chmod($dir.$dbfile, 0777);
 
 //Архивируем
-$zip = new PclZip($filename);
+$zip = new PclZip('rapida_source.zip');
 $v_list = $zip->create(array($dir), PCLZIP_OPT_REMOVE_PATH, $dir, PCLZIP_CB_PRE_ADD, "precheck");
 if ($v_list == 0)
 {
 	trigger_error('Не могу заархивировать '.$zip->errorInfo(true));
 }
+
+//Архивируем полученный архив README.md и install.php
+$zip = new PclZip($filename);
+$v_list = $zip->create(array('README.md','install.php','rapida_source.zip'));
+if ($v_list == 0)
+{
+	trigger_error('Не могу заархивировать '.$zip->errorInfo(true));
+}
+
 //удаляет файл БД
 //~ @unlink($dir.$dbfile);
 
+//Finish
+print "\n DONE!";

@@ -32,9 +32,8 @@ class Image extends Simpla
 	{
 		list($source_file, $width , $height, $set_watermark) = $this->get_resize_params($filename);
 
-		// Если вайл удаленный (http://), зальем его себе
-		if(substr($source_file, 0, 7) == 'http://')
-		{	
+		// Если файл удаленный (http://), зальем его себе
+		if(substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://' ){
 			// Имя оригинального файла
 			if(!$original_file = $this->download_image($source_file))
 				return false;

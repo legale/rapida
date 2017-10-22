@@ -155,12 +155,14 @@ class ProductAdmin extends Simpla
 						
 	
 						// Удалить непереданные варианты
-						$current_variants = $this->variants->get_variants(array('product_id'=>$product->id));
-						foreach($current_variants as $current_variant)
-							if(!in_array($current_variant->id, $variants_ids))
-	 							$this->variants->delete_variant($current_variant->id);
+						if( $current_variants = $this->variants->get_variants(array('product_id'=>$product->id)) ) {
+							foreach($current_variants as $current_variant){
+								if(!in_array($current_variant->id, $variants_ids)){
+									$this->variants->delete_variant($current_variant->id);
+								}
+							}
+						}
 	 							 					
-	 					//if(!empty($))
 						
 						// Отсортировать  варианты
 						asort($variants_ids);
@@ -174,13 +176,13 @@ class ProductAdmin extends Simpla
 	
 					// Удаление изображений
 					$images = (array)$this->request->post('images');
-					$current_images = $this->products->get_images(array('product_id'=>$product->id));
-					foreach($current_images as $image)
-					{
-						if(!in_array($image->id, $images))
-	 						$this->products->delete_image($image->id);
+					if ( $current_images = $this->products->get_images(array('product_id'=>$product->id)) ) {
+						foreach($current_images as $image) {
+							if(!in_array($image->id, $images)){
+								$this->products->delete_image($image->id);
+							}
 						}
-	
+					}
 					// Порядок изображений
 					if($images = $this->request->post('images'))
 					{
