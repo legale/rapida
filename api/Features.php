@@ -14,58 +14,6 @@ require_once('Simpla.php');
 class Features extends Simpla
 {	
 	
-	/*
-	 * Это метод для синхронизации таблицы features и options
-	 * Удаляет лишние и добавляет недостающие столбцы в таблицу options на основе id из таблицы features 
-	 */
-	public function sync_options(){
-		$fids = array();
-		$cols = array();
-		
-		//получим нужные нам id свойств из features
-		if ( $this->db->query("SELECT id FROM __features") ) {
-			$fids = $this->db->results_array('id');
-		} else {
-			return false;
-		}
-		//получим столбцы из таблицы options
-		if ( $this->db->query("SHOW COLUMNS FROM __options") ) {
-			if( $cols = $this->db->results_array('Field') ){
-				$cols = array_combine($cols, $cols);
-			}
-		} else {
-			return false;
-		}
-		
-		//Уберем product_id из массива - это поле проверять не нужно
-		if ( isset($cols['product_id']) ) {
-			unset($cols['product_id']);
-		} else {
-			return false;
-		}
-		
-		//проверим все свойства на предмет их наличия в таблице options
-		if( is_array($fids) ){
-			foreach($fids as $fid){
-				//Если столбца нет - добавим его
-				if( !array_key_exists($fid, $cols) ) {
-					$this->db->query("ALTER TABLE __options ADD `$fid` MEDIUMINT NULL");
-				} else {
-				//если он есть, уберем его из массива $cols
-					unset($cols[$fid]);
-				}
-			}
-		}
-		//Если у нас что-то осталось в массиве $cols - надо удалить это оттуда
-		if( count($cols) > 0 ) {
-			foreach( $cols as $col ){
-				$this->db->query("ALTER TABLE __options DROP `$col`");
-			}
-		}
-		
-		return true;
-		
-	}
 	
 	
 	function get_features($filter = array())

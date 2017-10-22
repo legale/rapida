@@ -91,9 +91,10 @@ class Image extends Simpla
 	public function get_resize_params($filename)
 	{
 		// Определаяем параметры ресайза
-		if(!preg_match('/(.+)\.([0-9]*)x([0-9]*)(w)?\.([^\.]+)$/', $filename, $matches))
+		if(!preg_match('/(.+)\.([0-9]*)x([0-9]*)(w)?\.([^\.]+)$/', $filename, $matches)){
 			return false;
-			
+		}
+		
 		$file = $matches[1];					// имя запрашиваемого файла
 		$width = $matches[2];					// ширина будущего изображения
 		$height = $matches[3];					// высота будущего изображения

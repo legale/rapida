@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-17 21:55:55
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-22 16:12:56
          compiled from "simpla\design\html\backup.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:201072454559e6523bd75e37-45528013%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'dcb3727c2ee43d09781082b896ac5be41606d4b3' => 
     array (
       0 => 'simpla\\design\\html\\backup.tpl',
-      1 => 1507729014,
+      1 => 1508677908,
       2 => 'file',
     ),
   ),
@@ -15,6 +15,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   'function' => 
   array (
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59e6523be930f6_95473869',
   'variables' => 
   array (
     'manager' => 0,
@@ -25,8 +27,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'backup' => 0,
   ),
   'has_nocache_code' => false,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59e6523be930f6_95473869',
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_59e6523be930f6_95473869')) {function content_59e6523be930f6_95473869($_smarty_tpl) {?>
 <?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
@@ -34,6 +34,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
 	<?php if (in_array('import',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=ImportYmlAdmin">Импорт YML</a></li><?php }?>
 	<?php if (in_array('export',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=ExportAdmin">Экспорт</a></li><?php }?>
 	<li class="active"><a href="index.php?module=BackupAdmin">Бекап</a></li>		
+	<?php if (in_array('export',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=SystemAdmin">Обслуживание системы</a></li><?php }?>
 <?php list($_capture_buffer, $_capture_assign, $_capture_append) = array_pop($_smarty_tpl->_capture_stack[0]);
 if (!empty($_capture_buffer)) {
  if (isset($_capture_assign)) $_smarty_tpl->assign($_capture_assign, ob_get_contents());

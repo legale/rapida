@@ -134,8 +134,14 @@ class OrderAdmin extends Simpla
 			// Метки заказа
 			$order_labels = array();
 			if(isset($order->id))
-			foreach($this->orders->get_order_labels($order->id) as $ol)
-				$order_labels[] = $ol->id;			
+
+			// Метки заказов
+			if ( $orders_labels = $this->orders->get_order_labels($order->id) ) {
+				foreach($orders_labels as $ol){
+					$orders[$ol->order_id]->labels[] = $ol;
+				}
+			}
+
 		}
 
 

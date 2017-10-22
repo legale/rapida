@@ -88,7 +88,8 @@ class Simpla
 		'feedbacks'  => 'Feedbacks',
 		'notify'     => 'Notify',
 		'managers'   => 'Managers',
-		'queue'      => 'Queue'
+		'queue'      => 'Queue',
+		'sys'      => 'System'
 	);
 	
 	//первое обращение к классу будет хранится тут

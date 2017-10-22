@@ -14,7 +14,7 @@ class FeaturesAdmin extends Simpla
 		 * соответствовало столбцам в options
 		 * Если функция возвращает false, выведем предупреждение об этом в шаблон
 		 */
-		if ( !$this->features->sync_options() ) {
+		if ( !$this->sys->sync_options() ) {
 			$this->design->assign('message_error', 'Не удалась синхронизация таблиц options и features, проверьте БД!');
 		}
 		

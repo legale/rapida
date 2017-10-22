@@ -290,7 +290,7 @@ class Database extends Simpla
 	/**
 	 * Возвращает первый результат запроса в виде массива
 	 */
-	public function result_array($field = null)
+	public function result_array($field = null, $group_field = null, $unsetkey = false)
 	{
 		if(!is_object($this->res)){
 			$this->error_msg = "exec query first!";
@@ -302,6 +302,9 @@ class Database extends Simpla
 		if( isset($field) ){
 			return $row[$field];
 		} else {
+			if($unsetkey === true){
+				unset($row[$group_field]);
+			}
 			return $row;
 		}
 	}

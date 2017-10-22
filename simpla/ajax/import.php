@@ -115,9 +115,10 @@ class ImportAjax extends Simpla
 	}
 	
 	// Импорт одного товара $item[column_name] = value;
-	private function import_item($item)
-	{
+	private function import_item($item) {
 		$imported_item = new stdClass;
+		
+		
 		
 		// Проверим не пустое ли название и артинкул (должно быть хоть что-то из них)
 		if(empty($item['name']) && empty($item['sku']))

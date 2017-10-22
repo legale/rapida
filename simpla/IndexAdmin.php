@@ -38,6 +38,7 @@ class IndexAdmin extends Simpla
 		'ImportYmlAdmin'      => 'import',
 		'ExportAdmin'         => 'export',
 		'BackupAdmin'         => 'backup',
+		'SystemAdmin'         => 'settings',
 		'StatsAdmin'          => 'stats',
 		'ThemeAdmin'          => 'design',
 		'StylesAdmin'         => 'design',

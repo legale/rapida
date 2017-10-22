@@ -495,7 +495,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(3000) CHARACTER SET ascii DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /* Clear table s_queue */
 TRUNCATE TABLE `s_queue`;
 /* Data for table s_queue */
