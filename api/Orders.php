@@ -153,16 +153,16 @@ class Orders extends Simpla
 	public function add_order($order)
 	{
 		dtimer::log(__METHOD__ . " order: ". print_r($order, true));
-		if( is_object($oprder) ){
-			$oprder = (array)$oprder;
+		if( is_object($order) ){
+			$order = (array)$order;
 		}
 		//удалим id, если он сюда закрался, при создании id быть не должно
-		if( isset($oprder['id']) ){
-			unset($oprder['id']);
+		if( isset($order['id']) ){
+			unset($order['id']);
 		}
-		foreach ($oprder as $k=>$e){
+		foreach ($order as $k=>$e){
 			if( empty_($e) ){
-				unset($oprder[$k]);
+				unset($order[$k]);
 			}
 		}
 
