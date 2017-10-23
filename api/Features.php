@@ -68,12 +68,18 @@ class Features extends Simpla
 	 */
 	 
 	public function add_feature($feature) {
-		if (  is_object($feature)  ) {
+		if( is_object($feature) ){
 			$feature = (array)$feature;
-		}elseif (  is_array($feature)  ) {
-		}else{
-			trigger_error(__METHOD__ . " argument type error" , E_USER_WARNING);
-			return false;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($feature['id']) ){
+			unset($feature['id']);
+		}
+		
+		foreach ($feature as $k=>$e){
+			if( empty_($e) ){
+				unset($feature[$k]);
+			}
 		}
 		
 		//самая быстрая функция для замены подстроки в строке strtr пробел и дефис меняем на подчеркивание

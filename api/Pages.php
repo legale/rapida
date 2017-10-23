@@ -68,8 +68,7 @@ class Pages extends Simpla
 	* Создание страницы
 	*
 	*/	
-	public function add_page($page)
-	{	
+	public function add_page($page){	
 		if( is_object($page) ){
 			$page = (array)$page;
 		}

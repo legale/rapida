@@ -101,9 +101,20 @@ class Users extends Simpla
 		return $user;
 	}
 	
-	public function add_user($user)
-	{
-		$user = (array)$user;
+	public function add_user($user){
+		if( is_object($user) ){
+			$user = (array)$user;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($user['id']) ){
+			unset($user['id']);
+		}
+		
+		foreach ($user as $k=>$e){
+			if( empty_($e) ){
+				unset($user[$k]);
+			}
+		}
 		if(isset($user['password']))
 			$user['password'] = md5($this->salt.$user['password'].md5($user['password']));
 			
@@ -167,8 +178,21 @@ class Users extends Simpla
 	}	
 	
 	
-	public function add_group($group)
-	{
+	public function add_group($group){
+		if( is_object($group) ){
+			$group = (array)$group;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($group['id']) ){
+			unset($group['id']);
+		}
+		
+		foreach ($group as $k=>$e){
+			if( empty_($e) ){
+				unset($group[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold("INSERT INTO __groups SET ?%", $group);
 		$this->db->query($query);
 		return $this->db->insert_id();

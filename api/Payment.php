@@ -124,8 +124,7 @@ class Payment extends Simpla
 			$this->db->query("INSERT INTO __delivery_payment SET payment_method_id=?, delivery_id=?", $id, $d_id);
 	}		
 	
-	public function add_payment_method($pm)
-	{	
+	public function add_payment_method($pm){	
 		if( is_object($pm) ){
 			$pm = (array)$pm;
 		}
@@ -152,8 +151,7 @@ class Payment extends Simpla
 		return $id;
 	}
 
-	public function delete_payment_method($id)
-	{
+	public function delete_payment_method($id){
 		// Удаляем связь метода оплаты с достаками
 		$query = $this->db->placehold("DELETE FROM __delivery_payment WHERE payment_method_id=?", intval($id));
 		$this->db->query($query);

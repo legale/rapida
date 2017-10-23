@@ -108,8 +108,21 @@ class Comments extends Simpla
 	}
 	
 	// Добавление комментария
-	public function add_comment($comment)
-	{	
+	public function add_comment($comment) {
+		if( is_object($comment) ){
+			$comment = (array)$comment;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($comment['id']) ){
+			unset($comment['id']);
+		}
+		
+		foreach ($comment as $k=>$e){
+			if( empty_($e) ){
+				unset($comment[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold('INSERT INTO __comments
 		SET ?%,
 		date = NOW()',

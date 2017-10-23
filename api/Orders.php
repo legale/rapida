@@ -150,8 +150,7 @@ class Orders extends Simpla
 		}
 	}
 	
-	public function add_order($order)
-	{
+	public function add_order($order){
 		dtimer::log(__METHOD__ . " order: ". print_r($order, true));
 		if( is_object($order) ){
 			$order = (array)$order;
@@ -199,8 +198,20 @@ class Orders extends Simpla
 	* @param $label
 	*
 	*/	
-	public function add_label($label)
-	{	
+	public function add_label($label){
+		if( is_object($label) ){
+			$label = (array)$label;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($label['id']) ){
+			unset($label['id']);
+		}
+		
+		foreach ($label as $k=>$e){
+			if( empty_($e) ){
+				unset($label[$k]);
+			}
+		}
 		$query = $this->db->placehold('INSERT INTO __labels SET ?%', $label);
 		if(!$this->db->query($query))
 			return false;
@@ -217,8 +228,7 @@ class Orders extends Simpla
 	* @param $id, $label
 	*
 	*/	
-	public function update_label($id, $label)
-	{
+	public function update_label($id, $label){
 		$query = $this->db->placehold("UPDATE __labels SET ?% WHERE id in(?@) LIMIT ?", $label, (array)$id, count((array)$id));
 		$this->db->query($query);
 		return $id;
@@ -230,8 +240,7 @@ class Orders extends Simpla
 	* @param $id
 	*
 	*/	
-	public function delete_label($id)
-	{
+	public function delete_label($id){
 		if(!empty($id))
 		{
 			$query = $this->db->placehold("DELETE FROM __orders_labels WHERE label_id=?", intval($id));
@@ -247,8 +256,7 @@ class Orders extends Simpla
 		}
 	}	
 	
-	function get_order_labels($order_id = array())
-	{
+	function get_order_labels($order_id = array()){
 		if(empty($order_id))
 			return array();
 
@@ -266,8 +274,7 @@ class Orders extends Simpla
 		return $this->db->results();
 	}
 	
-	public function update_order_labels($id, $labels_ids)
-	{
+	public function update_order_labels($id, $labels_ids){
 		$labels_ids = (array)$labels_ids;
 		$query = $this->db->placehold("DELETE FROM __orders_labels WHERE order_id=?", intval($id));
 		$this->db->query($query);
@@ -276,8 +283,7 @@ class Orders extends Simpla
 			$this->db->query("INSERT INTO __orders_labels SET order_id=?, label_id=?", $id, $l_id);
 	}
 
-	public function add_order_labels($id, $labels_ids)
-	{
+	public function add_order_labels($id, $labels_ids){
 		$labels_ids = (array)$labels_ids;
 		if(is_array($labels_ids))
 		foreach($labels_ids as $l_id)
@@ -286,8 +292,7 @@ class Orders extends Simpla
 		}
 	}
 
-	public function delete_order_labels($id, $labels_ids)
-	{
+	public function delete_order_labels($id, $labels_ids){
 		$labels_ids = (array)$labels_ids;
 		if(is_array($labels_ids))
 		foreach($labels_ids as $l_id)
@@ -295,15 +300,13 @@ class Orders extends Simpla
 	}
 
 
-	public function get_purchase($id)
-	{
+	public function get_purchase($id){
 		$query = $this->db->placehold("SELECT * FROM __purchases WHERE id=? LIMIT 1", intval($id));
 		$this->db->query($query);
 		return $this->db->result();
 	}
 
-	public function get_purchases($filter = array())
-	{
+	public function get_purchases($filter = array()){
 		$order_id_filter = '';
 		if(!empty($filter['order_id']))
 			$order_id_filter = $this->db->placehold('AND order_id in(?@)', (array)$filter['order_id']);
@@ -313,8 +316,7 @@ class Orders extends Simpla
 		return $this->db->results();
 	}
 	
-	public function update_purchase($id, $purchase)
-	{	
+	public function update_purchase($id, $purchase){	
 		$purchase = (object)$purchase;
 		$old_purchase = $this->get_purchase($id);
 		if(!$old_purchase)
@@ -358,8 +360,21 @@ class Orders extends Simpla
 		return $id;
 	}
 	
-	public function add_purchase($purchase)
-	{
+	public function add_purchase($purchase){
+		
+		if( is_object($purchase) ){
+			$purchase = (array)$purchase;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($purchase['id']) ){
+			unset($purchase['id']);
+		}
+		
+		foreach ($purchase as $k=>$e){
+			if( empty_($e) ){
+				unset($purchase[$k]);
+			}
+		}
 		$purchase = (object)$purchase;
 		if(!empty($purchase->variant_id))
 		{

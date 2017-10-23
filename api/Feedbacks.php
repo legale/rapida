@@ -78,12 +78,22 @@ class Feedbacks extends Simpla
 	}
 	
 	
-	public function add_feedback($feedback)
-	{	
+	public function add_feedback($feedback){
+		if( is_object($feedback) ){
+			$feedback = (array)$feedback;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($feedback['id']) ){
+			unset($feedback['id']);
+		}
+		
+		foreach ($feedback as $k=>$e){
+			if( empty_($e) ){
+				unset($feedback[$k]);
+			}
+		}
 		$query = $this->db->placehold('INSERT INTO __feedbacks
-		SET ?%,
-		date = NOW()',
-		$feedback);
+		SET ?%', $feedback);
 		
 		if(!$this->db->query($query))
 			return false;

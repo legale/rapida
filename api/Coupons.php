@@ -130,10 +130,25 @@ class Coupons extends Simpla
 	* @param $coupon
 	*
 	*/	
-	public function add_coupon($coupon)
-	{	
-		if(empty($coupon->single))
-			$coupon->single = 0;
+	public function add_coupon($coupon){
+		
+		if( is_object($coupon) ){
+			$coupon = (array)$coupon;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($coupon['id']) ){
+			unset($coupon['id']);
+		}
+		
+		foreach ($coupon as $k=>$e){
+			if( empty_($e) ){
+				unset($coupon[$k]);
+			}
+		}
+		
+		if(isset($coupon['single'])){
+			$coupon['single'] = 0;
+		}
 		$query = $this->db->placehold("INSERT INTO __coupons SET ?%", $coupon);
 		
 		if(!$this->db->query($query))

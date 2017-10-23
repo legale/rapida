@@ -328,7 +328,7 @@ class Products extends Simpla
 		if(isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
 
- 		if(!empty($filter['sort']))
+		if(!empty($filter['sort']))
 			switch ($filter['sort'])
 			{
 				case 'position':
@@ -556,9 +556,9 @@ class Products extends Simpla
 					p.meta_keywords, 
 					p.meta_description
 				FROM __products AS p
-                WHERE $filter
-                GROUP BY p.id
-                LIMIT 1";
+				WHERE $filter
+				GROUP BY p.id
+				LIMIT 1";
 		$this->db->query($query);
 		$product = $this->db->result();
 		return $product;
@@ -573,8 +573,20 @@ class Products extends Simpla
 			return false;
 	}
 	
-	public function add_product($product)
-	{	
+	public function add_product($product){
+		if( is_object($product) ){
+			$product = (array)$product;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($product['id']) ){
+			unset($product['id']);
+		}
+		
+		foreach ($product as $k=>$e){
+			if( empty_($e) ){
+				unset($product[$k]);
+			}
+		}
 		$product = (array) $product;
 		
 		if(empty($product['url']))
@@ -659,43 +671,42 @@ class Products extends Simpla
 	
 	public function duplicate_product($id)
 	{
-    	$product = $this->get_product($id);
-    	$product->id = null;
-    	$product->external_id = '';
-    	$product->created = null;
+		$product = $this->get_product($id);
+		$product->id = null;
+		$product->external_id = '';
+		$product->created = null;
 
 		// Сдвигаем товары вперед и вставляем копию на соседнюю позицию
-    	$this->db->query('UPDATE __products SET position=position+1 WHERE position>?', $product->position);
-    	$new_id = $this->products->add_product($product);
-    	$this->db->query('UPDATE __products SET position=? WHERE id=?', $product->position+1, $new_id);
-    	
-    	// Очищаем url
-    	$this->db->query('UPDATE __products SET url="" WHERE id=?', $new_id);
-    	
+		$this->db->query('UPDATE __products SET position=position+1 WHERE position>?', $product->position);
+		$new_id = $this->products->add_product($product);
+		$this->db->query('UPDATE __products SET position=? WHERE id=?', $product->position+1, $new_id);
+		
+		// Очищаем url
+		$this->db->query('UPDATE __products SET url="" WHERE id=?', $new_id);
+		
 		// Дублируем категории
 		$categories = $this->categories->get_product_categories($id);
 		foreach($categories as $c)
 			$this->categories->add_product_category($new_id, $c->category_id);
-    	
-    	// Дублируем изображения
-    	$images = $this->get_images(array('product_id'=>$id));
-    	foreach($images as $image)
-    		$this->add_image($new_id, $image->filename);
-    		
-    	// Дублируем варианты
-    	$variants = $this->variants->get_variants(array('product_id'=>$id));
-    	foreach($variants as $variant)
-    	{
-    		$variant->product_id = $new_id;
-    		unset($variant->id);
-    		if($variant->infinity)
-    			$variant->stock = null;
-    		unset($variant->infinity);
-    		$variant->external_id = '';
-    		$this->variants->add_variant($variant);
-    	}
-    	
-    	// Дублируем свойства
+		
+		// Дублируем изображения
+		$images = $this->get_images(array('product_id'=>$id));
+		foreach($images as $image)
+			$this->add_image($new_id, $image->filename);
+			
+		// Дублируем варианты
+		$variants = $this->variants->get_variants(array('product_id'=>$id));
+		foreach($variants as $variant){
+			$variant->product_id = $new_id;
+			unset($variant->id);
+			if($variant->infinity)
+				$variant->stock = null;
+			unset($variant->infinity);
+			$variant->external_id = '';
+			$this->variants->add_variant($variant);
+		}
+		
+		// Дублируем свойства
 		$options = $this->features->get_options(array('product_id'=>$id));
 		foreach($options as $o)
 			$this->features->update_option($new_id, $o->feature_id, $o->value);
@@ -705,8 +716,8 @@ class Products extends Simpla
 		foreach($related as $r)
 			$this->add_related_product($new_id, $r->related_id);
 			
-    		
-    	return $new_id;
+			
+		return $new_id;
 	}
 
 	

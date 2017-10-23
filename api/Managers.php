@@ -88,8 +88,7 @@ class Managers extends Simpla
 		return false;	
 	}
 	
-	public function add_manager($manager)
-	{
+	public function add_manager($manager){
 		$manager = (object)$manager;
 		if(!empty($manager->login))
 			$m[0] = $manager->login;
@@ -121,8 +120,7 @@ class Managers extends Simpla
 			return false;
 	}
 		
-	public function update_manager($login, $manager)
-	{
+	public function update_manager($login, $manager){
 		$manager = (object)$manager;
 		// Не допускаем двоеточия в логине
 		if(!empty($manager->login))
