@@ -153,12 +153,22 @@ class Orders extends Simpla
 	public function add_order($order)
 	{
 		dtimer::log(__METHOD__ . " order: ". print_r($order, true));
-		$order = (object)$order;
-		$order->url = md5(uniqid($this->config->salt, true));
-		$set_curr_date = '';
-		if(empty($order->date))
-			$set_curr_date = ', date=now()';
-		$query = $this->db->placehold("INSERT INTO __orders SET ?%$set_curr_date", $order);
+		if( is_object($oprder) ){
+			$oprder = (array)$oprder;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($oprder['id']) ){
+			unset($oprder['id']);
+		}
+		foreach ($oprder as $k=>$e){
+			if( empty_($e) ){
+				unset($oprder[$k]);
+			}
+		}
+
+
+		$order['url'] = md5(uniqid($this->config->salt, true));
+		$query = $this->db->placehold("INSERT INTO __orders SET ?%", $order);
 		dtimer::log(__METHOD__ . " query: $query");
 		
 		//Если запрос на добавление заказа сработал, вернем id записи, иначе вернем false

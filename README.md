@@ -9,7 +9,11 @@ Changelog
 v0.0.7.1 22.10.2017
 =================
 - Исправлена некритическая ошибка в работе функции sys->download_all_images()
-- исправлен simpla/ajax/export.php
+- Исправлен simpla/ajax/export.php
+- Исправлен simpla/ajax/import.php
+- Исправлен variants->add_variant()
+- Исправлен variants->get_variant()
+- Удален каталог simpla/update Похоже раньше он предназначался для обновления версий.
 
 =================
 v0.0.7 22.10.2017

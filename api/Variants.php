@@ -72,11 +72,27 @@ class Variants extends Simpla
 		return $id;
 	}
 	
-	public function add_variant($variant)
-	{
+	public function add_variant($variant) {
+		
+		if( is_object($variant) ){
+			$variant = (array)$variant;
+		}
+		//удалим id, если он сюда закрался, при создании id быть не должно
+		if( isset($variant['id']) ){
+			unset($variant['id']);
+		}
+		foreach ($variant as $k=>$e){
+			if( empty_($e) ){
+				unset($variant[$k]);
+			}
+		}
+		
 		$query = $this->db->placehold("INSERT INTO __variants SET ?%", $variant);
-		$this->db->query($query);
-		return $this->db->insert_id();
+		if ( $this->db->query($query) ) {
+			return $this->db->insert_id();
+		} else {
+			return false;
+		}
 	}
 
 	public function delete_variant($id)

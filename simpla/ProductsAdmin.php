@@ -243,17 +243,18 @@ class ProductsAdmin extends Simpla
 				$product->properties = array();
 			}
 		
-			$variants = $this->variants->get_variants(array('product_id'=>$products_ids));
+				$variants = $this->variants->get_variants(array('product_id'=>$products_ids));
 		
 		 
-			foreach($variants as &$variant)
-			{
+			foreach($variants as &$variant) {
 				$products->{$variant->product_id}->variants[] = $variant;
 			}
 		
-			$images = $this->products->get_images(array('product_id'=>$products_ids));
-			foreach($images as $image)
-				$products->{$image->product_id}->images[$image->id] = $image;
+			if ( $images = $this->products->get_images(array('product_id'=>$products_ids)) ) {
+				foreach($images as $image) {
+					$products->{$image->product_id}->images[$image->id] = $image;
+				}
+			}
 		}
 	 
 		$this->design->assign('products', $products);
