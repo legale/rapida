@@ -50,6 +50,8 @@ class ProductsAdmin extends Simpla
 				$filter['visible'] = 0; 
 			elseif($f == 'outofstock')
 				$filter['in_stock'] = 0; 
+			elseif($f == 'no_images')
+				$filter['no_images'] = 1; 
 			$this->design->assign('filter', $f);
 		}
 	
@@ -227,7 +229,7 @@ class ProductsAdmin extends Simpla
 	 	$this->design->assign('pages_count', $pages_count);
 	 	$this->design->assign('current_page', $filter['page']);
 	 	
-	 	
+	 	//~ print_r($filter);
 		$products = $this->products->get_products($filter);
 	 	
 	

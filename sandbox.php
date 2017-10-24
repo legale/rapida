@@ -5,6 +5,20 @@ if(isset($_SESSION['admin'])){
 	$simpla = new Simpla();
 	
 	
+	function glob_recurse($glob){
+		$res = array();
+		foreach(glob($glob) as $g){
+			$g = realpath($g);
+			if( is_file($g) ){
+				$res[] = $g;
+				print "\n$g";
+			} else {
+				$res = array_merge($res, glob_recurse($glob.'/*') );
+			}
+		}
+		return $res;
+	}
+	
 	//~ $res = $simpla->features->get_options(array('force_no_cache' => true, 'feature_id' => array(1,2,4), 'features' => array(2=>'смартфон/коммуникатор') ));
 	//~ $res = $simpla->features->get_options(array ('product_id' => '1', 'force_no_cache' => true));
 	//~ $res = $simpla->features->get_options_uniq();
@@ -18,8 +32,16 @@ if(isset($_SESSION['admin'])){
 	//~ $res = $simpla->features->get_product_options($pid);
 	//~ $res = $simpla->sys->sync_options();
 	$res = $simpla->sys->clear_options();
+	$files = glob_recurse('./*');
+	
 	print "HELLO!\n";
 	print_r($res);
+	
+	if(!empty($files)){
+		foreach($files as $f){
+			print "\n$f";
+		}
+	}
 	print "</PRE>";
 	dtimer::show();
 

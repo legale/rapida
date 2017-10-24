@@ -3,7 +3,7 @@
 //нужная функция empty_ работает иначе чем нативная empty
 //нативная empty(0) выдает true, наша функция empty(0) выдает - false
 function empty_($var){
-	if( !empty($var) || $var === 0 ){
+	if( !empty($var) || $var === 0 || $var === '0' ){
 		return false;
 	}else{
 		return true;

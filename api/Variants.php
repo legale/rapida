@@ -65,9 +65,17 @@ class Variants extends Simpla
 		return $variant;
 	}
 	
-	public function update_variant($id, $variant)
-	{
-		$query = $this->db->placehold("UPDATE __variants SET ?% WHERE id=? LIMIT 1", $variant, intval($id));
+	public function update_variant($id, $variant){
+		if( is_object($variant) ){
+			$variant = (array)$variant;
+		}
+
+		foreach ($variant as $k=>$e){
+			if( empty_($e) ){
+				unset($variant[$k]);
+			}
+		}
+		$query = $this->db->placehold("UPDATE __variants SET ?% WHERE id=? LIMIT 1", $variant, (int)$id);
 		$this->db->query($query);
 		return $id;
 	}

@@ -13,218 +13,6 @@ require_once('Simpla.php');
 
 class Products extends Simpla
 {
-	public function get_products_new($filter = array()) {
-
-		// По умолчанию
-		$limit = 100;
-		$page = 1;
-		//~ $images_filter = '';
-		$category_id_filter = '';
-		$brand_id_filter = '';
-		$product_id_filter = '';
-		$features_filter = '';
-		$keyword_filter = '';
-		$visible_filter = '';
-		$featured_filter = '';
-		$discounted_filter = '';
-		$stock_filter = '';
-		//~ $has_images_filter = '';
-		$yandex_filter = '';
-		$order = 'p.stock=0, p.position DESC';
-		$options_join_flag = false;
-		//~ $images_join_flag = true;
-		$brands_join_flag = false;
-		
-		$options_join = '';
-		$category_join = '';
-		//~ $images_join = '';
-		$brands_join = '';
-		$select = '';
-		
-		
-		//~ if(isset($filter['images_join_flag'])) {
-			//~ $images_join_flag = $filter['images_join_flag'];
-		//~ }
-		
-		if(isset($filter['limit'])) {
-			$limit = max(1, intval($filter['limit']));
-		}
-		
-		if(isset($filter['page'])) {
-			$page = max(1, intval($filter['page']));
-		}
-		
-		$sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page-1)*$limit, $limit);
-		
-		if(!empty($filter['id'])) {
-			$product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
-		}
-		
-		if(!empty($filter['category_id'])) {
-			$category_id_filter = $this->db->placehold('AND p.id in (SELECT DISTINCT product_id FROM __products_categories WHERE category_id in(?@)) ', (array)$filter['category_id']);
-		}
-		
-		if(!empty($filter['brand_id'])) {
-			$brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
-		}
-		if(!empty($filter['brands_join'])) {
-			$brands_join_flag = true;
-		}
-			
-		if(isset($filter['featured'])) {
-			$featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
-		}
-		
-		if(isset($filter['discounted'])) {
-			$discounted_filter = $this->db->placehold('AND p.price_old > p.price', intval($filter['discounted']));
-		}
-		
-		if(isset($filter['in_stock'])) {
-			$stock_filter = $this->db->placehold('AND p.stock != 0', intval($filter['in_stock']));
-		}
-
-		//больше не используется
-		//~ if(isset($filter['has_images'])) {
-			//~ $has_images_filter = $this->db->placehold('AND (SELECT count(*)>0 FROM __images pi WHERE pi.product_id=p.id LIMIT 1) = ?', intval($filter['has_images']));
-		//~ }
-		
-		$price_filter = '';
-		
-
-		if(isset($filter['price'])) {
-			if(isset($filter['price']['min'])) {
-				$price_filter .= $this->db->placehold(" AND p.price>= ? ", $this->db->escape(trim($filter['price']['min'])));
-			}
-			if(isset($filter['price']['max'])) {
-				$price_filter .= $this->db->placehold(" AND p.price<= ? ", $this->db->escape(trim($filter['price']['max'])));
-			}
-		}
-		
-		if(isset($filter['visible'])) {
-			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
-		}
-		
-		if(!empty($filter['sort'])) {
-			switch ($filter['sort']) {
-				case 'position':
-					$order = ' p.position DESC';
-					break;
-				case 'name':
-					$order = ' p.name ASC';
-					break;
-				case 'name_desc':
-					$order = ' p.name DESC';
-					break;
-				case 'created':
-					$order = ' p.created DESC';
-					break;
-				case 'price':
-					$order = "p.price ASC";
-					break;
-				case 'price_desc':
-					$order = "p.price ASC";
-					break;
-					case 'click':
-					$order = 'p.click ASC, p.position DESC';
-					break;
-					case 'click_desc':
-					$order = 'p.click DESC, p.position DESC';
-					break;
-					case 'random':
-					$order = 'rand()';
-					break;                    
-			}
-		}
-		
-		if(!empty($filter['keyword'])) {
-			$keywords = explode(' ', $filter['keyword']);
-			foreach($keywords as $keyword) {
-				$kw = $this->db->escape(trim($keyword));
-				if($kw!=='') {
-					$keyword_filter .= $this->db->placehold("AND (
-						p.name LIKE '%$kw%' 
-						OR p.meta_keywords LIKE '%$kw%' 
-						OR p.sku LIKE '%$kw%')");
-				}
-			}
-		}
-		
-		if(isset($filter['features']) && !empty($filter['features'])) {
-			$options_join_flag = true;
-			foreach($filter['features'] as $feature_id=>$value) {
-				$features_filter .= $this->db->placehold(' AND `o`.?! in(?@)', $feature_id, (array)$value);
-			}
-		}
-		
-		if($options_join_flag === true){
-			$options_join = "LEFT JOIN __options o on p.id = o.product_id";
-		}
-
-		//больше не используется
-		//~ if($images_join_flag === true){
-			//~ $select .= "i.filename as image, ";
-			//~ $images_filter = "AND (i.position = 0 OR i.position is null)";
-			//~ $images_join = "LEFT JOIN __images i on i.product_id = p.id";
-		//~ }
-		
-		if($brands_join_flag === true) {
-			$select .= "b.name as brand_name, ";
-			$brands_join = "LEFT JOIN __brands b on b.id = p.brand_id";
-		}
-
-		$select .= "p.id,
-				p.url,
-				p.brand_id,
-				p.position,
-				p.created as created,
-				p.visible,
-				p.featured,
-				p.name";
-
-
-		$query = "SELECT $select
-			FROM __products p
-			$brands_join
-			$options_join
-			
-			WHERE
-				1
-				$category_id_filter
-				$product_id_filter
-				$brand_id_filter
-				$features_filter
-				$keyword_filter
-				$featured_filter
-				$discounted_filter
-				$stock_filter
-				$visible_filter
-				$price_filter
-				$yandex_filter
-			ORDER BY $order
-			$sql_limit
-			";
-			
-		$query = $this->db->placehold($query);
-
-		$nolock = "SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;";
-		$lock = "SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ  ;";
-
-		$this->db->query($nolock);
-		dtimer::log(__METHOD__ . ' get_products2 before run query '.$query. ' ' . __LINE__);
-		$this->db->query($query);
-
-		if(!empty($filter['group_field'])) {
-			$get_products = $this->db->results_array(null, $filter['group_field']);
-		}else{
-			$get_products = $this->db->results_array();
-		}
-		$this->db->query($lock);
-
-		return $get_products;
-	}
-	
-
-
 	/**
 	* Функция возвращает товары
 	* Возможные значения фильтра:
@@ -293,6 +81,7 @@ class Products extends Simpla
 		$is_featured_filter = '';
 		$discounted_filter = '';
 		$in_stock_filter = '';
+		$no_images_filter = '';
 		$group_by = '';
 		$order = 'p.position DESC';
 
@@ -316,14 +105,17 @@ class Products extends Simpla
 		if(!empty($filter['brand_id']))
 			$brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
 
+		if(isset($filter['no_images']))
+			$no_images_filter = 'AND p.id NOT IN (SELECT DISTINCT product_id FROM __images)';
+
 		if(isset($filter['featured']))
 			$is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
 
-		if(isset($filter['discounted']))
-			$discounted_filter = $this->db->placehold('AND (SELECT 1 FROM __variants pv WHERE pv.product_id=p.id AND pv.compare_price>0 LIMIT 1) = ?', intval($filter['discounted']));
-
 		if(isset($filter['in_stock']))
-			$in_stock_filter = $this->db->placehold('AND (SELECT count(*)>0 FROM __variants pv WHERE pv.product_id=p.id AND pv.price>0 AND (pv.stock IS NULL OR pv.stock>0) LIMIT 1) = ?', intval($filter['in_stock']));
+			$in_stock_filter = $this->db->placehold('AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = ?)', (int)$filter['in_stock']);
+
+		if(isset($filter['discounted']))
+			$discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < compare_price)';
 
 		if(isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
@@ -383,6 +175,7 @@ class Products extends Simpla
 				LEFT JOIN __brands b ON p.brand_id = b.id
 				WHERE 
 					1
+					$no_images_filter
 					$product_id_filter
 					$brand_id_filter
 					$features_filter
@@ -468,6 +261,7 @@ class Products extends Simpla
 		$in_stock_filter = '';
 		$discounted_filter = '';
 		$features_filter = '';
+		$no_images_filter = '';
 		
 		if(!empty($filter['category_id']))
 			$category_id_filter = $this->db->placehold('INNER JOIN __products_categories pc ON pc.product_id = p.id AND pc.category_id in(?@)', (array)$filter['category_id']);
@@ -489,14 +283,17 @@ class Products extends Simpla
 			}
 		}
 
+		if(isset($filter['no_images']))
+			$no_images_filter = 'AND p.id NOT IN (SELECT DISTINCT product_id FROM __images)';
+
 		if(isset($filter['featured']))
 			$is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
 
 		if(isset($filter['in_stock']))
-			$in_stock_filter = $this->db->placehold('AND (SELECT count(*)>0 FROM __variants pv WHERE pv.product_id=p.id AND pv.price>0 AND (pv.stock IS NULL OR pv.stock>0) LIMIT 1) = ?', intval($filter['in_stock']));
+			$in_stock_filter = $this->db->placehold('AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = ?)', (int)$filter['in_stock']);
 
 		if(isset($filter['discounted']))
-			$discounted_filter = $this->db->placehold('AND (SELECT 1 FROM __variants pv WHERE pv.product_id=p.id AND pv.compare_price>0 LIMIT 1) = ?', intval($filter['discounted']));
+			$discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < compare_price)';
 
 		if(isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
@@ -511,6 +308,7 @@ class Products extends Simpla
 				FROM __products AS p
 				$category_id_filter
 				WHERE 1
+					$no_images_filter
 					$brand_id_filter
 					$product_id_filter
 					$keyword_filter

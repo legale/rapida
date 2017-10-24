@@ -332,9 +332,10 @@ class ProductAdmin extends Simpla
 		if(!empty($related_products)) {
 			$related_products = $this->products->get_products(array('id'=>array_keys($related_products)));
 			
-			$related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products)));
-			foreach($related_products_images as $image){
-				$related_products->{$image->product_id}->images[] = $image; 
+			if ( $related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products))) ) {
+				foreach($related_products_images as $image){
+					$related_products->{$image->product_id}->images[] = $image; 
+				}
 			}
 		}
 			
