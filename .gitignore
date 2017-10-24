@@ -3,7 +3,7 @@
 #########################
 /compiled/**
 /simpla/files/**
-/cache/**
+/cache/*
 /design/**
 /simpla/design/compiled/**
 /simpla/files/**
