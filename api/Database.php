@@ -753,6 +753,14 @@ class Database extends Simpla
 			//В зависимости от группы типа поля запишем каждое значение для строки соответствующим образом
 			
 			foreach($cols as $name=>$col){
+				//Если null - ставим null и переходим к следующему циклу
+				if( is_null($row[$name]) ) {
+					[$name] = 'NULL';
+					continue;
+				}elseif($row[$name] === ''){
+					$row[$name] ="''";
+					continue;
+				}
 				switch ($col['type_group']) {
 					case 'int':
 						break;

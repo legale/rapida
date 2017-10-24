@@ -192,8 +192,8 @@ function dbconfig()
 		if(!is_readable('rapida.sql'))
 			$error = 'Файл rapida.sql не найден';
 
-		if(!is_writable('config/config.ini'))
-			$error = 'Поставьте права на запись для файла config/config.ini';
+		if(!is_writable($configfile))
+			$error = "Поставьте права на запись для файла $configfile";
 
 		if(empty($error))
 		{
