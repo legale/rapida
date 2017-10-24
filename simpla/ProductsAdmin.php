@@ -70,13 +70,14 @@ class ProductsAdmin extends Simpla
 			$prices = $this->request->post('price');
 			$stocks = $this->request->post('stock');
 		
-			foreach($prices as $id=>$price)
-			{
-				$stock = $stocks[$id];
-				if($stock == '∞' || $stock == '')
-					$stock = null;
-					
-				$this->variants->update_variant($id, array('price'=>$price, 'stock'=>$stock));
+			if ( $prices ) {
+				foreach($prices as $id=>$price) {
+					$stock = $stocks[$id];
+					if($stock == '∞' || $stock == '')
+						$stock = null;
+						
+					$this->variants->update_variant($id, array('price'=>$price, 'stock'=>$stock));
+				}
 			}
 		
 			// Сортировка
@@ -245,13 +246,13 @@ class ProductsAdmin extends Simpla
 				$product->properties = array();
 			}
 		
-				$variants = $this->variants->get_variants(array('product_id'=>$products_ids));
-		
-		 
-			foreach($variants as &$variant) {
-				$products->{$variant->product_id}->variants[] = $variant;
+			
+			if ( $variants = $this->variants->get_variants(array('product_id'=>$products_ids)) ) {			
+				foreach($variants as &$variant) {
+					$products->{$variant->product_id}->variants[] = $variant;
+				}
 			}
-		
+			
 			if ( $images = $this->products->get_images(array('product_id'=>$products_ids)) ) {
 				foreach($images as $image) {
 					$products->{$image->product_id}->images[$image->id] = $image;

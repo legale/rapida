@@ -7,7 +7,14 @@
 /design/**
 /simpla/design/compiled/**
 /simpla/files/**
-/files/**
+
+/files/originals/*
+/files/products/*
+/files/categories/*
+/files/brands/*
+/files/uploads/*
+/files/downloads/*
+
 /config/db.ini
 /simpla/.passwd
 /simpla/.htaccess
@@ -28,3 +35,12 @@
 !/simpla/files/export_users
 
 
+#Это файлы /files
+!/files/.htaccess
+!/files/originals/.htaccess
+!/files/products/.htaccess
+!/files/categories/.htaccess
+!/files/brands/.htaccess
+!/files/uploads/.htaccess
+!/files/downloads/.htaccess
+!/cache

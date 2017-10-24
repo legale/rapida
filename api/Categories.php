@@ -30,10 +30,12 @@ class Categories extends Simpla
 			$this->db->query($query);
 			$categories_ids = $this->db->results('category_id');
 			$result = array();
-			foreach($categories_ids as $id)
-				if(isset($this->all_categories[$id]))
-					$result[$id] = $this->all_categories[$id];
-			return $result;
+			if(!empty($categories_ids)){
+				foreach($categories_ids as $id)
+					if(isset($this->all_categories[$id]))
+						$result[$id] = $this->all_categories[$id];
+				return $result;
+			}
 		}
 		
 		return $this->all_categories;

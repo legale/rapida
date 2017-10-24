@@ -141,10 +141,9 @@ class ProductAdmin extends Simpla
 		 						$variant->attachment = $attachment_name;
 		 					}
 	
-							if(!empty($variant->id))
+							if( !empty($variant->id) ) {
 								$this->variants->update_variant($variant->id, $variant);
-							else
-							{
+							} else {
 								$variant->product_id = $product->id;
 								$variant->id = $this->variants->add_variant($variant);
 							}
@@ -299,8 +298,6 @@ class ProductAdmin extends Simpla
 				
 				// Свойства товара
 				$options = $this->features->get_product_options($product->id);
-				//$options_uniq = $this->features->get_options_uniq(null, true);
-				//~ print_r($options);
 				
 
 				

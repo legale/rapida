@@ -423,38 +423,50 @@ class Products extends Simpla
 		if(!empty($id))
 		{
 			// Удаляем варианты
-			$variants = $this->variants->get_variants(array('product_id'=>$id));
-			foreach($variants as $v)
-				$this->variants->delete_variant($v->id);
+			if ( $variants = $this->variants->get_variants(array('product_id'=>$id)) ) {
+				foreach($variants as $v) {
+					$this->variants->delete_variant($v->id);
+				}
+			}
 			
 			// Удаляем изображения
-			$images = $this->get_images(array('product_id'=>$id));
-			foreach($images as $i)
-				$this->delete_image($i->id);
+			if( $images = $this->get_images(array('product_id'=>$id)) ) {
+				foreach($images as $i) {
+					$this->delete_image($i->id);
+				}
+			}
 			
 			// Удаляем категории
-			$categories = $this->categories->get_categories(array('product_id'=>$id));
-			foreach($categories as $c)
-				$this->categories->delete_product_category($id, $c->id);
+			if ( $categories = $this->categories->get_categories(array('product_id'=>$id)) ) {
+				foreach($categories as $c) {
+					$this->categories->delete_product_category($id, $c->id);
+				}
+			}
 
 			// Удаляем свойства
-			$options = $this->features->get_options(array('product_id'=>$id));
-			foreach($options as $o)
-				$this->features->delete_option($id, $o->feature_id);
+			if ( $options = $this->features->get_options(array('product_id'=>$id)) ) { 
+				foreach($options as $o) {
+					$this->features->delete_option($id, $o->feature_id);
+				}
+			}
 			
 			// Удаляем связанные товары
-			$related = $this->get_related_products($id);
-			foreach($related as $r)
-				$this->delete_related_product($id, $r->related_id);
+			if ( $related = $this->get_related_products($id) ) {
+				foreach($related as $r) {
+					$this->delete_related_product($id, $r->related_id);
+				}
+			}
 			
 			// Удаляем товар из связанных с другими
 			$query = $this->db->placehold("DELETE FROM __related_products WHERE related_id=?", intval($id));
 			$this->db->query($query);
 			
 			// Удаляем отзывы
-			$comments = $this->comments->get_comments(array('object_id'=>$id, 'type'=>'product'));
-			foreach($comments as $c)
-				$this->comments->delete_comment($c->id);
+			if ( $comments = $this->comments->get_comments(array('object_id'=>$id, 'type'=>'product')) ) {
+				foreach($comments as $c) {
+					$this->comments->delete_comment($c->id);
+				}
+			}
 			
 			// Удаляем из покупок
 			$this->db->query('UPDATE __purchases SET product_id=NULL WHERE product_id=?', intval($id));

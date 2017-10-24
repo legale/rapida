@@ -63,6 +63,7 @@ RewriteRule ^/?$	index.php?module=MainView&page_url= [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^files/products/(.+) resize/resize.php?file=$1&token=%{QUERY_STRING}
+
 #RewriteCond %{THE_REQUEST} ^GET\ (.*)files/products/(.*)\?([A-z0-9]*) 
 #RewriteRule ^files/products/(.+) resize/resize.php?file=%2&token=%3 [L,NE]
 

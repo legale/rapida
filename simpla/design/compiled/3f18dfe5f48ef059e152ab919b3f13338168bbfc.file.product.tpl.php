@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-21 21:43:37
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-24 21:57:35
          compiled from "simpla\design\html\product.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:98208248159eb955939e209-32390406%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     '3f18dfe5f48ef059e152ab919b3f13338168bbfc' => 
     array (
       0 => 'simpla\\design\\html\\product.tpl',
-      1 => 1508611402,
+      1 => 1508871449,
       2 => 'file',
     ),
   ),
@@ -23,6 +23,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       'compiled' => '',
     ),
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59eb95597d8386_10770061',
   'variables' => 
   array (
     'product' => 0,
@@ -53,8 +55,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'related_product' => 0,
   ),
   'has_nocache_code' => 0,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59eb95597d8386_10770061',
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_59eb95597d8386_10770061')) {function content_59eb95597d8386_10770061($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_replace')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.replace.php';
 if (!is_callable('smarty_modifier_truncate')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.truncate.php';
@@ -841,17 +841,22 @@ $_smarty_tpl->tpl_vars['feature']->_loop = true;
 			<h2>Изображения товара
 			<a href="#" id=images_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
+
+			<?php if ($_smarty_tpl->tpl_vars['product_images']->value) {?>
 			<ul><?php  $_smarty_tpl->tpl_vars['image'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['image']->_loop = false;
  $_from = $_smarty_tpl->tpl_vars['product_images']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
 foreach ($_from as $_smarty_tpl->tpl_vars['image']->key => $_smarty_tpl->tpl_vars['image']->value) {
 $_smarty_tpl->tpl_vars['image']->_loop = true;
-?><li>
+?>
+				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
 					<img src="<?php echo $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_MODIFIER]['resize'][0][0]->resize_modifier($_smarty_tpl->tpl_vars['image']->value->filename,100,100);?>
 " alt="" />
 					<input type=hidden name='images[]' value='<?php echo $_smarty_tpl->tpl_vars['image']->value->id;?>
 '>
-				</li><?php } ?></ul>
+				</li><?php } ?>
+			</ul>
+			<?php }?>
 			<div id=dropZone>
 				<div id=dropMessage>Перетащите файлы сюда</div>
 				<input type="file" name="dropped_images[]" multiple class="dropInput">
@@ -863,6 +868,7 @@ $_smarty_tpl->tpl_vars['image']->_loop = true;
 		<div class="block layer">
 			<h2>Связанные товары</h2>
 			<div id=list class="sortable related_products">
+				<?php if ($_smarty_tpl->tpl_vars['related_products']->value) {?>
 				<?php  $_smarty_tpl->tpl_vars['related_product'] = new Smarty_Variable; $_smarty_tpl->tpl_vars['related_product']->_loop = false;
  $_from = $_smarty_tpl->tpl_vars['related_products']->value; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array');}
 foreach ($_from as $_smarty_tpl->tpl_vars['related_product']->key => $_smarty_tpl->tpl_vars['related_product']->value) {
@@ -892,6 +898,7 @@ $_smarty_tpl->tpl_vars['related_product']->_loop = true;
 					<div class="clear"></div>
 				</div>
 				<?php } ?>
+				<?php }?>
 				<div id="new_related_product" class="row" style='display:none;'>
 					<div class="move cell">
 						<div class="move_zone"></div>

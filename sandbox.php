@@ -26,7 +26,35 @@ if(isset($_SESSION['admin'])){
 		}
 		return $res;
 	}
+
+	function filesize_remote($url){
+		 $ch = curl_init($url);
+
+		 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		 curl_setopt($ch, CURLOPT_HEADER, TRUE);
+		 curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+
+		 $data = curl_exec($ch);
+		 $size = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+
+		 curl_close($ch);
+		 return $size;
+	}
 	
+	function copy_remote($url, $dest){
+		 $ch = curl_init($url);
+
+		 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		 curl_setopt($ch, CURLOPT_HEADER, TRUE);
+		 curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+
+		 $data = curl_exec($ch);
+		 $size = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+
+		 curl_close($ch);
+		 return $size;
+	}
+
 	//~ $res = $simpla->features->get_options(array('force_no_cache' => true, 'feature_id' => array(1,2,4), 'features' => array(2=>'смартфон/коммуникатор') ));
 	//~ $res = $simpla->features->get_options(array ('product_id' => '1', 'force_no_cache' => true));
 	//~ $res = $simpla->features->get_options_uniq();
@@ -37,29 +65,29 @@ if(isset($_SESSION['admin'])){
 	$order_id = 8;
 	$pid = 10;
 	$res = $simpla->orders->get_order($order_id);
-	//~ $res = $simpla->features->get_product_options($pid);
+	$res2 = $simpla->features->get_product_options($pid);
+	
+	$res3 = filesize_remote('http://sevenlight.ru/logo.png');
+	
 	//~ $res = $simpla->sys->sync_options();
 	//~ $res = $simpla->sys->clear_options();
 	//~ $files = glob_recurse('./*');
 	
-	
+	//делает дамп базы
 	$simpla->db->dump($dir.$dbfile);
 	
 	
 	print "HELLO!\n";
-	//print_r($res);
-	
-	$s1 = 'VARCHAR(255)';
-	$s2 = 'TEXT';
-	var_export( substr($s1, 0, stripos($s1, '(')) );
-	var_export( stripos($s2, '(') );
+	//~ print_r($res);
+	print_r($res3);
 	
 	
-	if(!empty($files)){
-		foreach($files as $f){
-			print "\n$f";
-		}
-	}
+	//~ if(!empty($files)){
+		//~ foreach($files as $f){
+			//~ print "\n$f";
+		//~ }
+	//~ }
+
 	print "</PRE>";
 	dtimer::show();
 

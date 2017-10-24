@@ -10,7 +10,7 @@
  * @author 		Denis Pikusov
  *
  */
- 
+
 require_once('Simpla.php');
 
 class Config
@@ -18,36 +18,39 @@ class Config
 	public $version = '0.0.7.1';
 	
 	// Файлы для хранения настроек
-	public $config_file = 'config/config.ini';
-	public $db_config_file = 'config/db.ini';
+	public $config_file = '';
+	public $db_config_file = '';
 
 	private $vars = array();
 	public $vars_sections = array();
 	
 	// В конструкторе записываем настройки файла в переменные этого класса
 	// для удобного доступа к ним. Например: $simpla->config->db_user
-	public function __construct()
-	{			
+	public function __construct(){
+		dtimer::log(__METHOD__ . " config construct ");			
+		$this->config_file = dirname(__FILE__) . '/../config/config.ini';
+		$this->db_config_file = dirname(__FILE__) . '/../config/db.ini';
+
+
 		// Читаем настройки из файлов с секциями
-		$ini = array_merge(
-			parse_ini_file(dirname(dirname(__FILE__)).'/'.$this->config_file, true, INI_SCANNER_TYPED),
-			parse_ini_file(dirname(dirname(__FILE__)).'/'.$this->db_config_file, true, INI_SCANNER_TYPED)
+		$configs = array(
+			$this->config_file => parse_ini_file($this->config_file, true, INI_SCANNER_TYPED),
+			$this->db_config_file => parse_ini_file($this->db_config_file, true, INI_SCANNER_TYPED)
 		);
 		
-		
-		
 		// Записываем настройки как переменную класса
-		$this->vars_sections = $ini;
-		//~ var_dump($ini);
-		if(is_array($ini)){
-			foreach($ini as $section){
-				$this->vars = array_merge($this->vars, $section);
+		//~ var_dump($configs);
+
+		foreach($configs as $file=>$ini){
+			if(is_array($ini)){
+				foreach($ini as $section=>$content){
+					$this->vars_sections[$section] = $content;
+					foreach($content as $name=>$value) {
+						$this->vars[$name] = array('value' => $value, 'section'=> $section, 'file' => $file);
+					}
+				}
 			}
 		}
-		 
-		
-		//~ print_r($this->vars);
-		
 		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое
 		$localpath=getenv("SCRIPT_NAME");
 		$absolutepath=getenv("SCRIPT_FILENAME");
@@ -67,16 +70,16 @@ class Config
 		elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on')
 			$protocol = 'https';
 
-		$this->vars['protocol'] = $protocol;		
-		$this->vars['root_url'] = $protocol.'://'.rtrim($_SERVER['HTTP_HOST']);
+		$this->vars['protocol']['value'] = $protocol;		
+		$this->vars['root_url']['value'] = $protocol.'://'.rtrim($_SERVER['HTTP_HOST']);
 		if(!empty($subdir))
-			$this->vars['root_url'] .= '/'.$subdir;
+			$this->vars['root_url']['value'] .= '/'.$subdir;
 
 		// Подпапка в которую установлена симпла относительно корня веб-сервера
-		$this->vars['subfolder'] = $subdir.'/';
+		$this->vars['subfolder']['value'] = $subdir.'/';
 
 		// Определяем корневую директорию сайта
-		$this->vars['root_dir'] =  dirname(dirname(__FILE__)).'/';
+		$this->vars['root_dir']['value'] =  dirname(dirname(__FILE__)).'/';
 
 		// Максимальный размер загружаемых файлов
 		$max_upload = (int)(ini_get('upload_max_filesize'));
@@ -85,21 +88,20 @@ class Config
 		$this->vars['max_upload_filesize'] = min($max_upload, $max_post, $memory_limit)*1024*1024;
 		
 		// Соль (разная для каждой копии сайта, изменяющаяся при изменении config-файла)
-		$s = stat(dirname(dirname(__FILE__)).'/'.$this->config_file);
-		$this->vars['salt'] = md5(md5_file(dirname(dirname(__FILE__)).'/'.$this->config_file).$s['dev'].$s['ino'].$s['uid'].$s['mtime']);
+		$s = stat($this->config_file);
+		$this->vars['salt']['value'] = md5(md5_file($this->config_file).$s['dev'].$s['ino'].$s['uid'].$s['mtime']);
 		
 		// Часовой пояс
-		if(!empty($this->vars['php_timezone']))
-			date_default_timezone_set($this->vars['php_timezone']);
+		if(!empty($this->vars['php_timezone']['value']))
+			date_default_timezone_set($this->vars['php_timezone']['value']);
 		elseif (!ini_get('date.timezone'))
 			date_default_timezone_set('UTC');
 	}
 
 	// Магическим методов возвращаем нужную переменную
-	public function __get($name)
-	{
+	public function __get($name) {
 		if(isset($this->vars[$name]))
-			return $this->vars[$name];
+			return $this->vars[$name]['value'];
 		else
 			return null;
 	}
@@ -108,14 +110,14 @@ class Config
 	public function __set($name, $value)
 	{
 		# Запишем конфиги
-		if(isset($this->vars[$name]))
-		{
-			$conf = file_get_contents(dirname(dirname(__FILE__)).'/'.$this->config_file);
+		if( isset($this->vars[$name]) ){
+			$conf = file_get_contents($this->vars[$name]['file']);
 			$conf = preg_replace("/".$name."\s*=.*\n/i", $name.' = '.$value."\r\n", $conf);
-			$cf = fopen(dirname(dirname(__FILE__)).'/'.$this->config_file, 'w');
+			$cf = fopen($this->vars[$name]['file'], 'w');
 			fwrite($cf, $conf);
 			fclose($cf);
-			$this->vars[$name] = $value;
+			$this->vars[$name]['value'] = $value;
+
 		}
 	}
 

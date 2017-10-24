@@ -677,11 +677,16 @@ overflow-y: auto;
 			<h2>Изображения товара
 			<a href="#" id=images_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
-			<ul>{foreach $product_images as $image}<li>
+
+			{if $product_images}
+			<ul>{foreach $product_images as $image}
+				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
 					<img src="{$image->filename|resize:100:100}" alt="" />
 					<input type=hidden name='images[]' value='{$image->id}'>
-				</li>{/foreach}</ul>
+				</li>{/foreach}
+			</ul>
+			{/if}
 			<div id=dropZone>
 				<div id=dropMessage>Перетащите файлы сюда</div>
 				<input type="file" name="dropped_images[]" multiple class="dropInput">
@@ -693,6 +698,7 @@ overflow-y: auto;
 		<div class="block layer">
 			<h2>Связанные товары</h2>
 			<div id=list class="sortable related_products">
+				{if $related_products}
 				{foreach $related_products as $related_product}
 				<div class="row">
 					<div class="move cell">
@@ -713,6 +719,7 @@ overflow-y: auto;
 					<div class="clear"></div>
 				</div>
 				{/foreach}
+				{/if}
 				<div id="new_related_product" class="row" style='display:none;'>
 					<div class="move cell">
 						<div class="move_zone"></div>

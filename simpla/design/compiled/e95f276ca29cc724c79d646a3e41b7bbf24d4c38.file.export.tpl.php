@@ -1,4 +1,4 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-22 16:13:11
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-24 23:58:25
          compiled from "simpla\design\html\export.tpl" */ ?>
 <?php /*%%SmartyHeaderCode:79783691059ec9967e5b8f9-14211689%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
@@ -7,7 +7,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'e95f276ca29cc724c79d646a3e41b7bbf24d4c38' => 
     array (
       0 => 'simpla\\design\\html\\export.tpl',
-      1 => 1508677970,
+      1 => 1508698506,
       2 => 'file',
     ),
   ),
@@ -15,6 +15,8 @@ $_valid = $_smarty_tpl->decodeProperties(array (
   'function' => 
   array (
   ),
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59ec996802ac34_74568522',
   'variables' => 
   array (
     'manager' => 0,
@@ -23,8 +25,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'export_files_dir' => 0,
   ),
   'has_nocache_code' => false,
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59ec996802ac34_74568522',
 ),false); /*/%%SmartyHeaderCode%%*/?>
 <?php if ($_valid && !is_callable('content_59ec996802ac34_74568522')) {function content_59ec996802ac34_74568522($_smarty_tpl) {?><?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
 	<?php if (in_array('import',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=ImportAdmin">Импорт</a></li><?php }?>

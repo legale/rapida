@@ -384,7 +384,7 @@
 #dropZone { 
 	margin-bottom: 10px;
 	margin-right: 16px;
-	margin-top: -20px;
+/*	margin-top: -20px; */
 	height: 70px;
 	text-align: center;
 	background-color: white;

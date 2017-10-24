@@ -28,8 +28,8 @@ class Image extends Simpla
 	 * @param max_h максимальная высота
 	 * @return $string имя файла превью
 	 */
-	function resize($filename)
-	{
+	function resize($filename){
+		dtimer::log(__METHOD__ . " $filename");
 		list($source_file, $width , $height, $set_watermark) = $this->get_resize_params($filename);
 
 		// Если файл удаленный (http://), зальем его себе
@@ -105,12 +105,14 @@ class Image extends Simpla
 	}
 	
 	
-	public function download_image($filename)
-	{
+	public function download_image($filename){
+		
+		dtimer::log(__METHOD__ . " $filename");
 		// Заливаем только есть такой файл есть в базе
 		$this->db->query('SELECT 1 FROM __images WHERE filename=? LIMIT 1', $filename);
-		if(!$this->db->result())
+		if(!$this->db->result()){
 			return false;
+		}
 		
 		// Имя оригинального файла
 		$basename = explode('&', pathinfo($filename, PATHINFO_BASENAME));
