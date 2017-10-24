@@ -1,5 +1,6 @@
-
+#########################
 #Это мы не включаем в GIT
+#########################
 /compiled/**
 /simpla/files/**
 /cache/**
@@ -7,20 +8,23 @@
 /simpla/design/compiled/**
 /simpla/files/**
 /files/**
+/config/db.ini
+/simpla/.passwd
+/simpla/.htaccess
 
-
+###################
 #А это мы включаем
-
+###################
 #Это каталог шаблона
-/design/default
+!/design/default
 
 #Это бекап пустой базы
-/simpla/files/backup/empty.zip
+!/simpla/files/backup/empty.zip
 
 #Это каталоги и файлы simpla/files, которые надо включить
-/simpla/files/import/example.csv
-/simpla/files/export
-/simpla/files/watermark/watermark.png
-/simpla/files/export_users
+!/simpla/files/import/example.csv
+!/simpla/files/export
+!/simpla/files/watermark/watermark.png
+!/simpla/files/export_users
 
-**.htaccess**
+

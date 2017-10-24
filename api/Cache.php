@@ -381,8 +381,8 @@ allow from 127.0.0.1";
 		// 1 элемент массива содержит данные в виде hex строки, поэтому placehold type ! ключ = (X'значение'),
 		// 2 элемент просто строка поэтому тут просто % ключ = значение
 		
-		$query = "INSERT __cache_integer SET `keyhash` = (X'$keyhash') , `value` = '$value' 
-			ON DUPLICATE KEY UPDATE `value` = '$value'";
+		$query = "INSERT __cache_integer SET `keyhash` = (X'$keyhash') , `value` = '$value' , `updated` = NOW()
+			ON DUPLICATE KEY UPDATE `value` = '$value', `updated` = NOW()";
 		$query = $this->db->placehold($query);
 		dtimer::log("set_cache_integer query: $query");
 		$this->db->query($query);

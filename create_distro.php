@@ -37,6 +37,7 @@ function precheck($p_event, &$p_header){
 		'/rapida.*?\.zip$/i',
 		'/\.gitignore$/i',
 		'/^\.git\/.*/i',
+		'/^\.git$/i',
 		'/^files\/.*/i',
 		'/^compiled\/.*/i',
 		'/^simpla\/files\/.*/i',
@@ -45,6 +46,9 @@ function precheck($p_event, &$p_header){
 		'/^design\/.*/i',
 		'/^simpla\/design\/compiled\/.*/i',
 		'/^simpla\/files\/.*/i',
+		'/^simpla\.passwd$/i',
+		'/^simpla\.htaccess$/i',
+		'/^config\db.ini$/i',
 	);
 	
 	$fname = $p_header['stored_filename'];

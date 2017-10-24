@@ -4,6 +4,14 @@ if(isset($_SESSION['admin'])){
 	require_once(dirname(__FILE__) .'/api/Simpla.php');
 	$simpla = new Simpla();
 	
+	//корневая директория системы 
+	$dir = dirname(__FILE__) . '/';
+
+	//имя создаваемого архива
+	$filename = $dir.'distro/rapida_'.$simpla->config->version.'.zip';
+
+	$dbfile = 'rapida.sql';
+	
 	
 	function glob_recurse($glob){
 		$res = array();
@@ -28,14 +36,24 @@ if(isset($_SESSION['admin'])){
 	
 	$order_id = 8;
 	$pid = 10;
-	//~ $res = $simpla->orders->get_order($order_id);
+	$res = $simpla->orders->get_order($order_id);
 	//~ $res = $simpla->features->get_product_options($pid);
 	//~ $res = $simpla->sys->sync_options();
-	$res = $simpla->sys->clear_options();
-	$files = glob_recurse('./*');
+	//~ $res = $simpla->sys->clear_options();
+	//~ $files = glob_recurse('./*');
+	
+	
+	$simpla->db->dump($dir.$dbfile);
+	
 	
 	print "HELLO!\n";
-	print_r($res);
+	//print_r($res);
+	
+	$s1 = 'VARCHAR(255)';
+	$s2 = 'TEXT';
+	var_export( substr($s1, 0, stripos($s1, '(')) );
+	var_export( stripos($s2, '(') );
+	
 	
 	if(!empty($files)){
 		foreach($files as $f){

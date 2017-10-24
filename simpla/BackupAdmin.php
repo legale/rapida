@@ -21,17 +21,17 @@ class BackupAdmin extends Simpla
 				{
 					$filename = $dir.'simpla_'.date("Y_m_d_G_i_s").'.zip';
 					##Дамп базы	
-					$this->db->dump($dir.'simpla.sql');
-					chmod($dir.'simpla.sql', 0777);
+					$this->db->dump($dir.'rapida.sql');
+					chmod($dir.'rapida.sql', 0777);
 					
 					### Архивируем
 					$zip = new PclZip($filename);
-					$v_list = $zip->create(array('files', $dir.'simpla.sql'), PCLZIP_OPT_REMOVE_PATH, $dir, PCLZIP_CB_PRE_ADD, "myCallBack");
+					$v_list = $zip->create(array('files', $dir.'rapida.sql'), PCLZIP_OPT_REMOVE_PATH, $dir, PCLZIP_CB_PRE_ADD, "myCallBack");
 					if ($v_list == 0)
 					{
 						trigger_error('Не могу заархивировать '.$zip->errorInfo(true));
 					}
-					@unlink($dir.'simpla.sql');
+					@unlink($dir.'rapida.sql');
 					$this->design->assign('message_success', 'created');
 							
 	
@@ -50,18 +50,18 @@ class BackupAdmin extends Simpla
 					{
 						trigger_error('Не могу разархивировать '.$zip->errorInfo(true));
 					}
-					elseif (!$zip->extract(PCLZIP_OPT_PATH, $dir, PCLZIP_OPT_BY_NAME, 'simpla.sql'))
+					elseif (!$zip->extract(PCLZIP_OPT_PATH, $dir, PCLZIP_OPT_BY_NAME, 'rapida.sql'))
 					{
 						trigger_error('Не могу разархивировать '.$zip->errorInfo(true));
 					}
-					elseif (!is_readable($dir.'simpla.sql'))
+					elseif (!is_readable($dir.'rapida.sql'))
 					{
-						trigger_error('Не могу прочитать файл /temp/simpla.sql');
+						trigger_error('Не могу прочитать файл /temp/rapida.sql');
 					}
 					else
 					{
-						$this->db->restore($dir.'simpla.sql');
-						unlink($dir.'simpla.sql');
+						$this->db->restore($dir.'rapida.sql');
+						unlink($dir.'rapida.sql');
 						$this->design->assign('message_success', 'restored');		
 					}
 			        break;

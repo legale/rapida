@@ -1,5 +1,7 @@
 <?php
 
+
+
 /**
  * Класс для доступа к базе данных
  *
@@ -479,7 +481,7 @@ class Database extends Simpla
 						if(is_null($v))
 							$r = "NULL";
 						else
-							$r = "'".$this->db->escape($v)."'";
+							$r = '`'.$this->db->escape($v).'`';
 
 						$repl .= ($repl===''? "" : ",").$r; 
 					}
@@ -643,76 +645,149 @@ class Database extends Simpla
 	}
 	
 	
-	private function dump_table($table, $h)
-	{
-		$sql = "SELECT * FROM `$table`;";
-		$result = $this->mysqli->query($sql);
-		if($result)
-		{
-			fwrite($h, "/* Drop for table $table */\n");
-			fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
-			$this->db2->query("SHOW CREATE TABLE `$table`;");
-			$create = $this->db2->result_array('Create Table');
-			fwrite($h, "/* Create table $table */\n");
-			fwrite($h, "$create;\n");
-			fwrite($h, "/* Clear table $table */\n");
-			fwrite($h, "TRUNCATE TABLE `$table`;\n");
-			fwrite($h, "/* Data for table $table */\n");
+	private function dump_table($table, $h){
+		//массив для типов полей
+		$types = array();
+		//Числовые поля
+		$types['num'] = array(
+			'int',
+			'tinyint',
+			'smallint',
+			'mediumint',
+			'bigint',
+			'decimal',
+			'double',
+			'float',
+			'real',
+			'bit',
+			'boolean',
+			'serial',
+		);
+		//символьные поля (кроме bin)
+		$types['sym'] = array(
+			'char',
+			'varchar',
+			'varchar',
+			'text',
+			'tinytext',
+			'mediumtext',
+			'longtext',
+			'blob',
+			'tinyblob',
+			'mediumblob',
+			'longblob',
+			'enum',
+			'set',
+		);
+		//двоичные
+		$types['bin'] = array(
+			'binary',
+			'varbinary',
+		);
+		//получаем поля таблицы, чтобы узнать типы полей
+		$q = "SHOW FULL FIELDS FROM `$table`;";
+		$this->db->query($q);
+		//уложим из в массив с ключом по названию поля
+		$cols = $this->db->results_array(null, 'Field');
+		//теперь для каждого поля запишем способ последущей записи его значений
+		foreach($cols as &$col){
+			//отрежем все после скобок, если они есть
+			if ( $pos = stripos($col['Type'], '(') ) {
+				$col['Type'] = substr($col['Type'], 0, $pos);
+			}
 			
-			$num_rows = $result->num_rows;
-			$num_fields = $this->mysqli->field_count;
-	
-			if($num_rows > 0)
-			{
-				$field_type=array();
-				$field_name = array();
-				$meta = $result->fetch_fields();
-				foreach($meta as $m)
-				{
-					array_push($field_type, $m->type);
-					array_push($field_name, $m->name);
-				}
-				$fields = implode('`, `', $field_name);
-				fwrite($h,  "INSERT INTO `$table` (`$fields`) VALUES\n");
-				$index=0;
-				while( $row = $result->fetch_row())
-				{
-					fwrite($h, "(");
-					for( $i=0; $i < $num_fields; $i++)
-					{
-						if( is_null( $row[$i]))
-							fwrite($h, "null");
-						else
-						{
-							switch( $field_type[$i])
-							{
-								case 'int':
-									fwrite($h,  $row[$i]);
-									break;
-								case 'string':
-								case 'blob' :
-								default:
-									fwrite($h, "'". $this->mysqli->real_escape_string($row[$i])."'");
-	
-							}
-						}
-						if( $i < $num_fields-1)
-							fwrite($h,  ",");
-					}
-					fwrite($h, ")");
-	
-					if( $index < $num_rows-1)
-						fwrite($h,  ",");
-					else
-						fwrite($h, ";");
-					fwrite($h, "\n");
-	
-					$index++;
+			//в зависимости от типа, запишем группу типа
+			if( in_array($col['Type'], $types['num']) ) {
+				$col['type_group'] = 'num';
+			} elseif ( in_array($col['Type'], $types['sym']) ) {
+				$col['type_group'] = 'sym';
+			} elseif ( in_array($col['Type'], $types['bin']) ) {
+				$col['type_group'] = 'bin';
+			} else {
+				$col['type_group'] = 'else';
+			} 
+			
+		}
+		unset($col);
+		
+		
+
+		//удаляем таблицу, если она есть
+		fwrite($h, "/* Drop for table $table */\n");
+		fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
+		
+		//получаем и записываем выражение для создания таблицы
+		$this->db->query("SHOW CREATE TABLE `$table`;");
+		$create = $this->db->result_array('Create Table');
+		fwrite($h, "/* Create table $table */\n");
+		fwrite($h, "$create;\n");
+		
+		//Здесь идут данные для таблицы
+		fwrite($h, "/* Data for table $table */\n");
+		
+		//запрос на получение всех данных таблицы
+		$this->db->query("SELECT * FROM `$table`");
+
+		if($this->db->num_rows() > 0){
+			//Запишем начало запроса и названия полей, если у нас есть что-то в таблице
+			$fields = $this->db->placehold('?^', array_keys($cols) ); 
+			fwrite($h,  "INSERT INTO `$table` ($fields) VALUES\n");
+		}
+
+		//обрабатываем построчно
+		
+		//флаг для первой строки
+		$flag = true;
+		while( $row = $this->db->result_array() ){
+			
+			/* 
+			 * Теперь пишем сами значения, каждая строка пишется в круглых скобках через запятую.
+			 * Будем писать каждое значение в зависимости от его типа данных. 
+			 * Символьные (кроме bin) char, varchar, text, blob, set и др. будем писать через 
+			 * экранирование спецсимволов в одинарных кавычках. 
+			 * bin будем писать в виде hex строки. 0xcc23865436abc431007759e15a11991a
+			 * Числа int будем писать без кавычек.
+			 * Все остальное в одинарных кавычках
+			 */
+			 
+			//В зависимости от группы типа поля запишем каждое значение для строки соответствующим образом
+			
+			foreach($cols as $name=>$col){
+				switch ($col['type_group']) {
+					case 'int':
+						break;
+					case 'sym':
+						$row[$name] = "'" . $this->db->escape($row[$name]) . "'";
+						break;
+					case 'bin':
+						$row[$name] = '0x' . bin2hex($row[$name]);
+						break;
+					case 'else':
+						$row[$name] = "'" . $row[$name] . "'";
+						break;
 				}
 			}
-			$result->free();
+			unset($name, $col);
+
+			//А теперь запишем в файл через запятую и в круглых скобках
+			$row = implode(', ', $row);
+			if($flag === true){
+				//это первая строка
+				$vals = "(". $row . ")";
+				$flag = false;
+			} else {
+				//это для записи всех строк, кроме первой
+				$vals = ",\n(". $row . ")";
+			}
+			
+			fwrite($h,  $vals);
 		}
-		fwrite($h, "\n");
+		
+		//запишем точку с запятой и перенос с последней строки
+		fwrite($h,  ";\n");
+	
+	return true;
 	}
+	
 }
 

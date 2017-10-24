@@ -161,7 +161,7 @@ function myPostExtractCallBack($p_event, &$p_header)
 //
 function dbconfig()
 {
-	$configfile = 'config/config.ini';
+	$configfile = 'config/db.ini';
 
 	$dbhost = 'localhost';
 	$dbname = '';
@@ -200,12 +200,12 @@ function dbconfig()
 			mysqlrestore($mysqli, 'rapida.sql');
 
 			# Запишем конфиги с базой
-			$conf = file_get_contents('config/config.ini');
+			$conf = file_get_contents($configfile);
 			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'"', $conf);
 			$conf = preg_replace("/db_server.*;/i", 'db_server = "'.$dbhost.'"', $conf);
 			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'"', $conf);
 			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'"', $conf);
-			$cf = fopen('config/config.ini', 'w');
+			$cf = fopen($configfile, 'w');
 			fwrite($cf, $conf);
 			fclose($cf);
 
