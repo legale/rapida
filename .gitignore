@@ -43,4 +43,4 @@
 !/files/brands/.htaccess
 !/files/uploads/.htaccess
 !/files/downloads/.htaccess
-!/cache
+!/cache/.htaccess
