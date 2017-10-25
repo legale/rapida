@@ -198,13 +198,54 @@ function dbconfig()
 		if(empty($error))
 		{
 			mysqlrestore($mysqli, 'rapida.sql');
-
 			# Запишем конфиги с базой
 			$conf = file_get_contents($configfile);
-			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'"', $conf);
-			$conf = preg_replace("/db_server.*;/i", 'db_server = "'.$dbhost.'"', $conf);
-			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'"', $conf);
-			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'"', $conf);
+			if (!preg_match("/\[db\]/i", $conf) ){
+				$conf .= "\n[db]\n";
+			}
+			$count = '';
+			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'";', $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase name;\ndb_name = \"$dbname\";\n";
+			}
+			
+			$conf = preg_replace("/db_server.*;/i", 'db_server = "'.$dbhost.'";', $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase server;\ndb_server = \"$dbhost\";\n";
+			}
+			
+			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'";', $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase user;\ndb_user = \"$dbuser\";\n";
+			}
+			
+			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'";', $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase password;\ndb_password = \"$dbpassword\";\n";
+			}
+			
+			$conf = preg_replace("/db_prefix.*;/i", "db_prefix = \"s_\";", $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase tables names prefix;\ndb_prefix = \"s_\";\n";
+			}
+			
+			$conf = preg_replace("/db_charset.*;/i", "db_charset = \"UTF8\";", $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase codepage;\ndb_charset = \"UTF8\";\n";
+			}
+			
+			$conf = preg_replace("/db_timezone.*;/i", "db_timezone = \"+02:00\";", $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase timezone;\ndb_timezone =  = \"+02:00\";\n";
+			}
+			
+			$conf = preg_replace("/db_sql_mode.*;/i", "db_sql_mode = \"\";", $conf, -1, $count);
+			if ($count == 0){
+				$conf .= "\ndatabase SQL MODE parameter;\ndb_sql_mode = \"\";\n";
+			}
+
+			
+			
 			$cf = fopen($configfile, 'w');
 			fwrite($cf, $conf);
 			fclose($cf);
