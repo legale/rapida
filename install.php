@@ -220,7 +220,7 @@ function dbconfig()
 			
 			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\;ndatabase user\ndb_user = \"$dbuser\";\n";
+				$conf .= "\n;ndatabase user\ndb_user = \"$dbuser\";\n";
 			}
 			
 			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'";', $conf, -1, $count);
