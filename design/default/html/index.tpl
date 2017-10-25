@@ -1,3 +1,4 @@
+{Strip}
 <!DOCTYPE html>
 {*
 	Общий вид страницы
@@ -263,3 +264,4 @@
 	
 </body>
 </html>
+{/strip}
