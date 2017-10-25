@@ -191,7 +191,11 @@ function dbconfig()
 
 		if(!is_readable('rapida.sql'))
 			$error = 'Файл rapida.sql не найден';
-
+		
+		//создадим файл, если его нет
+		if (!file_exists($configfile) ) {
+		    file_put_contents($configfile, '');
+		}
 		if(!is_writable($configfile))
 			$error = "Поставьте права на запись для файла $configfile";
 
@@ -206,42 +210,42 @@ function dbconfig()
 			$count = '';
 			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase name;\ndb_name = \"$dbname\";\n";
+				$conf .= "\n;database name\ndb_name = \"$dbname\";\n";
 			}
 			
 			$conf = preg_replace("/db_server.*;/i", 'db_server = "'.$dbhost.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase server;\ndb_server = \"$dbhost\";\n";
+				$conf .= "\n;database server\ndb_server = \"$dbhost\";\n";
 			}
 			
 			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase user;\ndb_user = \"$dbuser\";\n";
+				$conf .= "\;ndatabase user\ndb_user = \"$dbuser\";\n";
 			}
 			
 			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase password;\ndb_password = \"$dbpassword\";\n";
+				$conf .= "\n;database password\ndb_password = \"$dbpassword\";\n";
 			}
 			
 			$conf = preg_replace("/db_prefix.*;/i", "db_prefix = \"s_\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase tables names prefix;\ndb_prefix = \"s_\";\n";
+				$conf .= "\n;database tables names prefix\ndb_prefix = \"s_\";\n";
 			}
 			
 			$conf = preg_replace("/db_charset.*;/i", "db_charset = \"UTF8\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase codepage;\ndb_charset = \"UTF8\";\n";
+				$conf .= "\n;database codepage\ndb_charset = \"UTF8\";\n";
 			}
 			
 			$conf = preg_replace("/db_timezone.*;/i", "db_timezone = \"+02:00\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase timezone;\ndb_timezone =  = \"+02:00\";\n";
+				$conf .= "\n;database timezone\ndb_timezone =  = \"+02:00\";\n";
 			}
 			
 			$conf = preg_replace("/db_sql_mode.*;/i", "db_sql_mode = \"\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\ndatabase SQL MODE parameter;\ndb_sql_mode = \"\";\n";
+				$conf .= "\n;database SQL MODE parameter\ndb_sql_mode = \"\";\n";
 			}
 
 			
@@ -280,37 +284,46 @@ function dbconfig()
 //
 function adminconf()
 {
-	$current_dir = dirname(__FILE__);
-	$error = '';
+	$passwd_file = dirname(__FILE__) . '/simpla/.passwd';
+	$htaccess_file = dirname(__FILE__) . '/simpla/.htaccess';
+	//проверяем файл с паролем админки
+	//создадим файл, если его нет
+	if (!file_exists($passwd_file) ) {
+		file_put_contents($passwd_file, '');
+	}
+
+	//.htaccess создаем файл, если его нет, или изменяем его - если есть
+	$hopen = fopen($htaccess_file, 'w+');
+	fwrite($hopen, "AuthName \"Administrator's interface login\"\n");
+	fwrite($hopen, "AuthType Basic\n");
+	fwrite($hopen, "AuthUserFile $passwd_file\n");
+	fwrite($hopen, "require valid-user\n");
+	fclose($hopen);
+
+
 	if(isset($_POST['login']) && isset($_POST['password']))
 	{
+		if(!is_writable($passwd_file))
+			$error = 'Поставьте права на запись для файла '.$passwd_file;
 
-		if(!is_writable($current_dir.'/simpla/.passwd'))
-			$error = 'Поставьте права на запись для файла '.$current_dir.'/simpla/.passwd';
-
-		if(!is_writable($current_dir.'/simpla/.htaccess'))
-			$error = 'Поставьте права на запись для файла '.$current_dir.'/simpla/.htaccess';
+		if(!is_writable($htaccess_file))
+			$error = 'Поставьте права на запись для файла '.$htaccess_file;
 
 		if(empty($error))
 		{
+			
 			$login = $_POST['login'];
 			$password = $_POST['password'];
 			$encpassword = crypt_apr1_md5($password);
 
-			$path_to_passwd = $current_dir.'/simpla/.passwd';
+			$path_to_passwd = $passwd_file;
 
 			$passstring = $login.':'.$encpassword;
-			$passfile = fopen($path_to_passwd, 'w');
-			fputs($passfile, $passstring);
-			fclose($passfile);
+			$popen = fopen($passwd_file, 'w');
+			fputs($popen, $passstring);
+			fclose($popen);
 
 
-    		$htaccess = file_get_contents($current_dir.'/simpla/.htaccess');
-    		$htaccess = preg_replace("/AuthUserFile .*\n/i", "AuthUserFile $path_to_passwd\n", $htaccess);
-
-    		$htafile = fopen($current_dir.'/simpla/.htaccess', 'w');
-    		fwrite($htafile, $htaccess);
-    		fclose($htafile);
     		print "<p>Пароль администратора установлен успешно. Не забудьте его.</p>";
 			print "<p><form method=get><input type='hidden' name='step' value='final'><input type='submit' value='продолжить →'></form></p>";
     		exit();
@@ -3272,6 +3285,3 @@ function pclzipdefines()
     }
     return $p_path;
   }
-
-
-

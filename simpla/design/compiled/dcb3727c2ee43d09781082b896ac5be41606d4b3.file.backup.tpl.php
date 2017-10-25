@@ -1,6 +1,6 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-22 22:23:28
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-25 19:16:44
          compiled from "simpla\design\html\backup.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:201072454559e6523bd75e37-45528013%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:188554828959f0b8ec13e7b6-19743571%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
@@ -11,12 +11,10 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '201072454559e6523bd75e37-45528013',
+  'nocache_hash' => '188554828959f0b8ec13e7b6-19743571',
   'function' => 
   array (
   ),
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59e6523be930f6_95473869',
   'variables' => 
   array (
     'manager' => 0,
@@ -27,8 +25,10 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'backup' => 0,
   ),
   'has_nocache_code' => false,
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59f0b8ec296409_45098460',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_59e6523be930f6_95473869')) {function content_59e6523be930f6_95473869($_smarty_tpl) {?>
+<?php if ($_valid && !is_callable('content_59f0b8ec296409_45098460')) {function content_59f0b8ec296409_45098460($_smarty_tpl) {?>
 <?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
 	<?php if (in_array('import',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=ImportAdmin">Импорт</a></li><?php }?>
 	<?php if (in_array('import',$_smarty_tpl->tpl_vars['manager']->value->permissions)) {?><li><a href="index.php?module=ImportYmlAdmin">Импорт YML</a></li><?php }?>

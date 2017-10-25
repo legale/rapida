@@ -1,6 +1,6 @@
-<?php /* Smarty version Smarty-3.1.18, created on 2017-10-24 06:31:46
+<?php /* Smarty version Smarty-3.1.18, created on 2017-10-25 19:15:31
          compiled from "simpla\design\html\products.tpl" */ ?>
-<?php /*%%SmartyHeaderCode:87338797459e33a99190408-69426282%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:197843266459f0b8a3529c22-00208736%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_valid = $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
@@ -11,7 +11,7 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       2 => 'file',
     ),
   ),
-  'nocache_hash' => '87338797459e33a99190408-69426282',
+  'nocache_hash' => '197843266459f0b8a3529c22-00208736',
   'function' => 
   array (
     'category_select' => 
@@ -30,8 +30,6 @@ $_valid = $_smarty_tpl->decodeProperties(array (
       'compiled' => '',
     ),
   ),
-  'version' => 'Smarty-3.1.18',
-  'unifunc' => 'content_59e33a99466db1_36100759',
   'variables' => 
   array (
     'manager' => 0,
@@ -57,8 +55,10 @@ $_valid = $_smarty_tpl->decodeProperties(array (
     'c' => 0,
   ),
   'has_nocache_code' => 0,
+  'version' => 'Smarty-3.1.18',
+  'unifunc' => 'content_59f0b8a38b40f7_89373526',
 ),false); /*/%%SmartyHeaderCode%%*/?>
-<?php if ($_valid && !is_callable('content_59e33a99466db1_36100759')) {function content_59e33a99466db1_36100759($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_truncate')) include 'D:\\openserver5.2.7\\OSPanel\\domains\\startup.my\\Smarty\\libs\\plugins\\modifier.truncate.php';
+<?php if ($_valid && !is_callable('content_59f0b8a38b40f7_89373526')) {function content_59f0b8a38b40f7_89373526($_smarty_tpl) {?><?php if (!is_callable('smarty_modifier_truncate')) include 'D:\\OpenServer\\domains\\rapida-dev\\Smarty\\libs\\plugins\\modifier.truncate.php';
 ?>
 <?php $_smarty_tpl->_capture_stack[0][] = array('tabs', null, null); ob_start(); ?>
 	<li class="active"><a href="<?php echo $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['url'][0][0]->url_modifier(array('module'=>'ProductsAdmin','keyword'=>null,'category_id'=>null,'brand_id'=>null,'filter'=>null,'page'=>null),$_smarty_tpl);?>
