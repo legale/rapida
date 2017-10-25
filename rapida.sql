@@ -48,8 +48,7 @@ CREATE TABLE `s_cache_integer` (
   KEY `updated` (`updated`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
-INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-10-24', 0xcc23865436abc431007759e15a11991a, 0);
+;
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
