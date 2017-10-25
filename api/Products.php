@@ -111,9 +111,14 @@ class Products extends Simpla
 		if(isset($filter['featured']))
 			$is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
 
-		if(isset($filter['in_stock']))
-			$in_stock_filter = $this->db->placehold('AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = ?)', (int)$filter['in_stock']);
-
+		if(isset($filter['in_stock']) ){
+			if ( (bool)$filter['in_stock'] == true) {
+				$in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock != 0)';
+			}else {
+				$in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = 0)';
+			}
+		}
+		
 		if(isset($filter['discounted']))
 			$discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < compare_price)';
 
@@ -289,9 +294,14 @@ class Products extends Simpla
 		if(isset($filter['featured']))
 			$is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
 
-		if(isset($filter['in_stock']))
-			$in_stock_filter = $this->db->placehold('AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = ?)', (int)$filter['in_stock']);
-
+		if(isset($filter['in_stock']) ){
+			if ( (bool)$filter['in_stock'] == true) {
+				$in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock != 0)';
+			}else {
+				$in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = 0)';
+			}
+		}
+		
 		if(isset($filter['discounted']))
 			$discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < compare_price)';
 

@@ -399,10 +399,6 @@ class Features extends Simpla
 		}       
 		
 		if(isset($filter['features'])){
-			//~ foreach($filter['features'] as $fid=>$fval)
-			//~ {
-				//~ $features_filter .= $this->db2->placehold(' AND ?! = ?', $fid , $fval);
-			//~ }
 			$features_filter = $this->db2->placehold(' AND ?&', $filter['features']);
 		}
 		
