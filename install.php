@@ -240,7 +240,7 @@ function dbconfig()
 			
 			$conf = preg_replace("/db_timezone.*;/i", "db_timezone = \"+02:00\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database timezone\ndb_timezone =  = \"+02:00\";\n";
+				$conf .= "\n;database timezone\ndb_timezone  = \"+02:00\";\n";
 			}
 			
 			$conf = preg_replace("/db_sql_mode.*;/i", "db_sql_mode = \"\";", $conf, -1, $count);
