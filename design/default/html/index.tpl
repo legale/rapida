@@ -44,9 +44,8 @@
 	<link   href="js/baloon/css/baloon.css" rel="stylesheet" type="text/css" /> 
 	
 	{* Автозаполнитель поиска *}
-	
-	<script src="js/autocomplete/jquery.autocomplete-min.js" type="text/javascript"></script>
 	{literal}
+	<script src="js/autocomplete/jquery.autocomplete-min.js" type="text/javascript"></script>
 	<style>
 		.autocomplete-suggestions{
 		background-color: #ffffff;
@@ -59,7 +58,26 @@
 		.autocomplete-suggestions div { padding:2px 5px; white-space:nowrap; }
 		.autocomplete-suggestions strong { font-weight:normal; color:#3399FF; }
 	</style>	
-
+	<script>
+	$(function() {
+		//  Автозаполнитель поиска
+		$(".input_search").autocomplete({
+			serviceUrl:'ajax/search_products.php',
+			minChars:1,
+			noCache: false, 
+			onSelect:
+				function(suggestion){
+					 $(".input_search").closest('form').submit();
+				},
+			formatResult:
+				function(suggestion, currentValue){
+					var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g');
+					var pattern = '(' + currentValue.replace(reEscape, '\\$1') + ')';
+	  				return (suggestion.data.image?"<img align=absmiddle src='"+suggestion.data.image+"'> ":'') + suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+				}	
+		});
+	});
+	</script>
 	{/literal}
 		
 			
