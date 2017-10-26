@@ -15,7 +15,7 @@ require_once('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.7.2';
+	public $version = '0.0.7.3';
 	
 	// Файлы для хранения настроек
 	public $config_file = '';

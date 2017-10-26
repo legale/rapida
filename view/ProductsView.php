@@ -147,14 +147,13 @@ class ProductsView extends View
 			
 		// Товары получаем их сразу массивом
 		$products = $this->products->get_products($filter);
-		//~ print "<pre>";
-		//~ print_r($products);
-		//~ print "</pre>";
-		//~ die;
 			
 		// Если искали товар и найден ровно один - перенаправляем на него
-		if(!empty($keyword) && $products_count == 1)
+		if(!empty($keyword) && $products_count == 1){
+			$p = (array)$products;
+			$p = reset($p);
 			header('Location: '.$this->config->root_url.'/products/'.$p->url);
+		}
 		
 		if( !empty($products) )
 		{

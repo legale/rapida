@@ -68,19 +68,27 @@ if(isset($_SESSION['admin'])){
 	$res2 = $simpla->features->get_product_options($pid);
 	
 	$res3 = filesize_remote('http://sevenlight.ru/logo.png');
+	$q = "SELECT max(position) as position FROM __images WHERE product_id=23523523";
+	$simpla->db->query($q);
+	$num = $simpla->db->num_rows();
+	$aff = $simpla->db->affected_rows();
+	$aff = $simpla->db->affected_rows();
+	$res = $simpla->db->results();
+	
 	
 	//~ $res = $simpla->sys->sync_options();
 	//~ $res = $simpla->sys->clear_options();
 	//~ $files = glob_recurse('./*');
 	
 	//делает дамп базы
-	$simpla->db->dump($dir.$dbfile);
+	//$simpla->db->dump($dir.$dbfile);
 	
 	
 	print "HELLO!\n";
-	//~ print_r($res);
-	print_r($res3);
-	
+	var_dump($res);
+	//~ print_r($res3);
+	var_dump($num);
+	var_dump($aff);
 	
 	//~ if(!empty($files)){
 		//~ foreach($files as $f){

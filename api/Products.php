@@ -167,6 +167,7 @@ class Products extends Simpla
 					p.body,
 					p.position,
 					p.created as created,
+					p.image,
 					p.visible, 
 					p.featured, 
 					p.meta_title, 
@@ -602,7 +603,7 @@ class Products extends Simpla
 		$res = $this->db->result();
 		
 		//Если кол-во затронутых строк больше 0, берем макс. позицию и прибавляем к ней 1, иначе 0
-		if($this->db->affected_rows() > 0){
+		if(!is_null($res->position)){
 			$pos = $res->position + 1;
 		} else {
 			$pos = 0;
