@@ -596,9 +596,9 @@ class Products extends Simpla
 	/* Метод для добавления изображений
 	 * позиция изображения (поле position) устанавливается по порядку
 	 */
-	public function add_image($product_id, $filename, $name = '')
+	public function add_image($pid, $filename, $name = '')
 	{
-		$query = $this->db->placehold("SELECT max(position) as position FROM __images WHERE product_id=?", $product_id);
+		$query = $this->db->placehold("SELECT max(position) as position FROM __images WHERE product_id=?", $pid);
 		$this->db->query($query);
 		$res = $this->db->result();
 		
@@ -607,9 +607,10 @@ class Products extends Simpla
 			$pos = $res->position + 1;
 		} else {
 			$pos = 0;
+			$this->db->query("UPDATE __products SET `image` = '$filename' WHERE `id`='$pid'");
 		}
 		
-		$query = $this->db->placehold("INSERT INTO __images SET product_id=?, filename=?, position=?", $product_id, $filename, $pos);
+		$query = $this->db->placehold("INSERT INTO __images SET product_id=?, filename=?, position=?", $pid, $filename, $pos);
 		dtimer::log(__METHOD__." query: '$query'");
 		$this->db->query($query);		
 		$id = $this->db->insert_id();

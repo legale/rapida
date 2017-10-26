@@ -109,8 +109,8 @@ class Image extends Simpla
 		
 		dtimer::log(__METHOD__ . " $filename");
 		// Заливаем только есть такой файл есть в базе
-		$this->db->query('SELECT 1 FROM __images WHERE filename=? LIMIT 1', $filename);
-		if(!$this->db->result()){
+		$this->db->query('SELECT product_id as pid, position as pos FROM __images WHERE filename=? LIMIT 1', $filename);
+		if(!$res = $this->db->result_array()){
 			return false;
 		}
 		
@@ -132,6 +132,12 @@ class Image extends Simpla
 				$new_name = $base.'_1.'.$ext;
 		}
 		$this->db->query('UPDATE __images SET filename=? WHERE filename=?', $new_name, $filename);
+		
+		//если картинка с position 0, дополнительно обновим таблицу s_products
+		if($res['pos'] == 0){
+			$this->db->query('UPDATE __products SET image=? WHERE id=?', $new_name, $res['pid']);
+		}
+		
 		
 		// Перед долгим копированием займем это имя
 		fclose(fopen($this->config->root_dir.$this->config->original_images_dir.$new_name, 'w'));

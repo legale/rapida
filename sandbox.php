@@ -68,7 +68,7 @@ if(isset($_SESSION['admin'])){
 	$res2 = $simpla->features->get_product_options($pid);
 	
 	$res3 = filesize_remote('http://sevenlight.ru/logo.png');
-	$q = "SELECT max(position) as position FROM __images WHERE product_id=23523523";
+	$q = "SELECT product_id as pid, position as pos FROM __images WHERE product_id = 1 LIMIT 1";
 	$simpla->db->query($q);
 	$num = $simpla->db->num_rows();
 	$aff = $simpla->db->affected_rows();

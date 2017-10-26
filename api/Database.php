@@ -304,7 +304,7 @@ class Database extends Simpla
 		if( isset($field) ){
 			return $row[$field];
 		} else {
-			if($unsetkey === true){
+			if($group_field !== null && $unsetkey === true){
 				unset($row[$group_field]);
 			}
 			return $row;
