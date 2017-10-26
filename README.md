@@ -15,8 +15,8 @@ v0.0.7.3 26.10.2017
 в таблицу s_products в поле image. Раньше туда изображение попадало только во время манипуляций с картинками, например, в админке. Т.е. требовалось выполнение метода products->update_image()
 - В методе image->download_image() при скачивании изображение с position 0, сразу изменяется 2 таблицы s_image и s_products.
 - Добавлен доступ к api через xhr. Для удобства работы необходимые функции собраны в файле js/main.js. Непосредственно для работы с api нужна 1 функция apiAjax(). В целях безопасности доступ разрешен только к следующим классам:
-		$allowed['classes'] = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
-		$allowed['methods'] = array('get_products', 'get_product', 'get_variants', 'get_variant', 'get_features', 
+	$allowed['classes'] = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
+	$allowed['methods'] = array('get_products', 'get_product', 'get_variants', 'get_variant', 'get_features', 
 		'get_options', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get_images');
 
 
