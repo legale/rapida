@@ -16,8 +16,40 @@ session_start();
 //тут мы будем проверять xhr запросы, чтобы не грузить view
 require_once('api/Simpla.php');
 $simpla = new Simpla();
-//~ print_r($_SERVER);
 
+if (isset($_GET['xhr']) ){
+	if( isset($_POST['json']) ){
+		$json = json_decode($_POST['json'], true);
+		
+		//разрешенные классы и методы
+		$allowed = array();
+		$allowed['classes'] = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
+		$allowed['methods'] = array('get_products', 'get_product', 'get_variants', 'get_variant', 'get_features', 
+		'get_options', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get_images');
+		if( 
+			!empty($json['class'])
+			&&  !empty($json['method'])
+			&&  !empty($json['args'])
+			&&  in_array($json['class'], $allowed['classes'])
+			&&  in_array($json['method'], $allowed['methods'])
+		){
+		}else{
+			print 'empty method/class/arguments or method/class not allowed';
+			die;
+		}
+			
+		if( $res = $simpla->{$json['class']}->{$json['method']}($json['args']) ) {
+			header("Content-type: application/json; charset=UTF-8");
+			header("Cache-Control: must-revalidate");
+			header("Pragma: no-cache");
+			header("Expires: -1");	
+			print json_encode($res, JSON_UNESCAPED_UNICODE);
+		} else {
+			print 'unable to perform api request';
+		}
+	}
+	die;
+}
 
 require_once('view/IndexView.php');
 
@@ -27,9 +59,9 @@ $view = new IndexView();
 
 if(isset($_GET['logout']))
 {
-    header('WWW-Authenticate: Basic realm="Simpla CMS"');
-    header('HTTP/1.0 401 Unauthorized');
 	unset($_SESSION['admin']);
+	header("Location: ");
+	die;
 }
 
 // Если все хорошо
