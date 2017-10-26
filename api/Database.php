@@ -755,7 +755,7 @@ class Database extends Simpla
 			foreach($cols as $name=>$col){
 				//Если null - ставим null и переходим к следующему циклу
 				if( is_null($row[$name]) ) {
-					[$name] = 'NULL';
+					$row[$name] = 'NULL';
 					continue;
 				}elseif($row[$name] === ''){
 					$row[$name] ="''";

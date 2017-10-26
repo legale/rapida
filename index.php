@@ -11,12 +11,17 @@
 
 // Засекаем время
 $time_start = microtime(true);
-
 session_start();
+
+//тут мы будем проверять xhr запросы, чтобы не грузить view
+require_once('api/Simpla.php');
+$simpla = new Simpla();
+//~ print_r($_SERVER);
+
 
 require_once('view/IndexView.php');
 
-$simpla = new Simpla();
+
 $view = new IndexView();
 
 
