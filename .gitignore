@@ -3,11 +3,12 @@
 #########################
 
 /compiled/**
-/simpla/files/**
 /cache/**
 /design/**
 /simpla/design/compiled/**
-/simpla/files/**
+
+# добавлены отдельные файлы .gitignore
+#/simpla/files/**
 
 /files/originals/*
 /files/products/*
