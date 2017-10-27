@@ -34,7 +34,7 @@ class ProductView extends View
 
 		$variants = array();
 		if ( $variants = $this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) ) {
-			foreach( as $v){
+			foreach($variants as $v){
 				$variants[$v->id] = $v;
 			}
 		}
