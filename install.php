@@ -533,7 +533,7 @@ function pclzipdefines()
     var $error_code = 1;
     var $error_string = '';
     var $magic_quotes_status;
-  function PclZip($p_zipname)
+  function __construct($p_zipname)
   {
     if (!function_exists('gzopen'))
     {
