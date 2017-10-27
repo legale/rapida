@@ -18,7 +18,7 @@ v0.0.7.3 26.10.2017
 	$allowed['classes'] = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
 	$allowed['methods'] = array('get_products', 'get_product', 'get_variants', 'get_variant', 'get_features', 
 		'get_options', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get_images');
-
+- Небольшой баг в view/ProductsView.php и view/ProductView.php, при переборе вариантов товара, отсутствующего на складе. varints->get_variants() возвращал false, а потом производился перебор, что приводило к ошибке.
 
 
 =================

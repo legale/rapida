@@ -165,12 +165,13 @@ class ProductsView extends View
 				$product->properties = array();
 			}
 	
-			$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
-			
-			foreach($variants as &$variant)
-			{
-				//$variant->price *= (100-$discount)/100;
-				$products->{$variant->product_id}->variants[] = $variant;
+			$variants = array();
+			if($variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true)) ) {
+				foreach($variants as &$variant)
+				{
+					//$variant->price *= (100-$discount)/100;
+					$products->{$variant->product_id}->variants[] = $variant;
+				}
 			}
 	
 			$images = $this->products->get_images(array('product_id'=>$products_ids));

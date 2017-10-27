@@ -33,9 +33,11 @@ class ProductView extends View
 		$product->image = reset($product->images);
 
 		$variants = array();
-		foreach($this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) as $v)
-			$variants[$v->id] = $v;
-		
+		if ( $variants = $this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) ) {
+			foreach( as $v){
+				$variants[$v->id] = $v;
+			}
+		}
 		$product->variants = $variants;
 		
 		// Вариант по умолчанию
