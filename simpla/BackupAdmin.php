@@ -20,8 +20,8 @@ class BackupAdmin extends Simpla
 				case 'create':
 				{
 					$filename = $dir.'simpla_'.date("Y_m_d_G_i_s").'.zip';
-					##Дамп базы	
-					$this->db->dump($dir.'rapida.sql');
+					##Дамп базы Второй параметр true означает, что мы пропускаем удаление и создание таблиц - только очистка
+					$this->db->dump($dir.'rapida.sql', true);
 					chmod($dir.'rapida.sql', 0777);
 					
 					### Архивируем

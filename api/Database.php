@@ -601,14 +601,14 @@ class Database extends Simpla
 		} 
 	} 
 
-	public function dump($filename)
+	public function dump($filename, $skip_create = false)
 	{
 		$h = fopen($filename, 'w');
 		$q = $this->placehold("SHOW FULL TABLES LIKE '__%';");		
 		$result = $this->mysqli->query($q);
 		while($row = $result->fetch_row()){
 			if($row[1] == 'BASE TABLE'){
-				$this->dump_table($row[0], $h);
+				$this->dump_table($row[0], $h, $skip_create);
 			}
 		}
 	    fclose($h);
@@ -645,7 +645,7 @@ class Database extends Simpla
 	}
 	
 	
-	private function dump_table($table, $h){
+	private function dump_table($table, $h, $skip_create = true){
 		//массив для типов полей
 		$types = array();
 		//Числовые поля
@@ -710,17 +710,21 @@ class Database extends Simpla
 		}
 		unset($col);
 		
-		
-
-		//удаляем таблицу, если она есть
-		fwrite($h, "/* Drop for table $table */\n");
-		fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
-		
-		//получаем и записываем выражение для создания таблицы
-		$this->db->query("SHOW CREATE TABLE `$table`;");
-		$create = $this->db->result_array('Create Table');
-		fwrite($h, "/* Create table $table */\n");
-		fwrite($h, "$create;\n");
+		//Если параметр $skip_create = false - пропускаем создание таблицы
+		if ( $skip_create === false ) {
+			//удаляем таблицу, если она есть
+			fwrite($h, "/* Drop for table $table */\n");
+			fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
+			
+			//получаем и записываем выражение для создания таблицы
+			$this->db->query("SHOW CREATE TABLE `$table`;");
+			$create = $this->db->result_array('Create Table');
+			fwrite($h, "/* Create table $table */\n");
+			fwrite($h, "$create;\n");
+		} else {
+			fwrite($h, "/* \$skip_create set true Truncate table $table */\n");
+			fwrite($h, "TRUNCATE TABLE `$table`;\n");
+		}
 		
 		//Здесь идут данные для таблицы
 		fwrite($h, "/* Data for table $table */\n");

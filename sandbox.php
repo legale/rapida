@@ -81,7 +81,7 @@ if(isset($_SESSION['admin'])){
 	//~ $files = glob_recurse('./*');
 	
 	//делает дамп базы
-	//$simpla->db->dump($dir.$dbfile);
+	$simpla->db->dump($dir.$dbfile);
 	
 	
 	print "HELLO!\n";

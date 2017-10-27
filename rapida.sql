@@ -437,10 +437,10 @@ CREATE TABLE `s_queue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `keyhash` binary(16) NOT NULL,
   `method` varchar(15) CHARACTER SET ascii NOT NULL,
-  `task` varchar(3000) CHARACTER SET ascii DEFAULT NULL,
+  `task` varchar(5000) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
 ;
 /* Drop for table s_queue_full */
@@ -450,10 +450,10 @@ CREATE TABLE `s_queue_full` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `keyhash` binary(16) NOT NULL,
   `method` varchar(15) CHARACTER SET ascii NOT NULL,
-  `task` varchar(3000) CHARACTER SET ascii DEFAULT NULL,
+  `task` varchar(5000) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
 ;
 /* Drop for table s_related_products */

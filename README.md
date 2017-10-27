@@ -19,7 +19,7 @@ v0.0.7.3 26.10.2017
 	$allowed['methods'] = array('get_products', 'get_product', 'get_variants', 'get_variant', 'get_features', 
 		'get_options', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get_images');
 - Небольшой баг в view/ProductsView.php и view/ProductView.php, при переборе вариантов товара, отсутствующего на складе. varints->get_variants() возвращал false, а потом производился перебор, что приводило к ошибке.
-
+- В метод db->dump_table() добавлен 3 необязательный аргумент $skip_create, если true - таблица не удаляется и не создается заново. Вместо drop table; create table - выполняется очистка таблицы truncate table. Метод используется при создании дампа.
 
 =================
 v0.0.7.2 25.10.2017
