@@ -165,7 +165,6 @@ class ProductsView extends View
 				$product->properties = array();
 			}
 	
-			$variants = array();
 			if($variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true)) ) {
 				foreach($variants as &$variant){
 					//$variant->price *= (100-$discount)/100;

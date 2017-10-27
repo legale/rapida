@@ -32,19 +32,19 @@ class ProductView extends View
 		$product->images = $this->products->get_images(array('product_id'=>$product->id));
 		$product->image = reset($product->images);
 
-		$variants = array();
 		if ( $variants = $this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) ) {
 			foreach($variants as $v){
 				$variants[$v->id] = $v;
 			}
-		}
-		$product->variants = $variants;
-		
-		// Вариант по умолчанию
-		if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id])) {
-			$product->variant = $variants[$v_id];
-		} else {
-			$product->variant = reset($variants);
+			
+			$product->variants = $variants;
+			
+			// Вариант по умолчанию
+			if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id])) {
+				$product->variant = $variants[$v_id];
+			} else {
+				$product->variant = reset($variants);
+			}
 		}
 		// Свойства товара
 		$features = $this->features->get_features();
