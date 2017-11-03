@@ -460,6 +460,7 @@ class Features extends Simpla
 		$visible_filter = '';
 		$brand_id_filter = '';
 		$features_filter = '';
+		$group_filter = '';
 		$products_join = '';
 		$products_join_flag = false;
 		$select = '';
@@ -523,9 +524,12 @@ class Features extends Simpla
 		
 		//фильтрация по свойствам товаров
 		if (!empty($filter['features'])) {
-			foreach ($filter['features'] as $fid => $vids) {
-				if(is_array($vids)){
-					$features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
+			$fg = $filter['features'];
+			foreach($fg as $gfid=>$gvids){
+				foreach ($filter['features'] as $fid => $vids) {
+					if(is_array($vids)){
+						$group_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
+					}
 				}
 			}
 		}
@@ -559,7 +563,6 @@ class Features extends Simpla
 		//обрабатываем выборку из базы построчно
 		$res = array();
 		$obj = new stdClass();
-		//~ print_r($this->db2->results_array());
 		for ($i = 0; $row = $this->db2->result_array(); $i++) {
 
 
@@ -586,7 +589,6 @@ class Features extends Simpla
 				$res['pid'][$row['pid']] = '';
 			}
 		}
-		//~ print_r($obj);
 		dtimer::log("set_cache_nosql key: $keyhash");
 		$this->cache->set_cache_nosql($keyhash, $obj);
 		dtimer::log(__METHOD__ . ' return db');
