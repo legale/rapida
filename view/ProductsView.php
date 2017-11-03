@@ -22,20 +22,37 @@ class ProductsView extends View
 	 */	
 	function fetch()
 	{
-		// GET-Параметры
-		$category_url = $this->request->get('category', 'string');
-		$brand_url    = $this->request->get('brand', 'string');
+		// Раньше все параметры брались из get query, теперь парсятся coMaster->parse_uri() из самой адресной строки
+		//~ print "<PRE>";
+		//~ print_r($this->coMaster->uri_arr);
+		//~ print "</PRE>";
+		$category_url = $this->coMaster->uri_arr['path_arr']['url'];
 		
 		$filter = array();
+		
+		//если у нас есть фильтрация по бренду, нам понадобятся id брендов для формирования $filter
+		//получим их
+		if( isset($this->coMaster->uri_arr['path_arr']['brand']) ){
+			$brands_urls = $this->coMaster->uri_arr['path_arr']['brand'];
+			//для экономии памяти присваиваем по ссылке
+			$this->brands->get_brands_ids();
+			$brands_ids =& $this->brands->brands_ids;
+			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
+		}
+		
+		
 		$filter['visible'] = 1;	
 
 		// Если задан бренд, выберем его из базы
-		if (  (!empty($brand_url)) ) {
-			$brand = $this->brands->get_brand((string)$brand_url);
-			if (empty($brand))
+		if (  (!empty($brands_urls)) ) {
+			if(is_array($brands_urls)){
+				$brand = $this->brands->get_brand( reset($brands_urls) );
+			}
+			
+			if (empty($brand)){
 				return false;
+			}
 			$this->design->assign('brand', $brand);
-			$filter['brand_id'] = $brand->id;
 		}
 		
 		// Выберем текущую категорию
@@ -64,18 +81,38 @@ class ProductsView extends View
 		$this->design->assign('sort', $filter['sort']);
 		
 		// Свойства товаров
+		
 		if ( (!empty($category))  ) {
+			//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
+			$features_trans = $this->features->get_features_trans(array('in_filter'=>1));
 			$features = $this->features->get_features(array('category_id'=>$category->id, 'in_filter'=>1));
+
+			//~ print_r($features_trans);
 			//~ print_r($features);
-			if (  ( !empty($features) )  ) {
-				foreach($features as $feature) { 
-					if(($val = strval($this->request->get($feature->id)))!='') {
-						$filter['features'][$feature->id] = $val;
+			//~ print_r($this->coMaster->uri_arr['path_arr']);
+			//тут фильтр в ЧПУ виде
+			if( isset($this->coMaster->uri_arr['path_arr']['filter']) ){
+				//перебираем массив
+				foreach($this->coMaster->uri_arr['path_arr']['filter'] as $name=>$vals){
+					
+					//если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq 
+					if( isset($features_trans[$name]) ){
+						//~ print $name . "\n";
+						foreach($vals as &$v){
+							$v = hash('md4', $v);
+						}
+						unset($v);
+						//получим id уникальных значений по их хешам
+						$ids = $this->features->get_options_md4($vals);
+						//~ print_r($ids);
+						//добавим в фильтр по свойствам массив с id значений опций
+						$filter['features'][$features_trans[$name]] = $ids;
 					}
 				}
 			}
-			//~ print_r($features);
-
+			//~ print_r($features_trans);
+			//~ print_r($filter['features']);
+			
 
 			$options_filter['visible'] = 1;
 			
@@ -88,10 +125,10 @@ class ProductsView extends View
 			}
 			$options_filter['category_id'] = $category->children;
 			if( isset($filter['features']) ){
-				$options_filter['features'] = $filter['features'];
+				$options_filter['features'] =& $filter['features'];
 			}
-			if(!empty($brand)) {
-				$options_filter['brand_id'] = $brand->id;
+			if(!empty($brands_urls)) {
+				$options_filter['brand_id'] =& $filter['brand_id'];
 			}
 			$options = $this->features->get_options($options_filter);
 			//~ print_r($options);

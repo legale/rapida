@@ -52,12 +52,12 @@
 {* Фильтр по брендам *}
 {if $category->brands}
 <div id="brands">
-	<a href="catalog/{$category->url}" {if !$brand->id}class="selected"{/if}>Все бренды</a>
+	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand->id}class="selected"{/if}>Все бренды</a>
 	{foreach $category->brands as $b}
 		{if $b->image}
-		<a data-brand="{$b->id}" href="catalog/{$category->url}/{$b->url}"><img src="{$config->brands_images_dir}{$b->image}" alt="{$b->name|escape}"></a>
+		<a data-brand="{$b->id}" href="{chpu_url params=[brand=>[$b->url], page=>'' ]}"><img src="{$config->brands_images_dir}{$b->image}" alt="{$b->name|escape}"></a>
 		{else}
-		<a data-brand="{$b->id}" href="catalog/{$category->url}/{$b->url}" {if $b->id == $brand->id}class="selected"{/if}>{$b->name|escape}</a>
+		<a data-brand="{$b->id}" href="{chpu_url params=[brand=>[$b->url], page=>'' ]}" {if $b->id == $brand->id}class="selected"{/if}>{$b->name|escape}</a>
 		{/if}
 	{/foreach}
 </div>
@@ -77,9 +77,9 @@
 		{$f->name}:
 	</td>
 	<td class="feature_values">
-		<a href="{url params=[$f->id=>null, page=>null]}" {if !$smarty.get.$key}class="selected"{/if}>Все</a>
+		<a href="{chpu_url params=[filter=>[$f->trans=>[]], page=>'' ]}" {if !$smarty.get.$key}class="selected"{/if}>Все</a>
 		{foreach $f->options as $o}
-		<a href="{url params=[$f->id=>$o->vid, page=>null]}" {if $smarty.get.$key == $o->value}class="selected"{/if}>{$o->value|escape}</a>
+		<a href="{chpu_url params=[filter=>[$f->trans=>[$o->trans]], page=>'' ]}" {if $smarty.get.$key == $o->value}class="selected"{/if}>{$o->value|escape}</a>
 		{/foreach}
 	</td>
 	</tr>

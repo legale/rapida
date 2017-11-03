@@ -77,7 +77,7 @@ $(function() {
 		<div class="block">
 			<h2>Настройки свойства</h2>
 			<ul>
-				<li><input type="text" name="uri" value="{$feature->uri|escape}"><label>uri для адресной строки</label></li>
+				<li><input type="text" name="trans" value="{$feature->trans|escape}"><label>translit для адресной строки</label></li>
 				<li><input type="checkbox" name="in_filter" {if $feature->in_filter}checked{/if} value="1"><label>Использовать в фильтре</label></li>
 			</ul>
 		</div>

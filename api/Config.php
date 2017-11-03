@@ -11,11 +11,11 @@
  *
  */
 
-require_once('Simpla.php');
+require_once ('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.7.3';
+	public $version = '0.0.8';
 	
 	// Файлы для хранения настроек
 	public $config_file = '';
@@ -26,8 +26,9 @@ class Config
 	
 	// В конструкторе записываем настройки файла в переменные этого класса
 	// для удобного доступа к ним. Например: $simpla->config->db_user
-	public function __construct(){
-		dtimer::log(__METHOD__ . " config construct ");			
+	public function __construct()
+	{
+		dtimer::log(__METHOD__ . " config construct ");
 		$this->config_file = dirname(__FILE__) . '/../config/config.ini';
 		$this->db_config_file = dirname(__FILE__) . '/../config/db.ini';
 
@@ -41,20 +42,20 @@ class Config
 		// Записываем настройки как переменную класса
 		//~ var_dump($configs);
 
-		foreach($configs as $file=>$ini){
-			if(is_array($ini)){
-				foreach($ini as $section=>$content){
+		foreach ($configs as $file => $ini) {
+			if (is_array($ini)) {
+				foreach ($ini as $section => $content) {
 					$this->vars_sections[$section] = $content;
-					foreach($content as $name=>$value) {
-						$this->vars[$name] = array('value' => $value, 'section'=> $section, 'file' => $file);
+					foreach ($content as $name => $value) {
+						$this->vars[$name] = array('value' => $value, 'section' => $section, 'file' => $file);
 					}
 				}
 			}
 		}
 		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое
-		$localpath=getenv("SCRIPT_NAME");
-		$absolutepath=getenv("SCRIPT_FILENAME");
-		$_SERVER['DOCUMENT_ROOT']=substr($absolutepath,0,strpos($absolutepath,$localpath));
+		$localpath = getenv("SCRIPT_NAME");
+		$absolutepath = getenv("SCRIPT_FILENAME");
+		$_SERVER['DOCUMENT_ROOT'] = substr($absolutepath, 0, strpos($absolutepath, $localpath));
 
 		// Адрес сайта - тоже одна из настроек, но вычисляем его автоматически, а не берем из файла
 		$script_dir1 = realpath(dirname(dirname(__FILE__)));
@@ -62,45 +63,46 @@ class Config
 		$subdir = trim(substr($script_dir1, strlen($script_dir2)), "/\\");
 
 		// Протокол
-		$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'? 'https' : 'http';
-		if($_SERVER["SERVER_PORT"] == 443)
+		$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https' ? 'https' : 'http';
+		if ($_SERVER["SERVER_PORT"] == 443)
 			$protocol = 'https';
-		elseif (isset($_SERVER['HTTPS']) && (($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1')))
+		elseif (isset($_SERVER['HTTPS']) && ( ($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1')))
 			$protocol = 'https';
 		elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on')
 			$protocol = 'https';
 
-		$this->vars['protocol']['value'] = $protocol;		
-		$this->vars['root_url']['value'] = $protocol.'://'.rtrim($_SERVER['HTTP_HOST']);
-		if(!empty($subdir))
-			$this->vars['root_url']['value'] .= '/'.$subdir;
+		$this->vars['protocol']['value'] = $protocol;
+		$this->vars['root_url']['value'] = $protocol . '://' . rtrim($_SERVER['HTTP_HOST']);
+		if (!empty($subdir))
+			$this->vars['root_url']['value'] .= '/' . $subdir;
 
 		// Подпапка в которую установлена симпла относительно корня веб-сервера
-		$this->vars['subfolder']['value'] = $subdir.'/';
+		$this->vars['subfolder']['value'] = $subdir . '/';
 
 		// Определяем корневую директорию сайта
-		$this->vars['root_dir']['value'] =  dirname(dirname(__FILE__)).'/';
+		$this->vars['root_dir']['value'] = dirname(dirname(__FILE__)) . '/';
 
 		// Максимальный размер загружаемых файлов
-		$max_upload = (int)(ini_get('upload_max_filesize'));
-		$max_post = (int)(ini_get('post_max_size'));
-		$memory_limit = (int)(ini_get('memory_limit'));
-		$this->vars['max_upload_filesize'] = min($max_upload, $max_post, $memory_limit)*1024*1024;
+		$max_upload = (int) (ini_get('upload_max_filesize'));
+		$max_post = (int) (ini_get('post_max_size'));
+		$memory_limit = (int) (ini_get('memory_limit'));
+		$this->vars['max_upload_filesize'] = min($max_upload, $max_post, $memory_limit) * 1024 * 1024;
 		
 		// Соль (разная для каждой копии сайта, изменяющаяся при изменении config-файла)
 		$s = stat($this->config_file);
-		$this->vars['salt']['value'] = md5(md5_file($this->config_file).$s['dev'].$s['ino'].$s['uid'].$s['mtime']);
+		$this->vars['salt']['value'] = md5(md5_file($this->config_file) . $s['dev'] . $s['ino'] . $s['uid'] . $s['mtime']);
 		
 		// Часовой пояс
-		if(!empty($this->vars['php_timezone']['value']))
+		if (!empty($this->vars['php_timezone']['value']))
 			date_default_timezone_set($this->vars['php_timezone']['value']);
 		elseif (!ini_get('date.timezone'))
 			date_default_timezone_set('UTC');
 	}
 
 	// Магическим методов возвращаем нужную переменную
-	public function __get($name) {
-		if(isset($this->vars[$name]))
+	public function __get($name)
+	{
+		if (isset($this->vars[$name]))
 			return $this->vars[$name]['value'];
 		else
 			return null;
@@ -110,9 +112,9 @@ class Config
 	public function __set($name, $value)
 	{
 		# Запишем конфиги
-		if( isset($this->vars[$name]) ){
+		if (isset($this->vars[$name])) {
 			$conf = file_get_contents($this->vars[$name]['file']);
-			$conf = preg_replace("/".$name."\s*=.*\n/i", $name.' = '.$value."\r\n", $conf);
+			$conf = preg_replace("/" . $name . "\s*=.*\n/i", $name . ' = ' . $value . "\r\n", $conf);
 			$cf = fopen($this->vars[$name]['file'], 'w');
 			fwrite($cf, $conf);
 			fclose($cf);
@@ -123,13 +125,13 @@ class Config
 
 	public function token($text)
 	{
-		return md5($text.$this->salt);
-	}	
-	
+		return md5($text . $this->salt);
+	}
+
 	public function check_token($text, $token)
 	{
-		if(!empty($token) && $token === $this->token($text))
+		if (!empty($token) && $token === $this->token($text))
 			return true;
 		return false;
-	}	
+	}
 }

@@ -17,6 +17,22 @@ require_once('View.php');
 
 class IndexView extends View
 {	
+
+	//здесь массив соответствия контроллеров из view, они включаются через IndexView
+	private $modules = array(
+			'/' => 'MainView',
+			'catalog' => 'ProductsView',
+			'products'=> 'ProductView',
+			'brands'=> 'ProductsView',
+			'contact'=> 'FeedbackView',
+			'user'=> 'LoginView',
+			'register'=> 'RegisterView',
+			'cart'=> 'CartView',
+			'order'=> 'OrderView',
+			'page'=> 'PageView',
+			'blog'=> 'BlogView',
+			);
+
 	public $modules_dir = 'view/';
 
 	public function __construct()
@@ -43,13 +59,11 @@ class IndexView extends View
 		$this->design->assign('pages', $pages);
 							
 		// Текущий модуль (для отображения центрального блока)
-		$module = $this->request->get('module', 'string');
-		$module = preg_replace("/[^A-Za-z0-9]+/", "", $module);
-
+		$module = $this->modules[$this->coMaster->uri_arr['path_arr']['module']];
+		
 		// Если не задан - берем из настроек
 		if(empty($module))
 			return false;
-		//$module = $this->settings->main_module;
 
 		// Создаем соответствующий класс
 		if (is_file($this->modules_dir."$module.php"))

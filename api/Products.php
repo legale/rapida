@@ -156,7 +156,12 @@ class Products extends Simpla
 
 		//фильтрация по свойствам товаров
 		if( !empty($filter['features']) ){
-			$features_filter = $this->db->placehold(' AND p.id in (SELECT product_id FROM __options WHERE ?& ) ', $filter['features']);
+			foreach($filter['features'] as $fid=>$vids){
+				if(is_array($vids)){
+					$features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
+				}
+			}
+			$features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
 		}
 		$query = $this->db->placehold("SELECT  
 					p.id,
@@ -172,13 +177,14 @@ class Products extends Simpla
 					p.featured, 
 					p.meta_title, 
 					p.meta_keywords, 
-					p.meta_description, 
-					b.name as brand,
-					b.url as brand_url
+					p.meta_description
+				#	, 
+				#	b.name as brand,
+				#	b.url as brand_url
 					
 				FROM __products p		
 				$category_id_filter 
-				LEFT JOIN __brands b ON p.brand_id = b.id
+			#	LEFT JOIN __brands b ON p.brand_id = b.id
 				WHERE 
 					1
 					$no_images_filter
@@ -312,10 +318,15 @@ class Products extends Simpla
 		
 		//фильтрация по свойствам товаров
 		if( !empty($filter['features']) ){
-			$features_filter = $this->db->placehold(' AND p.id in (SELECT product_id FROM __options WHERE ?& ) ', $filter['features']);
+			foreach($filter['features'] as $fid=>$vids){
+				if(is_array($vids)){
+					$features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
+				}
+			}
+			$features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
 		}
 		
-		$query = "SELECT count(distinct p.id) as count
+		$query =$this->db->placehold("SELECT count(distinct p.id) as count
 				FROM __products AS p
 				$category_id_filter
 				WHERE 1
@@ -327,8 +338,9 @@ class Products extends Simpla
 					$in_stock_filter
 					$discounted_filter
 					$visible_filter
-					$features_filter ";
+					$features_filter ");
 
+		dtimer::log(__METHOD__ . " query: $query");
 		$this->db->query($query);
 		$res = $this->db->result('count');
 		dtimer::log("set_cache_integer key: $keyhash");

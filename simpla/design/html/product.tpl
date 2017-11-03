@@ -98,7 +98,7 @@ $(function() {
 					$('.dropInput').hide();
 					$('#dropZone').append(temp_input);
 					$("#dropZone").css('border', '1px solid #d0d0d0').css('background-color', '#ffffff');
-					clone_input.show();
+					
 		        };
 		      })(f);
 		
@@ -477,11 +477,13 @@ overflow-y: auto;
 
 
 
-{if $message_success}
+{if !$message_error}
 <!-- Системное сообщение -->
 <div class="message message_success">
+	{if $message_success}
 	<span class="text">{if $message_success=='added'}Товар добавлен{elseif $message_success=='updated'}Товар изменен{else}{$message_success|escape}{/if}</span>
-
+	{/if}
+	
 	<a class="link" target="_blank" href="../products/{$product->url}">Открыть товар на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
@@ -498,9 +500,8 @@ overflow-y: auto;
 	
 </div>
 <!-- Системное сообщение (The End)-->
-{/if}
 
-{if $message_error}
+{elseif $message_error}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error=='url_exists'}Товар с таким адресом уже существует{elseif $message_error=='empty_name'}Введите название{else}{$message_error|escape}{/if}</span>
@@ -687,10 +688,14 @@ overflow-y: auto;
 				</li>{/foreach}
 			</ul>
 			{/if}
+			<!-- dropzone для перетаскивания изображений -->	
+			{if isset($product->id)}
 			<div id=dropZone>
 				<div id=dropMessage>Перетащите файлы сюда</div>
 				<input type="file" name="dropped_images[]" multiple class="dropInput">
 			</div>
+			{/if}
+			<!-- dropzone для перетаскивания изображений (The End) -->
 			<div id="add_image"></div>
 			<span class=upload_image><i class="dash_link" id="upload_image">Добавить изображение</i></span> или <span class=add_image_url><i class="dash_link" id="add_image_url">загрузить из интернета</i></span>
 		</div>

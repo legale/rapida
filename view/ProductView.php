@@ -19,7 +19,7 @@ class ProductView extends View
 
 	function fetch()
 	{   
-		$product_url = $this->request->get('product_url', 'string');
+		$product_url = $this->coMaster->uri_arr['path_arr']['url'];
 		
 		if(empty($product_url))
 			return false;
@@ -33,9 +33,10 @@ class ProductView extends View
 		$product->image = reset($product->images);
 
 		if ( $variants = $this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) ) {
-			foreach($variants as $v){
-				$variants[$v->id] = $v;
-			}
+		//~ print "<PRE>";
+		//~ print_r($variants);
+
+
 			
 			$product->variants = $variants;
 			

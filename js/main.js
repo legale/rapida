@@ -40,22 +40,22 @@ function postAjax(url, data, success) {
 
 /*
  * Эта функция для отправки особого POST запроса ajax к api системы
- * 3 аргумента:
- * url - строка с адресом
+ * 2 аргумента:
  * data - объект с параметрами
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
- * пример: apiAjax('http://rapida-dev?xhr=1', 
+ * пример: apiAjax( 
  * {'class': 'products', 'method': 'get_products', 'args': 
  * 		{'id': [1,2,3,4,5] }
  * } , function($e){
  * console.log(JSON.parse($e))
  * });
  */ 
-function apiAjax(url, data, success) {
+function apiAjax( data, success) {
+	let l = window.location;
 	let params = 'json=' + JSON.stringify(data);
 
 	let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-	xhr.open('POST', url);
+	xhr.open('POST', l.protocol + '//' + l.host + '?xhr=1');
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState>3 && xhr.status==200) { success(xhr.responseText); }
 	};

@@ -9,33 +9,33 @@
  *
  */
 
-require_once('Simpla.php');
+require_once ('Simpla.php');
 
 class Variants extends Simpla
 {
 	/**
-	* Функция возвращает варианты товара
-	* @param	$filter
-	* @retval	array
-	*/
+	 * Функция возвращает варианты товара
+	 * @param	$filter
+	 * @retval	array
+	 */
 	public function get_variants($filter = array())
-	{		
+	{
 		$product_id_filter = '';
 		$variant_id_filter = '';
 		$instock_filter = '';
-		
-		if(!empty($filter['product_id']))
+
+		if (!empty($filter['product_id']))
 			$product_id_filter = $this->db->placehold('AND v.product_id in(?@)', (array)$filter['product_id']);
-		
-		if(!empty($filter['id']))
+
+		if (!empty($filter['id']))
 			$variant_id_filter = $this->db->placehold('AND v.id in(?@)', (array)$filter['id']);
 
-		if(!empty($filter['in_stock']) && $filter['in_stock'])
+		if (!empty($filter['in_stock']) && $filter['in_stock'])
 			$instock_filter = $this->db->placehold('AND (v.stock>0 OR v.stock IS NULL)');
 
-		if(!$product_id_filter && !$variant_id_filter)
+		if (!$product_id_filter && !$variant_id_filter)
 			return array();
-		
+
 		$query = $this->db->placehold("SELECT v.id, v.product_id , v.price, NULLIF(v.compare_price, 0) as compare_price, v.sku, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.name, v.attachment, v.position
 					FROM __variants AS v
 					WHERE 
@@ -45,33 +45,36 @@ class Variants extends Simpla
 					$instock_filter 
 					ORDER BY v.position       
 					", $this->settings->max_order_amount);
-		
-		$this->db->query($query);	
-		return $this->db->results();
+
+		$this->db->query($query);
+		$res = $this->db->results(null, 'id');
+		//~ print_r($res);
+		return $res;
 	}
-	
-	
+
+
 	public function get_variant($id)
-	{	
-		if(empty($id))
+	{
+		if (empty($id))
 			return false;
-			
+
 		$query = $this->db->placehold("SELECT v.id, v.product_id , v.price, NULLIF(v.compare_price, 0) as compare_price, v.sku, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.name, v.attachment
 					FROM __variants v WHERE v.id=?
 					LIMIT 1", $this->settings->max_order_amount, $id);
-		
-		$this->db->query($query);	
+
+		$this->db->query($query);
 		$variant = $this->db->result();
 		return $variant;
 	}
-	
-	public function update_variant($id, $variant){
-		if( is_object($variant) ){
+
+	public function update_variant($id, $variant)
+	{
+		if (is_object($variant)) {
 			$variant = (array)$variant;
 		}
 
-		foreach ($variant as $k=>$e){
-			if( empty_($e) ){
+		foreach ($variant as $k => $e) {
+			if (empty_($e)) {
 				unset($variant[$k]);
 			}
 		}
@@ -79,41 +82,43 @@ class Variants extends Simpla
 		$this->db->query($query);
 		return $id;
 	}
-	
-	public function add_variant($variant) {
-		
-		if( is_object($variant) ){
+
+	public function add_variant($variant)
+	{
+
+		if (is_object($variant)) {
 			$variant = (array)$variant;
 		}
 		//удалим id, если он сюда закрался, при создании id быть не должно
-		if( isset($variant['id']) ){
+		if (isset($variant['id'])) {
 			unset($variant['id']);
 		}
-		foreach ($variant as $k=>$e){
-			if( empty_($e) ){
+		foreach ($variant as $k => $e) {
+			if (empty_($e)) {
 				unset($variant[$k]);
 			}
 		}
-		
+
 		$query = $this->db->placehold("INSERT INTO __variants SET ?%", $variant);
-		if ( $this->db->query($query) ) {
+		if ($this->db->query($query)) {
 			return $this->db->insert_id();
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	public function delete_variant($id)
 	{
-		if(!empty($id))
-		{
+		if (!empty($id))
+			{
 			$this->delete_attachment($id);
 			$query = $this->db->placehold("DELETE FROM __variants WHERE id = ? LIMIT 1", intval($id));
 			$this->db->query($query);
 			$this->db->query('UPDATE __purchases SET variant_id=NULL WHERE variant_id=?', intval($id));
 		}
 	}
-	
+
 	public function delete_attachment($id)
 	{
 		$query = $this->db->placehold("SELECT attachment FROM __variants WHERE id=?", $id);
@@ -122,9 +127,9 @@ class Variants extends Simpla
 		$query = $this->db->placehold("SELECT 1 FROM __variants WHERE attachment=? AND id!=?", $filename, $id);
 		$this->db->query($query);
 		$exists = $this->db->num_rows();
-		if(!empty($filename) && $exists == 0)
-			@unlink($this->config->root_dir.'/'.$this->config->downloads_dir.$filename);
-		$this->update_variant($id, array('attachment'=>null));
+		if (!empty($filename) && $exists == 0)
+			@unlink($this->config->root_dir . '/' . $this->config->downloads_dir . $filename);
+		$this->update_variant($id, array('attachment' => null));
 	}
-	
+
 }

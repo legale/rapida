@@ -9,7 +9,7 @@
  *
  */
 
-require_once('Simpla.php');
+require_once ('Simpla.php');
 
 class Feedbacks extends Simpla
 {
@@ -18,12 +18,12 @@ class Feedbacks extends Simpla
 	{
 		$query = $this->db->placehold("SELECT f.id, f.name, f.email, f.ip, f.message, f.date FROM __feedbacks f WHERE id=? LIMIT 1", intval($id));
 
-		if($this->db->query($query))
+		if ($this->db->query($query))
 			return $this->db->result();
 		else
-			return false; 
+			return false;
 	}
-	
+
 	public function get_feedbacks($filter = array(), $new_on_top = false)
 	{	
 		// По умолчанию
@@ -31,83 +31,84 @@ class Feedbacks extends Simpla
 		$page = 1;
 		$keyword_filter = '';
 
-		if(isset($filter['limit']))
+		if (isset($filter['limit']))
 			$limit = max(1, intval($filter['limit']));
 
-		if(isset($filter['page']))
+		if (isset($filter['page']))
 			$page = max(1, intval($filter['page']));
 
-		$sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page-1)*$limit, $limit);
+		$sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page - 1) * $limit, $limit);
 
-		if(!empty($filter['keyword']))
-		{
+		if (!empty($filter['keyword']))
+			{
 			$keywords = explode(' ', $filter['keyword']);
-			foreach($keywords as $keyword)
-				$keyword_filter .= $this->db->placehold('AND f.name LIKE "%'.$this->db->escape(trim($keyword)).'%" OR f.message LIKE "%'.$this->db->escape(trim($keyword)).'%" OR f.email LIKE "%'.$this->db->escape(trim($keyword)).'%" ');
+			foreach ($keywords as $keyword)
+				$keyword_filter .= $this->db->placehold('AND f.name LIKE "%' . $this->db->escape(trim($keyword)) . '%" OR f.message LIKE "%' . $this->db->escape(trim($keyword)) . '%" OR f.email LIKE "%' . $this->db->escape(trim($keyword)) . '%" ');
 		}
-			
-		if($new_on_top)
-			$sort='DESC';
+
+		if ($new_on_top)
+			$sort = 'DESC';
 		else
-			$sort='ASC';
+			$sort = 'ASC';
 
 		$query = $this->db->placehold("SELECT f.id, f.name, f.email, f.ip, f.message, f.date
 										FROM __feedbacks f WHERE 1 $keyword_filter ORDER BY f.id $sort $sql_limit");
-	
+
 		$this->db->query($query);
 		return $this->db->results();
 	}
-	
+
 	public function count_feedbacks($filter = array())
-	{	
+	{
 		$keyword_filter = '';
 
-		if(!empty($filter['keyword']))
-		{
+		if (!empty($filter['keyword']))
+			{
 			$keywords = explode(' ', $filter['keyword']);
-			foreach($keywords as $keyword)
-				$keyword_filter .= $this->db->placehold('AND f.name LIKE "%'.$this->db->escape(trim($keyword)).'%" OR f.message LIKE "%'.$this->db->escape(trim($keyword)).'%" OR f.email LIKE "%'.$this->db->escape(trim($keyword)).'%" ');
+			foreach ($keywords as $keyword)
+				$keyword_filter .= $this->db->placehold('AND f.name LIKE "%' . $this->db->escape(trim($keyword)) . '%" OR f.message LIKE "%' . $this->db->escape(trim($keyword)) . '%" OR f.email LIKE "%' . $this->db->escape(trim($keyword)) . '%" ');
 		}
 
 		$query = $this->db->placehold("SELECT count(distinct f.id) as count
 										FROM __feedbacks f WHERE 1 $keyword_filter");
-	
-		$this->db->query($query);	
+
+		$this->db->query($query);
 		return $this->db->result('count');
 
 	}
-	
-	
-	public function add_feedback($feedback){
-		if( is_object($feedback) ){
+
+
+	public function add_feedback($feedback)
+	{
+		if (is_object($feedback)) {
 			$feedback = (array)$feedback;
 		}
 		//удалим id, если он сюда закрался, при создании id быть не должно
-		if( isset($feedback['id']) ){
+		if (isset($feedback['id'])) {
 			unset($feedback['id']);
 		}
-		
-		foreach ($feedback as $k=>$e){
-			if( empty_($e) ){
+
+		foreach ($feedback as $k => $e) {
+			if (empty_($e)) {
 				unset($feedback[$k]);
 			}
 		}
 		$query = $this->db->placehold('INSERT INTO __feedbacks
 		SET ?%', $feedback);
-		
-		if(!$this->db->query($query))
+
+		if (!$this->db->query($query))
 			return false;
 
 		$id = $this->db->insert_id();
 		return $id;
 	}
-	
-	
+
+
 	public function update_feedback($id, $feedback)
 	{
 		$date_query = '';
-		if(isset($feedback->date))
-		{
+		if (isset($feedback->date))
+			{
 			$date = $feedback->date;
 			unset($feedback->date);
 			$date_query = $this->db->placehold(', date=STR_TO_DATE(?, ?)', $date, $this->settings->date_format);
@@ -120,10 +121,10 @@ class Feedbacks extends Simpla
 
 	public function delete_feedback($id)
 	{
-		if(!empty($id))
-		{
+		if (!empty($id))
+			{
 			$query = $this->db->placehold("DELETE FROM __feedbacks WHERE id=? LIMIT 1", intval($id));
 			$this->db->query($query);
 		}
-	}	
+	}
 }

@@ -3,12 +3,10 @@
 require_once('../api/Simpla.php');
 
 $filename = $_GET['file'];
-$token = $_GET['token'];
 
 $simpla = new Simpla();
 
-//~ if(!$simpla->config->check_token($filename, $token))
-	//~ exit('bad token');		
+
 
 $resized_filename =  $simpla->image->resize($filename);
 

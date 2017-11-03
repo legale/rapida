@@ -117,7 +117,7 @@
 				</span>
 				<a id="logout" href="user/logout">выйти</a>
 			{else}
-				<a id="register" href="user/register">Регистрация</a>
+				<a id="register" href="register">Регистрация</a>
 				<a id="login" href="user/login">Вход</a>
 			{/if}
 		</div>

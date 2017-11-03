@@ -17,11 +17,13 @@ class BlogView extends View
 {
 	public function fetch()
 	{
-		$url = $this->request->get('url', 'string');
+		
+		$url = $this->coMaster->uri_arr['path_arr']['url'];
 		
 		// Если указан адрес поста,
 		if(!empty($url))
 		{
+			
 			// Выводим пост
 			return $this->fetch_post($url);
 		}
@@ -145,8 +147,7 @@ class BlogView extends View
 		
 		// Выбираем статьи из базы
 		$posts = $this->blog->get_posts($filter);
-		if(empty($posts))
-			return false;
+
 		
 		// Передаем в шаблон
 		$this->design->assign('posts', $posts);

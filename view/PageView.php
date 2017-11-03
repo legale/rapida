@@ -16,7 +16,7 @@ class PageView extends View
 {
 	function fetch()
 	{
-		$url = $this->request->get('page_url', 'string');
+		$url = $this->coMaster->uri_arr['path_arr']['url'];
 
 		$page = $this->pages->get_page($url);
 		

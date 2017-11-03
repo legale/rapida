@@ -1,13 +1,13 @@
 <?PHP
-require_once('api/Simpla.php');
+require_once ('api/Simpla.php');
 
 class UserAdmin extends Simpla
-{	
+{
 	public function fetch()
 	{
 		$user = new stdClass;
-		if(!empty($_POST['user_info']))
-		{
+		if (!empty($_POST['user_info']))
+			{
 			$user->id = $this->request->post('id', 'integer');
 			$user->enabled = $this->request->post('enabled');
 			$user->name = $this->request->post('name');
@@ -15,68 +15,68 @@ class UserAdmin extends Simpla
 			$user->group_id = $this->request->post('group_id');
 	
 			## Не допустить одинаковые email пользователей.
-			if(empty($user->name))
-			{			
+			if (empty($user->name))
+				{
 				$this->design->assign('message_error', 'empty_name');
 			}
-			elseif(empty($user->email))
-			{			
+			elseif (empty($user->email))
+				{
 				$this->design->assign('message_error', 'empty_email');
 			}
-			elseif(($u = $this->users->get_user($user->email)) && $u->id!=$user->id)
-			{			
+			elseif ( ($u = $this->users->get_user($user->email)) && $u->id != $user->id)
+				{
 				$this->design->assign('message_error', 'login_existed');
 			}
 			else
-			{
+				{
 				$user->id = $this->users->update_user($user->id, $user);
-  				$this->design->assign('message_success', 'updated');
-   	    		$user = $this->users->get_user(intval($user->id));
+				$this->design->assign('message_success', 'updated');
+				$user = $this->users->get_user(intval($user->id));
 			}
 		}
-		elseif($this->request->post('check'))
-		{ 
+		elseif ($this->request->post('check'))
+			{ 
 			// Действия с выбранными
 			$ids = $this->request->post('check');
-			if(is_array($ids))
-			switch($this->request->post('action'))
-			{
-				case 'delete':
+			if (is_array($ids))
+				switch ($this->request->post('action'))
 				{
-					foreach($ids as $id)
+				case 'delete' :
 					{
-						$o = $this->orders->get_order(intval($id));
-						if($o->status<3)
-						{
-							$this->orders->update_order($id, array('status'=>3, 'user_id'=>null));
-							$this->orders->open($id);							
+						foreach ($ids as $id)
+							{
+							$o = $this->orders->get_order(intval($id));
+							if ($o->status < 3)
+								{
+								$this->orders->update_order($id, array('status' => 3, 'user_id' => null));
+								$this->orders->open($id);
+							}
+							else
+								$this->orders->delete_order($id);
 						}
-						else
-							$this->orders->delete_order($id);
+						break;
 					}
-					break;
-				}
 			}
- 		}
+		}
 
 		$id = $this->request->get('id', 'integer');
-		if(!empty($id))
-			$user = $this->users->get_user(intval($id));			
+		if (!empty($id))
+			$user = $this->users->get_user(intval($id));
 
-		if(!empty($user))
-		{
+		if (!empty($user))
+			{
 			$this->design->assign('user', $user);
-			
-			$orders = $this->orders->get_orders(array('user_id'=>$user->id));
+
+			$orders = $this->orders->get_orders(array('user_id' => $user->id));
 			$this->design->assign('orders', $orders);
-			
+
 		}
-		
- 	  	$groups = $this->users->get_groups();
+
+		$groups = $this->users->get_groups();
 		$this->design->assign('groups', $groups);
-		
- 	  	return $this->design->fetch('user.tpl');
+
+		return $this->design->fetch('user.tpl');
 	}
-	
+
 }
 

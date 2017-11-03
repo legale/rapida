@@ -6,15 +6,20 @@ class LoginView extends View
 {
 	function fetch()
 	{
+		if(!isset($this->coMaster->uri_arr['path_arr']['url'])){
+			return false;
+		} else {
+			$url = $this->coMaster->uri_arr['path_arr']['url'];
+		}
 		// Выход
-		if($this->request->get('action') == 'logout')
+		if($url == 'logout')
 		{
 			unset($_SESSION['user_id']);
 			header('Location: '.$this->config->root_url);
 			exit();
 		}
 		// Вспомнить пароль
-		elseif($this->request->get('action') == 'password_remind')
+		elseif($url == 'password_remind')
 		{
 			// Если запостили email
 			if($this->request->method('post') && $this->request->post('email'))
@@ -41,7 +46,7 @@ class LoginView extends View
 				}
 			}
 			// Если к нам перешли по ссылке для восстановления пароля
-			elseif($this->request->get('code'))
+			elseif(isset($this->coMaster->uri_arr['path_arr']['code']) )
 			{
 				// Проверяем существование сессии
 				if(!isset($_SESSION['password_remind_code']) || !isset($_SESSION['password_remind_user_id']))

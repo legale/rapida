@@ -168,7 +168,7 @@ DROP TABLE IF EXISTS `s_features`;
 CREATE TABLE `s_features` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `uri` varchar(200) DEFAULT NULL,
+  `trans` varchar(200) CHARACTER SET ascii DEFAULT NULL,
   `position` int(11) NOT NULL DEFAULT '0',
   `in_filter` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -248,7 +248,54 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`product_id`)
+  `1` mediumint(9) DEFAULT NULL,
+  `2` mediumint(9) DEFAULT NULL,
+  `3` mediumint(9) DEFAULT NULL,
+  `4` mediumint(9) DEFAULT NULL,
+  `5` mediumint(9) DEFAULT NULL,
+  `6` mediumint(9) DEFAULT NULL,
+  `7` mediumint(9) DEFAULT NULL,
+  `8` mediumint(9) DEFAULT NULL,
+  `9` mediumint(9) DEFAULT NULL,
+  `10` mediumint(9) DEFAULT NULL,
+  `11` mediumint(9) DEFAULT NULL,
+  `12` mediumint(9) DEFAULT NULL,
+  `13` mediumint(9) DEFAULT NULL,
+  `14` mediumint(9) DEFAULT NULL,
+  `15` mediumint(9) DEFAULT NULL,
+  `16` mediumint(9) DEFAULT NULL,
+  `17` mediumint(9) DEFAULT NULL,
+  `18` mediumint(9) DEFAULT NULL,
+  `19` mediumint(9) DEFAULT NULL,
+  `20` mediumint(9) DEFAULT NULL,
+  `21` mediumint(9) DEFAULT NULL,
+  `22` mediumint(9) DEFAULT NULL,
+  `23` mediumint(9) DEFAULT NULL,
+  `24` mediumint(9) DEFAULT NULL,
+  `25` mediumint(9) DEFAULT NULL,
+  `26` mediumint(9) DEFAULT NULL,
+  `27` mediumint(9) DEFAULT NULL,
+  `28` mediumint(9) DEFAULT NULL,
+  `29` mediumint(9) DEFAULT NULL,
+  `30` mediumint(9) DEFAULT NULL,
+  `31` mediumint(9) DEFAULT NULL,
+  `32` mediumint(9) DEFAULT NULL,
+  `33` mediumint(9) DEFAULT NULL,
+  `34` mediumint(9) DEFAULT NULL,
+  `35` mediumint(9) DEFAULT NULL,
+  `36` mediumint(9) DEFAULT NULL,
+  `37` mediumint(9) DEFAULT NULL,
+  `38` mediumint(9) DEFAULT NULL,
+  `39` mediumint(9) DEFAULT NULL,
+  `40` mediumint(9) DEFAULT NULL,
+  `41` mediumint(9) DEFAULT NULL,
+  `42` mediumint(9) DEFAULT NULL,
+  `43` mediumint(9) DEFAULT NULL,
+  `44` mediumint(9) DEFAULT NULL,
+  `45` mediumint(9) DEFAULT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `11` (`11`),
+  KEY `10` (`10`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
@@ -257,10 +304,11 @@ DROP TABLE IF EXISTS `s_options_uniq`;
 /* Create table s_options_uniq */
 CREATE TABLE `s_options_uniq` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `val` varchar(1024) NOT NULL,
+  `val` varchar(512) DEFAULT NULL,
+  `trans` varchar(512) CHARACTER SET ascii DEFAULT NULL,
   `md4` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `md4` (`md4`)
+  UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options_uniq */
 ;

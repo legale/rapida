@@ -41,8 +41,8 @@ class OrderView extends View
 	
 	function fetch_order()
 	{
-		if($url = $this->request->get('url', 'string'))
-			$order = $this->orders->get_order((string)$url);
+		if( isset($this->coMaster->uri_arr['path_arr']['url']) )
+			$order = $this->orders->get_order($this->coMaster->uri_arr['path_arr']['url']);
 		elseif(!empty($_SESSION['order_id']))
 			$order = $this->orders->get_order(intval($_SESSION['order_id']));
 		else

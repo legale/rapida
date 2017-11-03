@@ -1,28 +1,27 @@
 <?php
-
-require_once('api/Simpla.php');
+require_once ('api/Simpla.php');
 $simpla = new Simpla();
 
 header("Content-type: text/xml; charset=UTF-8");
 // Заголовок
 print
-"<?xml version='1.0' encoding='UTF-8'?>
+	"<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE yml_catalog SYSTEM 'shops.dtd'>
-<yml_catalog date='".date('Y-m-d H:i')."'>
+<yml_catalog date='" . date('Y-m-d H:i') . "'>
 <shop>
-<name>".$simpla->settings->site_name."</name>
-<company>".$simpla->settings->company_name."</company>
-<url>".$simpla->config->root_url."</url>
+<name>" . $simpla->settings->site_name . "</name>
+<company>" . $simpla->settings->company_name . "</company>
+<url>" . $simpla->config->root_url . "</url>
 ";
 
 // Валюты
-$currencies = $simpla->money->get_currencies(array('enabled'=>1));
+$currencies = $simpla->money->get_currencies(array('enabled' => 1));
 $main_currency = reset($currencies);
 print "<currencies>
 ";
-foreach($currencies as $c)
-if($c->enabled)
-print "<currency id='".$c->code."' rate='".$c->rate_to/$c->rate_from*$main_currency->rate_from/$main_currency->rate_to."'/>
+foreach ($currencies as $c)
+	if ($c->enabled)
+	print "<currency id='" . $c->code . "' rate='" . $c->rate_to / $c->rate_from * $main_currency->rate_from / $main_currency->rate_to . "'/>
 ";
 print "</currencies>
 ";
@@ -32,12 +31,12 @@ print "</currencies>
 $categories = $simpla->categories->get_categories();
 print "<categories>
 ";
-foreach($categories as $c)
-{
-print "<category id='$c->id'";
-if($c->parent_id>0)
-	print " parentId='$c->parent_id'";
-print ">".htmlspecialchars($c->name)."</category>
+foreach ($categories as $c)
+	{
+	print "<category id=' $c->id'";
+	if ($c->parent_id > 0)
+		print " parentId=' $c->parent_id'";
+	print ">" . htmlspecialchars($c->name) . "</category>
 ";
 }
 print "</categories>
@@ -53,7 +52,7 @@ $simpla->db2->query("SELECT v.price, v.id as variant_id, p.name as product_name,
 					WHERE p.visible AND (v.stock >0 OR v.stock is NULL) GROUP BY v.id ORDER BY p.id, v.position ");
 print "<offers>
 ";
- 
+
 
 $currency_code = reset($currencies)->code;
 
@@ -61,70 +60,71 @@ $currency_code = reset($currencies)->code;
 // так они нам одновременно не нужны - мы всё равно сразу же отправляем товар на вывод.
 // Таким образом используется памяти только под один товар
 $prev_product_id = null;
-while($p = $simpla->db2->result())
-{
+while ($p = $simpla->db2->result())
+	{
 
 //тут массив с картинками
-$p_images = array();
-foreach($simpla->products->get_images(array('product_id' => $p->product_id)) as $image) {
-    $p_images[$image->product_id][] = $image->filename;
-}
+	$p_images = array();
+	foreach ($simpla->products->get_images(array('product_id' => $p->product_id)) as $image) {
+		$p_images[$image->product_id][] = $image->filename;
+	}
 //тут массив со свойствами товаров
-$features = array();
-$features[$p->product_id] = $simpla->features->get_product_options(array('product_id'=>$p->product_id));
+	$features = array();
+	$features[$p->product_id] = $simpla->features->get_product_options(array('product_id' => $p->product_id));
 
 
 
-$variant_url = '';
-if ($prev_product_id === $p->product_id)
-	$variant_url = '?variant='.$p->variant_id;
-$prev_product_id = $p->product_id;
+	$variant_url = '';
+	if ($prev_product_id === $p->product_id)
+		$variant_url = '?variant=' . $p->variant_id;
+	$prev_product_id = $p->product_id;
 
-$price = round($simpla->money->convert($p->price, $main_currency->id, false),2);
-print
-"
-<offer id='$p->variant_id' available='true'>
-<url>".$simpla->config->root_url.'/products/'.$p->url.$variant_url."</url>";
-print "
+	$price = round($simpla->money->convert($p->price, $main_currency->id, false), 2);
+	print
+		"
+<offer id=' $p->variant_id' available='true'>
+<url>" . $simpla->config->root_url . '/products/' . $p->url . $variant_url . "</url>";
+	print "
 <price>$price</price>
-<currencyId>".$currency_code."</currencyId>
-<categoryId>".$p->category_id."</categoryId>
+<currencyId>" . $currency_code . "</currencyId>
+<categoryId>" . $p->category_id . "</categoryId>
 ";
 
 //выводим картинки
-	if(!empty($p_images[$p->product_id])) {
-		foreach($p_images[$p->product_id] as $img) {
-			$string =  htmlspecialchars($simpla->config->root_url.'/files/originals/'.$img);
+	if (!empty($p_images[$p->product_id])) {
+		foreach ($p_images[$p->product_id] as $img) {
+			$string = htmlspecialchars($simpla->config->root_url . '/files/originals/' . $img);
 			print "
-<picture>".$string."</picture>";
+<picture>" . $string . "</picture>";
 		}
 	}
 
 
 
-print "<name>".htmlspecialchars($p->product_name).($p->variant_name?' '.htmlspecialchars($p->variant_name):'')."</name>
-<description>".htmlspecialchars(strip_tags($p->annotation))."</description>
+	print "<name>" . htmlspecialchars($p->product_name) . ($p->variant_name ? ' ' . htmlspecialchars($p->variant_name) : '') . "</name>
+<description>" . htmlspecialchars(strip_tags($p->annotation)) . "</description>
 ";
 
 
 //тут пишем свойства товара
-    if (!empty($features[$p->product_id])) {
-        foreach($features[$p->product_id] as $feature) {
-			$comma_count = strrpos($feature->name,", ");
+	if (!empty($features[$p->product_id])) {
+		foreach ($features[$p->product_id] as $feature) {
+			$comma_count = strrpos($feature->name, ", ");
 			if ($feature->name != 'vId' && $feature->name != 'vURL' && $feature->name != '')
-			if ($comma_count) {
-			$string =  "<param name='".htmlspecialchars(substr($feature->name, 0, $comma_count))."' unit='".htmlspecialchars(substr($feature->name, $comma_count + 2, 999))."'>".htmlspecialchars(strip_tags(trim($feature->value)))."</param>
+				if ($comma_count) {
+				$string = "<param name='" . htmlspecialchars(substr($feature->name, 0, $comma_count)) . "' unit='" . htmlspecialchars(substr($feature->name, $comma_count + 2, 999)) . "'>" . htmlspecialchars(strip_tags(trim($feature->value))) . "</param>
 			";
-			} else {
-			$string =  "<param name='".htmlspecialchars(strip_tags(trim($feature->name)))."'>".htmlspecialchars(strip_tags(trim($feature->value)))."</param>
+			}
+			else {
+				$string = "<param name='" . htmlspecialchars(strip_tags(trim($feature->name))) . "'>" . htmlspecialchars(strip_tags(trim($feature->value))) . "</param>
 			";
 			}
 			print $string;
-        }
-    }
+		}
+	}
 
 
-print "</offer>
+	print "</offer>
 ";
 }
 
