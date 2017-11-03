@@ -17,7 +17,7 @@
  ```
  ALTER TABLE `s_options_uniq` ADD `trans` VARCHAR(512) CHARACTER SET ascii COLLATE ascii_general_ci NULL DEFAULT NULL AFTER `val`;
  
- ALTER TABLE `s_features` CHANGE `trans` `transr` VARCHAR(200) CHARACTER SET ascii COLLATE ascii_general_ci NULL DEFAULT NULL;
+ ALTER TABLE `s_features` CHANGE `uri` `trans` VARCHAR(200) CHARACTER SET ascii COLLATE ascii_general_ci NULL DEFAULT NULL;
  ```
 ### bugs:
  - Исправлен баг в js скрипте simpla/design/html/product.tpl. Поскольку добавление картинок перетаскиванием работает только, когда товар уже создан - при создании товара поле для перетаскивания скрыто.
