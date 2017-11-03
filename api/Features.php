@@ -106,6 +106,8 @@ class Features extends Simpla
 		foreach ($feature as $k => $e) {
 			if (empty_($e)) {
 				unset($feature[$k]);
+			} else {
+				$feature[$k] = trim($e);
 			}
 		}
 		
@@ -177,11 +179,19 @@ class Features extends Simpla
 		if (is_object($feature)) {
 			$feature = (array)$feature;
 		}
+
 		if (!is_array($feature) || !is_int($id)) {
 			$t1 = gettype($id);
 			$t2 = gettype($feature);
 			trigger_error(__METHOD__ . " argument type error $t1 $t2", E_USER_WARNING);
 			return false;
+		}
+		foreach ($feature as $k => $e) {
+			if (empty_($e)) {
+				unset($feature[$k]);
+			} else {
+				$feature[$k] = trim($e);
+			}
 		}
 
 		$this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
@@ -219,7 +229,7 @@ class Features extends Simpla
 		
 		//получим значение для записи в таблицу options из таблицы s_options_uniq
 		//сделаем хеш 
-		$val = (string)$value;
+		$val = trim((string)$value);
 		$fid = (int)$feature_id;
 		$pid = (int)$product_id;
 		//Хеш будем получать не по чистому значению $val, а по translit_url($val), чтобы можно было из ЧПУ вернуться к хешу
