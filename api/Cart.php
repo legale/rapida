@@ -47,10 +47,10 @@ class Cart extends Simpla
 
 				$products = $this->products->get_products(array('id' => $products_ids, 'limit' => count($products_ids)));
 
-				$images = $this->products->get_images(array('product_id' => $products_ids));
-				foreach ($images as $image)
-					$products->{$image->product_id}->images[$image->id] = $image;
-
+				if($images = $this->products->get_images(array('product_id' => $products_ids))){
+					foreach ($images as $image)
+						$products->{$image->product_id}->images[$image->id] = $image;
+				}
 
 				foreach ($items as $variant_id => $item)
 					{

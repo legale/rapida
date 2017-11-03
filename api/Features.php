@@ -460,7 +460,6 @@ class Features extends Simpla
 		$visible_filter = '';
 		$brand_id_filter = '';
 		$features_filter = '';
-		$group_filter = '';
 		$products_join = '';
 		$products_join_flag = false;
 		$select = '';
@@ -524,12 +523,9 @@ class Features extends Simpla
 		
 		//фильтрация по свойствам товаров
 		if (!empty($filter['features'])) {
-			$fg = $filter['features'];
-			foreach($fg as $gfid=>$gvids){
-				foreach ($filter['features'] as $fid => $vids) {
-					if(is_array($vids)){
-						$group_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
-					}
+			foreach ($filter['features'] as $fid => $vids) {
+				if(is_array($vids)){
+					$features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
 				}
 			}
 		}

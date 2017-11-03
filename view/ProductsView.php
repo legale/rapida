@@ -210,9 +210,11 @@ class ProductsView extends View
 				unset($variant);
 			}
 	
-			$images = $this->products->get_images(array('product_id'=>$products_ids));
-			foreach($images as $image)
-				$products->{$image->product_id}->images[] = $image;
+			if($images = $this->products->get_images(array('product_id'=>$products_ids))){
+				foreach($images as $image){
+					$products->{$image->product_id}->images[] = $image;
+				}
+			}
 
 			foreach($products as &$product)
 			{

@@ -232,7 +232,7 @@ class ControllerMaster extends Simpla
 		}
 		
 		//Если только 1 элемент после дроби, значит это модуль page
-		if(count($a) === 1){
+		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order') ) ){
 			return array('module' => 'page', 'url'=> array_shift($a) );
 		}
 		
