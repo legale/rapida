@@ -134,12 +134,12 @@ class Cache extends Simpla
 			}
 
 			$perms = (string)fileperms($full_path);
+			$def_chmod = self::$config['default_chmod'];
 			dtimer::log(__METHOD__ . " fileperms '$perms' $full_path");
-
-			if( $perms !== self::$config['default_chmod'] ){
-				$def_chmod = self::$config['default_chmod'];
+			
+			if( $perms !== $def_chmod ){
 				dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
-				@chmod($full_path, $def_chmod);
+				chmod($full_path, $def_chmod);
 			}
 
 			if (!@file_exists($full_path) || !@is_writable($full_path)) {
