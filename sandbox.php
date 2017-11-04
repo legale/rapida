@@ -105,12 +105,14 @@ if (isset($_SESSION['admin'])) {
 		}
 	}
 	
-	foreach($features as $f){
-		$set[] = "`$f` = CASE WHEN `$f` = $id THEN $new_id END";
+	foreach($repl as $id=>$new_id){
+		foreach($features as $f){
+			$set[] = "`$f` = CASE WHEN `$f` = $id THEN $new_id END";
+		}
+		$set_s = implode(' , ', $set);
+		$simpla->db2->query("UPDATE __options SET $set_s");
 	}
-	$set_s = implode(' , ', $set);
-	$simpla->db2->query("UPDATE __options SET $set_s");
-	
+		
 
 	print "</PRE>";
 	dtimer::show();
