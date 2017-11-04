@@ -292,7 +292,12 @@ class ControllerMaster extends Simpla
 			//перебираем оставшуюся часть массива - тут у нас опции
 			foreach($a as $o){
 				//сначала разделяем название и значения
-				list($f, $o) = explode('-', $o);
+				$explode = explode('-', $o);
+				if(count($explode) === 2){
+					list($f, $o) = $explode;
+				} else {
+					return false;
+				}
 				$res['filter'][$f] = explode('.', $o);
 			}
 			break;
