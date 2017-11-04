@@ -84,7 +84,7 @@ class ImportYmlAdmin extends Simpla
 		}
 
 		
-		//проверяем загрузилка ли файл
+		//проверяем загрузился ли файл
 		if($this->request->method('post') && ($this->request->files("file") || $this->request->post("file_url"))) {
 			
 			//если не указан удаленный файл, берем загруженный файл из post запроса

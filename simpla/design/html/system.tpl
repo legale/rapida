@@ -22,7 +22,7 @@
 		<div id="list">		
 			<div class="row">
 				<div class="name cell">
-					Очистить таблицу значений опций от неиспользуемых в товарах значений. от неиспользуемых в товарах значений.
+					Очистить таблицу значений опций от неиспользуемых в товарах значений.
 				</div>
 				<div class="icons cell">
 				<button class="button" type="submit" name="action" value="clear_options">Выполнить</button>

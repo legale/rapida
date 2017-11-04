@@ -5,7 +5,7 @@ class ImportAdmin extends Simpla
 {
 	public $import_files_dir = 'simpla/files/import/';
 	public $import_file = 'import.csv';
-	public $allowed_extensions = array('csv', 'txt');
+	public $allowed_extensions = array('csv', 'gz');
 
 	public function fetch()
 	{
@@ -25,19 +25,47 @@ class ImportAdmin extends Simpla
 			{
 			$uploaded_name = $this->request->files("file", "tmp_name");
 			$temp = tempnam($this->import_files_dir, 'temp_');
-			if (!move_uploaded_file($uploaded_name, $temp))
+			if (!move_uploaded_file($uploaded_name, $temp)){
 				$this->design->assign('message_error', 'upload_error');
-
+			}
+			//тут пытаемся распаковать файл, если он у нас в gzip
+			if($this->is_gzip($temp)){
+				$temp2 = $temp; 
+				$temp = tempnam($this->import_files_dir, 'temp_');
+				$gzopen = gzopen($temp2, "r");
+				$fopen = fopen($temp, "w");
+				//разжимаем куски по 2мб и пишем
+				while (!feof($gzopen)) {
+				$data = gzread($gzopen, 2097152);
+				fwrite($fopen, $data);
+				}
+				fclose($fopen);
+				gzclose($gzopen);
+				unlink($temp2);
+			}
+			
 			if (!$this->convert_file($temp, $this->import_files_dir . $this->import_file))
 				$this->design->assign('message_error', 'convert_error');
 			else
 				$this->design->assign('filename', $this->request->files("file", "name"));
+			
+			
+			
 			unlink($temp);
 		}
 
 		return $this->design->fetch('import.tpl');
 	}
 
+
+	private function is_gzip($realpath) {
+		$mystery_string = file_get_contents($realpath, null, null, null, 50);
+		
+		if(mb_strpos($mystery_string , "\x1f" . "\x8b" . "\x08") !== false){;
+			return true;
+		}
+	} 
+	
 	private function convert_file($source, $dest)
 	{
 		// Узнаем какая кодировка у файла

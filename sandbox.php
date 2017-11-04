@@ -86,33 +86,7 @@ if (isset($_SESSION['admin'])) {
 
 	$options = $simpla->features->get_options();
 	$features = $simpla->features->get_features_trans();
-	//~ print_r($options);
-	
-	$repl = array();
-	$set = array();
-	
-	foreach($options as $fid){
-		foreach($fid as $o){
-			$id = $o->vid;
-			$val = trim($o->value);
-			$trans = translit_url($val);
-			$md4 = hash('md4', $trans);
-			
-			$simpla->db2->query("SELECT id as vid FROM __options_uniq WHERE md4 = 0x$md4");
-			$new_id = $simpla->db2->result_array('vid');
-			$repl[$id] = $new_id;
-			
-		}
-	}
-	
-	foreach($repl as $id=>$new_id){
-		foreach($features as $f){
-			$set[] = "`$f` = CASE WHEN `$f` = $id THEN $new_id END";
-		}
-		$set_s = implode(' , ', $set);
-		$simpla->db2->query("UPDATE __options SET $set_s");
-	}
-		
+	print_r($options);
 
 	print "</PRE>";
 	dtimer::show();
