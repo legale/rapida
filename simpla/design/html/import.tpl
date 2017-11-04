@@ -32,14 +32,15 @@
  			 	data: {from:from},
  			 	dataType: 'json',
   				success: function(data){
-  					for(var key in data.items)
-  					{
-    					$('ul#import_result').prepend('<li><span class=count>'+count+'</span> <span title='+data.items[key].status+' class="status '+data.items[key].status+'"></span> <a target=_blank href="index.php?module=ProductAdmin&id='+data.items[key].product.id+'">'+data.items[key].product.name+'</a> '+data.items[key].variant.name+'</li>');
-    					count++;
-    				}
+  					//~ for(var key in data.items)
+  					//~ {
+    					//~ $('ul#import_result').prepend('<li><span class=count>'+count+'</span> <span title='+data.items[key].status+' class="status '+data.items[key].status+'"></span> <a target=_blank href="index.php?module=ProductAdmin&id='+data.items[key].product.id+'">'+data.items[key].product.name+'</a> '+data.items[key].variant.name+'</li>');
+    					//~ count++;
+    				//~ }
 
-    				Piecon.setProgress(Math.round(100*data.from/data.totalsize));
+    				Piecon.setProgress(Math.round(100*data.from/data.totalsize * 100) / 100);
    					$("#progressbar").progressbar({ value: 100*data.from/data.totalsize });
+   					$("ul#import_result").text('progress: ' + Math.round(data.from / 1024) + ' of ' + Math.round(data.totalsize / 1024) + ' kb');
   				
     				if(data != false && !data.end)
     				{
@@ -48,7 +49,8 @@
     				else
     				{
     					Piecon.setProgress(100);
-    					$("#progressbar").hide('fast');
+    					//~ $("#progressbar").hide('fast');
+    					$("ul#import_result").append(' Done!');
     					in_process = false;
     				}
   				},
@@ -111,7 +113,7 @@
 			Создайте бекап на случай неудачного импорта. 
 		</p>
 		<p>
-			Сохраните таблицу в формате CSV
+			Сохраните таблицу в формате CSV. (Теперь поддерживается сжатие GZIP!)
 		</p>
 		<p>
 			В первой строке таблицы должны быть указаны названия колонок в таком формате:
