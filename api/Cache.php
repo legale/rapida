@@ -123,31 +123,30 @@ class Cache extends Simpla
 
 		$full_path = $path . "/" . $securityKey;
 		$full_pathx = hash('md4', $full_path);
-		dtimer::log(__METHOD__ . "getPath: '$path' '$securityKey'");
-		dtimer::log(__METHOD__ . "getPath full_path: '$full_path'");
-		dtimer::log(__METHOD__ . "getPath realpath: " . var_export(realpath($full_path), true));
+		dtimer::log(__METHOD__ . " '$path' '$securityKey'");
+		dtimer::log(__METHOD__ . " full_path: '$full_path'");
+		dtimer::log(__METHOD__ . " realpath: " . var_export(realpath($full_path), true));
 
 		if ($skip_create_path !== true && !isset($this->tmp[$full_pathx])) {
 
-			if (!@file_exists($full_path) || !@is_writable($full_path)) {
-				if (!@file_exists($full_path)) {
-					@mkdir($full_path, self::$config['default_chmod'], true);
-				}
-				$perms = (string)fileperms($full_path);
-				dtimer::log(__METHOD__ . " fileperms '$perms' $full_path");
-
-				if( $perms !== self::$config['default_chmod'] ){
-					$def_chmod = self::$config['default_chmod'];
-					dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
-					@chmod($full_path, $def_chmod);
-				}
-				
-				if (!@file_exists($full_path) || !@is_writable($full_path)) {
-					dtimer::log("mkdir($full_path) error or chmod('$full_path', " . self::$config['default_chmod'] . ") error");
-					dtimer::log("PLEASE CREATE OR CHMOD " . $full_path . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
-				}
+			if ( !@file_exists($full_path) ) {
+				@mkdir($full_path, self::$config['default_chmod'], true);
 			}
 
+			$perms = (string)fileperms($full_path);
+			dtimer::log(__METHOD__ . " fileperms '$perms' $full_path");
+
+			if( $perms !== self::$config['default_chmod'] ){
+				$def_chmod = self::$config['default_chmod'];
+				dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
+				@chmod($full_path, $def_chmod);
+			}
+
+			if (!@file_exists($full_path) || !@is_writable($full_path)) {
+				dtimer::log("mkdir($full_path) error or chmod('$full_path', " . self::$config['default_chmod'] . ") error");
+				dtimer::log("PLEASE CREATE OR CHMOD " . $full_path . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
+				return false;
+			}
 
 			$this->tmp[$full_pathx] = true;
 			$this->htaccessGen($full_path, array_key_exists('htaccess', self::$config) ? self::$config['htaccess'] : false);
