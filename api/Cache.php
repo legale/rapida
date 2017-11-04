@@ -134,6 +134,8 @@ class Cache extends Simpla
 					@mkdir($full_path, self::$config['default_chmod'], true);
 				}
 				$perms = (string)fileperms($full_path);
+				dtimer::log(__METHOD__ . " fileperms '$perms' $full_path");
+
 				if( $perms !== self::$config['default_chmod'] ){
 					$def_chmod = self::$config['default_chmod'];
 					dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
