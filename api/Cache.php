@@ -121,7 +121,7 @@ class Cache extends Simpla
 
 		$securityKey = $this->cleanFileName($securityKey);
 
-		$full_path = $path . "/" . $securityKey;
+		$full_path = realpath($path . "/" . $securityKey);
 		$full_pathx = hash('md4', $full_path);
 		dtimer::log(__METHOD__ . " '$path' '$securityKey'");
 		dtimer::log(__METHOD__ . " full_path: '$full_path'");
