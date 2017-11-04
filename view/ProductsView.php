@@ -106,7 +106,7 @@ class ProductsView extends View
 						$ids = $this->features->get_options_md4($vals);
 						//~ print_r($ids);
 						//добавим в фильтр по свойствам массив с id значений опций
-						$filter['features'][$features_trans[$name]] = $ids;
+						$filter['features'][$features_trans[$name]] = array_values($ids);
 					}
 				}
 			}
@@ -223,12 +223,6 @@ class ProductsView extends View
 				if(isset($product->images[0]))
 					$product->image = $product->images[0];
 			}
-	
-			/*
-			$properties = $this->features->get_options(array('product_id'=>$products_ids));
-			foreach($properties as $property)
-				$products[$property->product_id]->options[] = $property;
-			*/
 	
 			$this->design->assign('products', $products);
  		}

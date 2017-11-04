@@ -413,6 +413,148 @@ class Features extends Simpla
 
 
 
+	public function get_options_new($filter = array())
+	{
+		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+		$filter_ = $filter;
+		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
+		unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
+		if (isset($filter_['force_no_cache'])) {
+			$force_no_cache = true;
+			unset($filter_['force_no_cache']);
+		}
+		
+		
+		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+		ksort($filter_);
+		$filter_string = var_export($filter_, true);
+		$keyhash = hash('md4', 'get_products' . $filter_string);
+
+		//если запуск был не из очереди - пробуем получить из кеша
+		if (!isset($force_no_cache)) {
+			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
+			$res = $this->cache->get_cache_nosql($keyhash, false);
+		
+		
+		
+			//запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+			//функция выполнялась полностью
+			$filter_['force_no_cache'] = true;
+			$filter_string = var_export($filter_, true);
+			dtimer::log(__METHOD__ . " add task force_no_cache keyhash: $keyhash");
+
+			$task = '$this->features->get_options(';
+			$task .= $filter_string;
+			$task .= ');';
+			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+		}
+
+		if (isset($res) && !empty_($res)) {
+			dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+			return $res;
+		}
+
+
+		$product_id_filter = '';
+		$category_id_filter = '';
+		$visible_filter = '';
+		$brand_id_filter = '';
+		$features_filter = '';
+		$products_join = '';
+		$products_join_flag = false;
+		$select = '';
+		
+		//так запросы к БД повисают
+		//~ //если не заданы id нужных свойств, выбираем всё
+		//~ if(!isset($filter['feature_id'])){
+			//~ $this->db2->query("SELECT id FROM __features WHERE 1");
+			//~ $filter['feature_id'] = $this->db2->results_array('id');
+		//~ /* Если есть $filter['features'] - проверяем, все ли свойства, которые запрошены, есть там,
+		//~ *  если чего-то, то не хватает, добавляем.
+		//~ */
+		//~ }
+
+		if (isset($filter['features'])) {
+			$features_ids = array_keys($filter['features']);
+			//если в фильтрах свойств что-то задано, но этого нет в запрошенных фильтрах, добавляем.
+			foreach ($features_ids as $fid) {
+				if (!in_array($fid, $filter['feature_id'])) {
+					$filter['feature_id'][] = $fid;
+				}
+			}
+		//если у нас не заданы фильтры опций и не запрошены сами опции - останавливаем
+
+		}
+		elseif (!isset($filter['feature_id'])) {
+			return false;
+		}
+		
+		
+		// если у нас нет свойств, то и не может быть их значений - останавливаем
+		if (count($filter['feature_id']) == 0) {
+			return false;
+		}
+		
+		
+		
+		//собираем столбцы, которые нам понадобятся для select
+		$select = implode(', ', array_map(function ($a) {
+			return '`' . $a . '`';
+		}, $filter['feature_id']));
+
+
+		if (isset($filter['category_id'])) {
+			$category_id_filter = $this->db2->placehold(' AND o.product_id in(SELECT DISTINCT product_id from s_products_categories where category_id in (?@))', (array)$filter['category_id']);
+		}
+
+		if (isset($filter['product_id'])) {
+			$product_id_filter = $this->db2->placehold(' AND o.product_id in (?@)', (array)$filter['product_id']);
+		}
+
+		if (isset($filter['brand_id'])) {
+			$products_join_flag = true;
+			$brand_id_filter = $this->db2->placehold(' AND p.brand_id in (?@)', (array)$filter['brand_id']);
+		}
+
+		if (isset($filter['visible'])) {
+			$products_join_flag = true;
+			$visible_filter = $this->db2->placehold(' AND p.visible=?', (int)$filter['visible']);
+		}       
+		
+		//фильтрация по свойствам товаров
+		if (!empty($filter['features'])) {
+			foreach ($filter['features'] as $fid => $vids) {
+				if(is_array($vids)){
+					$features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
+				}
+			}
+		}
+
+		if ($products_join_flag === true) {
+			$products_join = "INNER JOIN __products p on p.id = o.product_id";
+		}
+
+		$query = $this->db2->placehold("SELECT `o`.`product_id` as `pid`, $select
+		    FROM __options o
+		    $products_join
+			WHERE 1 
+			$product_id_filter 
+			$brand_id_filter 
+			$features_filter 
+		    $visible_filter
+			$category_id_filter
+			");
+
+		if (!$this->db2->query($query)) {
+			trigger_error(__METHOD__ . " query error: '$query'", E_USER_WARNING);
+			return false;
+		}
+
+
+
+	}
+	
+
 	public function get_options($filter = array())
 	{
 		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
