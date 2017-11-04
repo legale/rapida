@@ -17,7 +17,7 @@ class Cache extends Simpla
 	{
 		// загружаем настройки кеша, если они еще не были загружены
 		$config = array(
-			"default_chmod" => '0666', // 0777 , 0666, 0644
+			"default_chmod" => '0777', // 0777 , 0666, 0644
 			"securityKey" => "", // directory to store cache
 			"htaccess" => true, // create htaccess file
 			"path" => "auto", // cache root path
@@ -131,15 +131,17 @@ class Cache extends Simpla
 
 			if (!@file_exists($full_path) || !@is_writable($full_path)) {
 				if (!@file_exists($full_path)) {
-					@mkdir($full_path, (int)self::$config['default_chmod'], true);
+					@mkdir($full_path, self::$config['default_chmod'], true);
 				}
-				if( (string)fileperms($full_path) !== (string)self::$config['default_chmod'] ){
-					dtimer::log(__METHOD__ . " fileperms not equals to default_chmod trying to chmod $full_path");
-					@chmod($full_path, (int)self::$config['default_chmod']);
+				$perms = (string)fileperms($full_path);
+				if( $perms !== self::$config['default_chmod'] ){
+					$def_chmod = self::$config['default_chmod'];
+					dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
+					@chmod($full_path, $def_chmod);
 				}
 				
 				if (!@file_exists($full_path) || !@is_writable($full_path)) {
-					dtimer::log("mkdir($full_path) error or chmod('$full_path', " . (int)self::$config['default_chmod'] . ") error");
+					dtimer::log("mkdir($full_path) error or chmod('$full_path', " . self::$config['default_chmod'] . ") error");
 					dtimer::log("PLEASE CREATE OR CHMOD " . $full_path . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
 				}
 			}
@@ -205,8 +207,7 @@ allow from 127.0.0.1";
 		 */
 		if ($skip == false) {
 			if (!file_exists($path)) {
-				if (!mkdir($path, (int)self::$config['default_chmod'])) {
-					print_r($path);
+				if (!mkdir($path, self::$config['default_chmod'])) {
 					dtimer::log("mkdir($path) error");
 					dtimer::log("PLEASE CHMOD " . $this->getPath() . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
 				}
