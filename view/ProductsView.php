@@ -98,10 +98,13 @@ class ProductsView extends View
 					//если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq 
 					if( isset($features_trans[$name]) ){
 						//~ print $name . "\n";
+						dtimer::log(__METHOD__ . "options translit: " . print_r($vals, true) );
 						foreach($vals as &$v){
 							$v = hash('md4', $v);
 						}
 						unset($v);
+						dtimer::log(__METHOD__ . "options md4: " . print_r($vals, true) );
+
 						//получим id уникальных значений по их хешам
 						$ids = $this->features->get_options_md4($vals);
 						//~ print_r($ids);
