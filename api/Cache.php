@@ -203,7 +203,7 @@ allow from 127.0.0.1";
 		 */
 		if ($skip == false) {
 			if (!file_exists($path)) {
-				if (!mkdir($path, 755)) {
+				if (!mkdir($path, (int)self::$config['default_chmod'])) {
 					print_r($path);
 					dtimer::log("mkdir($path) error");
 					dtimer::log("PLEASE CHMOD " . $this->getPath() . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
