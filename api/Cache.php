@@ -132,10 +132,9 @@ class Cache extends Simpla
 			if (!@file_exists($full_path) || !@is_writable($full_path)) {
 				if (!@file_exists($full_path)) {
 					@mkdir($full_path, (int)self::$config['default_chmod'], true);
-				}
-				if (!@is_writable($full_path)) {
 					@chmod($full_path, (int)self::$config['default_chmod']);
 				}
+				
 				if (!@file_exists($full_path) || !@is_writable($full_path)) {
 					dtimer::log("mkdir($full_path) error or chmod('$full_path', " . (int)self::$config['default_chmod'] . ") error");
 					dtimer::log("PLEASE CREATE OR CHMOD " . $full_path . " - 0755 OR ANY WRITABLE PERMISSION!", 92);
