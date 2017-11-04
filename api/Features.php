@@ -605,16 +605,6 @@ class Features extends Simpla
 		$products_join = '';
 		$products_join_flag = false;
 		$select = '';
-		
-		//так запросы к БД повисают
-		//~ //если не заданы id нужных свойств, выбираем всё
-		//~ if(!isset($filter['feature_id'])){
-			//~ $this->db2->query("SELECT id FROM __features WHERE 1");
-			//~ $filter['feature_id'] = $this->db2->results_array('id');
-		//~ /* Если есть $filter['features'] - проверяем, все ли свойства, которые запрошены, есть там,
-		//~ *  если чего-то, то не хватает, добавляем.
-		//~ */
-		//~ }
 
 		if (isset($filter['features'])) {
 			$features_ids = array_keys($filter['features']);
@@ -624,26 +614,17 @@ class Features extends Simpla
 					$filter['feature_id'][] = $fid;
 				}
 			}
-		//если у нас не заданы фильтры опций и не запрошены сами опции - останавливаем
+		}
+		
+		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
+		if (!isset($filter['feature_id']) && count($filter['feature_id']) === 0 ) {
+			$filter['feature_id'] = array_values( $this->features->get_features_trans() );
+		}
 
-		}
-		elseif (!isset($filter['feature_id'])) {
-			return false;
-		}
-		
-		
-		// если у нас нет свойств, то и не может быть их значений - останавливаем
-		if (count($filter['feature_id']) == 0) {
-			return false;
-		}
-		
-		
-		
 		//собираем столбцы, которые нам понадобятся для select
-		$select = implode(', ', array_map(function ($a) {
+		$select = "SELECT `o`.`product_id` as `pid`, " . implode(', ', array_map(function ($a) {
 			return '`' . $a . '`';
-		}, $filter['feature_id']));
-
+		}, $filter['feature_id']));		
 
 		if (isset($filter['category_id'])) {
 			$category_id_filter = $this->db2->placehold(' AND o.product_id in(SELECT DISTINCT product_id from s_products_categories where category_id in (?@))', (array)$filter['category_id']);
@@ -676,7 +657,7 @@ class Features extends Simpla
 			$products_join = "INNER JOIN __products p on p.id = o.product_id";
 		}
 
-		$query = $this->db2->placehold("SELECT `o`.`product_id` as `pid`, $select
+		$query = $this->db2->placehold("$select
 		    FROM __options o
 		    $products_join
 			WHERE 1 
@@ -688,7 +669,7 @@ class Features extends Simpla
 			");
 
 		if (!$this->db2->query($query)) {
-			trigger_error(__METHOD__ . " query error: '$query'", E_USER_WARNING);
+			trigger_error(__METHOD__ . " query error: $query", E_USER_WARNING);
 			return false;
 		}
 		//вытащим значения из options_uniq

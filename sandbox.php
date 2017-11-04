@@ -60,112 +60,51 @@ if (isset($_SESSION['admin'])) {
 	}
 
 	//**********************************
-	print "HELLO!\n";
 	print "<pre>";
+	print "HELLO!\n";
 	//**********************************
 
 
-	//~ $res = $simpla->features->get_options(array('force_no_cache' => true, 'feature_id' => array(1,2,4), 'features' => array(2=>'смартфон/коммуникатор') ));
-	//~ $res = $simpla->features->get_options(array ('product_id' => '1', 'force_no_cache' => true));
-	//~ $res = $simpla->features->get_options_uniq();
+
+	//~ $simpla->db->query("SELECT id, val FROM __options_uniq");
 	
-	//~ $simpla->db->query("INSERT INTO s_orders SET `delivery_id`='1', `name`='Стандарт', `email`='legale.legale@gmail.com', `address`='3252', `phone`='9265723322', `comment`='', `ip`='127.0.0.1', `discount`='0', `url`='3287bc0a51dd9958334d21378515ebfc', date=now()");
-	//~ $res = $simpla->db->insert_id();
-
-	$order_id = 8;
-	$pid = 10;
-	// $res = $simpla->orders->get_order($order_id);
-	//~ $res2 = $simpla->features->get_product_options($pid);
-
-	//~ $res3 = filesize_remote('http://sevenlight.ru/logo.png');
-	//~ $q = "SELECT product_id as pid, position as pos FROM __images WHERE product_id = 1 LIMIT 1";
-	//~ $simpla->db->query($q);
-	//~ $num = $simpla->db->num_rows();
-	//~ $aff = $simpla->db->affected_rows();
-	//~ $aff = $simpla->db->affected_rows();
-	//~ $res = $simpla->db->results();
-
-	$res = $simpla->coMaster->parse_uri('https://yandex.ru/catalog/svet/brand-arte_lamp.citylux/sort-name/my-life/his-shit.thing') ;
-	$res2 = $simpla->coMaster->parse_uri('https://yandex.ru/cart/something-dsfds-dgsfgdsfg') ;
-	$res3 = $simpla->coMaster->parse_uri('https://yandex.ru/user/login') ;
-	$res4 = $simpla->brands->get_brands_ids();
-	$res5 = $simpla->brands->get_brands_ids();
-	$res6 = $simpla->features->get_options_ids();
+	//~ while($row = $simpla->db->result_array()){
+		//~ $val = trim($row['val']);
+		//~ $trans = translit_url($val);
+		//~ $md4 = hash('md4', $trans);
+		//~ $id = $row['id'];
+		//~ $simpla->db2->query("UPDATE __options_uniq SET `val` = '$val', `trans` = '$trans', `md4` = 0x$md4  WHERE 1 AND id = $id ");
+	//~ }
 	
+	//~ $simpla->db->query("SELECT id, name as val FROM __features");
 	
-	$ar =  array (
-    'module' => 'catalog',
-    'url' => 'svet',
-    'sort' => 'name',
-    'brand' =>
-    array (
-    'arte_lamp',
-    'mwlight',
-    'citylux',
-    ),
-    'filter' => 
-    array (
-      'stil~' => 
-      array (
-         'retro',
-         'klassika',
-         'loft',
-      ),
-      'cvet' => 
-      array (
-         'red',
-      ),
-    ),
-    );
-	$ar2 =  array (
-    'brand' =>
-    array (
-		'mwlight',
-		'eglo',
-    ),
-    'filter' => 
-    array (
-      'stil~' => 
-      array (
-        'retro',
-        'loft',
-		'provans',
-      ),
-      'cvet' => 
-      array (
-        'green',
-      ),
-    ),
-    );
-    $ar3 = array(
-    	'sort'=>'',
-		'filter'=>array(
-			'stil~'=>array(),
-			),
-    );
-    
-	print $simpla->coMaster->gen_uri($ar, $ar3) ."\n";
-	//~ $res = $simpla->sys->sync_options();
-	//~ $res = $simpla->sys->clear_options();
-	//~ $files = glob_recurse('./*');
-	
-	//делает дамп базы
-	//$simpla->db->dump($dir . $dbfile);
+	//~ while($row = $simpla->db->result_array()){
+		//~ $trans = translit_url($row['val']);
+		//~ $id = $row['id'];
+		//~ $simpla->db2->query("UPDATE __features SET `trans` = '$trans' WHERE 1 AND id = $id ");
+	//~ }
 
-
-
-	var_export(	$res);
-	var_export(	$res2);
-	var_export(	$res3);
-	print "\n\n\n\n\n";
-	print_r($simpla->coMaster->parse_uri('http://ya.ru/files/products/baby.lightt.my.fire'));
-	//~ print_r($res6);
-	//~ print_r($res3);
-	// var_dump($num);
-	// var_dump($aff);
-	
+	$options = $simpla->features->get_options();
+	$features = $simpla->features->get_features_trans();
+	//~ print_r($options);
+	foreach($options as $fid){
+		foreach($fid as $o){
+			$id = $o->vid;
+			$val = trim($o->value);
+			$trans = translit_url($val);
+			$md4 = hash('md4', $trans);
+			
+			$simpla->db2->query("SELECT id as vid FROM __options_uniq WHERE md4 = 0x$md4");
+			$new_id = $simpla->db2->result_array('vid');
+			
+			foreach($features as $f){
+				$simpla->db2->query("UPDATE __options SET `$f` = $new_id WHERE `$f` = $id ");
+			}
+			
+		}
+	}
 
 	print "</PRE>";
-	dtimer::show();
+	//~ dtimer::show();
 
 }
