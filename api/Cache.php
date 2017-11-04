@@ -17,7 +17,7 @@ class Cache extends Simpla
 	{
 		// загружаем настройки кеша, если они еще не были загружены
 		$config = array(
-			"default_chmod" => '0777', // 0777 , 0666, 0644
+			"default_chmod" => '777', // 777 , 666, 644
 			"securityKey" => "", // directory to store cache
 			"htaccess" => true, // create htaccess file
 			"path" => "auto", // cache root path
@@ -28,7 +28,9 @@ class Cache extends Simpla
 		$ini_config = $this->config->vars_sections['cache'];
 
 		self::$config = array_merge($config, $ini_config);
-
+		
+		//меняем систему счисления, чтобы chmod и mkdir правильно обрабатывали права, заданные в виде строки
+		self::$config['default_chmod'] = octdec(self::$config['default_chmod']);
 	}
 
 
@@ -104,7 +106,6 @@ class Cache extends Simpla
 		}
 
 		$securityKey = array_key_exists('securityKey', self::$config) ? self::$config['securityKey'] : "";
-		dtimer::log('$config: ' . var_export(self::$config, true));
 		if ($securityKey == "" || $securityKey == "auto") {
 			$securityKey = self::$config['securityKey'];
 			if ($securityKey == "auto" || $securityKey == "") {
@@ -121,11 +122,11 @@ class Cache extends Simpla
 
 		$securityKey = $this->cleanFileName($securityKey);
 
-		$full_path = realpath($path . "/" . $securityKey);
+		$full_path = $path . "/" . $securityKey;
+		
 		$full_pathx = hash('md4', $full_path);
 		dtimer::log(__METHOD__ . " '$path' '$securityKey'");
 		dtimer::log(__METHOD__ . " full_path: '$full_path'");
-		dtimer::log(__METHOD__ . " realpath: " . var_export(realpath($full_path), true));
 
 		if ($skip_create_path !== true && !isset($this->tmp[$full_pathx])) {
 
@@ -133,13 +134,13 @@ class Cache extends Simpla
 				@mkdir($full_path, self::$config['default_chmod'], true);
 			}
 
-			$perms = (string)fileperms($full_path);
-			$def_chmod = self::$config['default_chmod'];
+			$perms = substr(decoct(fileperms($full_path)) , 2);
+			$def_chmod = decoct(self::$config['default_chmod']);
 			dtimer::log(__METHOD__ . " fileperms '$perms' $full_path");
 			
 			if( $perms !== $def_chmod ){
 				dtimer::log(__METHOD__ . " fileperms '$perms' not equals to default_chmod '$def_chmod' trying to chmod $full_path");
-				chmod($full_path, $def_chmod);
+				chmod($full_path, self::$config['default_chmod']);
 			}
 
 			if (!@file_exists($full_path) || !@is_writable($full_path)) {
@@ -190,7 +191,7 @@ allow from 127.0.0.1";
 	private function getFilePath($keyword, $skip = false)
 	{
 		$path = $this->getPath();
-		dtimer::log(__METHOD__ . "getFilePath: '$path'");
+		dtimer::log(__METHOD__ . " Path: '$path'");
 		if (empty($path)) {
 			dtimer::log(__METHOD__ . "getPath empty!");
 		}
