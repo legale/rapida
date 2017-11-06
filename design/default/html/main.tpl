@@ -28,7 +28,7 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
@@ -45,14 +45,14 @@
 			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="featured_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
+					<input id="featured_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
-					{if $v->name}<label class="variant_name" for="featured_{$v->id}">{$v->name}</label>{/if}
+					{if $v['name']}<label class="variant_name" for="featured_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
-					{if $v->compare_price > 0}<span class="compare_price">{$v->compare_price|convert}</span>{/if}
-					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					{if $v['compare_price'] > 0}<span class="compare_price">{$v['compare_price']|convert}</span>{/if}
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
@@ -87,7 +87,7 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
@@ -103,14 +103,14 @@
 			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="new_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
+					<input id="new_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
-					{if $v->name}<label class="variant_name" for="new_{$v->id}">{$v->name}</label>{/if}
+					{if $v['name']}<label class="variant_name" for="new_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
-					{if $v->compare_price > 0}<span class="compare_price">{$v->compare_price|convert}</span>{/if}
-					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					{if $v['compare_price'] > 0}<span class="compare_price">{$v['compare_price']|convert}</span>{/if}
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
@@ -144,7 +144,7 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
@@ -160,14 +160,14 @@
 			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="discounted_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
+					<input id="discounted_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
-					{if $v->name}<label class="variant_name" for="discounted_{$v->id}">{$v->name}</label>{/if}
+					{if $v['name']}<label class="variant_name" for="discounted_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
-					{if $v->compare_price > 0}<span class="compare_price">{$v->compare_price|convert}</span>{/if}
-					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					{if $v['compare_price'] > 0}<span class="compare_price">{$v['compare_price']|convert}</span>{/if}
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
