@@ -81,10 +81,10 @@ class ExportAjax extends Simpla
 		$products = $this->products->get_products(array('page'=>$page, 'limit'=>$this->products_count));
  		foreach($products as &$p){
 	 		// Свойства товаров
-	 		if ( isset($features) && $options = $this->features->get_product_options($p->id) ) {
+	 		if ( isset($features) && $options = $this->features->get_product_options($p['id']) ) {
 				foreach($options as $fid=>$option) {
 					$feature = $features->{$fid}->name;
-					$p->$feature = str_replace(',', '.', trim($option['val']));
+					$p['$feature'] = str_replace(',', '.', trim($option['val']));
 				}
 			}
  		}

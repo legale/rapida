@@ -205,7 +205,7 @@ class Products extends Simpla
 		//~ die;
 		$this->db->query($query);
 		
-		if($res = $this->db->results_object(null,'id') ) {
+		if($res = $this->db->results_array(null,'id') ) {
 			dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
 			$this->cache->set_cache_nosql($keyhash, $res);
 			return $res;
@@ -381,7 +381,7 @@ class Products extends Simpla
 				GROUP BY p.id
 				LIMIT 1";
 		$this->db->query($query);
-		$product = $this->db->result();
+		$product = $this->db->result_array();
 		return $product;
 	}
 
@@ -570,7 +570,7 @@ class Products extends Simpla
 					");
 		
 		$this->db->query($query);
-		$res = $this->db->results(null, 'related_id');
+		$res = $this->db->results_array(null, 'related_id');
 		return $res;
 	}
 	
@@ -602,7 +602,7 @@ class Products extends Simpla
 		$query = $this->db->placehold("SELECT i.id, i.product_id, i.name, i.filename, i.position
 									FROM __images AS i WHERE 1 $product_id_filter $group_by ORDER BY i.product_id, i.position");
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 	
 	/* Метод для добавления изображений

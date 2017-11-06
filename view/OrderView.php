@@ -51,7 +51,7 @@ class OrderView extends View
 		if(!$order)
 			return false;
 						
-		$purchases = $this->orders->get_purchases(array('order_id'=>intval($order->id)));
+		$purchases = $this->orders->get_purchases(array('order_id'=>intval($order['id'])));
 		if(!$purchases)
 			return false;
 			
@@ -59,13 +59,13 @@ class OrderView extends View
 		{
 			if($payment_method_id = $this->request->post('payment_method_id', 'integer'))
 			{
-				$this->orders->update_order($order->id, array('payment_method_id'=>$payment_method_id));
-				$order = $this->orders->get_order((integer)$order->id);
+				$this->orders->update_order($order['id'], array('payment_method_id'=>$payment_method_id));
+				$order = $this->orders->get_order((integer)$order['id']);
 			}
 			elseif($this->request->post('reset_payment_method'))
 			{
-				$this->orders->update_order($order->id, array('payment_method_id'=>null));
-				$order = $this->orders->get_order((integer)$order->id);
+				$this->orders->update_order($order['id'], array('payment_method_id'=>null));
+				$order = $this->orders->get_order((integer)$order['id']);
 			}
 		}
 		
@@ -73,50 +73,50 @@ class OrderView extends View
 		$variants_ids = array();
 		foreach($purchases as $purchase)
 		{
-			$products_ids[] = $purchase->product_id;
-			$variants_ids[] = $purchase->variant_id;
+			$products_ids[] = $purchase['product_id'];
+			$variants_ids[] = $purchase['variant_id'];
 		}
 		$products = $this->products->get_products(array('id'=>$products_ids));
 		
 		$images = $this->products->get_images(array('product_id'=>$products_ids));
-		foreach($images as $image)
-			$products->{$image->product_id}->images[] = $image;
-		
+		foreach($images as $image){
+			$products[$image['product_id']]['images'][] = $image;
+		}
 		$variants = array();
 		foreach($this->variants->get_variants(array('id'=>$variants_ids)) as $v)
-			$variants[$v->id] = $v;
+			$variants[$v['id']] = $v;
 			
 		foreach($variants as $variant)
-			$products->{$variant->product_id}->variants[] = $variant;
+			$products[$variant['product_id']]['variants'][] = $variant;
 
 		foreach($purchases as &$purchase)
 		{
-			if(!empty($products->{$purchase->product_id}))
-				$purchase->product = $products->{$purchase->product_id};
-			if(!empty($variants[$purchase->variant_id]))
+			if(!empty($products[$purchase['product_id']]))
+				$purchase['product'] = $products[$purchase['product_id']];
+			if(!empty($variants[$purchase['variant_id']]))
 			{
-				$purchase->variant = $variants[$purchase->variant_id];
+				$purchase['variant'] = $variants[$purchase['variant_id']];
 			}
 		}
 		
 		// Способ доставки
-		$delivery = $this->delivery->get_delivery($order->delivery_id);
+		$delivery = $this->delivery->get_delivery($order['delivery_id']);
 		$this->design->assign('delivery', $delivery);
 			
 		$this->design->assign('order', $order);
 		$this->design->assign('purchases', $purchases);
 
 		// Способ оплаты
-		if($order->payment_method_id)
+		if($order['payment_method_id'])
 		{
-			$payment_method = $this->payment->get_payment_method($order->payment_method_id);
+			$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
 		} else {
 			$payment_method = '';
 		}
 		$this->design->assign('payment_method', $payment_method);
 			
 		// Варианты оплаты
-		$payment_methods = $this->payment->get_payment_methods(array('delivery_id'=>$order->delivery_id, 'enabled'=>1));
+		$payment_methods = $this->payment->get_payment_methods(array('delivery_id'=>$order['delivery_id'], 'enabled'=>1));
 		$this->design->assign('payment_methods', $payment_methods);
 
 		// Все валюты
@@ -139,11 +139,11 @@ class OrderView extends View
 		if(!$order)
 			return false;
 			
-		if(!$order->paid)
+		if(!$order['paid'])
 			return false;
 						
 		// Проверяем, есть ли такой файл в покупках	
-		$query = $this->db->placehold("SELECT p.id FROM __purchases p, __variants v WHERE p.variant_id=v.id AND p.order_id=? AND v.attachment=?", $order->id, $file);		$this->db->query($query);
+		$query = $this->db->placehold("SELECT p.id FROM __purchases p, __variants v WHERE p.variant_id=v.id AND p.order_id=? AND v.attachment=?", $order['id'], $file);		$this->db->query($query);
 		if($this->db->num_rows()==0)
 			return false;
 		

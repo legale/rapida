@@ -54,31 +54,31 @@
 
 		<div id="list">		
 			{foreach $orders as $order}
-			<div class="{if $order->paid}green{/if} row">
+			<div class="{if $order['paid']}green{/if} row">
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$order->id}"/>				
+					<input type="checkbox" name="check[]" value="{$order['id']}"/>				
 				</div>
 				<div class="order_date cell">				 	
-	 				{$order->date|date} в {$order->date|time}
+	 				{$order['date']|date} в {$order['date']|time}
 				</div>
 				<div class="order_name cell">
-					{foreach $order->labels as $l}
+					{foreach $order['labels'] as $l}
 					<span class="order_label" style="background-color:#{$l->color};" title="{$l->name}"></span>
 					{/foreach}
-	 				<a href="{url module=OrderAdmin id=$order->id return=$smarty.server.REQUEST_URI}">Заказ №{$order->id}</a> {$order->name|escape}
-	 				{if $order->note}
-	 				<div class="note">{$order->note|escape}</div>
+	 				<a href="{url module=OrderAdmin id=$order['id'] return=$smarty.server.REQUEST_URI}">Заказ №{$order['id']}</a> {$order['name']|escape}
+	 				{if $order['note']}
+	 				<div class="note">{$order['note']|escape}</div>
 	 				{/if} 	 			
 				</div>
 				<div class="icons cell">
-					<a href='{url module=OrderAdmin id=$order->id view=print}'  target="_blank" class="print" title="Печать заказа"></a>
+					<a href='{url module=OrderAdmin id=$order['id'] view=print}'  target="_blank" class="print" title="Печать заказа"></a>
 					<a href='#' class=delete title="Удалить"></a>
 				</div>
 				<div class="name cell" style='white-space:nowrap;'>
-	 				{$order->total_price|escape} {$currency->sign}
+	 				{$order['total_price']|escape} {$currency->sign}
 				</div>
 				<div class="icons cell">
-					{if $order->paid}
+					{if $order['paid']}
 						<img src='design/images/cash_stack.png' alt='Оплачен' title='Оплачен'>
 					{else}
 						<img src='design/images/cash_stack_gray.png' alt='Не оплачен' title='Не оплачен'>				
@@ -86,16 +86,16 @@
 				</div>
 				{if $keyword}
 				<div class="icons cell">
-						{if $order->status == 0}
+						{if $order['status'] == 0}
 						<img src='design/images/new.png' alt='Новый' title='Новый'>
 						{/if}
-						{if $order->status == 1}
+						{if $order['status'] == 1}
 						<img src='design/images/time.png' alt='Принят' title='Принят'>
 						{/if}
-						{if $order->status == 2}
+						{if $order['status'] == 2}
 						<img src='design/images/tick.png' alt='Выполнен' title='Выполнен'>
 						{/if}
-						{if $order->status == 3}
+						{if $order['status'] == 3}
 						<img src='design/images/cross.png' alt='Удалён' title='Удалён'>
 						{/if}
 				</div>

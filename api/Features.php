@@ -37,7 +37,7 @@ class Features extends Simpla
 									$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
 		$this->db->query($query);
 		dtimer::log(__METHOD__ . " query: '$query'");
-		$res = $this->db->results_object(null, 'id');
+		$res = $this->db->results_array(null, 'id');
 		dtimer::log(__METHOD__ . ' return');
 		return $res;
 	}
@@ -73,7 +73,7 @@ class Features extends Simpla
 		// Выбираем свойство
 		$query = $this->db->placehold("SELECT id, name, trans, position, in_filter FROM __features WHERE id=? LIMIT 1", (int)$id);
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 
 	function get_feature_categories($id)
@@ -159,7 +159,6 @@ class Features extends Simpla
 		}
 		if (!$this->db->query("SELECT 1 FROM __options_uniq LIMIT 1")) {
 			$this->db->query("CREATE TABLE __options_uniq (`id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
-			//$this->db->query("ALTER TABLE __options_uniq ADD INDEX `val` (`val`)");
 
 		}
 		if (!$this->db->query("SELECT `$id` FROM __options LIMIT 1")) {
@@ -183,7 +182,7 @@ class Features extends Simpla
 		if (!is_array($feature) || !is_int($id)) {
 			$t1 = gettype($id);
 			$t2 = gettype($feature);
-			trigger_error(__METHOD__ . " argument type error $t1 $t2", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " argument type error $t1 $t2", 1);
 			return false;
 		}
 		foreach ($feature as $k => $e) {
@@ -196,7 +195,7 @@ class Features extends Simpla
 
 		$this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
 		if (isset($feature['in_filter']) && (bool)$feature['in_filter'] === true) {
-			$this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`)");
+			$this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`, `product_id`)");
 		}
 		else {
 			$this->db->query("ALTER TABLE __options DROP INDEX `$id` ");
@@ -223,7 +222,7 @@ class Features extends Simpla
 	{
 		dtimer::log(__METHOD__ . " arguments '$product_id' '$feature_id' '$value'");
 		if (!isset($product_id) || !isset($feature_id) || !isset($value)) {
-			trigger_error(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", 1);
 			return false;
 		}
 		
@@ -271,7 +270,7 @@ class Features extends Simpla
 	public function update_option_direct($product_id, $feature_id, $value)
 	{
 		if (!isset($product_id) || !isset($feature_id) || !isset($value)) {
-			trigger_error(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", 1);
 			return false;
 		}
 		
@@ -372,7 +371,7 @@ class Features extends Simpla
 		}
 
 		$this->db->query("SELECT * FROM __options_uniq WHERE 1 $id_filter");
-		$res = $this->db->results_array( array('md4', 'id', 'val'), array('id', 'md4', 'id') );
+		$res = $this->db->results_array( array('md4', 'id', 'val', 'trans'), array('id', 'md4', 'id', 'id') );
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
 		if(is_null($ids)){
 			$this->options_ids = $res;
@@ -412,8 +411,76 @@ class Features extends Simpla
 	}
 
 
+	/*
+	 * Этот метод предоставляет комбинированные данные опций, в т.ч. все возможные опции без учета уже выбранных,
+	 * доступные для выбора опции с учетом уже выбранных. Т.е. если выбрана страна, например, Россия, другие 
+	 * страны будут также доступны для выбора. 
+	 */
+	public function get_options_mix($filter = array())
+	{
+		$res = array();
+		
+		//Самый простой вариант - если не заданы фильтры по свойствам
+		if(!isset($filter['features'])){
+			$res['filter'] = $this->get_options_raw($filter);
+			//2 массив со значениями
+			$vals = $this->get_options_ids()[2];
+			//3 массив с транслитом
+			$trans = $this->get_options_ids()[3];
+			foreach($res['filter'] as $fid=>$ids){
+				$res['full'][$fid] = array(
+				'vals' => array_intersect_key($vals, $res['filter'][$fid]),
+				'trans' => array_intersect_key($trans, $res['filter'][$fid])
+				);
+			} 
+		} else 
+		{
+			/*
+			 * Это фильтрованные результаты. Логика:
+			 * делается выборка для каждого свойства, исключая заданные опции по этому свойству
+			 */
+			 
+			//это результат со всеми заданными $fid
+			$filter_ = $filter;
+			$res['filter'] = $this->get_options_raw($filter_);
 
-	public function get_options_new($filter = array())
+			//тут получим полные результаты для отдельных $fid
+			foreach($filter['features'] as $fid=>$vid){
+				//копируем фильтр
+				$filter_ = $filter;
+				//оставляем только нужный нам $fid
+				$filter_['feature_id'] = array($fid);
+				//убираем из массива заданных фильтров искомый $fid
+				unset($filter_['features'][$fid]);
+				
+				$raw = $this->get_options_raw($filter_);
+				$res['filter'][$fid] = $raw[$fid];
+			}
+			
+			//это полный результат, поэтому убираем все фильтры 
+			$filter_ = $filter;
+			unset($filter_['features']);
+			$res['full'] = $this->get_options_raw($filter_);
+			//2 массив со значениями
+			$vals = $this->get_options_ids()[2];
+			//3 массив с транслитом
+			$trans = $this->get_options_ids()[3];
+			foreach($res['full'] as $fid=>$ids){
+				$res['full'][$fid] = array(
+				'vals' => array_intersect_key($vals, $res['full'][$fid]),
+				'trans' => array_intersect_key($trans, $res['full'][$fid])
+				);
+			} 
+		}
+		return $res;
+	}
+
+	/*
+	 * Этим методом можно получить необработанные данные из таблицы s_options
+	 * Используется для получения входных данных для метода get_options_mix()
+	 */
+	 
+	public function get_options_raw($filter = array())
 	{
 		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
 		$filter_ = $filter;
@@ -428,7 +495,7 @@ class Features extends Simpla
 		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
 		ksort($filter_);
 		$filter_string = var_export($filter_, true);
-		$keyhash = hash('md4', 'get_products' . $filter_string);
+		$keyhash = hash('md4', 'get_options_raw' . $filter_string);
 
 		//если запуск был не из очереди - пробуем получить из кеша
 		if (!isset($force_no_cache)) {
@@ -443,7 +510,7 @@ class Features extends Simpla
 			$filter_string = var_export($filter_, true);
 			dtimer::log(__METHOD__ . " add task force_no_cache keyhash: $keyhash");
 
-			$task = '$this->features->get_options(';
+			$task = '$this->features->get_options_raw(';
 			$task .= $filter_string;
 			$task .= ');';
 			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
@@ -463,16 +530,12 @@ class Features extends Simpla
 		$products_join = '';
 		$products_join_flag = false;
 		$select = '';
+		$res = array();
 		
-		//так запросы к БД повисают
-		//~ //если не заданы id нужных свойств, выбираем всё
-		//~ if(!isset($filter['feature_id'])){
-			//~ $this->db2->query("SELECT id FROM __features WHERE 1");
-			//~ $filter['feature_id'] = $this->db2->results_array('id');
-		//~ /* Если есть $filter['features'] - проверяем, все ли свойства, которые запрошены, есть там,
-		//~ *  если чего-то, то не хватает, добавляем.
-		//~ */
-		//~ }
+		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
+		if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0 ) {
+			$filter['feature_id'] = array_values( $this->features->get_features_trans(array('in_filter'=>1)) );
+		}
 
 		if (isset($filter['features'])) {
 			$features_ids = array_keys($filter['features']);
@@ -482,26 +545,14 @@ class Features extends Simpla
 					$filter['feature_id'][] = $fid;
 				}
 			}
-		//если у нас не заданы фильтры опций и не запрошены сами опции - останавливаем
+		}
+		
 
-		}
-		elseif (!isset($filter['feature_id'])) {
-			return false;
-		}
-		
-		
-		// если у нас нет свойств, то и не может быть их значений - останавливаем
-		if (count($filter['feature_id']) == 0) {
-			return false;
-		}
-		
-		
-		
+
 		//собираем столбцы, которые нам понадобятся для select
-		$select = implode(', ', array_map(function ($a) {
+		$select = "SELECT `o`.`product_id` as `pid`, " . implode(', ', array_map(function ($a) {
 			return '`' . $a . '`';
-		}, $filter['feature_id']));
-
+		}, $filter['feature_id']));		
 
 		if (isset($filter['category_id'])) {
 			$category_id_filter = $this->db2->placehold(' AND o.product_id in(SELECT DISTINCT product_id from s_products_categories where category_id in (?@))', (array)$filter['category_id']);
@@ -534,7 +585,7 @@ class Features extends Simpla
 			$products_join = "INNER JOIN __products p on p.id = o.product_id";
 		}
 
-		$query = $this->db2->placehold("SELECT `o`.`product_id` as `pid`, $select
+		$query = $this->db2->placehold("$select
 		    FROM __options o
 		    $products_join
 			WHERE 1 
@@ -546,12 +597,28 @@ class Features extends Simpla
 			");
 
 		if (!$this->db2->query($query)) {
-			trigger_error(__METHOD__ . " query error: '$query'", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " query error: $query", 1);
 			return false;
+		}
+		
+		
+		//вывод обрабатываем построчно
+		while( $row = $this->db2->result_array(null, 'pid', true) ){
+			//~ $res['pid'][] = $row['pid'];
+			//~ unset($row['pid']);
+			
+			foreach($row as $fid=>$vid){
+				if($vid !== null && !isset($res[$fid][$vid])){
+					$res[$fid][$vid] = '';
+				}
+			}
 		}
 
 
-
+		dtimer::log("set_cache_nosql key: $keyhash");
+		$this->cache->set_cache_nosql($keyhash, $res);
+		dtimer::log(__METHOD__ . ' return db');
+		return $res;
 	}
 	
 
@@ -570,7 +637,7 @@ class Features extends Simpla
 		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
 		ksort($filter_);
 		$filter_string = var_export($filter_, true);
-		$keyhash = hash('md4', 'get_products' . $filter_string);
+		$keyhash = hash('md4', 'get_options' . $filter_string);
 
 		//если запуск был не из очереди - пробуем получить из кеша
 		if (!isset($force_no_cache)) {
@@ -606,6 +673,7 @@ class Features extends Simpla
 		$products_join_flag = false;
 		$select = '';
 
+		
 		if (isset($filter['features'])) {
 			$features_ids = array_keys($filter['features']);
 			//если в фильтрах свойств что-то задано, но этого нет в запрошенных фильтрах, добавляем.
@@ -617,8 +685,8 @@ class Features extends Simpla
 		}
 		
 		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
-		if (!isset($filter['feature_id']) && count($filter['feature_id']) === 0 ) {
-			$filter['feature_id'] = array_values( $this->features->get_features_trans() );
+		if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0 ) {
+			$filter['feature_id'] = array_values( $this->features->get_features_trans(array('in_filter' => 1 )) );
 		}
 
 		//собираем столбцы, которые нам понадобятся для select
@@ -669,13 +737,12 @@ class Features extends Simpla
 			");
 
 		if (!$this->db2->query($query)) {
-			trigger_error(__METHOD__ . " query error: $query", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " query error: $query", 1);
 			return false;
 		}
 		//вытащим значения из options_uniq
 		if (!$options_uniq = $this->features->get_options_uniq(null, true)) {
-			dtimer::log(__METHOD__ . " unable to get_options_unique ");
-			trigger_error(__METHOD__ . " unable to get_options_unique ", E_USER_WARNING);
+			dtimer::log(__METHOD__ . " unable to get_options_unique ", 1);
 			return false;
 		}
 
@@ -714,6 +781,8 @@ class Features extends Simpla
 		return $obj;
 	}
 	
+
+
 
 	/* 
 	 * Этот метод предназначен для получения данных о свойствах напрямую из таблицы options. 

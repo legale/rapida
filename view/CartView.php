@@ -3,10 +3,6 @@
 /**
  * Simpla CMS
  *
- * @copyright 	2009 Denis Pikusov
- * @link 		http://simp.la
- * @author 		Denis Pikusov
- *
  * Корзина покупок
  * Этот класс использует шаблон cart.tpl
  *
@@ -46,35 +42,35 @@ class CartView extends View
     // Если нажали оформить заказ
     if(isset($_POST['checkout']))
     {
-    	$order = new stdClass;
-    	$order->delivery_id = $this->request->post('delivery_id', 'integer');
-    	$order->name        = $this->request->post('name');
-    	$order->email       = $this->request->post('email');
-    	$order->address     = $this->request->post('address');
-    	$order->phone       = $this->request->post('phone');
-    	$order->comment     = $this->request->post('comment');
-    	$order->ip      	= $_SERVER['REMOTE_ADDR'];
+    	$order = array();
+    	$order['delivery_id'] = $this->request->post('delivery_id', 'integer');
+    	$order['name']        = $this->request->post('name');
+    	$order['email']       = $this->request->post('email');
+    	$order['address']     = $this->request->post('address');
+    	$order['phone']       = $this->request->post('phone');
+    	$order['comment']     = $this->request->post('comment');
+    	$order['ip']      	= $_SERVER['REMOTE_ADDR'];
     	
     	$captcha_code =  $this->request->post('captcha_code', 'string');
 
 		// Скидка
 		$cart = $this->cart->get_cart();
-		$order->discount = $cart->discount;
+		$order['discount'] = $cart['discount'];
 		
-		if(isset($cart->coupon)){
-			$order->coupon_discount = $cart->coupon_discount;
-			$order->coupon_code = $cart->coupon->code;
+		if(isset($cart['coupon'])){
+			$order['coupon_discount'] = $cart['coupon_discount'];
+			$order['coupon_code'] = $cart['coupon']['code'];
 		}
 		
     	
     	if(!empty($this->user->id))
-	    	$order->user_id = $this->user->id;
+	    	$order['user_id'] = $this->user->id;
     	
-    	if(empty($order->name))
+    	if(empty($order['name']))
     	{
     		$this->design->assign('error', 'empty_name');
     	}
-    	elseif(empty($order->email))
+    	elseif(empty($order['email']))
     	{
     		$this->design->assign('error', 'empty_email');
     	}
@@ -89,15 +85,13 @@ class CartView extends View
 	    	
 			//что-то пошло не так на этапе создания заказа
 	    	if($order_id === false){
-				dtimer::log(__METHOD__ . " add_order return false");
-				trigger_error(__METHOD__ . " add_order return false");
+				dtimer::log(__METHOD__ . " add_order return false", 1);
 			}
 	    	$_SESSION['order_id'] = $order_id;
 	    	
 	    	// Если использовали купон, увеличим количество его использований
-	    	if(isset($cart->coupon)) {
-				//~ print_r($cart->coupon);
-	    		$this->coupons->update_coupon($cart->coupon->id, array('usages'=>$usages));
+	    	if(isset($cart['coupon'])) {
+	    		$this->coupons->update_coupon($cart['coupon']->id, array('usages'=>$usages));
 			}
 	    	
 	    	// Добавляем товары к заказу
@@ -108,23 +102,23 @@ class CartView extends View
 	    	
 	    	if ( $order = $this->orders->get_order($order_id) ) {
 				// Стоимость доставки
-				$delivery = $this->delivery->get_delivery($order->delivery_id);
-				if(!empty($delivery) && $delivery->free_from > $order->total_price)
+				$delivery = $this->delivery->get_delivery($order['delivery_id']);
+				if(!empty($delivery) && $delivery->free_from > $order['total_price'])
 				{
-					$this->orders->update_order($order->id, array('delivery_price'=>$delivery->price, 'separate_delivery'=>$delivery->separate_payment));
+					$this->orders->update_order($order['id'], array('delivery_price'=>$delivery->price, 'separate_delivery'=>$delivery->separate_payment));
 				}
 				
 				// Отправляем письмо пользователю
-				$this->notify->email_order_user($order->id);
+				$this->notify->email_order_user($order['id']);
 				
 				// Отправляем письмо администратору
-				$this->notify->email_order_admin($order->id);
+				$this->notify->email_order_admin($order['id']);
 				
 				// Очищаем корзину (сессию)
 				$this->cart->empty_cart();
 							
 				// Перенаправляем на страницу заказа
-				header('Location: '.$this->config->root_url.'/order/'.$order->url);
+				header('Location: '.$this->config->root_url.'/order/'.$order['url']);
 			} else {
 				dtimer::log(__METHOD__ . " unable to get_order ");
 			}
@@ -151,7 +145,7 @@ class CartView extends View
 	    	{
 				$coupon = $this->coupons->get_coupon((string)$coupon_code);
 
-				if(empty($coupon) || !$coupon->valid)
+				if(empty($coupon) || !$coupon['valid'])
 				{
 		    		$this->cart->apply_coupon($coupon_code);
 					$this->design->assign('coupon_error', 'invalid');
@@ -168,12 +162,12 @@ class CartView extends View
 	
 	
 	//добавляем переменные в шаблон
-	$this->design->assign('delivery_id', isset($order->delivery_id) ? $order->delivery_id : '');
-	$this->design->assign('name', isset($order->name) ? $order->name : '');
-	$this->design->assign('email', isset($order->email) ? $order->email : '');
-	$this->design->assign('phone', isset($order->phone) ? $order->phone : '');
-	$this->design->assign('address', isset($order->address) ? $order->address: '');
-	$this->design->assign('comment', isset($order->comment) ? $order->comment : '');
+	$this->design->assign('delivery_id', isset($order['delivery_id']) ? $order['delivery_id'] : '');
+	$this->design->assign('name', isset($order['name']) ? $order['name'] : '');
+	$this->design->assign('email', isset($order['email']) ? $order['email'] : '');
+	$this->design->assign('phone', isset($order['phone']) ? $order['phone'] : '');
+	$this->design->assign('address', isset($order['address']) ? $order['address']: '');
+	$this->design->assign('comment', isset($order['comment']) ? $order['comment'] : '');
 
               
   }
@@ -191,14 +185,16 @@ class CartView extends View
 		// Данные пользователя
 		if(isset($this->user->id))
 		{
-			$last_order = $this->orders->get_orders(array('user_id'=>$this->user->id, 'limit'=>1));
-			$last_order = reset($last_order);
+			$last_order = false;
+			if($last_order = $this->orders->get_orders(array('user_id'=>$this->user->id, 'limit'=>1))){
+				$last_order = reset($last_order);
+			}
 			if($last_order)
 			{
-				$this->design->assign('name', $last_order->name);
-				$this->design->assign('email', $last_order->email);
-				$this->design->assign('phone', $last_order->phone);
-				$this->design->assign('address', $last_order->address);
+				$this->design->assign('name', $last_order['name']);
+				$this->design->assign('email', $last_order['email']);
+				$this->design->assign('phone', $last_order['phone']);
+				$this->design->assign('address', $last_order['address']);
 			}
 			else
 			{

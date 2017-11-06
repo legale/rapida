@@ -34,14 +34,14 @@
 
 		<div id="list">
 			{foreach $features as $feature}
-			<div class="{if $feature->in_filter}in_filter{/if} row">
-				<input type="hidden" name="positions[{$feature->id}]" value="{$feature->position}">
+			<div class="{if $feature['in_filter']}in_filter{/if} row">
+				<input type="hidden" name="positions[{$feature['id']}]" value="{$feature['position']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$feature->id}" />				
+					<input type="checkbox" name="check[]" value="{$feature['id']}" />				
 				</div>
 				<div class="cell">
-					<a href="{url module=FeatureAdmin id=$feature->id return=$smarty.server.REQUEST_URI}">{$feature->name|escape}</a>
+					<a href="{url module=FeatureAdmin id=$feature['id'] return=$smarty.server.REQUEST_URI}">{$feature['name']|escape}</a>
 				</div>
 				<div class="icons cell">
 					<a title="Использовать в фильтре" class="in_filter" href='#' ></a>
@@ -80,12 +80,12 @@
 	{function name=categories_tree}
 	{if $categories}
 	<ul>
-		{if $categories[0]->parent_id == 0}
-		<li {if !$category->id}class="selected"{/if}><a href="{url category_id=null}">Все категории</a></li>	
+		{if $categories[0]['parent_id'] == 0}
+		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null}">Все категории</a></li>	
 		{/if}
 		{foreach $categories as $c}
-		<li {if $category->id == $c->id}class="selected"{/if}><a href="index.php?module=FeaturesAdmin&category_id={$c->id}">{$c->name}</a></li>
-		{categories_tree categories=$c->subcategories}
+		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="index.php?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
+		{categories_tree categories=$c['subcategories']}
 		{/foreach}
 	</ul>
 	{/if}

@@ -3,54 +3,54 @@
 {$meta_title = "Корзина" scope=parent}
 
 <h1>
-{if $cart->purchases}В корзине {$cart->total_products} {$cart->total_products|plural:'товар':'товаров':'товара'}
+{if $cart['purchases']}В корзине {$cart['total_products']} {$cart['total_products']|plural:'товар':'товаров':'товара'}
 {else}Корзина пуста{/if}
 </h1>
 
-{if $cart->purchases}
+{if $cart['purchases']}
 <form method="post" name="cart">
 
 {* Список покупок *}
 <table id="purchases">
 
-{foreach $cart->purchases as $purchase}
+{foreach $cart['purchases'] as $purchase}
 <tr>
 	{* Изображение товара *}
 	<td class="image">
-		{$image = $purchase->product->images|first}
+		{$image = $purchase['product']['images']|first}
 		{if $image}
-		<a href="products/{$purchase->product->url}"><img src="{$image->filename|resize:50:50}" alt="{$product->name|escape}"></a>
+		<a href="products/{$purchase['product']['url']}"><img src="{$image->filename|resize:50:50}" alt="{$product->name|escape}"></a>
 		{/if}
 	</td>
 	
 	{* Название товара *}
 	<td class="name">
-		<a href="products/{$purchase->product->url}">{$purchase->product->name|escape}</a>
-		{$purchase->variant->name|escape}			
+		<a href="products/{$purchase['product']['url']}">{$purchase['product']['name']|escape}</a>
+		{$purchase['variant']['name']|escape}			
 	</td>
 
 	{* Цена за единицу *}
 	<td class="price">
-		{($purchase->variant->price)|convert} {$currency->sign}
+		{($purchase['variant']['price'])|convert} {$currency->sign}
 	</td>
 
 	{* Количество *}
 	<td class="amount">
-		<select name="amounts[{$purchase->variant->id}]" onchange="document.cart.submit();">
-			{section name=amounts start=1 loop=$purchase->variant->stock+1 step=1}
-			<option value="{$smarty.section.amounts.index}" {if $purchase->amount==$smarty.section.amounts.index}selected{/if}>{$smarty.section.amounts.index} {$settings->units}</option>
+		<select name="amounts[{$purchase['variant']['id']}]" onchange="document.cart.submit();">
+			{section name=amounts start=1 loop=$purchase['variant']['stock']+1 step=1}
+			<option value="{$smarty.section.amounts.index}" {if $purchase['amount']==$smarty.section.amounts.index}selected{/if}>{$smarty.section.amounts.index} {$settings->units}</option>
 			{/section}
 		</select>
 	</td>
 
 	{* Цена *}
 	<td class="price">
-		{($purchase->variant->price*$purchase->amount)|convert}&nbsp;{$currency->sign}
+		{($purchase['variant']['price']*$purchase['amount'])|convert}&nbsp;{$currency->sign}
 	</td>
 	
 	{* Удалить из корзины *}
 	<td class="remove">
-		<a href="cart/remove/{$purchase->variant->id}">
+		<a href="cart/remove/{$purchase['variant']['id']}">
 		<img src="design/{$settings->theme}/images/delete.png" title="Удалить из корзины" alt="Удалить из корзины">
 		</a>
 	</td>
@@ -80,16 +80,16 @@
 		{/if}
 	
 		<div>
-		<input type="text" name="coupon_code" value="{$cart->coupon->code|escape}" class="coupon_code">
+		<input type="text" name="coupon_code" value="{$cart['coupon']['code']|escape}" class="coupon_code">
 		</div>
-		{if $cart->coupon->min_order_price>0}(купон {$cart->coupon->code|escape} действует для заказов от {$cart->coupon->min_order_price|convert} {$currency->sign}){/if}
+		{if $cart['coupon']['min_order_price']>0}(купон {$cart['coupon']['code']|escape} действует для заказов от {$cart['coupon']['min_order_price']|convert} {$currency->sign}){/if}
 		<div>
 		<input type="button" name="apply_coupon"  value="Применить купон" onclick="document.cart.submit();">
 		</div>
 	</th>
 	<th class="price">
-		{if $cart->coupon_discount>0}
-		&minus;{$cart->coupon_discount|convert}&nbsp;{$currency->sign}
+		{if $cart['coupon_discount']>0}
+		&minus;{$cart['coupon_discount']|convert}&nbsp;{$currency->sign}
 		{/if}
 	</th>
 	<th class="remove"></th>
@@ -114,7 +114,7 @@ $("input[name='coupon_code']").keypress(function(event){
 	<th class="name"></th>
 	<th class="price" colspan="4">
 		Итого
-		{$cart->total_price|convert}&nbsp;{$currency->sign}
+		{$cart['total_price']|convert}&nbsp;{$currency->sign}
 	</th>
 </tr>
 </table>
@@ -185,9 +185,9 @@ $("input[name='coupon_code']").keypress(function(event){
 			<h3>
 			<label for="deliveries_{$delivery->id}">
 			{$delivery->name}
-			{if $cart->total_price < $delivery->free_from && $delivery->price>0}
+			{if $cart['total_price'] < $delivery->free_from && $delivery->price>0}
 				({$delivery->price|convert}&nbsp;{$currency->sign})
-			{elseif $cart->total_price >= $delivery->free_from}
+			{elseif $cart['total_price'] >= $delivery->free_from}
 				(бесплатно)
 			{/if}
 			</label>

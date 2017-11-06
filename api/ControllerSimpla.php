@@ -18,7 +18,6 @@ class ControllerSimpla extends Simpla
 	public function action()
 	{
 
-
 		require_once ('view/IndexView.php');
 		$view = new IndexView();
 

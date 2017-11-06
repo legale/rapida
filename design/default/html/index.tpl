@@ -154,7 +154,7 @@
 
 			<!-- Поиск-->
 			<div id="search">
-				<form action="products">
+				<form action="search">
 					<input class="input_search" type="text" name="keyword" value="{$keyword|escape}" placeholder="Поиск товара"/>
 					<input class="button_search" value="" type="submit" />
 				</form>
@@ -171,11 +171,11 @@
 			<ul>
 			{foreach $categories as $c}
 				{* Показываем только видимые категории *}
-				{if $c->visible}
+				{if $c['visible']}
 					<li>
-						{if $c->image}<img src="{$config->categories_images_dir}{$c->image}" alt="{$c->name|escape}">{/if}
-						<a {if $category->id == $c->id}class="selected"{/if} href="catalog/{$c->url}" data-category="{$c->id}">{$c->name|escape}</a>
-						{categories_tree categories=$c->subcategories}
+						{if $c['image']}<img src="{$config->categories_images_dir}{$c['image']}" alt="{$c['name']|escape}">{/if}
+						<a {if $category->id == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
+						{categories_tree categories=$c['subcategories']}
 					</li>
 				{/if}
 			{/foreach}

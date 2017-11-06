@@ -91,7 +91,7 @@ class CommentsAdmin extends Simpla
 		foreach ($comments as &$comment)
 			{
 			if ($comment->type == 'product' && isset($products->{$comment->object_id}))
-				$comment->product = $products->{$comment->object_id};
+				$comment->product = $products[$comment->object_id];
 			if ($comment->type == 'blog' && isset($posts[$comment->object_id]))
 				$comment->post = $posts[$comment->object_id];
 		}

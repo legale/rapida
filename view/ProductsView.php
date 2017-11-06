@@ -26,6 +26,7 @@ class ProductsView extends View
 		//~ print "<PRE>";
 		//~ print_r($this->coMaster->uri_arr);
 		//~ print "</PRE>";
+		dtimer::log(__METHOD__ . " fetch");
 		$category_url = $this->coMaster->uri_arr['path_arr']['url'];
 		
 		$filter = array();
@@ -58,12 +59,11 @@ class ProductsView extends View
 		// Выберем текущую категорию
 		if (  (!empty($category_url)) ) {
 			$category = $this->categories->get_category((string)$category_url);
-			if (empty($category) || (!$category->visible && empty($_SESSION['admin'])))
+			if (empty($category) || (!$category['visible'] && empty($_SESSION['admin'])))
 				return false;
 			$this->design->assign('category', $category);
-			$filter['category_id'] = $category->children;
+			$filter['category_id'] = $category['children'];
 		}
-
 		// Если задано ключевое слово
 		$keyword = $this->request->get('keyword');
 		if (  (!empty($keyword)) ) {
@@ -85,7 +85,7 @@ class ProductsView extends View
 		if ( (!empty($category))  ) {
 			//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
 			$features_trans = $this->features->get_features_trans(array('in_filter'=>1));
-			$features = $this->features->get_features(array('category_id'=>$category->id, 'in_filter'=>1));
+			$features = $this->features->get_features(array('category_id'=>$category['id'], 'in_filter'=>1));
 
 			//~ print_r($features_trans);
 			//~ print_r($features);
@@ -107,14 +107,23 @@ class ProductsView extends View
 
 						//получим id уникальных значений по их хешам
 						$ids = $this->features->get_options_md4($vals);
+						
+						//тут проверим количество переданных значений опций и количество полученных из базы,
+						//если не совпадает - return false
+						if(count($ids) !== count($vals)){
+							return false;
+						}
+						
 						//~ print_r($ids);
 						//добавим в фильтр по свойствам массив с id значений опций
-						$filter['features'][$features_trans[$name]] = array_values($ids);
+						$ids = array_values($ids);
+						$ids = array_combine($ids, $ids);
+						$filter['features'][$features_trans[$name]] = $ids;
 					}
 				}
 			}
 			//~ print_r($features_trans);
-			//~ print_r($filter['features']);
+			//~ print_r($filter);
 			
 
 			$options_filter['visible'] = 1;
@@ -126,33 +135,18 @@ class ProductsView extends View
 			if(!empty($features_ids)){
 				$options_filter['feature_id'] = $features_ids;
 			}
-			$options_filter['category_id'] = $category->children;
+			$options_filter['category_id'] = $category['children'];
 			if( isset($filter['features']) ){
-				$options_filter['features'] =& $filter['features'];
+				$options_filter['features'] = $filter['features'];
 			}
 			if(!empty($brands_urls)) {
-				$options_filter['brand_id'] =& $filter['brand_id'];
+				$options_filter['brand_id'] = $filter['brand_id'];
 			}
-			$options = $this->features->get_options($options_filter);
-			//~ print_r($options);
-			
-			if(isset($features) && !empty_($features)){
-				foreach($features as $k=>&$feature) {
-					if( isset($options->{$k}) ){
-						$feature->options = $options->{$k};
-					}
-				}
-			}
-			
-			if (  ( !empty($features) )  ) {
-				foreach($features as $i=>&$feature) { 
-					if ( (empty($feature->options))  ) {
-						unset($features->{$i});
-					}
-				}
-			}
+			$options = $this->features->get_options_mix($options_filter);
 
+			$this->design->assign('filter', $filter);
 			$this->design->assign('features', $features);
+			$this->design->assign('options', $options);
  		}
 
 		// Постраничная навигация
@@ -200,31 +194,30 @@ class ProductsView extends View
 			$products_ids = array_keys((array)$products);
 			foreach($products as &$product)
 			{
-				$product->variants = array();
-				$product->images = array();
-				$product->properties = array();
+				$product['variants'] = array();
+				$product['images'] = array();
+				$product['properties'] = array();
 			}
 	
 			if($variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true)) ) {
 				foreach($variants as &$variant){
-					//$variant->price *= (100-$discount)/100;
-					$products->{$variant->product_id}->variants[] = $variant;
+					$products[$variant['product_id']]['variants'][] = $variant;
 				}
 				unset($variant);
 			}
 	
 			if($images = $this->products->get_images(array('product_id'=>$products_ids))){
 				foreach($images as $image){
-					$products->{$image->product_id}->images[] = $image;
+					$products[$image['product_id']]['images'][] = $image;
 				}
 			}
 
 			foreach($products as &$product)
 			{
-				if(isset($product->variants[0]))
-					$product->variant = $product->variants[0];
-				if(isset($product->images[0]))
-					$product->image = $product->images[0];
+				if(isset($product['variants'][0]))
+					$product['variant'] = $product['variants'][0];
+				if(isset($product['images'][0]))
+					$product['image'] = $product['images'][0];
 			}
 	
 			$this->design->assign('products', $products);
@@ -233,8 +226,8 @@ class ProductsView extends View
 		// Выбираем бренды, они нужны нам в шаблоне	
 		if(!empty($category))
 		{
-			$brands = $this->brands->get_brands(array('category_id'=>$category->children, 'visible'=>1));
-			$category->brands = $brands;		
+			$brands = $this->brands->get_brands(array('category_id'=>$category['children'], 'visible'=>1));
+			$category['brands'] = $brands;		
 		}
 		
 		// Устанавливаем мета-теги в зависимости от запроса
@@ -246,9 +239,9 @@ class ProductsView extends View
 		}
 		elseif(isset($category))
 		{
-			$this->design->assign('meta_title', $category->meta_title);
-			$this->design->assign('meta_keywords', $category->meta_keywords);
-			$this->design->assign('meta_description', $category->meta_description);
+			$this->design->assign('meta_title', $category['meta_title']);
+			$this->design->assign('meta_keywords', $category['meta_keywords']);
+			$this->design->assign('meta_description', $category['meta_description']);
 		}
 		elseif(isset($brand))
 		{

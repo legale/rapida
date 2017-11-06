@@ -36,7 +36,7 @@ class Coupons extends Simpla
 										((DATE(NOW()) <= DATE(c.expire) OR c.expire IS NULL) AND (c.usages=0 OR NOT c.single)) AS valid
 		                               FROM __coupons c $where LIMIT 1");
 		if ($this->db->query($query))
-			return $this->db->result();
+			return $this->db->result_array();
 		else
 			return false;
 	}
@@ -89,7 +89,7 @@ class Coupons extends Simpla
 		);
 
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 	
 	

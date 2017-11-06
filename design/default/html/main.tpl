@@ -26,26 +26,26 @@
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product->image}
+		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product->url}"><img src="{$product->image->filename|resize:200:200}" alt="{$product->name|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product->id}" href="products/{$product->url}">{$product->name|escape}</a></h3>
+		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
 		<!-- Название товара (The End) -->
 		
 
-		{if $product->variants|count > 0}
+		{if $product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">
 			<table>
-			{foreach $product->variants as $v}
+			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="featured_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product->variants|count<2}style="display:none;"{/if}/>
+					<input id="featured_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
 					{if $v->name}<label class="variant_name" for="featured_{$v->id}">{$v->name}</label>{/if}
@@ -85,25 +85,25 @@
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product->image}
+		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product->url}"><img src="{$product->image->filename|resize:200:200}" alt="{$product->name|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product->id}" href="products/{$product->url}">{$product->name|escape}</a></h3>
+		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
-		{if $product->variants|count > 0}
+		{if $product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">
 			<table>
-			{foreach $product->variants as $v}
+			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="new_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product->variants|count<2}style="display:none;"{/if}/>
+					<input id="new_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
 					{if $v->name}<label class="variant_name" for="new_{$v->id}">{$v->name}</label>{/if}
@@ -142,25 +142,25 @@
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product->image}
+		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product->url}"><img src="{$product->image->filename|resize:200:200}" alt="{$product->name|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']['filename']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product->id}" href="products/{$product->url}">{$product->name|escape}</a></h3>
+		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
 		<!-- Название товара (The End) -->
 		
-		{if $product->variants|count > 0}
+		{if $product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">
 			<table>
-			{foreach $product->variants as $v}
+			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="discounted_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product->variants|count<2}style="display:none;"{/if}/>
+					<input id="discounted_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
 					{if $v->name}<label class="variant_name" for="discounted_{$v->id}">{$v->name}</label>{/if}

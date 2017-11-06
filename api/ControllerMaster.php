@@ -19,6 +19,7 @@ class ControllerMaster extends Simpla
 	'page' => 'coSimpla',
 	'catalog' => 'coSimpla',
 	'products'=> 'coSimpla',
+	'search'=> 'coSimpla',
 	'brands'=> 'coSimpla',
 	'contact'=> 'coSimpla',
 	'user'=> 'coSimpla',
@@ -232,7 +233,7 @@ class ControllerMaster extends Simpla
 		}
 		
 		//Если только 1 элемент после дроби, значит это модуль page
-		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order') ) ){
+		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search') ) ){
 			return array('module' => 'page', 'url'=> array_shift($a) );
 		}
 		

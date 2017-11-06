@@ -6,8 +6,8 @@
 	{if in_array('features', $manager->permissions)}<li><a href="index.php?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
-{if $category->id}
-{$meta_title = $category->name scope=parent}
+{if $category['id']}
+{$meta_title = $category['name'] scope=parent}
 {else}
 {$meta_title = 'Новая категория' scope=parent}
 {/if}
@@ -129,17 +129,17 @@ function translit(str)
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Категория добавлена{elseif $message_success=='updated'}Категория обновлена{else}{$message_success}{/if}</span>
-	<a class="link" target="_blank" href="../catalog/{$category->url}">Открыть категорию на сайте</a>
+	<a class="link" target="_blank" href="../catalog/{$category['url']}">Открыть категорию на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 	
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/catalog/{$category->url|urlencode}&title={$category->name|urlencode}&description={$category->description|urlencode}&image={$config->root_url|urlencode}/files/categories/{$category->image|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}&title={$category['name']|urlencode}&description={$category['description']|urlencode}&image={$config->root_url|urlencode}/files/categories/{$category['image']|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/catalog/{$category->url|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$category->name|urlencode}&url={$config->root_url|urlencode}/catalog/{$category->url|urlencode}&hashtags={$category->meta_keywords|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://twitter.com/share?text={$category['name']|urlencode}&url={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}&hashtags={$category['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
@@ -162,10 +162,10 @@ function translit(str)
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$category->name|escape}"/> 
-		<input name=id type="hidden" value="{$category->id|escape}"/> 
+		<input class="name" name=name type="text" value="{$category['name']|escape}"/> 
+		<input name=id type="hidden" value="{$category['id']|escape}"/> 
 		<div class="checkbox">
-			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $category->visible}checked{/if}/> <label for="active_checkbox">Активна</label>
+			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
 		</div>
 	</div> 
 
@@ -174,9 +174,9 @@ function translit(str)
 				<option value='0'>Корневая категория</option>
 				{function name=category_select level=0}
 				{foreach $cats as $cat}
-					{if $category->id != $cat->id}
-						<option value='{$cat->id}' {if $category->parent_id == $cat->id}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat->name}</option>
-						{category_select cats=$cat->subcategories level=$level+1}
+					{if $category['id'] != $cat['id']}
+						<option value='{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
+						{category_select cats=$cat['subcategories'] level=$level+1}
 					{/if}
 				{/foreach}
 				{/function}
@@ -191,10 +191,10 @@ function translit(str)
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url">/catalog/</div><input name="url" class="page_url" type="text" value="{$category->url|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$category->meta_title|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$category->meta_keywords|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp">{$category->meta_description|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url">/catalog/</div><input name="url" class="page_url" type="text" value="{$category['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$category['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp">{$category['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
@@ -222,11 +222,11 @@ function translit(str)
 			<h2>Изображение категории</h2>
 			<input class='upload_image' name=image type=file>			
 			<input type=hidden name="delete_image" value="">
-			{if $category->image}
+			{if $category['image']}
 			<ul>
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
-					<img src="../{$config->categories_images_dir}{$category->image}" alt="" />
+					<img src="../{$config->categories_images_dir}{$category['image']}" alt="" />
 				</li>
 			</ul>
 			{/if}
@@ -237,7 +237,7 @@ function translit(str)
 	<!-- Описагние категории -->
 	<div class="block layer">
 		<h2>Описание</h2>
-		<textarea name="description" class="editor_large">{$category->description|escape}</textarea>
+		<textarea name="description" class="editor_large">{$category['description']|escape}</textarea>
 	</div>
 	<!-- Описание категории (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

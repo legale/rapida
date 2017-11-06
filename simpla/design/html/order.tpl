@@ -1,10 +1,10 @@
 {* Вкладки *}
 {capture name=tabs}
 	{if in_array('orders', $manager->permissions)}
-		<li {if $order->status==0}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=0">Новые</a></li>
-		<li {if $order->status==1}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=1">Приняты</a></li>
-		<li {if $order->status==2}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=2">Выполнены</a></li>
-		<li {if $order->status==3}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=3">Удалены</a></li>
+		<li {if $order['status']==0}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=0">Новые</a></li>
+		<li {if $order['status']==1}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=1">Приняты</a></li>
+		<li {if $order['status']==2}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=2">Выполнены</a></li>
+		<li {if $order['status']==3}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=3">Удалены</a></li>
 	{if $keyword}
 	<li class="active"><a href="{url module=OrdersAdmin keyword=$keyword id=null label=null}">Поиск</a></li>
 	{/if}
@@ -15,8 +15,8 @@
 {/capture}
 
 
-{if $order->id}
-{$meta_title = "Заказ №`$order->id`" scope=parent}
+{if $order['id']}
+{$meta_title = "Заказ №`$order['id']`" scope=parent}
 {else}
 {$meta_title = 'Новый заказ' scope=parent}
 {/if}
@@ -26,16 +26,16 @@
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 
 <div id="name">
-	<input name=id type="hidden" value="{$order->id|escape}"/> 
-	<h1>{if $order->id}Заказ №{$order->id|escape}{else}Новый заказ{/if}
+	<input name=id type="hidden" value="{$order['id']|escape}"/> 
+	<h1>{if $order['id']}Заказ №{$order['id']|escape}{else}Новый заказ{/if}
 	<select class=status name="status">
-		<option value='0' {if $order->status == 0}selected{/if}>Новый</option>
-		<option value='1' {if $order->status == 1}selected{/if}>Принят</option>
-		<option value='2' {if $order->status == 2}selected{/if}>Выполнен</option>
-		<option value='3' {if $order->status == 3}selected{/if}>Удален</option>
+		<option value='0' {if $order['status'] == 0}selected{/if}>Новый</option>
+		<option value='1' {if $order['status'] == 1}selected{/if}>Принят</option>
+		<option value='2' {if $order['status'] == 2}selected{/if}>Выполнен</option>
+		<option value='3' {if $order['status'] == 3}selected{/if}>Удален</option>
 	</select>
 	</h1>
-	<a href="{url view=print id=$order->id}" target="_blank"><img src="./design/images/printer.png" name="export" title="Печать заказа"></a>
+	<a href="{url view=print id=$order['id']}" target="_blank"><img src="./design/images/printer.png" name="export" title="Печать заказа"></a>
 
 
 	<div id=next_order>
@@ -80,53 +80,53 @@
 		<li>
 			<label class=property>Дата</label>
 			<div class="edit_order_detail view_order_detail">
-			{$order->date} {$order->time}
+			{$order['date']} {$order['time']}
 			</div>
 		</li>
 		<li>
 			<label class=property>Имя</label> 
 			<div class="edit_order_detail" style='display:none;'>
-				<input name="name" class="simpla_inp" type="text" value="{$order->name|escape}" />
+				<input name="name" class="simpla_inp" type="text" value="{$order['name']|escape}" />
 			</div>
 			<div class="view_order_detail">
-				{$order->name|escape}
+				{$order['name']|escape}
 			</div>
 		</li>
 		<li>
 			<label class=property>Email</label>
 			<div class="edit_order_detail" style='display:none;'>
-				<input name="email" class="simpla_inp" type="text" value="{$order->email|escape}" />
+				<input name="email" class="simpla_inp" type="text" value="{$order['email']|escape}" />
 			</div>
 			<div class="view_order_detail">
-				<a href="mailto:{$order->email|escape}?subject=Заказ%20№{$order->id}">{$order->email|escape}</a>
+				<a href="mailto:{$order['email']|escape}?subject=Заказ%20№{$order['id']}">{$order['email']|escape}</a>
 			</div>
 		</li>
 		<li>
 			<label class=property>Телефон</label>
 			<div class="edit_order_detail" style='display:none;'>
-				<input name="phone" class="simpla_inp " type="text" value="{$order->phone|escape}" />
+				<input name="phone" class="simpla_inp " type="text" value="{$order['phone']|escape}" />
 			</div>
 			<div class="view_order_detail">
-				{if $order->phone}
-				<span class="ip_call" data-phone="{$order->phone|escape}" target="_blank">{$order->phone|escape}</span>{else}{$order->phone|escape}{/if}
+				{if $order['phone']}
+				<span class="ip_call" data-phone="{$order['phone']|escape}" target="_blank">{$order['phone']|escape}</span>{else}{$order['phone']|escape}{/if}
 			</div>
 		</li>
 		<li>
 			<label class=property>Адрес <a href='http://maps.yandex.ru/' id=address_link target=_blank><img align=absmiddle src='design/images/map.png' alt='Карта в новом окне' title='Карта в новом окне'></a></label>
 			<div class="edit_order_detail" style='display:none;'>
-				<textarea name="address">{$order->address|escape}</textarea>
+				<textarea name="address">{$order['address']|escape}</textarea>
 			</div>
 			<div class="view_order_detail">
-				{$order->address|escape}
+				{$order['address']|escape}
 			</div>
 		</li>
 		<li>
 			<label class=property>Комментарий пользователя</label>
 			<div class="edit_order_detail" style='display:none;'>
-			<textarea name="comment">{$order->comment|escape}</textarea>
+			<textarea name="comment">{$order['comment']|escape}</textarea>
 			</div>
 			<div class="view_order_detail">
-				{$order->comment|escape|nl2br}
+				{$order['comment']|escape|nl2br}
 			</div>
 		</li>
 	</ul>
@@ -176,11 +176,11 @@
 		<li>
 			<div class="edit_note" style='display:none;'>
 				<label class=property>Ваше примечание (не видно пользователю)</label>
-				<textarea name="note">{$order->note|escape}</textarea>
+				<textarea name="note">{$order['note']|escape}</textarea>
 			</div>
-			<div class="view_note" {if !$order->note}style='display:none;'{/if}>
+			<div class="view_note" {if !$order['note']}style='display:none;'{/if}>
 				<label class=property>Ваше примечание (не видно пользователю)</label>
-				<div class="note_text">{$order->note|escape}</div>
+				<div class="note_text">{$order['note']|escape}</div>
 			</div>
 		</li>
 	</ul>
@@ -195,8 +195,8 @@
 		{foreach $purchases as $purchase}
 		<div class="row">
 			<div class="image cell">
-				<input type=hidden name=purchases[id][{$purchase->id}] value='{$purchase->id}'>
-				{$image = $purchase->product->images|first}
+				<input type=hidden name=purchases[id][{$purchase['id']}] value='{$purchase['id']}'>
+				{$image = $purchase['product']['images']|first}
 				{if $image}
 				<img class=product_icon src='{$image->filename|resize:35:35}'>
 				{/if}
@@ -205,11 +205,11 @@
 			
 				<div class='purchase_variant'>				
 				<span class=edit_purchase style='display:none;'>
-				<select name=purchases[variant_id][{$purchase->id}] {if $purchase->product->variants|count==1 && $purchase->variant_name == '' && $purchase->variant->sku == ''}style='display:none;'{/if}>					
-		    	{if !$purchase->variant}<option price='{$purchase->price}' amount='{$purchase->amount}' value=''>{$purchase->variant_name|escape} {if $purchase->sku}(арт. {$purchase->sku}){/if}</option>{/if}
-				{foreach $purchase->product->variants as $v}
-					{if $v->stock>0 || $v->id == $purchase->variant->id}
-					<option price='{$v->price}' amount='{$v->stock}' value='{$v->id}' {if $v->id == $purchase->variant_id}selected{/if} >
+				<select name=purchases[variant_id][{$purchase['id']}] {if $purchase['product']['variants']|count==1 && $purchase['variant_name'] == '' && $purchase['variant']['sku'] == ''}style='display:none;'{/if}>					
+		    	{if !$purchase['variant']}<option price='{$purchase['price']}' amount='{$purchase['amount']}' value=''>{$purchase['variant_name']|escape} {if $purchase['sku']}(арт. {$purchase['sku']}){/if}</option>{/if}
+				{foreach $purchase['product']['variants'] as $v}
+					{if $v->stock>0 || $v->id == $purchase['variant']['id']}
+					<option price='{$v->price}' amount='{$v->stock}' value='{$v->id}' {if $v->id == $purchase['variant_id']}selected{/if} >
 					{$v->name}
 					{if $v->sku}(арт. {$v->sku}){/if}
 					</option>
@@ -218,48 +218,48 @@
 				</select>
 				</span>
 				<span class=view_purchase>
-					{$purchase->variant_name} {if $purchase->sku}(арт. {$purchase->sku}){/if}			
+					{$purchase['variant_name']} {if $purchase['sku']}(арт. {$purchase['sku']}){/if}			
 				</span>
 				</div>
 		
-				{if $purchase->product}
-				<a class="related_product_name" href="index.php?module=ProductAdmin&id={$purchase->product->id}&return={$smarty.server.REQUEST_URI|urlencode}">{$purchase->product_name}</a>
+				{if $purchase['product']}
+				<a class="related_product_name" href="index.php?module=ProductAdmin&id={$purchase['product']['id']}&return={$smarty.server.REQUEST_URI|urlencode}">{$purchase['product_name']}</a>
 				{else}
-				{$purchase->product_name}				
+				{$purchase['product_name']}				
 				{/if}
 			</div>
 			<div class="price cell">
-				<span class=view_purchase>{$purchase->price}</span>
-				<span class=edit_purchase style='display:none;'>
-				<input type=text name=purchases[price][{$purchase->id}] value='{$purchase->price}' size=5>
+				<span class=view_purchase>{$purchase['price']}</span>
+				<span class=edit_purchase style="display:none;">
+				<input type=text name=purchases[price][{$purchase['id']}] value="{$purchase['price']}" size=5>
 				</span>
 				{$currency->sign}
 			</div>
 			<div class="amount cell">			
 				<span class=view_purchase>
-					{$purchase->amount} {$settings->units}
+					{$purchase['amount']} {$settings->units}
 				</span>
 				<span class=edit_purchase style='display:none;'>
-					{if $purchase->variant}
-					{math equation="min(max(x,y),z)" x=$purchase->variant->stock+$purchase->amount*($order->closed) y=$purchase->amount z=$settings->max_order_amount assign="loop"}
+					{if $purchase['variant']}
+					{math equation="min(max(x,y),z)" x=$purchase['variant']['stock']+$purchase['amount']*($order['closed']) y=$purchase['amount'] z=$settings->max_order_amount assign="loop"}
 					{else}
-					{math equation="x" x=$purchase->amount assign="loop"}
+					{math equation="x" x=$purchase['amount'] assign="loop"}
 					{/if}
-			        <select name=purchases[amount][{$purchase->id}]>
+			        <select name=purchases[amount][{$purchase['id']}]>
 						{section name=amounts start=1 loop=$loop+1 step=1}
-							<option value="{$smarty.section.amounts.index}" {if $purchase->amount==$smarty.section.amounts.index}selected{/if}>{$smarty.section.amounts.index} {$settings->units}</option>
+							<option value="{$smarty.section.amounts.index}" {if $purchase['amount']==$smarty.section.amounts.index}selected{/if}>{$smarty.section.amounts.index} {$settings->units}</option>
 						{/section}
 			        </select>
 				</span>			
 			</div>
 			<div class="icons cell">		
-				{if !$order->closed}
-					{if !$purchase->product}
+				{if !$order['closed']}
+					{if !$purchase['product']}
 					<img src='design/images/error.png' alt='Товар был удалён' title='Товар был удалён' >
-					{elseif !$purchase->variant}
+					{elseif !$purchase['variant']}
 					<img src='design/images/error.png' alt='Вариант товара был удалён' title='Вариант товара был удалён' >
-					{elseif $purchase->variant->stock < $purchase->amount}
-					<img src='design/images/error.png' alt='На складе остал{$purchase->variant->stock|plural:'ся':'ось'} {$purchase->variant->stock} товар{$purchase->variant->stock|plural:'':'ов':'а'}' title='На складе остал{$purchase->variant->stock|plural:'ся':'ось'} {$purchase->variant->stock} товар{$purchase->variant->stock|plural:'':'ов':'а'}'  >
+					{elseif $purchase['variant']['stock'] < $purchase['amount']}
+					<img src='design/images/error.png' alt='На складе остал{$purchase['variant']['stock']|plural:'ся':'ось'} {$purchase['variant']['stock']} товар{$purchase['variant']['stock']|plural:'':'ов':'а'}' title='На складе остал{$purchase['variant']['stock']|plural:'ся':'ось'} {$purchase['variant']['stock']} товар{$purchase['variant']['stock']|plural:'':'ов':'а'}'  >
 					{/if}
 				{/if}
 				<a href='#' class="delete" title="Удалить"></a>		
@@ -307,20 +307,20 @@
 
 	<div class="block discount layer">
 		<h2>Скидка</h2>
-		<input type=text name=discount value='{$order->discount}'> <span class=currency>%</span>		
+		<input type=text name=discount value='{$order['discount']}'> <span class=currency>%</span>		
 	</div>
 
 	<div class="subtotal layer">
-	С учетом скидки<b> {($subtotal-$subtotal*$order->discount/100)|round:2} {$currency->sign}</b>
+	С учетом скидки<b> {($subtotal-$subtotal*$order['discount']/100)|round:2} {$currency->sign}</b>
 	</div> 
 	
 	<div class="block discount layer">
-		<h2>Купон{if $order->coupon_code} ({$order->coupon_code}){/if}</h2>
-		<input type=text name=coupon_discount value='{$order->coupon_discount}'> <span class=currency>{$currency->sign}</span>		
+		<h2>Купон{if $order['coupon_code']} ({$order['coupon_code']}){/if}</h2>
+		<input type=text name=coupon_discount value='{$order['coupon_discount']}'> <span class=currency>{$currency->sign}</span>		
 	</div>
 
 	<div class="subtotal layer">
-	С учетом купона<b> {($subtotal-$subtotal*$order->discount/100-$order->coupon_discount)|round:2} {$currency->sign}</b>
+	С учетом купона<b> {($subtotal-$subtotal*$order['discount']/100-$order['coupon_discount'])|round:2} {$currency->sign}</b>
 	</div> 
 	
 	<div class="block delivery">
@@ -331,14 +331,14 @@
 				<option value="{$d->id}" {if $d->id==$delivery->id}selected{/if}>{$d->name}</option>
 				{/foreach}
 				</select>	
-				<input type=text name=delivery_price value='{$order->delivery_price}'> <span class=currency>{$currency->sign}</span>
+				<input type=text name=delivery_price value='{$order['delivery_price']}'> <span class=currency>{$currency->sign}</span>
 				<div class="separate_delivery">
-					<input type=checkbox id="separate_delivery" name=separate_delivery value='1' {if $order->separate_delivery}checked{/if}> <label  for="separate_delivery">оплачивается отдельно</label>
+					<input type=checkbox id="separate_delivery" name=separate_delivery value='1' {if $order['separate_delivery']}checked{/if}> <label  for="separate_delivery">оплачивается отдельно</label>
 				</div>
 	</div>
 
 	<div class="total layer">
-	Итого<b> {$order->total_price} {$currency->sign}</b>
+	Итого<b> {$order['total_price']} {$currency->sign}</b>
 	</div>
 		
 		
@@ -351,13 +351,13 @@
 				{/foreach}
 				</select>
 		
-		<input type=checkbox name="paid" id="paid" value="1" {if $order->paid}checked{/if}> <label for="paid" {if $order->paid}class="green"{/if}>Заказ оплачен</label>		
+		<input type=checkbox name="paid" id="paid" value="1" {if $order['paid']}checked{/if}> <label for="paid" {if $order['paid']}class="green"{/if}>Заказ оплачен</label>		
 	</div>
 
  
 	{if $payment_method}
 	<div class="subtotal layer">
-	К оплате<b> {$order->total_price|convert:$payment_currency->id} {$payment_currency->sign}</b>
+	К оплате<b> {$order['total_price']|convert:$payment_currency->id} {$payment_currency->sign}</b>
 	</div>
 	{/if}
 

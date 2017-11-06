@@ -31,7 +31,7 @@ class Config
 		dtimer::log(__METHOD__ . " config construct ");
 		$this->config_file = dirname(__FILE__) . '/../config/config.ini';
 		$this->db_config_file = dirname(__FILE__) . '/../config/db.ini';
-
+		
 
 		// Читаем настройки из файлов с секциями
 		$configs = array(

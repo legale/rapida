@@ -75,8 +75,9 @@ class Categories extends Simpla
 			return $category = $this->all_categories[intval($id)];
 		elseif (is_string($id))
 			foreach ($this->all_categories as $category)
-			if ($category->url == $id)
-			return $this->get_category((int)$category->id);
+
+			if ($category['url'] == $id)
+			return $this->get_category((int)$category['id']);
 
 		return false;
 	}
@@ -197,14 +198,14 @@ class Categories extends Simpla
 	private function init_categories()
 	{
 		// Дерево категорий
-		$tree = new stdClass();
-		$tree->subcategories = array();
+		$tree = array();
+		$tree['subcategories'] = array();
 		
 		// Указатели на узлы дерева
 		$pointers = array();
 		$pointers[0] = &$tree;
-		$pointers[0]->path = array();
-		$pointers[0]->level = 0;
+		$pointers[0]['path'] = array();
+		$pointers[0]['level'] = 0;
 		
 		// Выбираем все категории
 		$query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.position
@@ -216,35 +217,40 @@ class Categories extends Simpla
 
 
 		$this->db->query($query);
-		$categories = $this->db->results();
-
+		$categories = $this->db->results_array(null, 'id');
+		//~ print_r($categories);
+		
 		$finish = false;
-		// Не кончаем, пока не кончатся категории, или пока ниодну из оставшихся некуда приткнуть
+		// Не кончаем, пока не кончатся категории, или пока ни одну из оставшихся некуда приткнуть
 		while (!empty($categories) && !$finish)
 			{
 			$flag = false;
 			// Проходим все выбранные категории
 			foreach ($categories as $k => $category)
 				{
-				if (isset($pointers[$category->parent_id]))
+				if (isset($pointers[$category['parent_id']]))
 					{
 					// В дерево категорий (через указатель) добавляем текущую категорию
-					$pointers[$category->id] = $pointers[$category->parent_id]->subcategories[] = $category;
-					
+					$pointers[$category['id']] = $category;
+					$pointers[$category['parent_id']]['subcategories'][] = &$pointers[$category['id']]; 
+					//~ print_r($pointers);
 					// Путь к текущей категории
-					$curr = $pointers[$category->id];
-					$pointers[$category->id]->path = array_merge((array)$pointers[$category->parent_id]->path, array($curr));
+					$curr = &$pointers[$category['id']];
+					$pointers[$category['id']]['path'] = array_merge($pointers[$category['parent_id']]['path'], array(&$curr));
 					
 					// Уровень вложенности категории
-					$pointers[$category->id]->level = 1 + $pointers[$category->parent_id]->level;
+					$pointers[$category['id']]['level'] = 1 + $pointers[$category['parent_id']]['level'];
 
 					// Убираем использованную категорию из массива категорий
 					unset($categories[$k]);
 					$flag = true;
 				}
 			}
-			if (!$flag) $finish = true;
+			if (!$flag){
+				$finish = true;
+			}
 		}
+		//~ print_r($pointers);
 		
 		// Для каждой категории id всех ее деток узнаем
 		$ids = array_reverse(array_keys($pointers));
@@ -252,23 +258,19 @@ class Categories extends Simpla
 			{
 			if ($id > 0)
 				{
-				$pointers[$id]->children[] = $id;
+				$pointers[$id]['children'][] = $id;
 
-				if (isset($pointers[$pointers[$id]->parent_id]->children))
-					$pointers[$pointers[$id]->parent_id]->children = array_merge($pointers[$id]->children, $pointers[$pointers[$id]->parent_id]->children);
-				else
-					$pointers[$pointers[$id]->parent_id]->children = $pointers[$id]->children;
-					
-				// Добавляем количество товаров к родительской категории, если текущая видима
-				// if(isset($pointers[$pointers[$id]->parent_id]) && $pointers[$id]->visible)
-				//		$pointers[$pointers[$id]->parent_id]->products_count += $pointers[$id]->products_count;
-
+				if (isset($pointers[$pointers[$id]['parent_id']]['children'])){
+					$pointers[$pointers[$id]['parent_id']]['children'] = array_merge($pointers[$id]['children'], $pointers[$pointers[$id]['parent_id']]['children']);
+				} else {
+					$pointers[$pointers[$id]['parent_id']]['children'] = $pointers[$id]['children'];
+				}
 			}
 		}
 		unset($pointers[0]);
 		unset($ids);
 
-		$this->categories_tree = $tree->subcategories;
+		$this->categories_tree = $tree['subcategories'];
 		$this->all_categories = $pointers;
 	}
 }

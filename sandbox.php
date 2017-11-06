@@ -83,11 +83,18 @@ if (isset($_SESSION['admin'])) {
 		//~ $id = $row['id'];
 		//~ $simpla->db2->query("UPDATE __features SET `trans` = '$trans' WHERE 1 AND id = $id ");
 	//~ }
-
-	$options = $simpla->features->get_options();
+	
+	$filter = array ( 'category_id' =>  array ( 0 => 12, 1 => 13, 2 => 14, 3 => 15, 4 => 16, 5 => 4, 6 => 8,
+	 7 => 10, 8 => 7, 9 => 3, 10 => 2, ),
+	  'feature_id' =>  array ( 0 => '1', 1 => '8', 2 => '19', ),
+	 'visible' => 1, 'force_no_cache' => true,);	$options = $simpla->features->get_options_mix($filter);
 	$features = $simpla->features->get_features_trans();
-	print_r($options);
-
+	$cats = $simpla->categories->get_categories_tree();
+	$all_cats = $simpla->categories->all_categories;
+	
+	print_r($all_cats);
+	//~ print_r($options);
+	//~ print_r ( get_defined_constants(true)['Core']['E_ALL'] );
 	print "</PRE>";
 	dtimer::show();
 }

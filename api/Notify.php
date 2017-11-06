@@ -1,12 +1,7 @@
 <?php
 
 /**
- * Simpla CMS
- *
- * @copyright	2011 Denis Pikusov
- * @link		http://simplacms.ru
- * @author		Denis Pikusov
- *
+ * Класс уведомлений
  */
 
 class Notify extends Simpla
@@ -26,43 +21,44 @@ class Notify extends Simpla
 
 	public function email_order_user($order_id)
 	{
-		if (! ($order = $this->orders->get_order(intval($order_id))) || empty($order->email))
+		if (! ($order = $this->orders->get_order(intval($order_id))) || empty($order['email']))
 			return false;
 
-		$purchases = $this->orders->get_purchases(array('order_id' => $order->id));
+		$purchases = $this->orders->get_purchases(array('order_id' => $order['id']));
 		$this->design->assign('purchases', $purchases);
 
 		$products_ids = array();
 		$variants_ids = array();
 		foreach ($purchases as $purchase)
 			{
-			$products_ids[] = $purchase->product_id;
-			$variants_ids[] = $purchase->variant_id;
+			$products_ids[] = $purchase['product_id'];
+			$variants_ids[] = $purchase['variant_id'];
 		}
 
 		$products = $this->products->get_products(array('id' => $products_ids));
 
 		$images = $this->products->get_images(array('product_id' => $products_ids));
-		foreach ($images as $image)
-			$products->{$image->product_id}->images[] = $image;
+		foreach ($images as $image){
+			$products[$image['product_id']]['images'][] = $image;
+		}
 
 		$variants = array();
 		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)
 			{
-			$variants[$v->id] = $v;
-			$products->{$v->product_id}->variants[] = $v;
+			$variants[$v['id']] = $v;
+			$products[$v['product_id']]['variants'][] = $v;
 		}
 
 		foreach ($purchases as &$purchase)
 			{
-			if (!empty($products->{$purchase->product_id}))
-				$purchase->product = $products->{$purchase->product_id};
-			if (!empty($variants[$purchase->variant_id]))
-				$purchase->variant = $variants[$purchase->variant_id];
+			if (!empty($products->{$purchase['product_id']}))
+				$purchase['product'] = $products->{$purchase['product_id']};
+			if (!empty($variants[$purchase['variant_id']]))
+				$purchase['variant'] = $variants[$purchase['variant_id']];
 		}
 			
 			// Способ доставки
-		$delivery = $this->delivery->get_delivery($order->delivery_id);
+		$delivery = $this->delivery->get_delivery($order['delivery_id']);
 		$this->design->assign('delivery', $delivery);
 
 		$this->design->assign('order', $order);
@@ -76,7 +72,7 @@ class Notify extends Simpla
 		}
 		$email_template = $this->design->fetch($this->config->root_dir . 'design/' . $this->settings->theme . '/html/email_order.tpl');
 		$subject = $this->design->get_var('subject');
-		$this->email($order->email, $subject, $email_template, $this->settings->notify_from_email);
+		$this->email($order['email'], $subject, $email_template, $this->settings->notify_from_email);
 
 	}
 
@@ -86,44 +82,45 @@ class Notify extends Simpla
 		if (! ($order = $this->orders->get_order(intval($order_id))))
 			return false;
 
-		$purchases = $this->orders->get_purchases(array('order_id' => $order->id));
+		$purchases = $this->orders->get_purchases(array('order_id' => $order['id']));
 		$this->design->assign('purchases', $purchases);
 
 		$products_ids = array();
 		$variants_ids = array();
 		foreach ($purchases as $purchase)
 			{
-			$products_ids[] = $purchase->product_id;
-			$variants_ids[] = $purchase->variant_id;
+			$products_ids[] = $purchase['product_id'];
+			$variants_ids[] = $purchase['variant_id'];
 		}
 
 		$products = $this->products->get_products(array('id' => $products_ids));
 
 		$images = $this->products->get_images(array('product_id' => $products_ids));
-		foreach ($images as $image)
-			$products->{$image->product_id}->images[] = $image;
+		foreach ($images as $image){
+			$products[$image['product_id']]['images'][] = $image;
+		}
 
 		$variants = array();
 		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)
 			{
-			$variants[$v->id] = $v;
-			$products->{$v->product_id}->variants[] = $v;
+			$variants[$v['id']] = $v;
+			$products[$v['product_id']]['variants'][] = $v;
 		}
 
 		foreach ($purchases as &$purchase)
 			{
-			if (!empty($products->{$purchase->product_id}))
-				$purchase->product = $products->{$purchase->product_id};
-			if (!empty($variants[$purchase->variant_id]))
-				$purchase->variant = $variants[$purchase->variant_id];
+			if (!empty($products[$purchase['product_id']]))
+				$purchase['product'] = $products[$purchase['product_id']];
+			if (!empty($variants[$purchase['variant_id']]))
+				$purchase['variant'] = $variants[$purchase['variant_id']];
 		}
 			
 			// Способ доставки
-		$delivery = $this->delivery->get_delivery($order->delivery_id);
+		$delivery = $this->delivery->get_delivery($order['delivery_id']);
 		$this->design->assign('delivery', $delivery);
 
 			// Пользователь
-		$user = $this->users->get_user(intval($order->user_id));
+		$user = $this->users->get_user(intval($order['user_id']));
 		$this->design->assign('user', $user);
 
 		$this->design->assign('order', $order);

@@ -1,4 +1,32 @@
 <?php
+//функция для конвертации величин
+function convert($size)
+{
+	if($size == 0 ){
+		return 0;
+	}
+    $unit=array('b','kb','mb','gb','tb','pb');
+    $i=floor(log($size,1024));
+    return @round($size/pow(1024,$i) , 1).$unit[$i];
+}
+//функция для конвертации времени, принимает значения в секундах
+
+function convert_time($time)
+{
+	if($time == 0 ){
+		return 0;
+	}
+	//допустимые единицы измерения
+    $unit=array(-4=>'ps', -3=>'ns',-2=>'mcs',-1=>'ms',0=>'s');
+    //логарифм времени в сек по основанию 1000
+    //берем значение не больше 0, т.к. секунды у нас последняя изменяемая по тысяче величина, дальше по 60
+    $i=min(0,floor(log($time,1000)));
+
+	//тут делим наше время на число соответствующее единицам измерения т.е. на миллион для секунд,
+    //на тысячу для миллисекунд
+    $t = @round($time/pow(1000,$i) , 1);
+    return $t.$unit[$i];
+}
 
 //нужная функция empty_ работает иначе чем нативная empty
 //нативная empty(0) выдает true, наша функция empty(0) выдает - false
@@ -166,7 +194,7 @@ class Simpla
 
 			//уровень отображения ошибок
 			error_reporting($this->config->error_reporting);
-			dtimer::log('error_reporting config.ini ' . var_export($this->config->error_reporting, true));
+			dtimer::log('error_reporting config.ini: ' . $this->config->error_reporting . ' error_reporting() says: ' . error_reporting());
 			//выключатель отладчика
 			dtimer::$disabled = $this->config->dtimer_disabled;
 			//локаль

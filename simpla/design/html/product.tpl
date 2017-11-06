@@ -1,12 +1,12 @@
 {capture name=tabs}
-	<li class="active"><a href="{url module=ProductsAdmin category_id=$product->category_id return=null brand_id=null id=null}">Товары</a></li>
+	<li class="active"><a href="{url module=ProductsAdmin category_id=$product['category_id'] return=null brand_id=null id=null}">Товары</a></li>
 	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
 	{if in_array('brands', $manager->permissions)}<li><a href="index.php?module=BrandsAdmin">Бренды</a></li>{/if}
 	{if in_array('features', $manager->permissions)}<li><a href="index.php?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
-{if $product->id}
-{$meta_title = $product->name scope=parent}
+{if $product['id']}
+{$meta_title = $product['name'] scope=parent}
 {else}
 {$meta_title = 'Новый товар' scope=parent}
 {/if}
@@ -484,17 +484,17 @@ overflow-y: auto;
 	<span class="text">{if $message_success=='added'}Товар добавлен{elseif $message_success=='updated'}Товар изменен{else}{$message_success|escape}{/if}</span>
 	{/if}
 	
-	<a class="link" target="_blank" href="../products/{$product->url}">Открыть товар на сайте</a>
+	<a class="link" target="_blank" href="../products/{$product['url']}">Открыть товар на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 	
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/products/{$product->url|urlencode}&title={$product->name|urlencode}&description={$product->annotation|urlencode}&image={$product_images.0->filename|resize:1000:1000|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&title={$product['name']|urlencode}&description={$product['annotation']|urlencode}&image={$product_images.0->filename|resize:1000:1000|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/products/{$product->url|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/products/{$product['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$product->name|urlencode}&url={$config->root_url|urlencode}/products/{$product->url|urlencode}&hashtags={$product->meta_keywords|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://twitter.com/share?text={$product['name']|urlencode}&url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&hashtags={$product['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
@@ -518,22 +518,22 @@ overflow-y: auto;
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 
  	<div id="name">
-		<input class="name" name=name type="text" value="{$product->name|escape}"/> 
-		<input name=id type="hidden" value="{$product->id|escape}"/> 
+		<input class="name" name=name type="text" value="{$product['name']|escape}"/> 
+		<input name=id type="hidden" value="{$product['id']|escape}"/> 
 		<div class="checkbox">
-			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $product->visible}checked{/if}/> <label for="active_checkbox">Активен</label>
+			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $product['visible']}checked{/if}/> <label for="active_checkbox">Активен</label>
 		</div>
 		<div class="checkbox">
-			<input name=featured value="1" type="checkbox" id="featured_checkbox" {if $product->featured}checked{/if}/> <label for="featured_checkbox">Рекомендуемый</label>
+			<input name=featured value="1" type="checkbox" id="featured_checkbox" {if $product['featured']}checked{/if}/> <label for="featured_checkbox">Рекомендуемый</label>
 		</div>
 	</div> 
 	
 	<div id="product_brand" {if !$brands}style='display:none;'{/if}>
 		<label>Бренд</label>
 		<select name="brand_id">
-            <option value='0' {if !$product->brand_id}selected{/if} brand_name=''>Не указан</option>
+            <option value='0' {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
        		{foreach $brands as $brand}
-            	<option value='{$brand->id}' {if $product->brand_id == $brand->id}selected{/if} brand_name='{$brand->name|escape}'>{$brand->name|escape}</option>
+            	<option value='{$brand->id}' {if $product['brand_id'] == $brand->id}selected{/if} brand_name='{$brand->name|escape}'>{$brand->name|escape}</option>
         	{/foreach}
 		</select>
 	</div>
@@ -543,21 +543,21 @@ overflow-y: auto;
 		<label>Категория</label>
 		<div>
 			<ul>
-				{foreach $product_categories as $product_category name=categories}
+				{foreach $product_categories as $pc name=categories}
 				<li>
 					<select name="categories[]">
 						{function name=category_select level=0}
 						{foreach $categories as $category}
-								<option value='{$category->id}' {if $category->id == $selected_id}selected{/if} category_name='{$category->name|escape}'>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category->name|escape}</option>
-								{category_select categories=$category->subcategories selected_id=$selected_id  level=$level+1}
+								<option value="{$category['id']}" {if $category['id'] == $selected_id}selected{/if} category_name="{$category['name']|escape}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']|escape}</option>
+								{category_select categories=$category['subcategories'] selected_id=$selected_id  level=$level+1}
 						{/foreach}
 						{/function}
-						{category_select categories=$categories selected_id=$product_category->id}
+						{category_select categories=$categories selected_id=$pc['id']}
 					</select>
 					<span {if not $smarty.foreach.categories.first}style='display:none;'{/if} class="add"><i class="dash_link">Дополнительная категория</i></span>
 					<span {if $smarty.foreach.categories.first}style='display:none;'{/if} class="delete"><i class="dash_link">Удалить</i></span>
 				</li>
-				{/foreach}		
+				{/foreach}
 			</ul>
 		</div>
 	</div>
@@ -577,15 +577,15 @@ overflow-y: auto;
 		{foreach $product_variants as $variant}
 		<ul>
 			<li class="variant_move"><div class="move_zone"></div></li>
-			<li class="variant_name">      <input name="variants[id][]"            type="hidden" value="{$variant->id|escape}" /><input name="variants[name][]" type="" value="{$variant->name|escape}" /> <a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
-			<li class="variant_sku">       <input name="variants[sku][]"           type="text"   value="{$variant->sku|escape}" /></li>
-			<li class="variant_price">     <input name="variants[price][]"         type="text"   value="{$variant->price|escape}" /></li>
-			<li class="variant_discount">  <input name="variants[compare_price][]" type="text"   value="{$variant->compare_price|escape}" /></li>
-			<li class="variant_amount">    <input name="variants[stock][]"         type="text"   value="{if $variant->infinity || $variant->stock == ''}∞{else}{$variant->stock|escape}{/if}" />{$settings->units}</li>
+			<li class="variant_name">      <input name="variants[id][]"            type="hidden" value="{$variant['id']|escape}" /><input name="variants[name][]" type="" value="{$variant['name']|escape}" /> <a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
+			<li class="variant_sku">       <input name="variants[sku][]"           type="text"   value="{$variant['sku']|escape}" /></li>
+			<li class="variant_price">     <input name="variants[price][]"         type="text"   value="{$variant['price']|escape}" /></li>
+			<li class="variant_discount">  <input name="variants[compare_price][]" type="text"   value="{$variant['compare_price']|escape}" /></li>
+			<li class="variant_amount">    <input name="variants[stock][]"         type="text"   value="{if $variant['infinity'] || $variant['stock'] == ''}∞{else}{$variant['stock']|escape}{/if}" />{$settings->units}</li>
 			<li class="variant_download">
 			
-				{if $variant->attachment}
-					<span class=attachment_name>{$variant->attachment|truncate:25:'...':false:true}</span>
+				{if $variant['attachment']}
+					<span class=attachment_name>{$variant['attachment']|truncate:25:'...':false:true}</span>
 					<a href='#' class=remove_attachment><img src='design/images/bullet_delete.png'  title="Удалить цифровой товар"></a>
 					<a href='#' class=add_attachment style='display:none;'><img src="design/images/cd_add.png" title="Добавить цифровой товар" /></a>
 				{else}
@@ -628,21 +628,20 @@ overflow-y: auto;
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /products/</div><input name="url" class="page_url" type="text" value="{$product->url|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$product->meta_title|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$product->meta_keywords|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$product->meta_description|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /products/</div><input name="url" class="page_url" type="text" value="{$product['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$product['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$product['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$product['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
 				
 		<div class="block layer" {if !$categories}style='display:none;'{/if}>
-			<h2>Свойства товара
-			<a href="#" id=properties_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
-			</h2>
+			<!-- Свойства товара -->
+			<h2>Свойства товара</h2>
 			<ul class="prop_ul">
-				{foreach $features as $feature_id=>$feature}
-					<li feature_id={$feature_id}><label class=property>{$feature->name}</label><input class="simpla_inp" type="text" name=options[{$feature_id}] vid="{$options[$feature_id]['vid']|escape}"  value="{$options[$feature_id]['val']|escape}" /></li>
+				{foreach $features as $fid=>$feature}
+					<li feature_id={$fid}><label class=property>{$feature['name']}</label><input class="simpla_inp" type="text" name=options[{$fid}]  value="{$options[$fid]['val']|escape}" /></li>
 				{/foreach}
 			</ul>
 			<!-- Новые свойства -->
@@ -689,7 +688,7 @@ overflow-y: auto;
 			</ul>
 			{/if}
 			<!-- dropzone для перетаскивания изображений -->	
-			{if isset($product->id)}
+			{if isset($product['id'])}
 			<div id=dropZone>
 				<div id=dropMessage>Перетащите файлы сюда</div>
 				<input type="file" name="dropped_images[]" multiple class="dropInput">
@@ -753,12 +752,12 @@ overflow-y: auto;
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Краткое описание</h2>
-		<textarea name="annotation" class="editor_small">{$product->annotation|escape}</textarea>
+		<textarea name="annotation" class="editor_small">{$product['annotation']|escape}</textarea>
 	</div>
 		
 	<div class="block">		
 		<h2>Полное  описание</h2>
-		<textarea name="body" class="editor_large">{$product->body|escape}</textarea>
+		<textarea name="body" class="editor_large">{$product['body']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

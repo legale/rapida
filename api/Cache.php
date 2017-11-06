@@ -277,6 +277,11 @@ allow from 127.0.0.1";
 	 */
 	public function set_cache_nosql($keyword, $value = '')
 	{
+		//Если кеш отключен - останавливаем
+		if($this->config->cache !== true){
+			return false;
+		}
+		
 		dtimer::log(__METHOD__ . ' driver_set start ');
 		$file_path = $this->getFilePath($keyword);
 		$tmp_path = $file_path . ".tmp";
@@ -333,6 +338,10 @@ allow from 127.0.0.1";
 	 */
 	public function get_cache_nosql($keyword, $as_array = true)
 	{
+		//Если кеш отключен - останавливаем
+		if($this->config->cache !== true){
+			return false;
+		}
 		//проверка типов аргументов
 		if (is_string($keyword) && is_bool($as_array)) {
 		}
@@ -388,6 +397,10 @@ allow from 127.0.0.1";
 
 	public function set_cache_integer($keyhash, $value)
 	{
+		//Если кеш отключен - останавливаем
+		if($this->config->cache !== true){
+			return false;
+		}
 		
 		//останавливаем если у нас пустое значение или длина хеша не равна 32 символам, или $value не строка
 		if ($value === '' || @strlen($keyhash) != 32 || !is_string($value)) {
@@ -420,7 +433,11 @@ allow from 127.0.0.1";
 
 	public function get_cache_integer($keyhash)
 	{
-
+		//Если кеш отключен - останавливаем
+		if($this->config->cache !== true){
+			return false;
+		}
+		
 		if (@strlen($keyhash) != 32) {
 			return false;
 		}

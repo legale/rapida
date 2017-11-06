@@ -27,24 +27,24 @@
 		<div id="list" class="sortable">
 		
 			{foreach $categories as $category}
-			<div class="{if !$category->visible}invisible{/if} row">		
+			<div class="{if !$category['visible']}invisible{/if} row">		
 				<div class="tree_row">
-					<input type="hidden" name="positions[{$category->id}]" value="{$category->position}">
+					<input type="hidden" name="positions[{$category['id']}]" value="{$category['position']}">
 					<div class="move cell" style="margin-left:{$level*20}px"><div class="move_zone"></div></div>
 			 		<div class="checkbox cell">
-						<input type="checkbox" name="check[]" value="{$category->id}" />				
+						<input type="checkbox" name="check[]" value="{$category['id']}" />				
 					</div>
 					<div class="cell">
-						<a href="{url module=CategoryAdmin id=$category->id return=$smarty.server.REQUEST_URI}">{$category->name|escape}</a> 	 			
+						<a href="{url module=CategoryAdmin id=$category['id'] return=$smarty.server.REQUEST_URI}">{$category['name']|escape}</a> 	 			
 					</div>
 					<div class="icons cell">
-						<a class="preview" title="Предпросмотр в новом окне" href="../catalog/{$category->url}" target="_blank"></a>				
+						<a class="preview" title="Предпросмотр в новом окне" href="../catalog/{$category['url']}" target="_blank"></a>				
 						<a class="enable" title="Активна" href="#"></a>
 						<a class="delete" title="Удалить" href="#"></a>
 					</div>
 					<div class="clear"></div>
 				</div>
-				{categories_tree categories=$category->subcategories level=$level+1}
+				{categories_tree categories=$category['subcategories'] level=$level+1}
 			</div>
 			{/foreach}
 	

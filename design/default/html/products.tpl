@@ -2,9 +2,9 @@
 
 {* Канонический адрес страницы *}
 {if $category && $brand}
-{$canonical="/catalog/{$category->url}/{$brand->url}" scope=parent}
+{$canonical="/catalog/{$category['url']}/{$brand->url}" scope=parent}
 {elseif $category}
-{$canonical="/catalog/{$category->url}" scope=parent}
+{$canonical="/catalog/{$category['url']}" scope=parent}
 {elseif $brand}
 {$canonical="/brands/{$brand->url}" scope=parent}
 {elseif $keyword}
@@ -17,7 +17,7 @@
 <div id="path">
 	<a href="/">Главная</a>
 	{if $category}
-	{foreach $category->path as $cat}
+	{foreach $category['path'] as $cat}
 	→ <a href="catalog/{$cat->url}">{$cat->name|escape}</a>
 	{/foreach}  
 	{if $brand}
@@ -37,7 +37,7 @@
 {elseif $page}
 <h1>{$page->name|escape}</h1>
 {else}
-<h1>{$category->name|escape} {$brand->name|escape}</h1>
+<h1>{$category['name']|escape} {$brand->name|escape}</h1>
 {/if}
 
 
@@ -46,14 +46,14 @@
 
 {if $current_page_num==1}
 {* Описание категории *}
-{$category->description}
+{$category['description']}
 {/if}
 
 {* Фильтр по брендам *}
-{if $category->brands}
+{if $category['brands']}
 <div id="brands">
 	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand->id}class="selected"{/if}>Все бренды</a>
-	{foreach $category->brands as $b}
+	{foreach $category['brands'] as $b}
 		{if $b->image}
 		<a data-brand="{$b->id}" href="{chpu_url params=[brand=>[$b->url], page=>'' ]}"><img src="{$config->brands_images_dir}{$b->image}" alt="{$b->name|escape}"></a>
 		{else}
@@ -71,15 +71,22 @@
 {* Фильтр по свойствам *}
 {if $features}
 <table id="features">
+	{*$filter['features']|@debug_print_var*}
 	{foreach $features as $key=>$f}
 	<tr>
 	<td class="feature_name" data-feature="{$f->id}">
 		{$f->name}:
 	</td>
 	<td class="feature_values">
-		<a href="{chpu_url params=[filter=>[$f->trans=>[]], page=>'' ]}" {if !$smarty.get.$key}class="selected"{/if}>Все</a>
-		{foreach $f->options as $o}
-		<a href="{chpu_url params=[filter=>[$f->trans=>[$o->trans]], page=>'' ]}" {if $smarty.get.$key == $o->value}class="selected"{/if}>{$o->value|escape}</a>
+		<a href="{chpu_url params=[filter=>[$f->trans=>[]], page=>'' ]}">Все</a>
+		{foreach $options['full'][$f->id]['vals'] as $k=>$o}
+			{$otrans=$options['full'][$f->id]['trans'][$k]}
+			{if isset($options['filter'][$f->id][$k])}
+			<a {if isset($filter['features'][$f->id][$k])}class="selected" {/if}
+			href="{chpu_url params=[filter=>[$f->trans=>[$otrans]], page=>'' ]}">{$o|escape}</a>
+			{else}
+			{$o|escape}
+			{/if}
 		{/foreach}
 	</td>
 	</tr>
@@ -115,35 +122,35 @@
 		<!-- Фото товара -->
 		{if $product->image}
 		<div class="image">
-			<a href="products/{$product->url}"><img src="{$product->image->filename|resize:200:200}" alt="{$product->name|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<div class="product_info">
 		<!-- Название товара -->
-		<h3 class="{if $product->featured}featured{/if}"><a data-product="{$product->id}" href="products/{$product->url}">{$product->name|escape}</a></h3>
+		<h3 class="{if $product['featured']}featured{/if}"><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
 		<!-- Описание товара -->
-		<div class="annotation">{$product->annotation}</div>
+		<div class="annotation">{$product['annotation']}</div>
 		<!-- Описание товара (The End) -->
 		
-		{if $product->variants|count > 0}
+		{if $product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">
 			<table>
-			{foreach $product->variants as $v}
+			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="variants_{$v->id}" name="variant" value="{$v->id}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product->variants|count<2}style="display:none;"{/if}/>
+					<input id="variants_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $v@first}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 				</td>
 				<td>
-					{if $v->name}<label class="variant_name" for="variants_{$v->id}">{$v->name}</label>{/if}
+					{if $v['name']}<label class="variant_name" for="variants_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
-					{if $v->compare_price > 0}<span class="compare_price">{$v->compare_price|convert}</span>{/if}
-					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					{if $v['compare_price'] > 0}<span class="compare_price">{$v['compare_price']|convert}</span>{/if}
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}

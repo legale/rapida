@@ -122,7 +122,7 @@ class OrdersAdmin extends Simpla
 		// Отображение
 		if ($orders = $this->orders->get_orders($filter)) {
 			foreach ($orders as $o) {
-				$orders[$o->id] = $o;
+				$orders[$o['id']] = $o;
 			}
 		}
 		// Метки заказов

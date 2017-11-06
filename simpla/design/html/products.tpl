@@ -8,7 +8,7 @@
 
 {* Title *}
 {if $category}
-	{$meta_title=$category->name scope=parent}
+	{$meta_title=$category['name'] scope=parent}
 {else}
 	{$meta_title='Товары' scope=parent}
 {/if}
@@ -25,8 +25,8 @@
 {* Заголовок *}
 <div id="header">	
 	{if $products_count}
-		{if $category->name || $brand->name}
-			<h1>{$category->name} {$brand->name} ({$products_count} {$products_count|plural:'товар':'товаров':'товара'})</h1>
+		{if $category['name'] || $brand->name}
+			<h1>{$category['name']} {$brand->name} ({$products_count} {$products_count|plural:'товар':'товаров':'товара'})</h1>
 		{elseif $keyword}
 			<h1>{$products_count|plural:'Найден':'Найдено':'Найдено'} {$products_count} {$products_count|plural:'товар':'товаров':'товара'}</h1>
 		{else}
@@ -59,32 +59,29 @@
 	
 		<div id="list">
 		{foreach $products as $product}
-		<div class="{if !$product->visible}invisible{/if} {if $product->featured}featured{/if} row">
-			<input type="hidden" name="positions[{$product->id}]" value="{$product->position}">
+		<div class="{if !$product['visible']}invisible{/if} {if $product['featured']}featured{/if} row">
+			<input type="hidden" name="positions[{$product['id']}]" value="{$product['position']}">
 			<div class="move cell"><div class="move_zone"></div></div>
 	 		<div class="checkbox cell">
-				<input type="checkbox" name="check[]" value="{$product->id}"/>				
+				<input type="checkbox" name="check[]" value="{$product['id']}"/>				
 			</div>
 			<div class="image cell">
-				{$image = $product->images|@first}
-				{if $image}
-				<a href="{url module=ProductAdmin id=$product->id return=$smarty.server.REQUEST_URI}"><img src="{$image->filename|escape|resize:35:35}" /></a>
-				{/if}
+				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|escape|resize:35:35}" /></a>
 			</div>
 			<div class="name product_name cell">
 			 	
 			 	<div class="variants">
 			 	<ul>
-				{foreach $product->variants as $variant}
+				{foreach $product['variants'] as $variant}
 				<li {if !$variant@first}class="variant" style="display:none;"{/if}>
-					<i title="{$variant->name|escape}">{$variant->name|escape|truncate:30:'…':true:true}</i>
-					<input class="price {if $variant->compare_price>0}compare_price{/if}" type="text" name="price[{$variant->id}]" value="{$variant->price}" {if $variant->compare_price>0}title="Старая цена &mdash; {$variant->compare_price} {$currency->sign}"{/if} />{$currency->sign}  
-					<input class="stock" type="text" name="stock[{$variant->id}]" value="{if $variant->infinity}∞{else}{$variant->stock}{/if}" />{$settings->units}
+					<i title="{$variant['name']|escape}">{$variant['name']|escape|truncate:30:'…':true:true}</i>
+					<input class="price {if $variant['compare_price']>0}compare_price{/if}" type="text" name="price[{$variant['id']}]" value="{$variant['price']}" {if $variant['compare_price']>0}title="Старая цена &mdash; {$variant['compare_price']} {$currency->sign}"{/if} />{$currency->sign}  
+					<input class="stock" type="text" name="stock[{$variant['id']}]" value="{if $variant['infinity']}∞{else}{$variant['stock']}{/if}" />{$settings->units}
 				</li>
 				{/foreach}
 				</ul>
 	
-				{$variants_num = $product->variants|count}
+				{$variants_num = $product['variants']|count}
 				{if $variants_num>1}
 				<div class="expand_variant">
 				<a class="dash_link expand_variant" href="#">{$variants_num} {$variants_num|plural:'вариант':'вариантов':'варианта'} ↓</a>
@@ -93,11 +90,11 @@
 				{/if}
 				</div>
 				
-				<a href="{url module=ProductAdmin id=$product->id return=$smarty.server.REQUEST_URI}">{$product->name|escape}</a>
+				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}">{$product['name']|escape}</a>
 	 			
 			</div>
 			<div class="icons cell">
-				<a class="preview"   title="Предпросмотр в новом окне" href="../products/{$product->url}" target="_blank"></a>			
+				<a class="preview"   title="Предпросмотр в новом окне" href="../products/{$product['url']}" target="_blank"></a>			
 				<a class="enable"    title="Активен"                 href="#"></a>
 				<a class="featured"  title="Рекомендуемый"           href="#"></a>
 				<a class="duplicate" title="Дублировать"             href="#"></a>
@@ -144,8 +141,8 @@
 			<select name="target_category">
 				{function name=category_select level=0}
 				{foreach $categories as $category}
-						<option value='{$category->id}'>{section sp $level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category->name|escape}</option>
-						{category_select categories=$category->subcategories selected_id=$selected_id level=$level+1}
+						<option value='{$category['id']}'>{section sp $level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']|escape}</option>
+						{category_select categories=$category['subcategories'] selected_id=$selected_id level=$level+1}
 				{/foreach}
 				{/function}
 				{category_select categories=$categories}
@@ -192,12 +189,12 @@
 	{function name=categories_tree}
 	{if $categories}
 	<ul>
-		{if $categories[0]->parent_id == 0}
-		<li {if !$category->id}class="selected"{/if}><a href="{url category_id=null brand_id=null}">Все категории</a></li>	
+		{if $categories[0]['parent_id'] == 0}
+		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null brand_id=null}">Все категории</a></li>	
 		{/if}
 		{foreach $categories as $c}
-		<li category_id="{$c->id}" {if $category->id == $c->id}class="selected"{else}class="droppable category"{/if}><a href='{url keyword=null brand_id=null page=null category_id={$c->id}}'>{$c->name}</a></li>
-		{categories_tree categories=$c->subcategories}
+		<li category_id="{$c['id']}" {if $category['id'] == $c['id']}class="selected"{else}class="droppable category"{/if}><a href='{url keyword=null brand_id=null page=null category_id={$c['id']}}'>{$c['name']}</a></li>
+		{categories_tree categories=$c['subcategories']}
 		{/foreach}
 	</ul>
 	{/if}

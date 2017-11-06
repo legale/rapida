@@ -6,8 +6,8 @@
 	<li class="active"><a href="index.php?module=FeaturesAdmin">Свойства</a></li>
 {/capture}
 
-{if $feature->id}
-{$meta_title = $feature->name|escape scope=parent}
+{if $feature['id']}
+{$meta_title = $feature['name']|escape scope=parent}
 {else}
 {$meta_title = 'Новое свойство' scope=parent}
 {/if}
@@ -46,8 +46,8 @@ $(function() {
 <form method=post id=product>
 
 	<div id="name">
-		<input class="name" name="name" type="text" value="{$feature->name|escape}"/> 
-		<input name="id" type="hidden" value="{$feature->id|escape}"/> 
+		<input class="name" name="name" type="text" value="{$feature['name']|escape}"/> 
+		<input name="id" type="hidden" value="{$feature['id']|escape}"/> 
 	</div> 
 
 	<!-- Левая колонка свойств товара -->
@@ -59,8 +59,8 @@ $(function() {
 					<select class=multiple_categories multiple name="feature_categories[]">
 						{function name=category_select selected_id=$product_category level=0}
 						{foreach $categories as $category}
-								<option value='{$category->id}' {if in_array($category->id, $feature_categories)}selected{/if} category_name='{$category->single_name}'>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category->name}</option>
-								{category_select categories=$category->subcategories selected_id=$selected_id  level=$level+1}
+								<option value='{$category['id']}' {if in_array($category['id'], $feature_categories)}selected{/if} category_name="{$category['single_name']}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']}</option>
+								{category_select categories=$category['subcategories'] selected_id=$selected_id  level=$level+1}
 						{/foreach}
 						{/function}
 						{category_select categories=$categories}
@@ -77,8 +77,8 @@ $(function() {
 		<div class="block">
 			<h2>Настройки свойства</h2>
 			<ul>
-				<li><input type="text" name="trans" value="{$feature->trans|escape}"><label>translit для адресной строки</label></li>
-				<li><input type="checkbox" name="in_filter" {if $feature->in_filter}checked{/if} value="1"><label>Использовать в фильтре</label></li>
+				<li><input type="text" name="trans" value="{$feature['trans']|escape}"><label>translit для адресной строки</label></li>
+				<li><input type="checkbox" name="in_filter" {if $feature['in_filter']}checked{/if} value="1"><label>Использовать в фильтре</label></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->

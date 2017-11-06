@@ -1,12 +1,7 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
+ * 
  * Этот класс использует шаблон product.tpl
  *
  */
@@ -26,42 +21,31 @@ class ProductView extends View
 
 		// Выбираем товар из базы
 		$product = $this->products->get_product((string)$product_url);
-		if(empty($product) || (!$product->visible && empty($_SESSION['admin'])))
+		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin'])))
 			return false;
 		
-		$product->images = $this->products->get_images(array('product_id'=>$product->id));
-		$product->image = reset($product->images);
+		$product['images'] = $this->products->get_images(array('product_id'=>$product['id']));
+		$product['image'] = reset($product['images']);
 
-		if ( $variants = $this->variants->get_variants(array('product_id'=>$product->id, 'in_stock'=>true)) ) {
+		if ( $variants = $this->variants->get_variants(array('product_id'=>$product['id'], 'in_stock'=>true)) ) {
 		//~ print "<PRE>";
 		//~ print_r($variants);
 
 
 			
-			$product->variants = $variants;
+			$product['variants'] = $variants;
 			
 			// Вариант по умолчанию
 			if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id])) {
-				$product->variant = $variants[$v_id];
+				$product['variant'] = $variants[$v_id];
 			} else {
-				$product->variant = reset($variants);
+				$product['variant'] = reset($variants);
 			}
 		}
 		// Свойства товара
 		$features = $this->features->get_features();
-		$options = $this->features->get_product_options($product->id);
+		$options = $this->features->get_product_options($product['id']);
 
-		//перебираем все значения свойств и собираем $product->features для шаблона
-		foreach($options as $fid=>$vid){
-			if($vid !== null){
-				$product->features[] = (object)array(
-					'fid' => $fid,
-					'name' => $features->{$fid}->name,
-					'vid' => $vid['vid'], 
-					'value' => $vid['val']
-				);
-			}
-		}
 	
 		// Автозаполнение имени для формы комментария
 		if(!empty($this->user->name)){
@@ -98,7 +82,7 @@ class ProductView extends View
 			else
 			{
 				// Создаем комментарий
-				$comment->object_id = $product->id;
+				$comment->object_id = $product['id'];
 				$comment->type      = 'product';
 				$comment->ip        = $_SERVER['REMOTE_ADDR'];
 				
@@ -124,63 +108,59 @@ class ProductView extends View
 		$this->design->assign('comment_name', isset($comment->name) ? $comment->name : '');
 		
 		// Связанные товары
-		$related_ids = array();
-		$related_products = $this->products->get_related_products($product->id);
-		if(!empty($related_products)){
-			foreach($related_products as $p)
-			{
-				$related_ids[] = $p->related_id;
-				$related_products[$p->related_id] = null;
-			}
+		$rp_ids = array();
+		if($rp = $this->products->get_related_products($product['id'])){
+			$rp_ids = array_keys($rp);
 		}
-		if(!empty($related_ids))
+		if(!empty($rp_ids))
 		{
-			$related_products = $this->products->get_products(array('id'=>$related_ids, 'in_stock'=>1, 'visible'=>1));
+			$rp = $this->products->get_products(array('id'=>$rp_ids, 'in_stock'=>1, 'visible'=>1));
 			
-			$related_products_images = $this->products->get_images(array('product_id'=>array_keys((array)$related_products)));
-			foreach($related_products_images as $related_product_image)
-				if(isset($related_products->{$related_product_image->product_id}))
-					$related_products->{$related_product_image->product_id}->images[] = $related_product_image;
-			$related_products_variants = $this->variants->get_variants(array('product_id'=>array_keys((array)$related_products), 'in_stock'=>1));
-			foreach($related_products_variants as $related_product_variant)
-			{
-				if(isset($related_products->{$related_product_variant->product_id}))
-				{
-					$related_products->{$related_product_variant->product_id}->variants[] = $related_product_variant;
+			$rp_images = $this->products->get_images(array('product_id'=>array_keys($rp)));
+			foreach($rp_images as $rp_image){
+				if(isset($rp[$rp_image['product_id']])){
+					$rp[$rp_image['product_id']]['images'][] = $rp_image;
 				}
 			}
-			foreach($related_products as $id=>$r)
+			$rp_variants = $this->variants->get_variants(array('product_id'=>array_keys($rp), 'in_stock'=>1));
+			foreach($rp_variants as $rp_variant)
 			{
-				if(is_object($r))
+				if(isset($rp[$rp_variant['product_id']]))
 				{
-					$r->image = &$r->images[0];
-					$r->variant = &$r->variants[0];
+					$rp[$rp_variant['product_id']]['variants'][] = $rp_variant;
+				}
+			}
+			foreach($rp as $id=>$r)
+			{
+				if(is_array($r))
+				{
+					$r['variant'] = &$r['variants'][0];
 				}
 				else
 				{
-					unset($related_products[$id]);
+					unset($rp[$id]);
 				}
 			}
 			
 		}
 		//заводим в шаблон связанные товары
-		$this->design->assign('related_products', isset($related_products) ? $related_products : '');
+		$this->design->assign('related_products', isset($rp) ? $rp : '');
 		
 		// Отзывы о товаре
-		$comments = $this->comments->get_comments(array('type'=>'product', 'object_id'=>$product->id, 'approved'=>1, 'ip'=>$_SERVER['REMOTE_ADDR']));
+		$comments = $this->comments->get_comments(array('type'=>'product', 'object_id'=>$product['id'], 'approved'=>1, 'ip'=>$_SERVER['REMOTE_ADDR']));
 		
 		// Соседние товары
-		$this->design->assign('next_product', $this->products->get_next_product($product->id));
-		$this->design->assign('prev_product', $this->products->get_prev_product($product->id));
+		$this->design->assign('next_product', $this->products->get_next_product($product['id']));
+		$this->design->assign('prev_product', $this->products->get_prev_product($product['id']));
 
 		// И передаем его в шаблон
 		$this->design->assign('product', $product);
 		$this->design->assign('comments', $comments);
 		
 		// Категория и бренд товара
-		$product->categories = $this->categories->get_categories(array('product_id'=>$product->id));
-		$this->design->assign('brand', $this->brands->get_brand(intval($product->brand_id)));		
-		$this->design->assign('category', reset($product->categories));		
+		$product['categories'] = $this->categories->get_categories(array('product_id'=>$product['id']));
+		$this->design->assign('brand', $this->brands->get_brand(intval($product['brand_id'])));		
+		$this->design->assign('category', reset($product['categories']));		
 		
 
 		// Добавление в историю просмотров товаров
@@ -190,17 +170,17 @@ class ProductView extends View
 		{
 			$browsed_products = explode(',', $_COOKIE['browsed_products']);
 			// Удалим текущий товар, если он был
-			if(($exists = array_search($product->id, $browsed_products)) !== false)
+			if(($exists = array_search($product['id'], $browsed_products)) !== false)
 				unset($browsed_products[$exists]);
 		}
 		// Добавим текущий товар
-		$browsed_products[] = $product->id;
+		$browsed_products[] = $product['id'];
 		$cookie_val = implode(',', array_slice($browsed_products, -$max_visited_products, $max_visited_products));
 		setcookie("browsed_products", $cookie_val, $expire, "/");
 		
-		$this->design->assign('meta_title', $product->meta_title);
-		$this->design->assign('meta_keywords', $product->meta_keywords);
-		$this->design->assign('meta_description', $product->meta_description);
+		$this->design->assign('meta_title', $product['meta_title']);
+		$this->design->assign('meta_keywords', $product['meta_keywords']);
+		$this->design->assign('meta_description', $product['meta_description']);
 		
 		return $this->design->fetch('product.tpl');
 	}

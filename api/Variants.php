@@ -47,8 +47,7 @@ class Variants extends Simpla
 					", $this->settings->max_order_amount);
 
 		$this->db->query($query);
-		$res = $this->db->results(null, 'id');
-		//~ print_r($res);
+		$res = $this->db->results_array(null, 'id');
 		return $res;
 	}
 
@@ -63,7 +62,7 @@ class Variants extends Simpla
 					LIMIT 1", $this->settings->max_order_amount, $id);
 
 		$this->db->query($query);
-		$variant = $this->db->result();
+		$variant = $this->db->result_array();
 		return $variant;
 	}
 

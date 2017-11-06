@@ -146,7 +146,7 @@ class ProductsAdmin extends Simpla
 					$temp_filter['page'] = $limit+1;
 					$temp_filter['limit'] = 1;
 					$target_product = array_pop($this->products->get_products($temp_filter));
-					$target_position = $target_product->position;
+					$target_position = $target_product['position'];
 				   	
 				   	// Если вылезли за последний товар - берем позицию последнего товара в качестве цели перемещения
 					if($target_page > $this->request->get('page', 'integer') && !$target_position)
@@ -238,24 +238,24 @@ class ProductsAdmin extends Simpla
 		{
 		  	
 			// Товары 
-			$products_ids = array_keys((array)$products);
+			$products_ids = array_keys($products);
 			foreach($products as &$product)
 			{
-				$product->variants = array();
-				$product->images = array();
-				$product->properties = array();
+				$product['variants'] = array();
+				$product['images'] = array();
+				$product['properties'] = array();
 			}
 		
 			
 			if ( $variants = $this->variants->get_variants(array('product_id'=>$products_ids)) ) {			
 				foreach($variants as &$variant) {
-					$products->{$variant->product_id}->variants[] = $variant;
+					$products[$variant['product_id']]['variants'][] = $variant;
 				}
 			}
 			
 			if ( $images = $this->products->get_images(array('product_id'=>$products_ids)) ) {
 				foreach($images as $image) {
-					$products->{$image->product_id}->images[$image->id] = $image;
+					$products[$image['product_id']]['images'][$image['id']] = $image;
 				}
 			}
 		}

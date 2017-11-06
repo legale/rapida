@@ -26,12 +26,16 @@ class FeaturesAdmin extends Simpla
 				{
 				case 'set_in_filter' :
 					{
-						$this->features->update_feature($ids, array('in_filter' => 1));
+						foreach($ids as $id){
+							$this->features->update_feature($id, array('in_filter' => 1));
+						}
 						break;
 					}
 				case 'unset_in_filter' :
-					{
-						$this->features->update_feature($ids, array('in_filter' => 0));
+					{	
+						foreach($ids as $id){
+							$this->features->update_feature($id, array('in_filter' => 0));
+						}
 						break;
 					}
 				case 'delete' :
