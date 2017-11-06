@@ -205,19 +205,12 @@ class ProductsView extends View
 				}
 				unset($variant);
 			}
-	
-			if($images = $this->products->get_images(array('product_id'=>$products_ids))){
-				foreach($images as $image){
-					$products[$image['product_id']]['images'][] = $image;
-				}
-			}
-
+		
 			foreach($products as &$product)
 			{
-				if(isset($product['variants'][0]))
+				if(isset($product['variants'][0])){
 					$product['variant'] = $product['variants'][0];
-				if(isset($product['images'][0]))
-					$product['image'] = $product['images'][0];
+				}
 			}
 	
 			$this->design->assign('products', $products);
