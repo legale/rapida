@@ -25,7 +25,6 @@ class ProductView extends View
 			return false;
 		
 		$product['images'] = $this->products->get_images(array('product_id'=>$product['id']));
-		$product['image'] = reset($product['images']);
 
 		if ( $variants = $this->variants->get_variants(array('product_id'=>$product['id'], 'in_stock'=>true)) ) {
 		//~ print "<PRE>";

@@ -74,16 +74,16 @@
 	{*$filter['features']|@debug_print_var*}
 	{foreach $features as $key=>$f}
 	<tr>
-	<td class="feature_name" data-feature="{$f->id}">
-		{$f->name}:
+	<td class="feature_name" data-feature="{$f['id']}">
+		{$f['name']}:
 	</td>
 	<td class="feature_values">
-		<a href="{chpu_url params=[filter=>[$f->trans=>[]], page=>'' ]}">Все</a>
-		{foreach $options['full'][$f->id]['vals'] as $k=>$o}
-			{$otrans=$options['full'][$f->id]['trans'][$k]}
-			{if isset($options['filter'][$f->id][$k])}
-			<a {if isset($filter['features'][$f->id][$k])}class="selected" {/if}
-			href="{chpu_url params=[filter=>[$f->trans=>[$otrans]], page=>'' ]}">{$o|escape}</a>
+		<a href="{chpu_url params=[filter=>[$f['trans']=>[]], page=>'' ]}">Все</a>
+		{foreach $options['full'][$f['id']]['vals'] as $k=>$o}
+			{$otrans=$options['full'][$f['id']]['trans'][$k]}
+			{if isset($options['filter'][$f['id']][$k])}
+			<a {if isset($filter['features'][$f['id']][$k])}class="selected" {/if}
+			href="{chpu_url params=[filter=>[$f['trans']=>[$otrans]], page=>'' ]}">{$o|escape}</a>
 			{else}
 			{$o|escape}
 			{/if}
@@ -120,7 +120,7 @@
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product->image}
+		{if $product['image']}
 		<div class="image">
 			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
 		</div>

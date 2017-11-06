@@ -133,30 +133,22 @@ class View extends Simpla
 	{
 		if(!empty($_COOKIE['browsed_products']))
 		{
-			$browsed_products_ids = explode(',', $_COOKIE['browsed_products']);
-			$browsed_products_ids = array_reverse($browsed_products_ids);
+			$ids = explode(',', $_COOKIE['browsed_products']);
+			$ids = array_reverse($ids);
 			if(isset($params['limit']))
-				$browsed_products_ids = array_slice($browsed_products_ids, 0, $params['limit']);
+				$ids = array_slice($ids, 0, $params['limit']);
 
-			$products = $this->products->get_products(array('id'=>$browsed_products_ids, 'visible'=>1));
+			$products = $this->products->get_products(array('id'=>$ids, 'visible'=>1));
 			
-			if ( $browsed_products_images = $this->products->get_images(array('product_id'=>$browsed_products_ids)) ) {
-				foreach($browsed_products_images as $browsed_product_image) {
-					if(isset($products->{$browsed_product_image->product_id})) {
-						$products->{$browsed_product_image->product_id}->images[] = $browsed_product_image;
+			if ( $images = $this->products->get_images(array('product_id'=>$ids)) ) {
+				foreach($images as $image) {
+					if(isset($products->{$image['product_id']})) {
+						$products[$image['product_id']]['images'][] = $image;
 					}
 				}
 			}
-			
-			foreach($browsed_products_ids as $id) {	
-				if(isset($products->{$id}))
-				{
-					if(isset($products->{$id}->images[0]))
-						$products->{$id}->image = $products->{$id}->images[0];
-					$result[] = $products->{$id};
-				}
-			}
-			$smarty->assign($params['var'], $result);
+
+			$smarty->assign($params['var'], $products);
 		}
 	}
 	
