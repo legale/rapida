@@ -21,9 +21,10 @@
 <div class="product">
 
 	<!-- Большое фото -->
-	{if $product['image']}
+	{if $product['image']['filename']}
 	<div class="image">
-		<a href="{$product['image']['filename']|resize:800:600:w}" class="zoom" rel="group"><img src="{$product['image']['filename']|resize:300:300}" alt="{$product['product']['name']|escape}" /></a>
+		<a href="{$product['image']['filename']|resize:800:600:w}" class="zoom" rel="group">
+			<img src="{$product['image']['filename']|resize:300:300}" alt="{$product['name']|escape}" /></a>
 	</div>
 	{/if}
 	<!-- Большое фото (The End)-->

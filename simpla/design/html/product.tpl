@@ -677,13 +677,12 @@ overflow-y: auto;
 			<h2>Изображения товара
 			<a href="#" id=images_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
-
 			{if $product_images}
 			<ul>{foreach $product_images as $image}
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
-					<img src="{$image->filename|resize:100:100}" alt="" />
-					<input type=hidden name='images[]' value='{$image->id}'>
+					<img src="{$image['filename']|resize:100:100}" alt="" />
+					<input type=hidden name='images[]' value='{$image['id']}'>
 				</li>{/foreach}
 			</ul>
 			{/if}
