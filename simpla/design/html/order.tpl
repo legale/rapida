@@ -1,15 +1,15 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('orders', $manager->permissions)}
-		<li {if $order['status']==0}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=0">Новые</a></li>
-		<li {if $order['status']==1}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=1">Приняты</a></li>
-		<li {if $order['status']==2}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=2">Выполнены</a></li>
-		<li {if $order['status']==3}class="active"{/if}><a href="index.php?module=OrdersAdmin&status=3">Удалены</a></li>
+	{if in_array('orders', $manager['permissions'])}
+		<li {if $order['status']==0}class="active"{/if}><a href="?module=OrdersAdmin&status=0">Новые</a></li>
+		<li {if $order['status']==1}class="active"{/if}><a href="?module=OrdersAdmin&status=1">Приняты</a></li>
+		<li {if $order['status']==2}class="active"{/if}><a href="?module=OrdersAdmin&status=2">Выполнены</a></li>
+		<li {if $order['status']==3}class="active"{/if}><a href="?module=OrdersAdmin&status=3">Удалены</a></li>
 	{if $keyword}
 	<li class="active"><a href="{url module=OrdersAdmin keyword=$keyword id=null label=null}">Поиск</a></li>
 	{/if}
 	{/if}
-	{if in_array('labels', $manager->permissions)}
+	{if in_array('labels', $manager['permissions'])}
 	<li><a href="{url module=OrdersLabelsAdmin keyword=null id=null page=null label=null}">Метки</a></li>
 	{/if}
 {/capture}
@@ -159,7 +159,7 @@
 		{if !$user}
 			Не зарегистрирован
 		{else}
-			<a href='index.php?module=UserAdmin&id={$user->id}' target=_blank>{$user->name|escape}</a> ({$user->email|escape})
+			<a href='?module=UserAdmin&id={$user->id}' target=_blank>{$user->name|escape}</a> ({$user->email|escape})
 		{/if}
 		</div>
 		<div class='edit_user' style='display:none;'>
@@ -223,7 +223,7 @@
 				</div>
 		
 				{if $purchase['product']}
-				<a class="related_product_name" href="index.php?module=ProductAdmin&id={$purchase['product']['id']}&return={$smarty.server.REQUEST_URI|urlencode}">{$purchase['product_name']}</a>
+				<a class="related_product_name" href="?module=ProductAdmin&id={$purchase['product']['id']}&return={$smarty.server.REQUEST_URI|urlencode}">{$purchase['product_name']}</a>
 				{else}
 				{$purchase['product_name']}				
 				{/if}
@@ -413,7 +413,7 @@ $(function() {
   			new_item = new_purchase.clone().appendTo('.purchases');
   			new_item.removeAttr('id');
   			new_item.find('a.purchase_name').html(suggestion.data.name);
-  			new_item.find('a.purchase_name').attr('href', 'index.php?module=ProductAdmin&id='+suggestion.data.id);
+  			new_item.find('a.purchase_name').attr('href', '?module=ProductAdmin&id='+suggestion.data.id);
   			
   			// Добавляем варианты нового товара
   			var variants_select = new_item.find('select[name*=purchases][name*=variant_id]');

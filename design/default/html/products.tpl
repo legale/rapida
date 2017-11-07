@@ -2,11 +2,11 @@
 
 {* Канонический адрес страницы *}
 {if $category && $brand}
-{$canonical="/catalog/{$category['url']}/{$brand->url}" scope=parent}
+{$canonical="/catalog/{$category['url']}/{$brand['url']}" scope=parent}
 {elseif $category}
 {$canonical="/catalog/{$category['url']}" scope=parent}
 {elseif $brand}
-{$canonical="/brands/{$brand->url}" scope=parent}
+{$canonical="/brands/{$brand['url']}" scope=parent}
 {elseif $keyword}
 {$canonical="/products?keyword={$keyword|escape}" scope=parent}
 {else}
@@ -21,10 +21,10 @@
 	→ <a href="catalog/{$cat->url}">{$cat->name|escape}</a>
 	{/foreach}  
 	{if $brand}
-	→ <a href="catalog/{$cat->url}/{$brand->url}">{$brand->name|escape}</a>
+	→ <a href="catalog/{$cat->url}/{$brand['url']}">{$brand['name']|escape}</a>
 	{/if}
 	{elseif $brand}
-	→ <a href="brands/{$brand->url}">{$brand->name|escape}</a>
+	→ <a href="brands/{$brand['url']}">{$brand['name']|escape}</a>
 	{elseif $keyword}
 	→ Поиск
 	{/if}
@@ -37,7 +37,7 @@
 {elseif $page}
 <h1>{$page->name|escape}</h1>
 {else}
-<h1>{$category['name']|escape} {$brand->name|escape}</h1>
+<h1>{$category['name']|escape} {$brand['name']|escape}</h1>
 {/if}
 
 
@@ -48,16 +48,16 @@
 {* Описание категории *}
 {$category['description']}
 {/if}
-
 {* Фильтр по брендам *}
 {if $category['brands']}
+
 <div id="brands">
-	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand->id}class="selected"{/if}>Все бренды</a>
+	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>
 	{foreach $category['brands'] as $b}
-		{if $b->image}
-		<a data-brand="{$b->id}" href="{chpu_url params=[brand=>[$b->url], page=>'' ]}"><img src="{$config->brands_images_dir}{$b->image}" alt="{$b->name|escape}"></a>
+		{if $b['image']}
+		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['url']], page=>'' ]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
 		{else}
-		<a data-brand="{$b->id}" href="{chpu_url params=[brand=>[$b->url], page=>'' ]}" {if $b->id == $brand->id}class="selected"{/if}>{$b->name|escape}</a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['url']], page=>'' ]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
 		{/if}
 	{/foreach}
 </div>
@@ -65,7 +65,7 @@
 
 {if $current_page_num==1}
 {* Описание бренда *}
-{$brand->description}
+{$brand['description']}
 {/if}
 
 {* Фильтр по свойствам *}

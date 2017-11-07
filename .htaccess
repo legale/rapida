@@ -4,11 +4,11 @@ ErrorDocument 401 /password.php
 RewriteEngine on
 
 # Админка теперь по адресу /simpla
-RewriteRule		^admin/?$  simpla [L]
-RewriteRule		^simpla/?$  simpla/index.php [L]
+# RewriteRule		^admin/?$  simpla [L]
+# RewriteRule		^simpla/?$  simpla/index.php [L]
 
 
-# Все запросы обрабатывает главный контроллер
+# Все запросы, кроме реальных имен файлов обрабатывает главный контроллер
 RewriteCond %{REQUEST_FILENAME} !-f
 # RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*) index.php

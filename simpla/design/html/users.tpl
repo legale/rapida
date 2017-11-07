@@ -1,8 +1,8 @@
 {* Вкладки *}
 {capture name=tabs}
-	<li class="active"><a href="index.php?module=UsersAdmin">Покупатели</a></li>
-	{if in_array('groups', $manager->permissions)}<li><a href="index.php?module=GroupsAdmin">Группы</a></li>{/if}
-	{if in_array('coupons', $manager->permissions)}<li><a href="index.php?module=CouponsAdmin">Купоны</a></li>{/if}
+	<li class="active"><a href="?module=UsersAdmin">Покупатели</a></li>
+	{if in_array('groups', $manager['permissions'])}<li><a href="?module=GroupsAdmin">Группы</a></li>{/if}
+	{if in_array('coupons', $manager['permissions'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
 {/capture}
 
 {* Title *}
@@ -59,18 +59,18 @@
 	
 		<div id="list">	
 			{foreach $users as $user}
-			<div class="{if !$user->enabled}invisible{/if} row">
+			<div class="{if !$user['enabled']}invisible{/if} row">
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$user->id}"/>				
+					<input type="checkbox" name="check[]" value="{$user['id']}"/>				
 				</div>
 				<div class="user_name cell">
-					<a href="index.php?module=UserAdmin&id={$user->id}">{$user->name|escape}</a>	
+					<a href="?module=UserAdmin&id={$user['id']}">{$user['name']|escape}</a>	
 				</div>
 				<div class="user_email cell">
-					<a href="mailto:{$user->name|escape}<{$user->email|escape}>">{$user->email|escape}</a>	
+					<a href="mailto:{$user['name']|escape}<{$user['email']|escape}>">{$user['email']|escape}</a>	
 				</div>
 				<div class="user_group cell">
-					{$groups[$user->group_id]->name}
+					{$groups[$user['group_id']]['name']}
 				</div>
 				<div class="icons cell">
 					<a class="enable" title="Активен" href="#"></a>
@@ -107,13 +107,13 @@
  <!-- Меню -->
 <div id="right_menu">
 	<ul>
-		<li {if !$group->id}class="selected"{/if}><a href='index.php?module=UsersAdmin'>Все группы</a></li>
+		<li {if !$group->id}class="selected"{/if}><a href='?module=UsersAdmin'>Все группы</a></li>
 	</ul>
 	<!-- Группы -->
 	{if $groups}
 	<ul>
 		{foreach $groups as $g}
-		<li {if $group->id == $g->id}class="selected"{/if}><a href="index.php?module=UsersAdmin&group_id={$g->id}">{$g->name}</a></li>
+		<li {if $group->id == $g->id}class="selected"{/if}><a href="?module=UsersAdmin&group_id={$g->id}">{$g->name}</a></li>
 		{/foreach}
 	</ul>
 	{/if}

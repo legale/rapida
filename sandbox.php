@@ -89,10 +89,10 @@ if (isset($_SESSION['admin'])) {
 	  'feature_id' =>  array ( 0 => '1', 1 => '8', 2 => '19', ),
 	 'visible' => 1, 'force_no_cache' => true,);	$options = $simpla->features->get_options_mix($filter);
 	$features = $simpla->features->get_features_trans();
-	$cats = $simpla->categories->get_categories_tree();
-	$all_cats = $simpla->categories->all_categories;
+	$ids = $simpla->features->get_options_ids();
 	
-	print_r($all_cats);
+	
+	print_r($ids);
 	//~ print_r($options);
 	//~ print_r ( get_defined_constants(true)['Core']['E_ALL'] );
 	print "</PRE>";

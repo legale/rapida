@@ -1,9 +1,9 @@
 {capture name=tabs}
-	{if in_array('import', $manager->permissions)}<li><a href="index.php?module=ImportAdmin">Импорт</a></li>{/if}
-	<li class="active"><a href="index.php?module=ImportYmlAdmin">Импорт YML</a></li>
-	{if in_array('export', $manager->permissions)}<li><a href="index.php?module=ExportAdmin">Экспорт</a></li>{/if}
-	{if in_array('backup', $manager->permissions)}<li><a href="index.php?module=BackupAdmin">Бекап</a></li>{/if}
-	{if in_array('export', $manager->permissions)}<li><a href="index.php?module=SystemAdmin">Обслуживание системы</a></li>{/if}
+	{if in_array('import', $manager['permissions'])}<li><a href="?module=ImportAdmin">Импорт</a></li>{/if}
+	<li class="active"><a href="?module=ImportYmlAdmin">Импорт YML</a></li>
+	{if in_array('export', $manager['permissions'])}<li><a href="?module=ExportAdmin">Экспорт</a></li>{/if}
+	{if in_array('backup', $manager['permissions'])}<li><a href="?module=BackupAdmin">Бекап</a></li>{/if}
+	{if in_array('export', $manager['permissions'])}<li><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
 {/capture}
 {$meta_title='Импорт товаров' scope=parent}
 
@@ -34,7 +34,7 @@
   				success: function(data){
   					//~ for(var key in data.items)
   					//~ {
-    					//~ $('ul#import_result').prepend('<li><span class=count>'+count+'</span> <span title='+data.items[key].status+' class="status '+data.items[key].status+'"></span> <a target=_blank href="index.php?module=ProductAdmin&id='+data.items[key].product.id+'">'+data.items[key].product.name+'</a> '+data.items[key].variant.name+'</li>');
+    					//~ $('ul#import_result').prepend('<li><span class=count>'+count+'</span> <span title='+data.items[key].status+' class="status '+data.items[key].status+'"></span> <a target=_blank href="?module=ProductAdmin&id='+data.items[key].product.id+'">'+data.items[key].product.name+'</a> '+data.items[key].variant.name+'</li>');
     					//~ count++;
     				//~ }
 

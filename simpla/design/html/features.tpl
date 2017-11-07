@@ -1,9 +1,9 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('products', $manager->permissions)}<li><a href="index.php?module=ProductsAdmin">Товары</a></li>{/if}
-	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if in_array('brands', $manager->permissions)}<li><a href="index.php?module=BrandsAdmin">Бренды</a></li>{/if}
-	<li class="active"><a href="index.php?module=FeaturesAdmin">Свойства</a></li>
+	{if in_array('products', $manager['permissions'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
+	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if in_array('brands', $manager['permissions'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
+	<li class="active"><a href="?module=FeaturesAdmin">Свойства</a></li>
 {/capture}
 
 {* Title *}
@@ -84,7 +84,7 @@
 		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null}">Все категории</a></li>	
 		{/if}
 		{foreach $categories as $c}
-		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="index.php?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
+		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
 		{categories_tree categories=$c['subcategories']}
 		{/foreach}
 	</ul>

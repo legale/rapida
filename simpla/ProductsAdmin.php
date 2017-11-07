@@ -178,7 +178,7 @@ class ProductsAdmin extends Simpla
 			    	$category_id = $this->request->post('target_category', 'integer');
 			    	$filter['page'] = 1;
 					$category = $this->categories->get_category($category_id);
-	  				$filter['category_id'] = $category->children;
+	  				$filter['category_id'] = $category['children'];
 			    	
 			    	foreach($ids as $id)
 			    	{

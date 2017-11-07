@@ -1,12 +1,12 @@
 {* Вкладки *}
 {capture name=tabs}
-	<li class="active"><a href="index.php?module=UsersAdmin">Покупатели</a></li>
-	{if in_array('groups', $manager->permissions)}<li><a href="index.php?module=GroupsAdmin">Группы</a></li>{/if}
-	{if in_array('coupons', $manager->permissions)}<li><a href="index.php?module=CouponsAdmin">Купоны</a></li>{/if}
+	<li class="active"><a href="?module=UsersAdmin">Покупатели</a></li>
+	{if in_array('groups', $manager['permissions'])}<li><a href="?module=GroupsAdmin">Группы</a></li>{/if}
+	{if in_array('coupons', $manager['permissions'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
 {/capture}
 
-{if $user->id}
-{$meta_title = $user->name|escape scope=parent}
+{if $user['id']}
+{$meta_title = $user['name']|escape scope=parent}
 {/if}
 
 {if $message_success}
@@ -34,52 +34,117 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-
-
 <!-- Основная форма -->
-<form method=post id=product>
+<form method=post>
 <input type=hidden name="session_id" value="{$smarty.session.id}">
-	<div id="name">
-		<input class="name" name=name type="text" value="{$user->name|escape}"/> 
-		<input name=id type="hidden" value="{$user->id|escape}"/> 
-		<div class="checkbox">
-			<input name="enabled" value='1' type="checkbox" id="active_checkbox" {if $user->enabled}checked{/if}/> <label for="active_checkbox">Активен</label>
-		</div>
-	</div> 
-	
+<input class="name" name=name type="text" value="{$user['name']|escape}"/> 
+<input name=id type="hidden" value="{$user['id']|escape}"/> 
 
-<div id=column_left>
-	<!-- Левая колонка свойств товара -->
+
+<div class="column_left ">
+	<!-- Левая колонка -->
 
 		<!-- Параметры страницы -->
 		<div class="block">
-			<ul>
+			<ul class="list">
+				<li>
+				<div class="switcher">
+					<label class="switcher__text">Аккаунт</label>
+					<input class="switcher__input" value="1" type="checkbox" name="enabled" id="enabled_switch" {if $user['enabled']}checked{/if}>
+					<label class="switcher__label" for="enabled_switch">
+						<span class="switcher__text">Вкл.</span>
+					</label>
+				</div>
+				</li>
+				<li>
+				<div class="switcher">
+					<label class="switcher__text">Администратор</label>
+					<input class="switcher__input" value="1" type="checkbox" name="admin" id="admin_switch" {if $user['admin']}checked{/if}>
+					<label class="switcher__label" for="admin_switch">
+						<span class="switcher__text">Вкл.</span>
+					</label>
+				</div>
+				</li>
+
 				{if $groups}
 				<li>
 					<label class=property>Группа</label>
 					<select name="group_id">
 						<option value='0'>Не входит в группу</option>
 				   		{foreach $groups as $g}
-				        	<option value='{$g->id}' {if $user->group_id == $g->id}selected{/if}>{$g->name|escape}</option>
+				        	<option value='{$g['id']}' {if $user['group_id'] == $g['id']}selected{/if}>{$g['name']|escape}</option>
 				    	{/foreach}
 					</select>
 				</li>
 				{/if}
-				<li><label class=property>Email</label><input name="email" class="simpla_inp" type="text" value="{$user->email|escape}" /></li>
-				<li><label class=property>Дата регистрации</label><input name="email" class="simpla_inp" type="text" disabled value="{$user->created|date}" /></li>
-				<li><label class=property>Последний IP</label><input name="email" class="simpla_inp" type="text" disabled value="{$user->last_ip|escape}" /></li>
+				<li><label class=property>Email</label><input name="email"  type="text" value="{$user['email']|escape}" /></li>
+				<li><label class=property>Дата регистрации</label><input name="email"  type="text" disabled value="{$user['created']|date}" /></li>
+				<li><label class=property>Последний IP</label><input name="email"  type="text" disabled value="{$user['last_ip']|escape}" /></li>
 			</ul>
+			<input class="button_green button_save" type="submit" name="user_info" value="Сохранить" />
+			
 		</div>
 
-
-		
 		<!-- Параметры страницы (The End)-->			
-		
-	<input class="button_green button_save" type="submit" name="user_info" value="Сохранить" />
 </div>
-		
 	 
-	<!-- Левая колонка свойств товара (The End)--> 
+	<!-- Левая колонка (The End)--> 
+
+	<!-- Правая колонка -->
+	<div class=" column_right">
+		
+		<h2>Права доступа: </h2>
+		<div class="block"><label id="check_all" class="dash_link">Выбрать все</label></div>
+
+		<!-- Параметры  -->
+		<div class="block">
+			<ul>
+			
+				{$perms = [
+					'products'   =>'Товары',
+					'categories' =>'Категории',
+					'brands'     =>'Бренды',
+					'features'   =>'Свойства товаров',
+					'orders'     =>'Заказы',
+					'labels'     =>'Метки заказов',
+					'users'      =>'Покупатели',
+					'groups'     =>'Группы покупателей',
+					'coupons'    =>'Купоны',
+					'pages'      =>'Страницы',
+					'blog'       =>'Блог',
+					'comments'   =>'Комментарии',
+					'feedbacks'  =>'Обратная связь',
+					'import'     =>'Импорт',
+					'export'     =>'Экспорт',
+					'backup'     =>'Бекап',
+					'stats'      =>'Статистика',
+					'design'     =>'Дизайн',
+					'settings'   =>'Настройки',
+					'currency'   =>'Валюты',
+					'delivery'   =>'Способы доставки',
+					'payment'    =>'Способы оплаты',
+					'managers'   =>'Менеджеры',
+					'license'    =>'Управление лицензией'
+				]}
+				
+				{foreach $perms as $p=>$name}
+
+				<li>
+				<div class="switcher">
+					<label class="switcher__text">{$name}</label>
+					<input class="switcher__input" value="1" type="checkbox" name="permissions[]" id="{$p}_switch" {if $user['enabled']}checked{/if}>
+					<label class="switcher__label" for="{$p}_switch"></label>
+				</div>
+				</li>
+				{/foreach}
+				
+			</ul>
+		</div>
+		<!-- Параметры (The End)-->
+	</div>
+	<!-- Правая колонка (The End)--> 
+
+
 	
 		
 </form>
@@ -87,28 +152,28 @@
  
 
 {if $orders}
-<div class="block" id=column_left>
+<div class="block column_left">
 <form id="list" method="post">
 	<input type="hidden" name="session_id" value="{$smarty.session.id}">
 	<h2>Заказы пользователя</h2>
 
 	<div>		
 		{foreach $orders as $order}
-		<div class="{if $order->paid}green{/if} row">
+		<div class="{if $order['paid']}green{/if} row">
 	 		<div class="checkbox cell">
-				<input type="checkbox" name="check[]" value="{$order->id}" />				
+				<input type="checkbox" name="check[]" value="{$order['id']}" />				
 			</div>
 			<div class="order_date cell">
-				{$order->date|date} {$order->date|time}
+				{$order['date']|date} {$order['date']|time}
 			</div>
 			<div class="name cell">
-				<a href="{url module=OrderAdmin id=$order->id return=$smarty.server.REQUEST_URI}">Заказ №{$order->id}</a>
+				<a href="{url module=OrderAdmin id=$order['id'] return=$smarty.server.REQUEST_URI}">Заказ №{$order['id']}</a>
 			</div>
 			<div class="name cell">
-				{$order->total_price}&nbsp;{$currency->sign}
+				{$order['total_price']}&nbsp;{$currency->sign}
 			</div>
 			<div class="icons cell">
-				{if $order->paid}
+				{if $order['paid']}
 					<img src='design/images/cash_stack.png' alt='Оплачен' title='Оплачен'>
 				{else}
 					<img src='design/images/cash_stack_gray.png' alt='Не оплачен' title='Не оплачен'>				

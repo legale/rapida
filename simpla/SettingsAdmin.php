@@ -33,6 +33,13 @@ class SettingsAdmin extends Simpla
 			$this->settings->max_order_amount = $this->request->post('max_order_amount');
 			$this->settings->units = $this->request->post('units');	
 			
+			//кеш
+			$this->config->cache = $this->request->post('cache');	
+			//Экономный кеш через json
+			$this->config->json = $this->request->post('json');
+			//отладчик
+			$this->config->debug = $this->request->post('debug');
+			
 
 			
 			// Водяной знак

@@ -15,7 +15,10 @@ require_once ('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.8.1';
+	public $version = '0.0.8.1.1';
+	
+	//соль
+	public $salt = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
 	
 	// Файлы для хранения настроек
 	public $config_file = '';
@@ -88,9 +91,8 @@ class Config
 		$memory_limit = (int) (ini_get('memory_limit'));
 		$this->vars['max_upload_filesize'] = min($max_upload, $max_post, $memory_limit) * 1024 * 1024;
 		
-		// Соль (разная для каждой копии сайта, изменяющаяся при изменении config-файла)
-		$s = stat($this->config_file);
-		$this->vars['salt']['value'] = md5(md5_file($this->config_file) . $s['dev'] . $s['ino'] . $s['uid'] . $s['mtime']);
+		// Соль для повышения надежности хеширования
+		$this->vars['salt'] = md5('sale marino. il sale iodato. il sale e il pepe. solo il sale.');
 		
 		// Часовой пояс
 		if (!empty($this->vars['php_timezone']['value']))
@@ -102,10 +104,11 @@ class Config
 	// Магическим методов возвращаем нужную переменную
 	public function __get($name)
 	{
-		if (isset($this->vars[$name]))
+		if (isset($this->vars[$name]['value'])){
 			return $this->vars[$name]['value'];
-		else
+		}else{
 			return null;
+		}
 	}
 	
 	// Магическим методов задаём нужную переменную
@@ -114,7 +117,7 @@ class Config
 		# Запишем конфиги
 		if (isset($this->vars[$name])) {
 			$conf = file_get_contents($this->vars[$name]['file']);
-			$conf = preg_replace("/" . $name . "\s*=.*\n/i", $name . ' = ' . $value . "\r\n", $conf);
+			$conf = preg_replace("/" . $name . "\s*=.*\n/i", $name . ' = ' . $value . ";\r\n", $conf);
 			$cf = fopen($this->vars[$name]['file'], 'w');
 			fwrite($cf, $conf);
 			fclose($cf);

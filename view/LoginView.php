@@ -15,6 +15,7 @@ class LoginView extends View
 		if($url == 'logout')
 		{
 			unset($_SESSION['user_id']);
+			unset($_SESSION['admin']);
 			header('Location: '.$this->config->root_url);
 			exit();
 		}
@@ -34,10 +35,10 @@ class LoginView extends View
 					// Генерируем секретный код и сохраняем в сессии
 					$code = md5(uniqid($this->config->salt, true));
 					$_SESSION['password_remind_code'] = $code;
-					$_SESSION['password_remind_user_id'] = $user->id;
+					$_SESSION['password_remind_user_id'] = $user['id'];
 					
 					// Отправляем письмо пользователю для восстановления пароля
-					$this->notify->email_password_remind($user->id, $code);
+					$this->notify->email_password_remind($user['id'], $code);
 					$this->design->assign('email_sent', true);
 				}
 				else
@@ -62,7 +63,7 @@ class LoginView extends View
 					return false;
 				
 				// Залогиниваемся под пользователем и переходим в кабинет для изменения пароля
-				$_SESSION['user_id'] = $user->id;
+				$_SESSION['user_id'] = $user['id'];
 				header('Location: '.$this->config->root_url.'/user');
 			}
 			return $this->design->fetch('password_remind.tpl');
@@ -78,8 +79,13 @@ class LoginView extends View
 			if($user_id = $this->users->check_password($email, $password))
 			{
 				$user = $this->users->get_user($email);
-				if($user->enabled)
+				if($user['enabled'])
 				{
+					//Если запись администратора - запишем это в сессию
+					if(!empty($user['perm'])){
+						$_SESSION['admin'] = $email;
+					}
+					
 					$_SESSION['user_id'] = $user_id;
 					$this->users->update_user($user_id, array('last_ip'=>$_SERVER['REMOTE_ADDR']));
 					

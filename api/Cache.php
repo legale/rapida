@@ -22,7 +22,8 @@ class Cache extends Simpla
 			"htaccess" => true, // create htaccess file
 			"path" => "auto", // cache root path
 			"JSON_UNESCAPED_UNICODE" => true, //parameter to json_encode cache->encode method 
-			"codepage" => "cp1251" //codepage to store cache data on disk
+			"codepage" => "cp1251", //codepage to store cache data on disk
+			"json" => "true", //codepage to store cache data on disk
 		);
 
 		$ini_config = $this->config->vars_sections['cache'];
@@ -227,20 +228,55 @@ allow from 127.0.0.1";
 	 * @param $data
 	 * @return string
 	 */
-	private function encode($data, $unescaped = true)
+	private function serialize($data)
 	{
-		if ( (is_object($data) || is_array($data) || is_null($data)) && is_bool($unescaped)) {
+		dtimer::log(__METHOD__ . " start");
+		if(empty_($data)){
+			dtimer::log(__METHOD__ . " empty value! skip encode", 2);
+			return false;
+		}
+		
+		if ( is_object($data) || is_array($data) ) {
 		}
 		else {
-			trigger_error(__METHOD__ . ' wrong argument type ' . gettype($data) . ' ' . gettype($unescaped));
+			dtimer::log(__METHOD__ . ' wrong argument type ' . gettype($data) , 1);
 			return false;
 		}
 
-		if ($unescaped === true) {
-			return json_encode($data, JSON_UNESCAPED_UNICODE);
+		if ($res = serialize($data)){
+			return $res;
+		} else {
+			dtimer::log(__METHOD__ . " serialize error", 1);
+			return false;
+		}
+	}
+	
+	
+	private function encode($data, $unescaped = true)
+	{
+		dtimer::log(__METHOD__ . " start");
+		if(empty_($data)){
+			dtimer::log(__METHOD__ . " empty value! skip encode", 2);
+			return false;
+		}
+		
+		if ( (is_object($data) || is_array($data)) && is_bool($unescaped) ) {
 		}
 		else {
-			return json_encode($data);
+			dtimer::log(__METHOD__ . ' wrong argument type ' . gettype($data) . ' ' . gettype($unescaped) , 1);
+			return false;
+		}
+		
+		if ($unescaped === true) {
+			$param = JSON_UNESCAPED_UNICODE;
+		} else {
+			$param = '';
+		}
+		if ($res = json_encode($data, $param)){
+			return $res;
+		} else {
+			dtimer::log(__METHOD__ . " json encode error", 1);
+			return false;
 		}
 	}
 
@@ -251,12 +287,37 @@ allow from 127.0.0.1";
 	 */
 	private function decode($value, $as_array = null)
 	{
+		dtimer::log(__METHOD__ . " start");
 		if (is_null($as_array)) {
 			$as_array = true;
+		}
+		if(empty_($value)){
+			dtimer::log(__METHOD__ . " empty value! skip decode", 2);
+			return false;
 		}
 
 		$x = @json_decode($value, $as_array);
 		if ($x === null) {
+			dtimer::log(__METHOD__ . " json_decode error", 1);
+			return false;
+		}
+		else {
+			return $x;
+		}
+	}
+
+	private function unserialize($value)
+	{
+		dtimer::log(__METHOD__ . " start");
+
+		if(empty_($value)){
+			dtimer::log(__METHOD__ . " empty value! skip decode", 2);
+			return false;
+		}
+
+		$x = @unserialize($value);
+		if ($x === false) {
+			dtimer::log(__METHOD__ . " unserialize error", 1);
 			return false;
 		}
 		else {
@@ -275,17 +336,35 @@ allow from 127.0.0.1";
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function set_cache_nosql($keyword, $value = '')
+	public function set_cache_nosql($keyword, $value = '', $json = true)
 	{
+
 		//Если кеш отключен - останавливаем
-		if($this->config->cache !== true){
+		if(self::$config['cache'] !== true){
 			return false;
 		}
 		
+		//проверка типов аргументов
+		if ( !is_string($keyword) ) {
+			dtimer::log(__METHOD__ . ' wrong argument type ' . gettype($keyword), 1);
+			return false;
+		}
+
+		
+		//если json кодирование не отключено принудительно, берем настройку из конфига
+		if ($json === true){
+			$json = self::$config['json'];
+		}
+		
+
 		dtimer::log(__METHOD__ . ' driver_set start ');
 		$file_path = $this->getFilePath($keyword);
 		$tmp_path = $file_path . ".tmp";
-		$data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
+		if($json === true ){
+			$data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
+		} else {
+			$data = $this->serialize($value);
+		}
 
 		$toWrite = true;
 
@@ -302,8 +381,8 @@ allow from 127.0.0.1";
 			try {
 				dtimer::log(__METHOD__ . ' write to tmp ' . $tmp_path);
 				$f = @fopen($tmp_path, "w");
-				if (!empty(self::$config['codepage'])) {
-					$data = iconv("utf-8", self::$config['codepage'] . "//IGNORE", $data);
+				if (!empty(self::$config['codepage']) && $json === true) {
+					$data = @iconv("utf-8", self::$config['codepage'] . "//IGNORE", $data);
 				}
 
 				if (@fwrite($f, $data)) {
@@ -322,7 +401,7 @@ allow from 127.0.0.1";
 				}
 			} catch (Exception $e) {
 				// miss cache
-				dtimer::log("write FALSE error: " . print_r($e));
+				dtimer::log("write FALSE error: " . print_r($e), 2);
 				$written = false;
 			}
 		}
@@ -336,41 +415,51 @@ allow from 127.0.0.1";
 	 * @return mixed|null
 	 * @throws \Exception
 	 */
-	public function get_cache_nosql($keyword, $as_array = true)
+	public function get_cache_nosql($keyword, $as_array = true, $json = true)
 	{
 		//Если кеш отключен - останавливаем
-		if($this->config->cache !== true){
+		if(self::$config['cache'] !== true){
 			return false;
 		}
+
 		//проверка типов аргументов
 		if (is_string($keyword) && is_bool($as_array)) {
 		}
 		else {
-			trigger_error(__METHOD__ . ' wrong argument type ' . gettype($keyword) . ' ' . gettype($as_array));
+			dtimer::log(__METHOD__ . ' wrong argument type ' . gettype($keyword) . ' ' . gettype($as_array), 1);
 			return false;
 		}
 
-		dtimer::log(__METHOD__ . ' driver_get start ');
-		dtimer::log(__METHOD__ . ' keyword ' . $keyword);
+		//если json кодирование не отключено принудительно, берем настройку из конфига
+		if ($json === true){
+			$json = self::$config['json'];
+		}
+
+		dtimer::log(__METHOD__ . ' driver_get start keyword ' . $keyword);
 		$file_path = $this->getFilePath($keyword);
 		dtimer::log(__METHOD__ . ' file_path ' . $file_path);
 		if (!file_exists($file_path)) {
-			dtimer::log(__METHOD__ . ' file_exists check. not found ' . $file_path);
+			dtimer::log(__METHOD__ . ' file_exists check. not found ');
 			return null;
 		}
 
+
 		$content = file_get_contents($file_path);
-		dtimer::log(__METHOD__ . " before iconv $file_path first 5 sym ' " . mb_substr($content, 0, 5) . " '");
-		// check if codepage isset transcode from codepage to utf8
-		if (!empty(self::$config['codepage'])) {
-			$content = iconv(self::$config['codepage'], "utf-8", $content);
+		
+		if($json !== true){
+			$data = $this->unserialize($content);
+		} else {
+			dtimer::log(__METHOD__ . " before iconv $file_path first 5 sym ' " . mb_substr($content, 0, 5) . " '");
+			// check if codepage isset transcode from codepage to utf8
+			if (!empty(self::$config['codepage'])) {
+				$content = @iconv(self::$config['codepage'], "utf-8", $content);
+			}
+			dtimer::log(__METHOD__ . " after iconv $file_path first 5 sym ' " . mb_substr($content, 0, 5) . " '");
+			$data = $this->decode($content, $as_array);
 		}
-
-		dtimer::log(__METHOD__ . " after iconv $file_path first 5 sym ' " . mb_substr($content, 0, 5) . " '");
-		$array = $this->decode($content, $as_array);
-
+		
 		dtimer::log(__METHOD__ . " before driver_get return");
-		return $array;
+		return $data;
 	}
 
 	/**
@@ -379,7 +468,7 @@ allow from 127.0.0.1";
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function driver_delete($keyword, $option = array())
+	public function driver_delete_nosql($keyword, $option = array())
 	{
 		$file_path = $this->getFilePath($keyword, true);
 		if (file_exists($file_path) && @unlink($file_path)) {
@@ -398,7 +487,7 @@ allow from 127.0.0.1";
 	public function set_cache_integer($keyhash, $value)
 	{
 		//Если кеш отключен - останавливаем
-		if($this->config->cache !== true){
+		if(self::$config['cache'] !== true){
 			return false;
 		}
 		
@@ -434,7 +523,7 @@ allow from 127.0.0.1";
 	public function get_cache_integer($keyhash)
 	{
 		//Если кеш отключен - останавливаем
-		if($this->config->cache !== true){
+		if(self::$config['cache'] !== true){
 			return false;
 		}
 		

@@ -1,5 +1,5 @@
 <?php
-//функция для конвертации величин
+//функция для конвертации величин измерения информации
 function convert($size)
 {
 	if($size == 0 ){
@@ -169,6 +169,7 @@ class Simpla
 		'managers' => 'Managers',
 		'queue' => 'Queue',
 		'sys' => 'System',
+		'coAdmin' => 'ControllerAdmin',
 		'coMaster' => 'ControllerMaster',
 		'coSimpla' => 'ControllerSimpla', /* Контроллер Симплы, которые запускает view/indexView.php */
 		'coResize' => 'ControllerResize',
@@ -196,7 +197,7 @@ class Simpla
 			error_reporting($this->config->error_reporting);
 			dtimer::log('error_reporting config.ini: ' . $this->config->error_reporting . ' error_reporting() says: ' . error_reporting());
 			//выключатель отладчика
-			dtimer::$disabled = $this->config->dtimer_disabled;
+			dtimer::$enabled = $this->config->debug;
 			//локаль
 			setlocale(LC_ALL, $this->config->locale);
 		}

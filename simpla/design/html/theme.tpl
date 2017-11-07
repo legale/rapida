@@ -1,8 +1,8 @@
 {capture name=tabs}
-	<li class="active"><a href="index.php?module=ThemeAdmin">Тема</a></li>
-	<li><a href="index.php?module=TemplatesAdmin">Шаблоны</a></li>		
-	<li><a href="index.php?module=StylesAdmin">Стили</a></li>		
-	<li><a href="index.php?module=ImagesAdmin">Изображения</a></li>		
+	<li class="active"><a href="?module=ThemeAdmin">Тема</a></li>
+	<li><a href="?module=TemplatesAdmin">Шаблоны</a></li>		
+	<li><a href="?module=StylesAdmin">Стили</a></li>		
+	<li><a href="?module=ImagesAdmin">Изображения</a></li>		
 {/capture}
 
 {if $theme->name}
@@ -94,7 +94,7 @@ $(function() {
 		{else}
 		<p class=name><a href='#' class='set_main_theme'>{$t->name|escape|truncate:16:'...'}</a></p>
 		{/if}
-		<a href="index.php?module=TemplatesAdmin"><img class="preview" src='{$root_dir}../design/{$t->name}/preview.png'></a>
+		<a href="?module=TemplatesAdmin"><img class="preview" src='{$root_dir}../design/{$t->name}/preview.png'></a>
 	</li>
 {/foreach}
 </ul>

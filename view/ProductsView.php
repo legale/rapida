@@ -36,8 +36,7 @@ class ProductsView extends View
 		if( isset($this->coMaster->uri_arr['path_arr']['brand']) ){
 			$brands_urls = $this->coMaster->uri_arr['path_arr']['brand'];
 			//для экономии памяти присваиваем по ссылке
-			$this->brands->get_brands_ids();
-			$brands_ids =& $this->brands->brands_ids;
+			$brands_ids = $this->brands->get_brands_ids()[2];
 			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
 		}
 		
@@ -177,7 +176,7 @@ class ProductsView extends View
 
 		$discount = 0;
 		if(isset($_SESSION['user_id']) && $user = $this->users->get_user(intval($_SESSION['user_id'])))
-			$discount = $user->discount;
+			$discount = $user['discount'];
 			
 		// Товары получаем их сразу массивом
 		$products = $this->products->get_products($filter);
@@ -186,12 +185,12 @@ class ProductsView extends View
 		if(!empty($keyword) && $products_count == 1){
 			$p = (array)$products;
 			$p = reset($p);
-			header('Location: '.$this->config->root_url.'/products/'.$p->url);
+			header('Location: '.$this->config->root_url.'/products/'.$p['url']);
 		}
 		
 		if( !empty($products) )
 		{
-			$products_ids = array_keys((array)$products);
+			$products_ids = array_keys($products);
 			foreach($products as &$product)
 			{
 				$product['variants'] = array();
@@ -220,8 +219,11 @@ class ProductsView extends View
 		if(!empty($category))
 		{
 			$brands = $this->brands->get_brands(array('category_id'=>$category['children'], 'visible'=>1));
-			$category['brands'] = $brands;		
+			$category['brands'] = $brands;
 		}
+		//~ print "<pre>";
+		//~ print_r($category['children']);
+		//~ print_r($category['brands']);
 		
 		// Устанавливаем мета-теги в зависимости от запроса
 		if($this->page)
@@ -232,6 +234,7 @@ class ProductsView extends View
 		}
 		elseif(isset($category))
 		{
+			$this->design->assign('category', $category);
 			$this->design->assign('meta_title', $category['meta_title']);
 			$this->design->assign('meta_keywords', $category['meta_keywords']);
 			$this->design->assign('meta_description', $category['meta_description']);

@@ -1,10 +1,10 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('settings', $manager->permissions)}<li><a href="index.php?module=SettingsAdmin">Настройки</a></li>{/if}
-	{if in_array('currency', $manager->permissions)}<li><a href="index.php?module=CurrencyAdmin">Валюты</a></li>{/if}
-	{if in_array('delivery', $manager->permissions)}<li><a href="index.php?module=DeliveriesAdmin">Доставка</a></li>{/if}
-	{if in_array('payment', $manager->permissions)}<li><a href="index.php?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	<li class="active"><a href="index.php?module=ManagersAdmin">Менеджеры</a></li>
+	{if in_array('settings', $manager['permissions'])}<li><a href="?module=SettingsAdmin">Настройки</a></li>{/if}
+	{if in_array('currency', $manager['permissions'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
+	{if in_array('delivery', $manager['permissions'])}<li><a href="?module=DeliveriesAdmin">Доставка</a></li>{/if}
+	{if in_array('payment', $manager['permissions'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
+	<li class="active"><a href="?module=ManagersAdmin">Менеджеры</a></li>
 {/capture}
 
 {if $m->login}
@@ -71,7 +71,7 @@ $(function() {
 	</div> 
 
 	<!-- Левая колонка -->
-	<div id="column_left">
+	<div class="column_left">
 		
 		<h2>Права доступа: </h2>
 		<div class="block"><label id="check_all" class="dash_link">Выбрать все</label></div>
@@ -110,7 +110,7 @@ $(function() {
 				{foreach $perms as $p=>$name}
 				<li><label class=property for="{$p}">{$name}</label>
 				<input id="{$p}" name="permissions[]" class="simpla_inp" type="checkbox" value="{$p}"
-				{if $m->permissions && in_array($p, $m->permissions)}checked{/if} {if $m->login==$manager->login}disabled{/if}/></li>
+				{if $m['permissions'] && in_array($p, $m['permissions'])}checked{/if} {if $m->login==$manager->login}disabled{/if}/></li>
 				{/foreach}
 				
 			</ul>

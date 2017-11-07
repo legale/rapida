@@ -1,9 +1,9 @@
 {capture name=tabs}
-	<li class="active"><a href="index.php?module=SettingsAdmin">Настройки</a></li>
-	{if in_array('currency', $manager->permissions)}<li><a href="index.php?module=CurrencyAdmin">Валюты</a></li>{/if}
-	{if in_array('delivery', $manager->permissions)}<li><a href="index.php?module=DeliveriesAdmin">Доставка</a></li>{/if}
-	{if in_array('payment', $manager->permissions)}<li><a href="index.php?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	{if in_array('managers', $manager->permissions)}<li><a href="index.php?module=ManagersAdmin">Менеджеры</a></li>{/if}
+	<li class="active"><a href="?module=SettingsAdmin">Настройки</a></li>
+	{if in_array('currency', $manager['permissions'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
+	{if in_array('delivery', $manager['permissions'])}<li><a href="?module=DeliveriesAdmin">Доставка</a></li>{/if}
+	{if in_array('payment', $manager['permissions'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
+	{if in_array('managers', $manager['permissions'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
 {/capture}
  
 {$meta_title = "Настройки" scope=parent}
@@ -27,14 +27,40 @@
 </div>
 <!-- Системное сообщение (The End)-->
 {/if}
-			
+
 
 <!-- Основная форма -->
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
-			
-		<!-- Параметры -->
 		<div class="block">
+			<h2>Настройки системы</h2>
+
+				<div class="switcher">
+<div class="switcher__title">Кеширование самых тяжелых запросов к БД</div>
+					<input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch" {if $config->cache}checked{/if}>
+					<label class="switcher__label" for="cache_switch">
+						<span class="switcher__text">Вкл.</span>
+					</label>
+				</div>
+
+				<div class="switcher">
+<div class="switcher__title">Экономная (json_encode) запись кеша на диск вместо быстрой (serialize)</div>
+					<input class="switcher__input" value="true" type="checkbox" name="json" id="json_switch" {if $config->json}checked{/if}>
+					<label class="switcher__label" for="json_switch">
+						<span class="switcher__text">Вкл.</span>
+					</label>
+				</div>
+
+				<div class="switcher">
+<div class="switcher__title">Отладчик работы системы (Появляется в конце каждой страницы)</div>
+					<input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch" {if $config->debug}checked{/if}>
+					<label class="switcher__label" for="debug_switch">
+						<span class="switcher__text">Вкл.</span>
+					</label>
+				</div>
+		</div>
+		<!-- Параметры -->
+		<div class="block layer">
 			<h2>Настройки сайта</h2>
 			<ul>
 				<li><label class=property>Имя сайта</label><input name="site_name" class="simpla_inp" type="text" value="{$settings->site_name|escape}" /></li>

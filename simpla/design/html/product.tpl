@@ -1,8 +1,8 @@
 {capture name=tabs}
 	<li class="active"><a href="{url module=ProductsAdmin category_id=$product['category_id'] return=null brand_id=null id=null}">Товары</a></li>
-	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if in_array('brands', $manager->permissions)}<li><a href="index.php?module=BrandsAdmin">Бренды</a></li>{/if}
-	{if in_array('features', $manager->permissions)}<li><a href="index.php?module=FeaturesAdmin">Свойства</a></li>{/if}
+	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if in_array('brands', $manager['permissions'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
+	{if in_array('features', $manager['permissions'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
 {if $product['id']}
@@ -19,6 +19,121 @@
 <script src="design/js/autocomplete/jquery.autocomplete-min.js"></script>
 
 <script>
+document.addEventListener("DOMContentLoaded", ready);
+
+function ready(){
+/* DragnDrop */
+var holder = document.getElementById('holder'),
+	product_id,
+	tests = {
+	  filereader: typeof FileReader != 'undefined',
+	  dnd: 'draggable' in document.createElement('span'),
+	  formdata: !!window.FormData,
+	  progress: "upload" in new XMLHttpRequest
+	}, 
+	support = {
+	  filereader: document.getElementById('filereader'),
+	  formdata: document.getElementById('formdata'),
+	  progress: document.getElementById('progress')
+	},
+	acceptedTypes = {
+	  'image/png': true,
+	  'image/jpeg': true,
+	  'image/gif': true
+	},
+	progress = document.getElementById('uploadprogress'),
+	fileupload = document.getElementById('upload');
+	if(holder !== null){
+		product_id = holder.getAttribute('product_id');
+	} else {
+		return false;
+	}
+
+
+"filereader formdata progress".split(' ').forEach(function (api) {
+  if (tests[api] === false) {
+	support[api].className = 'fail';
+  } else {
+	// FFS. I could have done el.hidden = true, but IE doesn't support
+	// hidden, so I tried to create a polyfill that would extend the
+	// Element.prototype, but then IE10 doesn't even give me access
+	// to the Element object. Brilliant.
+	support[api].className = 'hidden';
+  }
+});
+
+function previewfile(file) {
+  if (tests.filereader === true && acceptedTypes[file.type] === true) {
+	var reader = new FileReader();
+	reader.onload = function (event) {
+	  var image = new Image();
+	  image.src = event.target.result;
+	  image.width = 100; // a fake resize
+	  imagelist.appendChild(image);
+	};
+
+	reader.readAsDataURL(file);
+  }  else {
+	holder.innerHTML += '<p>Uploaded ' + file.name + ' ' + (file.size ? (file.size/1024|0) + 'K' : '');
+	console.log(file);
+  }
+}
+
+function readfiles(files) {
+	//debugger;
+	//console.log(files);
+	var formData = tests.formdata ? new FormData() : null;
+	for (var i = 0; i < files.length; i++) {
+	  if (tests.formdata){
+		   formData.append('file[]', files[i]);
+	   }
+		formData.append('product_id', product_id );
+	}
+	//console.log(formData);
+
+	// now post a new XHR request
+	if (tests.formdata) {
+	  var xhr = new XMLHttpRequest();
+	  xhr.open('POST', '/simpla/ajax/upload_image.php');
+	  xhr.onload = function() {
+		progress.value = progress.innerHTML = 100;
+		for (var i = 0; i < files.length; i++) {
+			previewfile(files[i]);
+		}
+	  };
+
+	  if (tests.progress) {
+		xhr.upload.onprogress = function (event) {
+		  if (event.lengthComputable) {
+			var complete = (event.loaded / event.total * 100 | 0);
+			progress.value = progress.innerHTML = complete;
+		  }
+		}
+	  }
+
+	  xhr.send(formData);
+	}
+}
+
+if (tests.dnd) { 
+  holder.ondragover = function () { this.className = 'hover'; return false; };
+  holder.ondragend = function () { this.className = ''; return false; };
+  holder.ondrop = function (e) {
+	this.className = '';
+	e.preventDefault();
+	readfiles(e.dataTransfer.files);
+  }
+} else {
+	alert('else');
+  fileupload.className = 'hidden';
+  fileupload.querySelector('input').onchange = function () {
+	readfiles(this.files);
+  };
+}
+/* DragnDrop (The end) */
+}
+
+
 $(function() {
 
 	// Добавление категории
@@ -67,47 +182,7 @@ $(function() {
 	$('#add_image_url').click(function() {
 		$("<input class='remote_image' name=images_urls[] type=text value='http://'>").appendTo('div#add_image').focus().select();
 	});
-	// Или перетаскиванием
-	if(window.File && window.FileReader && window.FileList)
-	{
-		$("#dropZone").show();
-		$("#dropZone").on('dragover', function (e){
-			$(this).css('border', '1px solid #8cbf32');
-		});
-		$(document).on('dragenter', function (e){
-			$("#dropZone").css('border', '1px dotted #8cbf32').css('background-color', '#c5ff8d');
-		});
-	
-		dropInput = $('.dropInput').last().clone();
-		
-		function handleFileSelect(evt){
-			var files = evt.target.files; // FileList object
-			// Loop through the FileList and render image files as thumbnails.
-		    for (var i = 0, f; f = files[i]; i++) {
-				// Only process image files.
-				if (!f.type.match('image.*')) {
-					continue;
-				}
-			var reader = new FileReader();
-			// Closure to capture the file information.
-			reader.onload = (function(theFile) {
-				return function(e) {
-					// Render thumbnail.
-					$("<li class=wizard><a href='' class='delete'><img src='design/images/cross-circle-frame.png'></a><img onerror='$(this).closest(\"li\").remove();' src='"+e.target.result+"' /><input name=images_urls[] type=hidden value='"+theFile.name+"'></li>").appendTo('div .images ul');
-					temp_input =  dropInput.clone();
-					$('.dropInput').hide();
-					$('#dropZone').append(temp_input);
-					$("#dropZone").css('border', '1px solid #d0d0d0').css('background-color', '#ffffff');
-					
-		        };
-		      })(f);
-		
-		      // Read in the image file as a data URL.
-		      reader.readAsDataURL(f);
-		    }
-		}
-		$('.dropInput').live("change", handleFileSelect);
-	};
+
 
 	// Удаление варианта
 	$('a.del_variant').click(function() {
@@ -235,7 +310,7 @@ $(function() {
 				new_item = new_related_product.clone().appendTo('.related_products');
 				new_item.removeAttr('id');
 				new_item.find('a.related_product_name').html(suggestion.data.name);
-				new_item.find('a.related_product_name').attr('href', 'index.php?module=ProductAdmin&id='+suggestion.data.id);
+				new_item.find('a.related_product_name').attr('href', '?module=ProductAdmin&id='+suggestion.data.id);
 				new_item.find('input[name*="related_products"]').val(suggestion.data.id);
 				if(suggestion.data.image)
 					new_item.find('img.product_icon').attr("src", suggestion.data.image);
@@ -247,7 +322,7 @@ $(function() {
 			function(suggestions, currentValue){
 				var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g');
 				var pattern = '(' + currentValue.replace(reEscape, '\\$1') + ')';
-  				return (suggestions.data.image?"<img align=absmiddle src='"+suggestions.data.image+"'> ":'') + suggestions.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+				return (suggestions.data.image?"<img align=absmiddle src='"+suggestions.data.image+"'> ":'') + suggestions.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
 			}
 
 	});
@@ -265,106 +340,7 @@ $(function() {
 			$(this).val('∞');
 	});
 	
-	// Волшебные изображения
-	name_changed = false;
-	$("input[name=name]").change(function() {
-		name_changed = true;
-		images_loaded = 0;
-	});	
-	images_num = 8;
-	images_loaded = 0;
-	old_wizar_dicon_src = $('#images_wizard img').attr('src');
-	$('#images_wizard').click(function() {
-		
-		$('#images_wizard img').attr('src', 'design/images/loader.gif');
-		if(name_changed)
-			$('div.images ul li.wizard').remove();
-		name_changed = false;
-		key = $('input[name=name]').val();
-		$.ajax({
- 			 url: "ajax/get_images.php",
- 			 	data: {keyword: key, start: images_loaded},
- 			 	dataType: 'json',
-  				success: function(data){
-    				for(i=0; i<Math.min(data.length, images_num); i++)
-    				{
-	    				image_url = data[i];
-						$("<li class=wizard><a href='' class='delete'><img src='design/images/cross-circle-frame.png'></a><a href='"+image_url+"' target=_blank><img onerror='$(this).closest(\"li\").remove();' src='"+image_url+"' /><input name=images_urls[] type=hidden value='"+image_url+"'></a></li>").appendTo('div .images ul');
-    				}
-					$('#images_wizard img').attr('src', old_wizar_dicon_src);
-					images_loaded += images_num;
-  				}
-		});
-		return false;
-	});
-	
-	// Волшебное описание
-	name_changed = false;
-	captcha_code = '';
-	$("input[name=name]").change(function() {
-		name_changed = true;
-	});	
-	old_prop_wizard_icon_src = $('#properties_wizard img').attr('src');
-	$('#properties_wizard').click(function() {
-		
-		$('#properties_wizard img').attr('src', 'design/images/loader.gif');
-		$('#captcha_form').remove();
-		if(name_changed)
-			$('div.images ul li.wizard').remove();
-		name_changed = false;
-		key = $('input[name=name]').val();
 
-		$.ajax({
- 			 url: "ajax/get_info.php",
- 			 	data: {keyword: key, captcha: captcha_code},
- 			 	dataType: 'json',
-  				success: function(data){
- 
-  					captcha_code = '';
-					$('#properties_wizard img').attr('src', old_prop_wizard_icon_src);
-
-					// Если запрашивают капчу
-					if(data.captcha)
-					{	 
-						captcha_form = $("<form id='captcha_form'><img src='data:image/png;base64,"+data.captcha+"' align='absmiddle'><input id='captcha_input' type=text><input type=submit value='Ok'></form>");
-						$("#properties_wizard").parent().append(captcha_form);
-						$('#captcha_input').focus();
-						captcha_form.submit(function() {
-							captcha_code = $('#captcha_input').val();
-							$(this).remove();
-							$('#properties_wizard').click();
-							return false;
-						});
-					}
-					else
-  					if(data.product)
-  					{ 
-  						$('li#new_feature').remove();
-	    				for(i=0; i<data.product.options.length; i++)
-	    				{
-	    					option_name = data.product.options[i].name;
-	    					option_value = data.product.options[i].value;
-							// Добавление нового свойства товара
-							exists = false;
-														
-							if(!$('label.property:visible').filter(function(){ return $(this).text().toLowerCase() === option_name.toLowerCase();}).closest('li').find('input[name*=options]').val(option_value).length)
-							{
-								f = $(new_feature).clone(true);
-								f.find('input[name*=new_features_names]').val(option_name);
-								f.find('input[name*=new_features_values]').val(option_value);
-								f.appendTo('ul.new_features').fadeIn('slow').find("input[name*=new_feature_name]");
-							}
-	   					}
-	   					
-   					}				
-				},
-				error: function(xhr, textStatus, errorThrown){
-                	alert("Error: " +textStatus);
-           		}
-		});
-		return false;
-	});
-	
 
 	// Автозаполнение мета-тегов
 	meta_title_touched = true;
@@ -420,7 +396,7 @@ function generate_meta_keywords()
 	$('select[name="categories[]"]').each(function(index) {
 		c = $(this).find('option:selected').attr('category_name');
 		if(typeof(c) == 'string' && c != '')
-    		result += ', '+c;
+			result += ', '+c;
 	}); 
 	return result;
 }
@@ -449,14 +425,14 @@ function translit(str)
 {
 	var ru=("А-а-Б-б-В-в-Ґ-ґ-Г-г-Д-д-Е-е-Ё-ё-Є-є-Ж-ж-З-з-И-и-І-і-Ї-ї-Й-й-К-к-Л-л-М-м-Н-н-О-о-П-п-Р-р-С-с-Т-т-У-у-Ф-ф-Х-х-Ц-ц-Ч-ч-Ш-ш-Щ-щ-Ъ-ъ-Ы-ы-Ь-ь-Э-э-Ю-ю-Я-я").split("-")   
 	var en=("A-a-B-b-V-v-G-g-G-g-D-d-E-e-E-e-E-e-ZH-zh-Z-z-I-i-I-i-I-i-J-j-K-k-L-l-M-m-N-n-O-o-P-p-R-r-S-s-T-t-U-u-F-f-H-h-TS-ts-CH-ch-SH-sh-SCH-sch-'-'-Y-y-'-'-E-e-YU-yu-YA-ya").split("-")   
- 	var res = '';
+	var res = '';
 	for(var i=0, l=str.length; i<l; i++)
 	{ 
 		var s = str.charAt(i), n = ru.indexOf(s); 
 		if(n >= 0) { res += en[n]; } 
 		else { res += s; } 
-    } 
-    return res;  
+	} 
+	return res;  
 }
 
 </script>
@@ -491,11 +467,11 @@ overflow-y: auto;
 	
 	<span class="share">		
 		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&title={$product['name']|urlencode}&description={$product['annotation']|urlencode}&image={$product_images.0->filename|resize:1000:1000|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
+		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
 		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/products/{$product['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
+		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
 		<a href="#" onClick='window.open("http://twitter.com/share?text={$product['name']|urlencode}&url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&hashtags={$product['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
+		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
 </div>
@@ -517,7 +493,7 @@ overflow-y: auto;
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 
- 	<div id="name">
+	<div id="name">
 		<input class="name" name=name type="text" value="{$product['name']|escape}"/> 
 		<input name=id type="hidden" value="{$product['id']|escape}"/> 
 		<div class="checkbox">
@@ -531,10 +507,10 @@ overflow-y: auto;
 	<div id="product_brand" {if !$brands}style='display:none;'{/if}>
 		<label>Бренд</label>
 		<select name="brand_id">
-            <option value='0' {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
-       		{foreach $brands as $brand}
-            	<option value='{$brand->id}' {if $product['brand_id'] == $brand->id}selected{/if} brand_name='{$brand->name|escape}'>{$brand->name|escape}</option>
-        	{/foreach}
+			<option value='0' {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
+			{foreach $brands as $brand}
+				<option value='{$brand->id}' {if $product['brand_id'] == $brand->id}selected{/if} brand_name='{$brand->name|escape}'>{$brand->name|escape}</option>
+			{/foreach}
 		</select>
 	</div>
 	
@@ -563,7 +539,7 @@ overflow-y: auto;
 	</div>
 
 
- 	<!-- Варианты товара -->
+	<!-- Варианты товара -->
 	<div id="variants_block" {assign var=first_variant value=$product_variants|@first}{if $product_variants|@count <= 1 && !$first_variant->name}class=single_variant{/if}>
 		<ul id="header">
 			<li class="variant_move"></li>
@@ -618,48 +594,42 @@ overflow-y: auto;
 
 		<input class="button_green button_save" type="submit" name="" value="Сохранить" />
 		<span class="add" id="add_variant"><i class="dash_link">Добавить вариант</i></span>
- 	</div>
+	</div>
 	<!-- Варианты товара (The End)--> 
 	
- 	<!-- Левая колонка свойств товара -->
-	<div id="column_left">
+	<!-- Левая колонка свойств товара -->
+	<div class="column_left">
 			
 		<!-- Параметры страницы -->
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
-			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /products/</div><input name="url" class="page_url" type="text" value="{$product['url']|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$product['meta_title']|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$product['meta_keywords']|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$product['meta_description']|escape}</textarea></li>
+			<ul class="list">
+				<li><label class=property>Адрес</label>
+					<div class="page_url"> /products/</div>
+					<input name="url" class="page_url" type="text" value="{$product['url']|escape}" />
+				</li>
+				<li><label class=property>Заголовок</label>
+					<input name="meta_title"  type="text" value="{$product['meta_title']|escape}" />
+				</li>
+				<li>
+					<label class=property>Ключевые слова</label>
+					<input name="meta_keywords"  type="text" value="{$product['meta_keywords']|escape}" />
+				</li>
+				<li>
+					<label class=property>Описание</label>
+					<textarea name="meta_description"  />{$product['meta_description']|escape}</textarea>
+				</li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
-				
-		<div class="block layer" {if !$categories}style='display:none;'{/if}>
-			<!-- Свойства товара -->
-			<h2>Свойства товара</h2>
-			<ul class="prop_ul">
-				{foreach $features as $fid=>$feature}
-					<li feature_id={$fid}><label class=property>{$feature['name']}</label><input class="simpla_inp" type="text" name=options[{$fid}]  value="{$options[$fid]['val']|escape}" /></li>
-				{/foreach}
-			</ul>
-			<!-- Новые свойства -->
-			<ul class=new_features>
-				<li id=new_feature><label class=property><input type=text name=new_features_names[]></label><input class="simpla_inp" type="text" name=new_features_values[] /></li>
-			</ul>
-			<span class="add"><i class="dash_link" id="add_new_feature">Добавить новое свойство</i></span>
-			<input class="button_green button_save" type="submit" name="" value="Сохранить" />			
-		</div>
-		
-		<!-- Свойства товара (The End)-->
+
 		
 		{*
 		<!-- Экспорт-->
 		<div class="block">
 			<h2>Экспорт товара</h2>
 			<ul>
-				<li><input id="exp_yad" type="checkbox" /> <label for="exp_yad">Яндекс Маркет</label> Бид <input class="simpla_inp" type="" name="" value="12" /> руб.</li>
+				<li><input id="exp_yad" type="checkbox" /> <label for="exp_yad">Яндекс Маркет</label> Бид <input  type="" name="" value="12" /> руб.</li>
 				<li><input id="exp_goog" type="checkbox" /> <label for="exp_goog">Google Base</label> </li>
 			</ul>
 		</div>
@@ -670,32 +640,45 @@ overflow-y: auto;
 	<!-- Левая колонка свойств товара (The End)--> 
 	
 	<!-- Правая колонка свойств товара -->	
-	<div id="column_right">
+	<div class="column_right">
 		
 		<!-- Изображения товара -->	
 		<div class="block layer images">
 			<h2>Изображения товара
-			<a href="#" id=images_wizard><img src="design/images/wand.png" alt="Подобрать автоматически" title="Подобрать автоматически"/></a>
 			</h2>
+			<ul id="imagelist">
 			{if $product_images}
-			<ul>{foreach $product_images as $image}
+			{foreach $product_images as $image}
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
 					<img src="{$image['filename']|resize:100:100}" alt="" />
-					<input type=hidden name='images[]' value='{$image['id']}'>
+					<input type="hidden" name='images[]' value="{$image['id']}">
 				</li>{/foreach}
-			</ul>
 			{/if}
+			</ul>
+
+			<div class="block">
+
 			<!-- dropzone для перетаскивания изображений -->	
 			{if isset($product['id'])}
-			<div id=dropZone>
-				<div id=dropMessage>Перетащите файлы сюда</div>
-				<input type="file" name="dropped_images[]" multiple class="dropInput">
-			</div>
+				<div id="holder" product_id="{$product['id']}">
+					<div class="holder__text">Тяни файл сюда</div>
+				</div> 
+				<p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+				<p id="filereader">File API & FileReader API not supported</p>
+				<p id="formdata">XHR2's FormData is not supported</p>
+				<p id="progress">XHR2's upload progress isn't supported</p>
+				<p>Upload progress: <progress id="uploadprogress" max="100" value="0">0</progress></p>
+
 			{/if}
 			<!-- dropzone для перетаскивания изображений (The End) -->
+
+			<span class=upload_image><i class="dash_link" id="upload_image">Добавить изображение</i></span>
+			 или 
+			 <span class=add_image_url><i class="dash_link" id="add_image_url">загрузить из интернета</i></span>
 			<div id="add_image"></div>
-			<span class=upload_image><i class="dash_link" id="upload_image">Добавить изображение</i></span> или <span class=add_image_url><i class="dash_link" id="add_image_url">загрузить из интернета</i></span>
+
+			</div>
 		</div>
 
 		<div class="block layer">
@@ -747,7 +730,29 @@ overflow-y: auto;
 		
 	</div>
 	<!-- Правая колонка свойств товара (The End)--> 
-
+			<!-- Свойства товара -->
+		<div class="block layer" {if !$categories}style='display:none;'{/if}>
+			<h2>Свойства товара</h2>
+			<ul class="prop_ul">
+				{foreach $features as $fid=>$feature}
+					<li feature_id={$fid}>
+						<label class="property inrow">{$feature['name']}</label>
+						<input class="inrow" type="text" name=options[{$fid}] value="{$options[$fid]['val']|escape}" />
+					</li>
+				{/foreach}
+			</ul>
+			<!-- Новые свойства -->
+			<ul class=new_features>
+				<li id=new_feature>
+					<label class="property inrow"><input type=text class="inrow" name=new_features_names[]></label>
+					<input class="inrow" type="text" name=new_features_values[] />
+				</li>
+			</ul>
+			<span class="add"><i class="dash_link" id="add_new_feature">Добавить новое свойство</i></span>
+			<input class="button_green button_save" type="submit" name="" value="Сохранить" />			
+		</div>
+		
+		<!-- Свойства товара (The End)-->
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Краткое описание</h2>

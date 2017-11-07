@@ -15,6 +15,8 @@ class ControllerMaster extends Simpla
 	
 	//здесь массив соответствия модулей и контроллеров
 	private $modules = array(
+	'admin' => 'coAdmin',
+	'simpla' => 'coAdmin',
 	'/' => 'coSimpla',
 	'page' => 'coSimpla',
 	'catalog' => 'coSimpla',
@@ -233,7 +235,7 @@ class ControllerMaster extends Simpla
 		}
 		
 		//Если только 1 элемент после дроби, значит это модуль page
-		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search') ) ){
+		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search','admin','simpla') ) ){
 			return array('module' => 'page', 'url'=> array_shift($a) );
 		}
 		

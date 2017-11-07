@@ -1,10 +1,10 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('settings', $manager->permissions)}<li><a href="index.php?module=SettingsAdmin">Настройки</a></li>{/if}
-	{if in_array('currency', $manager->permissions)}<li><a href="index.php?module=CurrencyAdmin">Валюты</a></li>{/if}
-	{if in_array('delivery', $manager->permissions)}<li><a href="index.php?module=DeliveriesAdmin">Доставка</a></li>{/if}
-	{if in_array('payment', $manager->permissions)}<li><a href="index.php?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	<li class="active"><a href="index.php?module=ManagersAdmin">Менеджеры</a></li>
+	{if in_array('settings', $manager['permissions'])}<li><a href="?module=SettingsAdmin">Настройки</a></li>{/if}
+	{if in_array('currency', $manager['permissions'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
+	{if in_array('delivery', $manager['permissions'])}<li><a href="?module=DeliveriesAdmin">Доставка</a></li>{/if}
+	{if in_array('payment', $manager['permissions'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
+	<li class="active"><a href="?module=ManagersAdmin">Менеджеры</a></li>
 {/capture}
 
 {* Title *}
@@ -14,7 +14,7 @@
 {* Заголовок *}
 <div id="header">
 	<h1>{$managers_count} {$managers_count|plural:'менеджер':'менеджеров':'менеджера'}</h1> 	
-	<a class="add" href="index.php?module=ManagerAdmin">Добавить менеджера</a>
+	<a class="add" href="?module=ManagerAdmin">Добавить менеджера</a>
 </div>
 
 {if $message_error}
@@ -43,7 +43,7 @@
 					<input type="checkbox" name="check[]" value="{$m->login|escape}" {if $manager->login == $m->login}disabled{/if}/>
 				</div>
 				<div class="user_name cell">
-					<a href="index.php?module=ManagerAdmin&login={$m->login|urlencode}">{$m->login|escape}</a>
+					<a href="?module=ManagerAdmin&login={$m->login|urlencode}">{$m->login|escape}</a>
 				</div>
 				<div class="user_email cell">
 					<a href="mailto:{$user->name|escape}<{$user->email|escape}>">{$user->email|escape}</a>	

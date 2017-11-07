@@ -1,9 +1,9 @@
 {* Вкладки *}
 {capture name=tabs}
 	<li class="active"><a href="{url module=ProductsAdmin keyword=null category_id=null brand_id=null filter=null page=null}">Товары</a></li>
-	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if in_array('brands', $manager->permissions)}<li><a href="index.php?module=BrandsAdmin">Бренды</a></li>{/if}
-	{if in_array('features', $manager->permissions)}<li><a href="index.php?module=FeaturesAdmin">Свойства</a></li>{/if}
+	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if in_array('brands', $manager['permissions'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
+	{if in_array('features', $manager['permissions'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
 {* Title *}

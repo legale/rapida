@@ -1,5 +1,5 @@
 {capture name=tabs}
-	<li class="active"><a href="index.php?module=BlogAdmin">Блог</a></li>
+	<li class="active"><a href="?module=BlogAdmin">Блог</a></li>
 {/capture}
 
 {if $post->id}
@@ -161,7 +161,7 @@ function translit(str)
 	</div> 
 
 	<!-- Левая колонка свойств товара -->
-	<div id="column_left">
+	<div class="column_left">
 			
 		<!-- Параметры страницы -->
 		<div class="block">
@@ -188,7 +188,7 @@ function translit(str)
 	<!-- Левая колонка свойств товара (The End)--> 
 	
 	<!-- Правая колонка свойств товара -->	
-	<div id="column_right">
+	<div class="column_right">
 		
 	</div>
 	<!-- Правая колонка свойств товара (The End)--> 

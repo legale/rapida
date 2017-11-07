@@ -1,9 +1,9 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('products', $manager->permissions)}<li><a href="index.php?module=ProductsAdmin">Товары</a></li>{/if}
-	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if in_array('brands', $manager->permissions)}<li><a href="index.php?module=BrandsAdmin">Бренды</a></li>{/if}
-	<li class="active"><a href="index.php?module=FeaturesAdmin">Свойства</a></li>
+	{if in_array('products', $manager['permissions'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
+	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if in_array('brands', $manager['permissions'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
+	<li class="active"><a href="?module=FeaturesAdmin">Свойства</a></li>
 {/capture}
 
 {if $feature['id']}
@@ -51,7 +51,7 @@ $(function() {
 	</div> 
 
 	<!-- Левая колонка свойств товара -->
-	<div id="column_left">
+	<div class="column_left">
 			
 		<!-- Категории -->	
 		<div class="block">
@@ -71,7 +71,7 @@ $(function() {
 	<!-- Левая колонка свойств товара (The End)--> 
 	
 	<!-- Правая колонка свойств товара -->	
-	<div id="column_right">
+	<div class="column_right">
 		
 		<!-- Параметры страницы -->
 		<div class="block">

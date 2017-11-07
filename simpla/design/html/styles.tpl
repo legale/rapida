@@ -1,8 +1,8 @@
 {capture name=tabs}
-	<li><a href="index.php?module=ThemeAdmin">Тема</a></li>
-	<li><a href="index.php?module=TemplatesAdmin">Шаблоны</a></li>		
-	<li class="active"><a href="index.php?module=StylesAdmin">Стили</a></li>		
-	<li><a href="index.php?module=ImagesAdmin">Изображения</a></li>		
+	<li><a href="?module=ThemeAdmin">Тема</a></li>
+	<li><a href="?module=TemplatesAdmin">Шаблоны</a></li>		
+	<li class="active"><a href="?module=StylesAdmin">Стили</a></li>		
+	<li><a href="?module=ImagesAdmin">Изображения</a></li>		
 {/capture}
 
 {if $style_file}
@@ -96,7 +96,7 @@ $(function() {
 <div class="block layer">
 	<div class="templates_names">
 		{foreach $styles as $s}
-			<a {if $style_file == $s}class="selected"{/if} href='index.php?module=StylesAdmin&file={$s}'>{$s}</a>
+			<a {if $style_file == $s}class="selected"{/if} href='?module=StylesAdmin&file={$s}'>{$s}</a>
 		{/foreach}
 	</div>
 </div>

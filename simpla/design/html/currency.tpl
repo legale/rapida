@@ -1,9 +1,9 @@
 {capture name=tabs}
-	{if in_array('settings', $manager->permissions)}<li><a href="index.php?module=SettingsAdmin">Настройки</a></li>{/if}
-	<li class="active"><a href="index.php?module=CurrencyAdmin">Валюты</a></li>
-	{if in_array('delivery', $manager->permissions)}<li><a href="index.php?module=DeliveriesAdmin">Доставка</a></li>{/if}
-	{if in_array('payment', $manager->permissions)}<li><a href="index.php?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	{if in_array('managers', $manager->permissions)}<li><a href="index.php?module=ManagersAdmin">Менеджеры</a></li>{/if}
+	{if in_array('settings', $manager['permissions'])}<li><a href="?module=SettingsAdmin">Настройки</a></li>{/if}
+	<li class="active"><a href="?module=CurrencyAdmin">Валюты</a></li>
+	{if in_array('delivery', $manager['permissions'])}<li><a href="?module=DeliveriesAdmin">Доставка</a></li>{/if}
+	{if in_array('payment', $manager['permissions'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
+	{if in_array('managers', $manager['permissions'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
 {/capture}
 
 {$meta_title = 'Валюты' scope=parent}

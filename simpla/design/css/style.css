@@ -1,6 +1,109 @@
 @import url("reset.css");
 @import url("main.css");
 
+/* Стили для красивого переключателя */
+.switcher {
+	box-sizing: border-box;
+	width: 100%;
+	float: left;
+    text-align: left;
+}
+
+.switcher__title {
+    margin: 0 0 20px;
+}
+
+
+.switcher__input {
+    display: none;
+}
+
+.switcher__input:checked + .switcher__label {
+    color: #000;
+}
+
+.switcher__input:checked + .switcher__label:before {
+    background-color: #459300; /* фон */
+}
+
+.switcher__input:checked + .switcher__label:after {
+    transform: translateX(23px);
+}
+
+.switcher__input:checked + .switcher__label:active:after {
+    transform: translateX(12px);
+}
+
+.switcher__input:checked + .switcher__label:active:before {
+    background-color: #A3E06C; /* цвет перехода */
+}
+
+.switcher__label {
+    display: inline-block;
+    float: right;
+    vertical-align: top;
+    padding-left: 50px;
+
+    font-size: 14px;
+    color: #ccc;
+    cursor: pointer;
+
+    position: relative;
+
+    transition: color 0.09s linear;
+}
+
+.switcher__label:before {
+    content: "";
+    display: block;
+    width: 45px;
+    height: 22px;
+
+    background-color: #e5e5e5;
+    border-radius: 10px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+
+    transition: background-color 0.09s linear;
+}
+
+.switcher__label:after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+
+    background-color: #fff;
+    border-radius: 50%;
+
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    z-index: 2;
+
+    transition: transform 0.09s linear;
+}
+
+.switcher__label:active:after {
+    transform: translateX(12px);
+}
+
+.switcher__label:active:before {
+    background-color: #A3E06C; /* цвет перехода */
+}
+
+.switcher__text {
+    line-height: 22px;
+    float:none;
+}
+
+/* Стили для красивого переключателя (The end) */
+
+
+
 /* Сообщение */
 .message { 
 	clear: both;
@@ -63,19 +166,16 @@
 .message_error a.link { color: #ff0000; }
 .message_error a.link:hover { color: #ff4f4f; }
 
-/* Основная форма */
-#product {
-	width: 100%;
-}
+
 /* Блок названия */
-#product #name {
+ #name {
 	display: table;
 	width: 100%;
 	margin-bottom: 20px;
 	/*height: 30px;*/
 }
 /* Инпут названия */
-#product input.name {
+input.name {
 	font-size: 26px;
 	display: table-cell;
 	width: 98%;
@@ -83,7 +183,7 @@
     *width: 70%;
 }
 /* Блок чекбоксов возле названия */
-#product .checkbox{
+.checkbox{
 	display: table-cell;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -97,7 +197,7 @@
     *float: left;
 }
 /* Надпись возле чекбокса */
-#product .checkbox label {
+ .checkbox label {
 	cursor: pointer;
 }
 /* Блок с выбором бренда */
@@ -152,11 +252,11 @@
 }
 
 /* Купоны */
-#product .block li select.coupon_type {
+.block li select.coupon_type {
 	width: 70px;
 	font-size: 18px;
 }
-#product #column_left .block li input.coupon_value {
+.block li input.coupon_value {
 	width: 130px;
 	font-size: 18px;
 }
@@ -170,7 +270,7 @@
 	padding-top: 15px;
 	padding-bottom: 15px;
 	margin-bottom: 20px;
-	width: 940px;
+	width: 100%;
 }
 #variants_block ul  {
 	overflow: hidden;
@@ -195,6 +295,8 @@
 	height: 31px;
 	overflow: hidden;
 }
+
+
 #variants_block ul li input {
 	height: 20px;
 	font-size: 14px;
@@ -258,83 +360,114 @@
 
 .button_save {
 	float: right;
-	margin-top: 0px;
-	margin-right: 15px;
+	margin-top: 20px;
 }
 
 .button_delete {
 	float: right;
-	margin-top: 0px;
+	margin-top: 20px;
 }
 
 
-#column_left,
-#column_right {
-	width: 445px;
+.column_left,
+.column_right {
+	box-sizing: border-box;
+	width: 50%;
+	min-width: 300px;
 	float: left;
 }
-#column_right {
+.column_right {
+	padding-left: 10px;
 	clear: right;
 }
-#column_left {
+.column_left {
+	padding-right: 10px;
 	clear: left;
 }
-#column_left { padding-right: 20px; }
-#column_right { padding-left: 20px; }
+
+
 
 .layer {
 	padding-top: 15px;
-	margin-top: -5px;
 	background-repeat: repeat-x;
 	background-image: url('../images/gradient.jpg');
 	background-position: top;	
 }
-.layer ul{
-	margin-bottom: 20px;	
+
+/*стиль для элементов списка в 1 строку*/
+.inrow {
+width:50%;
+padding: 0 5px 0 5px;
 }
-#product .block {
-	margin-bottom: 20px;
-	width: 100%;
-	clear: both;
+label.inrow {
+width:30%;
 }
-#product .block li {
-	clear: left;
+input.inrow {
+width:70%;
+}
+/*стиль для элементов списка в 1 строку (The end) */
+
+/*стиль для списка с элементами на всю ширину*/
+.block ul.list li {
+clear: both;
+}
+/*стиль для списка с элементами на всю ширину (The end) */
+
+
+/* стили для дропзоны*/
+#holder { border: 10px dashed #ccc; width: 300px; min-height: 50px; margin: 20px auto;}
+.holder__text 
+{
+	padding: 20px;
+	font: 2em Arial, sans-serif;
+	text-align: center;
+}
+
+
+#holder.hover { border: 10px dashed #0c0; }
+#holder img { display: block; margin: 10px auto; }
+#holder p { margin: 10px; font-size: 14px; }
+progress { width: 100%; }
+progress:after { content: '%'; }
+.fail { background: #c00; padding: 2px; color: #fff; }
+.hidden { display: none !important;}
+
+/*стили для дропзоны (The end) */
+
+
+
+ .block li {
 	display: block;
-	overflow: hidden;
-	margin-bottom: 7px;
-	width: 500px;
+	width: 50%;
+	padding-top: 5px;
+	float: left;
 }
-#product .block label.property {
+ .block label.property {
 	display: block;
 	float: left;
-	width: 170px;
 	clear: left;
-	padding-top: 2px;
 	overflow: hidden;
 	color: #808080;
 }
-#product .block li input[type=text] { width: 265px; font-size:13px; height:18px;} 
-#product .block ul.new_features li label input { margin-top: -2px; width: 150px; font-size:13px; height:18px;} 
-#product .block li select {width: 265px; font-size: 13px; height:25px;}
-#product .block li textarea {
-	width: 265px;
+ .block li input{ font-size:13px; height:18px;} 
+ .block li textarea {
+	width: 100%;
+	min-width: 300px;
 	height: 60px;
 }
-#product .block select.multiple_categories {width: 440px; height:400px; font-size: 13px;}
-#product .block span.add { 
+ .block select.multiple_categories {width: 440px; height:400px; font-size: 13px;}
+ .block span.add { 
 	background-repeat: no-repeat;
 	padding-left: 20px;
 	background-image: url(../images/plus-circle.png);
 }
-#product .block li input.page_url {
+ .block li input.page_url {
 	font: 12px;
 	padding: 0px;
 	width: 197px;
 }
-#product .block li input.simpla_small_inp {
-	width: 137px;
-}
-#product .block div.page_url {
+
+ .block div.page_url {
 	width: 65px;
 	display: block;
 	float: left;
@@ -348,7 +481,7 @@
 	white-space: nowrap;
 }
 
-#product .images li{
+ .images li{
 	border: 1px solid #d0d0d0;
 	width: 100px;
 	height: 100px;
@@ -364,12 +497,12 @@
 	vertical-align: top;
 	text-align: center;
 }
-#product .images li img{
+ .images li img{
 	vertical-align: middle;
 	max-width: 100px;
 	max-height: 100px;
 }
-#product .images a.delete{
+ .images a.delete{
 	display: block;
 	width: 15px;
 	height: 15px;
@@ -378,56 +511,32 @@
 	position:absolute;
 	visibility: hidden;
 }
-#product .images li:hover a.delete{
+ .images li:hover a.delete{
 	visibility: visible;
 }
-#dropZone { 
-	margin-bottom: 10px;
-	margin-right: 16px;
-/*	margin-top: -20px; */
-	height: 70px;
-	text-align: center;
-	background-color: white;
-	border: 1px solid #d0d0d0;
-	display: none;
-	position: relative;
-}
-#dropMessage {
-	height: 45px;
-	margin-top: 25px;
-}
-.dropInput { 
-	margin-top: -70px;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	display: block;
-	opacity: 0;
-	-moz-opacity: 0;
-	filter: alpha(opacity=0);
-}
+
+
  
-#product .related_products .image{
+.related_products .image{
 	width: 35px;
 }
 
-
-#product div.images  span.upload_image, #product div.images  span.add_image_url{
+div.images  span.upload_image, #product div.images  span.add_image_url{
 	margin-top: 5px;
 	background-repeat: no-repeat;
 	padding-left: 20px;	
 	margin-right: 5px;
 } 
-#product div.images  span.upload_image { background-image: url(../images/picture_add.png); }
-#product div.images  span.add_image_url { background-image: url(../images/world_link.png); margin-left: 5px;}
+div.images  span.upload_image { background-image: url(../images/picture_add.png); }
+div.images  span.add_image_url { background-image: url(../images/world_link.png); margin-left: 5px;}
 
-#product div.images input.upload_image, #product div.images input.remote_image{ 
+div.images input.upload_image, #product div.images input.remote_image{ 
 	font-size: 12px;
 	margin-bottom: 15px;
 	width: 300px;
 }
 
-#product div.images #add_image {
+div.images #add_image {
 	margin-top: 15px;
 }
 
@@ -435,6 +544,7 @@
 .block {
 	width: 100%;
 	clear: both;
+	margin-bottom: 10px;
 }
 
 
@@ -1001,8 +1111,10 @@ div#action span#move_to_page, div#action span#move_to_category, div#action span#
 /* TinyMCE */
 textarea.editor_large{
 	height:500px;
+	width: 100%;
 }
 textarea.editor_small{
+	width: 100%;
 	height:250px;
 }
 
@@ -1258,7 +1370,6 @@ form#order div.payment label.green{background-color: #b9ff3f;}
 
 form#order div.view_user{margin-bottom: 15px; font-size: 14px;}
 form#order div.edit_user{margin-bottom: 15px;}
-form#order div.block_save{margin-top: 15px; margin-right: -15px;}
 
 
 /* Импорт */

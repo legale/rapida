@@ -37,7 +37,7 @@ print $backend->fetch();
 if (1)
 	{
 	//показываем отладочную информацию из dtimer
-	if ($simpla->config->dtimer_disabled === false) {
+	if ($simpla->config->debug === true) {
 		dtimer::show();
 	}
 

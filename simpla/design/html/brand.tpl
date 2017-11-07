@@ -1,13 +1,13 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('products', $manager->permissions)}<li><a href="index.php?module=ProductsAdmin">Товары</a></li>{/if}
-	{if in_array('categories', $manager->permissions)}<li><a href="index.php?module=CategoriesAdmin">Категории</a></li>{/if}
-	<li class="active"><a href="index.php?module=BrandsAdmin">Бренды</a></li>
-	{if in_array('features', $manager->permissions)}<li><a href="index.php?module=FeaturesAdmin">Свойства</a></li>{/if}
+	{if in_array('products', $manager['permissions'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
+	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	<li class="active"><a href="?module=BrandsAdmin">Бренды</a></li>
+	{if in_array('features', $manager['permissions'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
-{if $brand->id}
-{$meta_title = $brand->name scope=parent}
+{if $brand['id']}
+{$meta_title = $brand['name'] scope=parent}
 {else}
 {$meta_title = 'Новый бренд' scope=parent}
 {/if}
@@ -113,17 +113,17 @@ $(function() {
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Бренд добавлен{elseif $message_success=='updated'}Бренд обновлен{else}{$message_success}{/if}</span>
-	<a class="link" target="_blank" href="../brands/{$brand->url}">Открыть бренд на сайте</a>
+	<a class="link" target="_blank" href="../brands/{$brand['url']}">Открыть бренд на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 	
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/brands/{$brand->url|urlencode}&title={$brand->name|urlencode}&description={$brand->description|urlencode}&image={$config->root_url|urlencode}/files/brands/{$brand->image|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}&title={$brand['name']|urlencode}&description={$brand['description']|urlencode}&image={$config->root_url|urlencode}/files/brands/{$brand['image']|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/brands/{$brand->url|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$brand->name|urlencode}&url={$config->root_url|urlencode}/brands/{$brand->url|urlencode}&hashtags={$brand->meta_keywords|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://twitter.com/share?text={$brand['name']|urlencode}&url={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}&hashtags={$brand['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
@@ -145,22 +145,22 @@ $(function() {
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$brand->name|escape}"/> 
-		<input name=id type="hidden" value="{$brand->id|escape}"/> 
+		<input class="name" name=name type="text" value="{$brand['name']|escape}"/> 
+		<input name=id type="hidden" value="{$brand['id']|escape}"/> 
 	</div> 
 
  		
 	<!-- Левая колонка свойств товара -->
-	<div id="column_left">
+	<div class="column_left">
 			
 		<!-- Параметры страницы -->
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /brands/</div><input name="url" class="page_url" type="text" value="{$brand->url|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$brand->meta_title|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$brand->meta_keywords|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$brand->meta_description|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /brands/</div><input name="url" class="page_url" type="text" value="{$brand['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$brand['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$brand['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$brand['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
@@ -182,18 +182,18 @@ $(function() {
 	<!-- Левая колонка свойств товара (The End)--> 
 	
 	<!-- Правая колонка свойств товара -->	
-	<div id="column_right">
+	<div class="column_right">
 	
 		<!-- Изображение категории -->	
 		<div class="block layer images">
 			<h2>Изображение бренда</h2>
 			<input class='upload_image' name=image type=file>			
 			<input type=hidden name="delete_image" value="">
-			{if $brand->image}
+			{if $brand['image']}
 			<ul>
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
-					<img src="../{$config->brands_images_dir}{$brand->image}" alt="" />
+					<img src="../{$config->brands_images_dir}{$brand['image']}" alt="" />
 				</li>
 			</ul>
 			{/if}
@@ -205,7 +205,7 @@ $(function() {
 	<!-- Описагние бренда -->
 	<div class="block layer">
 		<h2>Описание</h2>
-		<textarea name="description" class="editor_large">{$brand->description|escape}</textarea>
+		<textarea name="description" class="editor_large">{$brand['description']|escape}</textarea>
 	</div>
 	<!-- Описание бренда (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

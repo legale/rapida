@@ -43,7 +43,7 @@ class OrdersAdmin extends Simpla
 						foreach ($ids as $id)
 							{
 							$o = $this->orders->get_order(intval($id));
-							if ($o->status < 3)
+							if ($o['status'] < 3)
 								{
 								$this->orders->update_order($id, array('status' => 3));
 								$this->orders->open($id);

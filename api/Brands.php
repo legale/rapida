@@ -43,7 +43,7 @@ class Brands extends Simpla
 		}
 
 		$q = $this->db->query("SELECT id, url FROM __brands WHERE 1 $id_filter");
-		$res = $this->db->results_array('id' , 'url');
+		$res = $this->db->results_array( array('id' , 'name', 'url'), array('name' , 'id', 'id') );
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
 		if(is_null($ids)){
 			$this->brands_ids = $res;
@@ -60,26 +60,36 @@ class Brands extends Simpla
 	 */
 	public function get_brands($filter = array())
 	{
-
+		dtimer::log(__METHOD__ . ' start');
 		$category_id_filter = '';
 		$visible_filter = '';
 		$in_stock_filter = '';
-
-		if (isset($filter['in_stock']))
-			$in_stock_filter = $this->db->placehold('AND (SELECT count(*)>0 FROM __variants pv WHERE pv.product_id=p.id AND pv.price>0 AND (pv.stock IS NULL OR pv.stock>0) LIMIT 1) = ?', intval($filter['in_stock']));
-
-		if (isset($filter['visible']))
-			$visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
-
-		if (!empty($filter['category_id']))
-			$category_id_filter = $this->db->placehold("LEFT JOIN __products p ON p.brand_id=b.id LEFT JOIN __products_categories pc ON p.id = pc.product_id WHERE pc.category_id in(?@) $visible_filter $in_stock_filter", (array)$filter['category_id']);
-
+		$where = '';
+		$where_flag = false;
+		
+		if (isset($filter['in_stock'])){
+			$in_stock_filter ='';
+		}
+		if (isset($filter['visible'])){
+			$visible_filter = $this->db->placehold("AND p.visible=?", intval($filter['visible']));
+			$where_flag = true;
+		}
+		if (!empty($filter['category_id'])){
+			$category_id_filter = $this->db->placehold("AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in (?@) )", (array)$filter['category_id']);
+			$where_flag = true;
+		}
+		
+		$where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $category_id_filter)";
+		
 		// Выбираем все бренды
-		$query = $this->db->placehold("SELECT DISTINCT b.id, b.name, b.url, b.meta_title, b.meta_keywords, b.meta_description, b.description, b.image
-								 		FROM __brands b $category_id_filter ORDER BY b.name");
+		$query = $this->db->placehold("SELECT b.id, b.name, b.url, b.meta_title,
+		 b.meta_keywords, b.meta_description, b.description, b.image
+								 		FROM __brands b WHERE 1 $where ");
 		$this->db->query($query);
-
-		return $this->db->results();
+		
+		dtimer::log(__METHOD__ . ' end');
+		$res = $this->db->results_array(null, 'id');
+		return $res; 
 	}
 
 	/*
@@ -95,18 +105,19 @@ class Brands extends Simpla
 			$id = "b.id = '$id'";
 		}
 		elseif (is_string($id)) {
+			$id = translit_url($id);
 			$id = "b.url = '$id'";
 		}
 		else {
-			dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ");
+			dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ", 1);
 			return false;
 		}
 
-
-		$query = "SELECT b.id, b.name, b.url, b.meta_title, b.meta_keywords, b.meta_description, b.description, b.image
-								 FROM __brands b WHERE $id LIMIT 1";
+		$query = "SELECT b.id, b.name, b.url, b.meta_title, b.meta_keywords, 
+		b.meta_description, b.description, b.image
+		FROM __brands b WHERE $id LIMIT 1";
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 
 	/*
@@ -117,7 +128,7 @@ class Brands extends Simpla
 	 */
 	public function add_brand($brand)
 	{
-
+		dtimer::log(__METHOD__ . " start");
 		if (is_object($brand)) {
 			$brand = (array)$brand;
 		}
@@ -133,13 +144,18 @@ class Brands extends Simpla
 		}
 
 		if (!isset($brand['url']) || empty_($brand['url'])) {
-			$brand['url'] = preg_replace("/[\s]+/ui", '_', $brand['name']);
-			$brand['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $brand['url']));
+			$brand['url'] = translit_url($brand['name']);
 		}
 
 
 		$this->db->query("INSERT INTO __brands SET ?%", $brand);
-		return $this->db->insert_id();
+		if( ( $res = $this->db->insert_id() ) !== false ){
+			dtimer::log(__METHOD__ . " end \$res: '$res'");
+		}else{
+			dtimer::log(__METHOD__ . " unable to add brand", 1);
+		}
+		
+		return $res;
 	}
 
 	/*

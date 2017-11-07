@@ -1,7 +1,6 @@
 <?php
 
 require_once('../../api/Simpla.php');
-
 class ImportAjax extends Simpla
 {	
 	// Соответствие полей в базе и имён колонок в файле
@@ -33,21 +32,41 @@ class ImportAjax extends Simpla
 	private $category_delimiter = ',';                       // Разделитель каегорий в файле
 	private $subcategory_delimiter = '/';                    // Разделитель подкаегорий в файле
 	private $column_delimiter      = ';';
-	private $products_count        = 10;
+	private $products_count        = 150;
 	private $columns               = array();
 
 	public function import()
 	{
-		if(!$this->managers->access('import'))
-			return false;
+		//~ if(!$this->managers->access('import'))
+			//~ return false;
 
 		//сюда будем писать результат импорта
 		$result = new stdClass;
-
+		
+		//получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
+		$GLOBALS['features'] = $this->features->get_features_ids()[0];
+		//~ print "<PRE>";
+		//~ print_r($GLOBALS['features']);
+		//~ dtimer::show();
+		//~ die;
+ 		
+		
 		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
 		// должно значительное ускорить импорт
-		$_GLOBALS['options_uniq'] = $this->features->get_options_uniq();
-
+		
+		//поставим выполнение запроса без кеша только для первой позиции импорта
+		$filter = array();
+		dtimer::log(__METHOD__ . " from: " . var_export($this->request->get('from'), true) );
+		if( !isset($_GET['from']) ){
+			$filter = array('force_no_cache' => true);
+		}
+		
+		$GLOBALS['options_uniq'] = array_flip($this->features->get_options_ids($filter)[2]);
+		
+		
+		//~ print "<pre>";
+		//~ print_r($GLOBALS['options_uniq']);
+		//~ die;
 
 		// Определяем колонки из первой строки файла
 		$f = fopen($this->import_files_dir.$this->import_file, 'r');
@@ -68,8 +87,9 @@ class ImportAjax extends Simpla
 			return false;
 	 	
 		// Переходим на заданную позицию, если импортируем не сначала
-		if($from = $this->request->get('from'))
+		if($from = $this->request->get('from')){
 			fseek($f, $from);
+		}
 		
 		// Массив импортированных товаров
 		$imported_items = array();	
@@ -110,7 +130,7 @@ class ImportAjax extends Simpla
 		$result->from = $from;          // На каком месте остановились
 		$result->totalsize = $size;     // Размер всего файла
 		$result->items = $imported_items;   // Импортированные товары
-	
+		
 		return $result;
 	}
 	
@@ -161,11 +181,17 @@ class ImportAjax extends Simpla
 		{
 			$item['brand'] = trim($item['brand']);
 			// Найдем его по имени
-			$this->db->query('SELECT id FROM __brands WHERE name=?', $item['brand']);
-			if(!$product['brand_id'] = $this->db->result('id'))
+			if( $brand = $this->brands->get_brand($item['brand']) ){
+				$product['brand_id'] = $brand['id'];
+			}else{
 				// Создадим, если не найден
-				$product['brand_id'] = $this->brands->add_brand(array('name'=>$item['brand'], 'meta_title'=>$item['brand'], 'meta_keywords'=>$item['brand'], 'meta_description'=>$item['brand']));
+				if( ($product['brand_id'] = $this->brands->add_brand(array('name'=>$item['brand']))) === false ){
+					dtimer::log(__METHOD__. " failed on add_brand", 1);
+					return false;
+				}
+			}
 		}
+
 		
 		// Если задана категория
 		$category_id = null;
@@ -210,15 +236,15 @@ class ImportAjax extends Simpla
 				if(!empty_(@$variant))
 					$this->variants->update_variant($result->variant_id, $variant);
 				
-				$product_id = $result->product_id;
-				$variant_id = $result->variant_id;
+				$pid = $result->product_id;
+				$varid = $result->variant_id;
 				// Обновлен
 				$imported_item->status = 'updated';
 			}
 		}
 		
 		// Если на прошлом шаге товар не нашелся, и задано хотя бы название товара
-		if((empty_(@$product_id) || empty_(@$variant_id)) && isset($item['name']))
+		if((empty_(@$pid) || empty_(@$varid)) && isset($item['name']))
 		{
 			if(!empty_(@$variant['sku']) && empty_(@$variant['name'])){
 				$this->db->query('SELECT v.id as variant_id, p.id as product_id FROM __products p 
@@ -232,29 +258,29 @@ class ImportAjax extends Simpla
 				LEFT JOIN __variants v ON v.product_id=p.id WHERE p.name=? LIMIT 1', $item['name']);
 			}
 			
-			$r =  $this->db->result();
+			$r =  $this->db->result_array();
 			if($r)
 			{
-				$product_id = $r->product_id;
-				$variant_id = $r->variant_id;
+				$pid = $r['product_id'];
+				$varid = $r['variant_id'];
 			}
 			// Если вариант найден - обновляем,
-			if(!empty_(@$variant_id))
+			if(!empty_(@$varid))
 			{
-				$this->variants->update_variant($variant_id, $variant);
-				$this->products->update_product($product_id, $product);				
+				$this->variants->update_variant($varid, $variant);
+				$this->products->update_product($pid, $product);				
 				$imported_item->status = 'updated';		
 			// Иначе - добавляем
-			}elseif(empty_(@$variant_id)) {
-				if(empty_(@$product_id))
-					$product_id = $this->products->add_product($product);
+			}elseif(empty_(@$varid)) {
+				if(empty_(@$pid))
+					$pid = $this->products->add_product($product);
 
-                $this->db->query('SELECT max(v.position) as pos FROM __variants v WHERE v.product_id=? LIMIT 1', $product_id);
+                $this->db->query('SELECT max(v.position) as pos FROM __variants v WHERE v.product_id=? LIMIT 1', $pid);
                 $pos =  $this->db->result('pos');
 
 				$variant['position'] = $pos+1;
-				$variant['product_id'] = $product_id;
-				if ( $variant_id = $this->variants->add_variant($variant) ) {
+				$variant['product_id'] = $pid;
+				if ( $varid = $this->variants->add_variant($variant) ) {
 					$imported_item->status = 'added';
 				} else {
 					$imported_item->status = 'variant add failed';
@@ -262,16 +288,16 @@ class ImportAjax extends Simpla
 			}
 		}
 		
-		if(!empty_(@$variant_id) && !empty_(@$product_id))
+		if(!empty_(@$varid) && !empty_(@$pid))
 		{
 			// Нужно вернуть обновленный товар
-			$imported_item->variant = $this->variants->get_variant(intval($variant_id));
-			$imported_item->product = $this->products->get_product(intval($product_id));
+			$imported_item->variant = $this->variants->get_variant(intval($varid));
+			$imported_item->product = $this->products->get_product(intval($pid));
 	
 			// Добавляем категории к товару
 			if(!empty_(@$categories_ids))
 				foreach($categories_ids as $c_id)
-					$this->categories->add_product_category($product_id, $c_id);
+					$this->categories->add_product_category($pid, $c_id);
 	
 	 		// Изображения товаров
 	 		if(isset($item['images']))
@@ -287,42 +313,61 @@ class ImportAjax extends Simpla
 						$image_filename = pathinfo($image, PATHINFO_BASENAME);
 		 				
 		 				// Добавляем изображение только если такого еще нет в этом товаре
-						$this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $product_id, $image_filename, $image);
+						$this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $pid, $image_filename, $image);
 						if(!$this->db->result('filename'))
 						{
-							$this->products->add_image($product_id, $image);
+							$this->products->add_image($pid, $image);
 						}
 					}
 	 			}
 	 		}
 	 		// Характеристики товаров
+	 		$features = array(); //массив для записи пар id свойства и id значения свойства
 	 		foreach($item as $feature_name=>$feature_value)
 	 		{
+				//сразу обрежем пробелы по краям
+				$feature_value = trim($feature_value);
+				$feature_name = trim($feature_name);
+				
 	 			// Если нет такого названия колонки, значит это название свойства
 	 			if(!in_array($feature_name, $this->internal_columns_names))
 	 			{ 
 	 				// Свойство добавляем только если для товара указана категория и непустое значение свойства
 					if($category_id && $feature_value!=='')
 					{
-						$this->db->query('SELECT f.id FROM __features f WHERE f.name=? LIMIT 1', $feature_name);
-						if(!$feature_id = $this->db->result('id'))
+						//если у нас уже есть id свойства, просто берем это значение
+						if ( isset($GLOBALS['features'][$feature_name]) ){
+							$feature_id = $GLOBALS['features'][$feature_name];
+						} else {
+							//иначе добавляем свойство в базу и пишем в наш глобальный массив
 							$feature_id = $this->features->add_feature(array('name'=>$feature_name));
+							$GLOBALS['features'][$feature_name] = $feature_id;
+						}
 							
-						$this->features->add_feature_category($feature_id, $category_id);
 						
-						//Если у нас уже есть id значения опции, пользуемся быстрой функцией
-						if ( isset($_GLOBALS['options_uniq'][$feature_value]) ){
-							$this->features->update_option_direct($product_id, $feature_id, $_GLOBALS['options_uniq'][$feature_value]['id']);
+						//Если у нас уже есть id значения опции, 
+						//пользуемся быстрым методом features->update_options_direct(), но сразу по всем найденным опциям
+						if ( isset($GLOBALS['options_uniq'][$feature_value]) ){
+							$vid = $GLOBALS['options_uniq'][$feature_value];
+							$features[$feature_id] = $vid; 
 						} else {
 							//иначе пользуемся обычной функцией, а результат записываем в наш суперглобальный массив
-							$_GLOBALS['options_uniq'][$feature_value] =  array( 'id' => $this->features->update_option($product_id, $feature_id, $feature_value) );
+							if( false !== ( $vid = $this->features->update_option($pid, $feature_id, $feature_value)) ){
+								$GLOBALS['options_uniq'][$feature_value] =  $vid ;
+							}
 						}
 					}
 					
 	 			}
-	 		} 	
- 		return $imported_item;
-	 	}	
+	 		}
+	 		//тут пишем разом все свойства, чьи id удалось найти
+	 		if( $this->features->update_options_direct(array('product_id' => $pid, 'features' => $features )) !== false ){
+				return $imported_item;
+			} else {
+				dtimer::log(__METHOD__ . "unable to add options", 1);
+				return false;
+			}
+	 	}
 	}
 	
 	
@@ -388,10 +433,11 @@ class ImportAjax extends Simpla
 }
 
 $import_ajax = new ImportAjax();
-header("Content-type: application/json; charset=UTF-8");
-header("Cache-Control: must-revalidate");
-header("Pragma: no-cache");
-header("Expires: -1");		
+//~ header("Content-type: application/json; charset=UTF-8");
+//~ header("Cache-Control: must-revalidate");
+//~ header("Pragma: no-cache");
+//~ header("Expires: -1");	
+
 		
 $json = json_encode($import_ajax->import());
 print $json;

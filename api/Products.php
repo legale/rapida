@@ -45,7 +45,7 @@ class Products extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if(!isset($force_no_cache)){
 			dtimer::log("get_products normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, false);
+			$res = $this->cache->get_cache_nosql($keyhash, true);
 		
 		
 		
@@ -431,8 +431,10 @@ class Products extends Simpla
 			$this->db->query("UPDATE __products SET position=id WHERE id=?", $id);		
 			return $id;
 		}
-		else
+		else 
+		{
 			return false;
+		}
 	}
 	
 	
@@ -443,40 +445,37 @@ class Products extends Simpla
 	*/	
 	public function delete_product($id)
 	{
+		
 		if(!empty($id))
 		{
 			// Удаляем варианты
 			if ( $variants = $this->variants->get_variants(array('product_id'=>$id)) ) {
 				foreach($variants as $v) {
-					$this->variants->delete_variant($v->id);
+					$this->variants->delete_variant($v['id']);
 				}
 			}
 			
 			// Удаляем изображения
 			if( $images = $this->get_images(array('product_id'=>$id)) ) {
 				foreach($images as $i) {
-					$this->delete_image($i->id);
+					$this->delete_image($i['id']);
 				}
 			}
 			
 			// Удаляем категории
 			if ( $categories = $this->categories->get_categories(array('product_id'=>$id)) ) {
 				foreach($categories as $c) {
-					$this->categories->delete_product_category($id, $c->id);
+					$this->categories->delete_product_category($id, $c['id']);
 				}
 			}
 
 			// Удаляем свойства
-			if ( $options = $this->features->get_options(array('product_id'=>$id)) ) { 
-				foreach($options as $o) {
-					$this->features->delete_option($id, $o->feature_id);
-				}
-			}
+			$this->features->delete_options($id); 
 			
 			// Удаляем связанные товары
 			if ( $related = $this->get_related_products($id) ) {
 				foreach($related as $r) {
-					$this->delete_related_product($id, $r->related_id);
+					$this->delete_related_product($id, $r['related_id']);
 				}
 			}
 			

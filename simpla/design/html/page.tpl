@@ -1,7 +1,7 @@
 {capture name=tabs}
-	{if in_array('pages', $manager->permissions)}
+	{if in_array('pages', $manager['permissions'])}
 	{foreach $menus  as $m}
-		<li {if $m->id == $menu->id}class="active"{/if}><a href='index.php?module=PagesAdmin&menu_id={$m->id}'>{$m->name}</a></li>
+		<li {if $m->id == $menu->id}class="active"{/if}><a href='?module=PagesAdmin&menu_id={$m->id}'>{$m->name}</a></li>
 	{/foreach}
 	{/if}
 {/capture}
@@ -188,7 +188,7 @@ function translit(str)
 		<!-- Параметры страницы (The End)-->
 
 	<!-- Левая колонка свойств товара -->
-	<div id="column_left">
+	<div class="column_left">
 			
 		<!-- Параметры страницы -->
 		<div class="block layer">

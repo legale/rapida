@@ -29,7 +29,7 @@ $simpla->coMaster->action();
 // Отладочная информация
 
 	//показываем отладочную информацию из dtimer
-	if($simpla->config->dtimer_disabled === false){
+	if($simpla->config->debug === true){
 		dtimer::show();
 	}
 	

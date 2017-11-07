@@ -4,7 +4,7 @@
 {$subject = "Новый заказ №`$order->id`" scope=parent}
 {/if}
 <h1 style="font-weight:normal;font-family:arial;">
-	<a href="{$config->root_url}/simpla/index.php?module=OrderAdmin&id={$order->id}">Заказ №{$order->id}</a>
+	<a href="{$config->root_url}/simpla/?module=OrderAdmin&id={$order->id}">Заказ №{$order->id}</a>
 	на сумму {$order->total_price|convert:$main_currency->id}&nbsp;{$main_currency->sign}
 	{if $order->paid == 1}оплачен{else}еще не оплачен{/if},
 	{if $order->status == 0}ждет обработки{elseif $order->status == 1}в обработке{elseif $order->status == 2}выполнен{/if}	
@@ -43,7 +43,7 @@
 		</td>
 		<td style="padding:6px; width:330; background-color:#ffffff; border:1px solid #e0e0e0;font-family:arial;">
 			{$order->name|escape}
-			{if $user}(<a href="{$config->root_url}/simpla/index.php?module=UserAdmin&id={$user->id}">зарегистрированный пользователь</a>){/if}
+			{if $user}(<a href="{$config->root_url}/simpla/?module=UserAdmin&id={$user->id}">зарегистрированный пользователь</a>){/if}
 		</td>
 	</tr>
 	{/if}

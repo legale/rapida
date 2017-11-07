@@ -27,7 +27,7 @@
 	<script src="js/jquery/jquery.js"  type="text/javascript"></script>
 	
 	{* Всплывающие подсказки для администратора *}
-	{if $smarty.session.admin == 'admin'}
+	{if $smarty.session.admin}
 	<script src ="js/admintooltip/admintooltip.js" type="text/javascript"></script>
 	<link   href="js/admintooltip/css/admintooltip.css" rel="stylesheet" type="text/css" /> 
 	{/if}

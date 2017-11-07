@@ -65,10 +65,10 @@ class View extends Simpla
 			if(isset($_SESSION['user_id']))
 			{
 				$u = $this->users->get_user(intval($_SESSION['user_id']));
-				if($u && $u->enabled)
+				if($u && $u['enabled'])
 				{
 					$this->user = $u;
-					$this->group = $this->users->get_group($this->user->group_id);
+					$this->group = $this->users->get_group($this->user['group_id']);
 				
 				}
 			}

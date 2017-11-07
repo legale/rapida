@@ -1,8 +1,8 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('users', $manager->permissions)}<li><a href="index.php?module=UsersAdmin">Покупатели</a></li>{/if}
-	<li class="active"><a href="index.php?module=GroupsAdmin">Группы</a></li>		
-	{if in_array('coupons', $manager->permissions)}<li><a href="index.php?module=CouponsAdmin">Купоны</a></li>{/if}
+	{if in_array('users', $manager['permissions'])}<li><a href="?module=UsersAdmin">Покупатели</a></li>{/if}
+	<li class="active"><a href="?module=GroupsAdmin">Группы</a></li>		
+	{if in_array('coupons', $manager['permissions'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
 {/capture}
 
 {* Title *}
@@ -11,7 +11,7 @@
 {* Заголовок *}
 <div id="header">
 	<h1>Группы пользователей</h1> 
-	<a class="add" href="index.php?module=GroupAdmin">Добавить группу</a>
+	<a class="add" href="?module=GroupAdmin">Добавить группу</a>
 </div>	
 
 
@@ -25,13 +25,13 @@
 		{foreach $groups as $group}
 		<div class="row">
 		 	<div class="checkbox cell">
-				<input type="checkbox" name="check[]" value="{$group->id}"/>				
+				<input type="checkbox" name="check[]" value="{$group['id']}"/>				
 			</div>
 			<div class="group_name cell">
-				<a href="index.php?module=GroupAdmin&id={$group->id}">{$group->name}</a>
+				<a href="?module=GroupAdmin&id={$group['id']}">{$group['name']}</a>
 			</div>
 			<div class="group_discount cell">
-				{$group->discount} %
+				{$group['discount']} %
 			</div>
 			<div class="icons cell">
 				<a class="delete" title="Удалить" href="#"></a>

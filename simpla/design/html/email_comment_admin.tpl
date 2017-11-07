@@ -4,9 +4,9 @@
 {$subject="Комментарий от `$comment->name|escape` ожидает одобрения" scope=parent}
 {/if}
 {if $comment->approved}
-<h1 style="font-weight:normal;font-family:arial;"><a href="{$config->root_url}/simpla/index.php?module=CommentsAdmin">Новый комментарий</a> от {$comment->name|escape}</h1>
+<h1 style="font-weight:normal;font-family:arial;"><a href="{$config->root_url}/simpla/?module=CommentsAdmin">Новый комментарий</a> от {$comment->name|escape}</h1>
 {else}
-<h1 style="font-weight:normal;font-family:arial;"><a href="{$config->root_url}/simpla/index.php?module=CommentsAdmin">Комментарий</a> от {$comment->name|escape} ожидает одобрения</h1>
+<h1 style="font-weight:normal;font-family:arial;"><a href="{$config->root_url}/simpla/?module=CommentsAdmin">Комментарий</a> от {$comment->name|escape} ожидает одобрения</h1>
 {/if}
 
 <table cellpadding="6" cellspacing="0" style="border-collapse: collapse;">

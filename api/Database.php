@@ -51,7 +51,7 @@ class Database extends Simpla
 		// Выводим сообщение, в случае ошибки
 		if ($this->mysqli->connect_error)
 			{
-			trigger_error("Could not connect to the database: " . $this->mysqli->connect_error, E_USER_WARNING);
+			dtimer::log(__METHOD__ . "Could not connect to the database: " . $this->mysqli->connect_error, 1);
 			return false;
 		}
 		// Или настраиваем соединение
@@ -109,7 +109,7 @@ class Database extends Simpla
 		
 		//для долгих перерывов между запросами обновляем соединение с БД
 		if (time() - $this->started > 45) {
-			//trigger_error("Mysql ping сработал", E_USER_WARNING);
+			dtimer::log(__METHOD__ . "Mysql ping сработал", 2);
 			$this->connect(true);
 		}
 		
@@ -124,9 +124,9 @@ class Database extends Simpla
 		$this->started = time();
 		$this->res = $this->mysqli->query($q);
 
-		if ($this->mysqli->affected_rows == -1) {
+		if ($this->mysqli->affected_rows === -1) {
 			$this->error_msg = "Query error $q ";
-			dtimer::log(__METHOD__ . " query error: $q ");
+			dtimer::log(__METHOD__ . " query error: $q ", 1);
 			return false;
 		}
 		else {
@@ -347,6 +347,10 @@ class Database extends Simpla
 	 */
 	public function insert_id()
 	{
+		//если запрос не прошел - вернем false
+		if ($this->mysqli->affected_rows === -1) {
+			return false;
+		}
 		return $this->mysqli->insert_id;
 	}
 
@@ -355,6 +359,10 @@ class Database extends Simpla
 	 */
 	public function num_rows()
 	{
+		//если запрос не прошел - вернем false
+		if ($this->mysqli->affected_rows === -1) {
+			return false;
+		}
 		return $this->res->num_rows;
 	}
 
@@ -380,13 +388,12 @@ class Database extends Simpla
 			// Определяем тип placeholder-а. 
 			switch ($c = substr($tmpl, ++$p, 1))
 				{
-				case '!' :
-				case '%' :
-				case '^' :
-				case '&' :
-				case '$' :
-				case '@' :
-				case '#' :
+				case '!' : // Это скалярный тип оборачивается в `a`, `b`
+				case '%' : // Это набор пар `название поля` = 'значение поля' для конструкции SET `a` = 'aa', `b` = 'bb'
+				case '^' : // Это список с названиями столбцов `a`, `b`
+				case '&' : // Это набор пар для конструкции WHERE `a` = 'aa' AND `b` = 'bb'
+				case '$' : // Это список со значениями в HEX 0xAA, 0xBB 
+				case '@' : // Это список со значениями полей, оборачивается в 'a', 'b' 
 					$type = $c;
 					++$p;
 					break;
@@ -396,17 +403,17 @@ class Database extends Simpla
 			} 
 			// Проверяем, именованный ли это placeholder: "?keyname" 
 			if (preg_match('/^((?:[^\s[:punct:]]|_)+)/', substr($tmpl, $p), $pock))
-				{
+			{
 				$key = $pock[1];
-				if ($type != '#')
-					$has_named = true;
+				$has_named = true;
 				$p += strlen($key);
 			}
 			else
-				{
+			{
 				$key = $i;
-				if ($type != '#')
+				if ($type != '#'){
 					$i++;
+				}
 			} 
 			// Сохранить запись о placeholder-е. 
 			$compiled[] = array($key, $type, $start, $p - $start);
@@ -447,21 +454,8 @@ class Database extends Simpla
 
 			$repl = '';		// текст для замены текущего placeholder-а 
 			$errmsg = ''; // сообщение об ошибке для этого placeholder-а 
-			do { 
-				// Это placeholder-константа? 
-				if ($type === '#')
-					{
-					$repl = @constant($key);
-					if (NULL === $repl)
-						$error = $errmsg = "UNKNOWN_CONSTANT_$key";
-					break;
-				} 
-				// Обрабатываем ошибку. 
-				if (!isset($args[$key]))
-					{
-					$error = $errmsg = "UNKNOWN_PLACEHOLDER_$key";
-					break;
-				} 
+			do {
+				
 				// Вставляем значение в соответствии с типом placeholder-а. 
 				$a = $args[$key]; 
 				

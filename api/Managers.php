@@ -23,7 +23,7 @@ class Managers extends Simpla
 
 	public function __construct()
 	{
-		// Для совсестимости с режимом CGI
+		// Для совмсестимости с режимом CGI
 		if (isset($_SERVER['REDIRECT_REMOTE_USER']) && empty($_SERVER['PHP_AUTH_USER']))
 			{
 			$_SERVER['PHP_AUTH_USER'] = $_SERVER['REDIRECT_REMOTE_USER'];
@@ -44,17 +44,17 @@ class Managers extends Simpla
 				{
 				$manager = null;
 				$fields = explode(":", $line);
-				$manager = new stdClass();
-				$manager->login = trim($fields[0]);
-				$manager->permissions = array();
+				$manager = array();
+				$manager['login'] = trim($fields[0]);
+				$manager['permissions'] = array();
 				if (isset($fields[2]))
 					{
-					$manager->permissions = explode(",", $fields[2]);
-					foreach ($manager->permissions as &$permission)
+					$manager['permissions'] = explode(",", $fields[2]);
+					foreach ($manager['permissions'] as &$permission)
 						$permission = trim($permission);
 				}
 				else
-					$manager->permissions = $this->permissions_list;
+					$manager['permissions'] = $this->permissions_list;
 
 				$managers[] = $manager;
 			}
@@ -67,48 +67,34 @@ class Managers extends Simpla
 		return count($this->get_managers());
 	}
 
-	public function get_manager($login = null)
+	public function get_manager()
 	{
-		// Если не запрашивается по логину, отдаём текущего менеджера или false
-		if (empty($login))
-			if (!empty($_SERVER['PHP_AUTH_USER']))
-			$login = $_SERVER['PHP_AUTH_USER'];
-		else
-			{
-				// Тестовый менеджер, если отключена авторизация
-			$m = new stdClass();
-			$m->login = 'manager';
-			$m->permissions = $this->permissions_list;
-			return $m;
-		}
-
-		foreach ($this->get_managers() as $manager)
-			{
-			if ($manager->login == $login)
-				return $manager;
-		}
-		return false;
+		$manager = array();
+		$manager['login'] = $_SESSION['admin'];
+		$manager['permissions'] = $this->permissions_list;
+		
+		return $manager;
 	}
 
 	public function add_manager($manager)
 	{
-		$manager = (object)$manager;
-		if (!empty($manager->login))
-			$m[0] = $manager->login;
-		if (!empty($manager->password))
+		$manager = (array)$manager;
+		if (!empty($manager['login']))
+			$m[0] = $manager['login'];
+		if (!empty($manager['password']))
 			{
 			// захешировать пароль
-			$m[1] = $this->crypt_apr1_md5($manager->password);
+			$m[1] = $this->crypt_apr1_md5($manager['password']);
 		}
 		else
 			{
 			$m[1] = "";
 		}
-		if (is_array($manager->permissions))
+		if (is_array($manager['permissions']))
 			{
-			if (count(array_diff($this->permissions_list, $manager->permissions)) > 0)
+			if (count(array_diff($this->permissions_list, $manager['permissions'])) > 0)
 				{
-				$m[2] = implode(",", $manager->permissions);
+				$m[2] = implode(",", $manager['permissions']);
 			}
 			else
 				{
@@ -117,18 +103,18 @@ class Managers extends Simpla
 		}
 		$line = implode(":", $m);
 		file_put_contents($this->passwd_file, @file_get_contents($this->passwd_file) . "\n" . $line);
-		if ($m = $this->get_manager($manager->login))
-			return $m->login;
+		if ($m = $this->get_manager($manager['login']))
+			return $m['login'];
 		else
 			return false;
 	}
 
 	public function update_manager($login, $manager)
 	{
-		$manager = (object)$manager;
+		$manager = (array)$manager;
 		// Не допускаем двоеточия в логине
-		if (!empty($manager->login))
-			$manager->login = str_replace(":", "", $manager->login);
+		if (!empty($manager['login']))
+			$manager['login'] = str_replace(":", "", $manager['login']);
 
 		$lines = explode("\n", @file_get_contents($this->passwd_file));
 		$updated_flag = false;
@@ -137,18 +123,18 @@ class Managers extends Simpla
 			$m = explode(":", $line);
 			if ($m[0] == $login)
 				{
-				if (!empty($manager->login))
-					$m[0] = $manager->login;
-				if (!empty($manager->password))
+				if (!empty($manager['login']))
+					$m[0] = $manager['login'];
+				if (!empty($manager['password']))
 					{
 					// захешировать пароль
-					$m[1] = $this->crypt_apr1_md5($manager->password);
+					$m[1] = $this->crypt_apr1_md5($manager['password']);
 				}
-				if (isset($manager->permissions) && is_array($manager->permissions))
+				if (isset($manager['permissions']) && is_array($manager['permissions']))
 					{
-					if (count(array_diff($this->permissions_list, $manager->permissions)) > 0)
+					if (count(array_diff($this->permissions_list, $manager['permissions'])) > 0)
 						{
-						$m[2] = implode(",", array_intersect($this->permissions_list, $manager->permissions));
+						$m[2] = implode(",", array_intersect($this->permissions_list, $manager['permissions']));
 					}
 					else
 						{
@@ -162,8 +148,8 @@ class Managers extends Simpla
 		if ($updated_flag)
 			{
 			file_put_contents($this->passwd_file, implode("\n", $lines));
-			if ($m = $this->get_manager($manager->login))
-				return $m->login;
+			if ($m = $this->get_manager($manager['login']))
+				return $m['login'];
 		}
 		return false;
 	}
@@ -219,10 +205,10 @@ class Managers extends Simpla
 	}
 
 	public function access($module)
-	{
+	{	
 		$manager = $this->get_manager();
-		if (is_array($manager->permissions))
-			return in_array($module, $manager->permissions);
+		if (is_array($manager['permissions']))
+			return in_array($module, $manager['permissions']);
 		else
 			return false;
 	}

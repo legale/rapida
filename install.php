@@ -182,12 +182,13 @@ function dbconfig()
 	{
 		@$mysqli = new mysqli($dbhost, $dbuser, $dbpassword);
 
-		if(@$mysqli->connect_error)
-			$error = 'Не могу соединиться с базой. Проверьте логин и пароль '. $mysqli->connect_error;
-		if(!@$mysqli->select_db($dbname))
+		if($mysqli->connect_error)
+			$error = 'Не могу соединиться с базой. Проверьте логин и пароль connect_error '. $mysqli->connect_error;
+		if(!$mysqli->select_db($dbname))
 			$error = "Базы данных $dbname не существует.";
-		if(!@$mysqli->query('SET NAMES utf8'))
-			$error = 'Не могу соединиться с базой. Проверьте логин и пароль';
+			$q = 'SET NAMES utf8';
+		if(!$mysqli->query($q))
+			$error = "query error $q";
 
 		if(!is_readable('rapida.sql'))
 			$error = 'Файл rapida.sql не найден';
@@ -256,7 +257,7 @@ function dbconfig()
 
 			print "<p>База данных успешно настроена</p>";
 			print "<p><form method=get><input type='hidden' name='step' value='admin'><input type='submit' value='продолжить →'></form></p>";
-			exit();
+			return;
 
 		}
 
@@ -284,62 +285,44 @@ function dbconfig()
 //
 function adminconf()
 {
-	$passwd_file = dirname(__FILE__) . '/simpla/.passwd';
-	$htaccess_file = dirname(__FILE__) . '/simpla/.htaccess';
-	//проверяем файл с паролем админки
-	//создадим файл, если его нет
-	if (!file_exists($passwd_file) ) {
-		file_put_contents($passwd_file, '');
-	}
-
-	//.htaccess создаем файл, если его нет, или изменяем его - если есть
-	$hopen = fopen($htaccess_file, 'w+');
-	fwrite($hopen, "AuthName \"Administrator's interface login\"\n");
-	fwrite($hopen, "AuthType Basic\n");
-	fwrite($hopen, "AuthUserFile $passwd_file\n");
-	fwrite($hopen, "require valid-user\n");
-	fclose($hopen);
 
 
-	if(isset($_POST['login']) && isset($_POST['password']))
+	if(isset($_POST['email']) && isset($_POST['password']))
 	{
-		if(!is_writable($passwd_file))
-			$error = 'Поставьте права на запись для файла '.$passwd_file;
-
-		if(!is_writable($htaccess_file))
-			$error = 'Поставьте права на запись для файла '.$htaccess_file;
-
-		if(empty($error))
+		//добавляем пользователя
+		$user['email'] = $_POST['email'];
+		$user['name'] = $_POST['email'];
+		$user['password'] = $_POST['password'];
+		$user['perm'] = 1;
+		$user['enabled'] = 1;
+		
+		$res = add_user($user);
+		
+		print "created user id: $res\n";
+		if( !is_string($res) )
 		{
-			
-			$login = $_POST['login'];
+			$email = $_POST['email'];
 			$password = $_POST['password'];
-			$encpassword = crypt_apr1_md5($password);
-
-			$path_to_passwd = $passwd_file;
-
-			$passstring = $login.':'.$encpassword;
-			$popen = fopen($passwd_file, 'w');
-			fputs($popen, $passstring);
-			fclose($popen);
-
-
+			
     		print "<p>Пароль администратора установлен успешно. Не забудьте его.</p>";
 			print "<p><form method=get><input type='hidden' name='step' value='final'><input type='submit' value='продолжить →'></form></p>";
-    		exit();
+    		return;
 
 
 		}
 
 	}
-(isset($_POST['login'])) ? $login = $_POST['login'] : $login = ''; 
-(isset($_POST['password'])) ? $password = $_POST['password'] : $password = '';
+	
+	(isset($_POST['email'])) ? $email = $_POST['email'] : $email = ''; 
+	(isset($_POST['password'])) ? $password = $_POST['password'] : $password = '';
+
 	print "<p>Задайте логин и пароль администратора сайта.</p>";
-	if(!empty($error))
+	if(!empty($error)){
 		print "<p class=error>$error</p>";
+	}
 	print "<p><form method=post><table>";
-	print "<tr><td>Логин</td><td><input type=text name=login value='$login'></td></tr>";
-	print "<tr><td>Пароль</td><td><input type=text name=password value='$password'></td></tr>";
+	print "<tr><td>E-mail</td><td><input type=text name='email' value='$email'></td></tr>";
+	print "<tr><td>Пароль</td><td><input type=text name='password' value='$password'></td></tr>";
 	print "<tr><td></td><td><input type='hidden' name='step' value='adminconf'><input type='submit' value='продолжить →'></td></tr>";
 	print "</table></form></p>";
 }
@@ -390,34 +373,68 @@ function clean_dir($path, $exc=array())
 
 
 
-function crypt_apr1_md5($plainpasswd) {
-	$tmp = '';
-    $salt = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8);
-    $len = strlen($plainpasswd);
-    $text = $plainpasswd.'$apr1$'.$salt;
-    $bin = pack("H32", md5($plainpasswd.$salt.$plainpasswd));
-    for($i = $len; $i > 0; $i -= 16) { $text .= substr($bin, 0, min(16, $i)); }
-    for($i = $len; $i > 0; $i >>= 1) { $text .= ($i & 1) ? chr(0) : $plainpasswd{0}; }
-    $bin = pack("H32", md5($text));
-    for($i = 0; $i < 1000; $i++) {
-        $new = ($i & 1) ? $plainpasswd : $bin;
-        if ($i % 3) $new .= $salt;
-        if ($i % 7) $new .= $plainpasswd;
-        $new .= ($i & 1) ? $bin : $plainpasswd;
-        $bin = pack("H32", md5($new));
-    }
-    for ($i = 0; $i < 5; $i++) {
-        $k = $i + 6;
-        $j = $i + 12;
-        if ($j == 16) $j = 5;
-        $tmp = $bin[$i].$bin[$k].$bin[$j].$tmp;
-    }
-    $tmp = chr(0).chr(0).$bin[11].$tmp;
-    $tmp = strtr(strrev(substr(base64_encode($tmp), 2)),
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
-    "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-    return "$"."apr1"."$".$salt."$".$tmp;
-}
+	function add_user($user)
+	{
+		//сначала загрузим конфиг с базой
+		$salt = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
+		$file = 'config/db.ini';
+		$config = parse_ini_file($file);
+		$db_prefix = $config['db_prefix'];
+		$tbl = $db_prefix . 'users';
+		
+		//сначала соединимся с базой
+		@$mysqli = new mysqli($config['db_server'], $config['db_user'], $config['db_password']);
+		
+		//проверка соединения и выбор БД
+		if($mysqli->connect_error){
+			return "Не могу соединиться с базой. Проверьте логин и пароль connect_error ". $mysqli->connect_error;
+		}
+		
+		if(!$mysqli->select_db($config['db_name'])){
+			return "База данных " . $config['db_name'] . " не существует.";
+		}
+		
+		$q = 'SET NAMES utf8';
+
+		if(!$mysqli->query($q)){
+			return "Не могу выполнить тестовый запрос к БД $q";
+		}
+		
+		if (is_object($user)) {
+			$user = (array)$user;
+		}
+		
+		if (isset($user['id'])) {
+			unset($user['id']);
+		}
+
+		foreach ($user as $k => $e) {
+			if (!isset($e) || $e === '') {
+				unset($user[$k]);
+			}
+		}
+		
+		if (isset($user['password'])){
+			$user['password'] = md5($salt . $user['password'] . md5($user['password']));
+		}else{
+			return "Не указан пароль. Не могу сделать его хеш";
+		}
+		
+		
+		$user_prep = array();
+		foreach($user as $k=>$v){
+			$user_prep[] = "`$k`='$v'"; 
+		}
+		$set = implode(' , ' , $user_prep);
+		
+		$q = "INSERT INTO $tbl SET $set";
+		
+		if($mysqli->query($q)){
+			return $mysqli->insert_id;
+		}else{
+			return "Не могу добавить пользователя в БД";
+		}
+	}
 
 
 
