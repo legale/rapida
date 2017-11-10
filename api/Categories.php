@@ -138,12 +138,12 @@ class Categories extends Simpla
 		foreach ($ids as $id)
 			{
 			if ($category = $this->get_category(intval($id)))
-				$this->delete_image($category->children);
-			if (!empty($category->children))
+				$this->delete_image($category['children']);
+			if (!empty($category['children']))
 				{
-				$query = $this->db->placehold("DELETE FROM __categories WHERE id in(?@)", $category->children);
+				$query = $this->db->placehold("DELETE FROM __categories WHERE id in(?@)", $category['children']);
 				$this->db->query($query);
-				$query = $this->db->placehold("DELETE FROM __products_categories WHERE category_id in(?@)", $category->children);
+				$query = $this->db->placehold("DELETE FROM __products_categories WHERE category_id in(?@)", $category['children']);
 				$this->db->query($query);
 			}
 		}
