@@ -18,7 +18,10 @@
 - Инсталер обучен создавать запись администратора.
 - Раздел настроек пользователя расширен возможностью установки статуса администратора. Для обновления версии БД без перезаписи необходимо выполнить следующие запросы: 
 ```
-ALTER TABLE `s_users` ADD `admin` TINYINT(1) NULL DEFAULT '0' AFTER `enabled`, ADD INDEX `admin` (`admin`);
+ALTER TABLE `s_users` ADD `admin` TINYINT(1) NULL DEFAULT '0' AFTER `enabled`, ADD INDEX `perm` (`admin`);
+ALTER TABLE `s_users` ADD `last_login` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `last_ip`, ADD INDEX `last_login` (`last_login`);
+ALTER TABLE `s_users` ADD `perm` VARCHAR(200) CHARACTER SET ascii COLLATE ascii_general_ci NULL DEFAULT '0' AFTER `enabled`;
+ALTER TABLE `s_users` CHANGE `created` `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP();
 ALTER TABLE `s_users` CHANGE `enabled` `enabled` TINYINT(1) NULL DEFAULT '0';
 ALTER TABLE `s_users` DROP INDEX `email`, ADD UNIQUE `email` (`email`) USING BTREE;
 ALTER TABLE `s_brands` CHANGE `url` `url` VARCHAR(255) CHARACTER SET ascii COLLATE ascii_general_ci NULL DEFAULT NULL;
@@ -39,6 +42,7 @@ ALTER TABLE `s_brands` CHANGE `url` `url` VARCHAR(255) CHARACTER SET ascii COLLA
 - Исправлена ошибка в магическом методе config->__get(), которая приводила к ошибке, если переменной в конфиге нет.
 - Скорее не устранение бага, а усовершенствование, тем не менее пишу в баги потому что обнаружилось в ходе дебагинга функции импорта товаров. При импорте возврат от insert_id используется в дальнейшей работе, поскольку insert_id() давал 0, на ошибочных запросах, 0 использовался дальше, как нормальное значение. Метод db->insert_id() очень тупо возвращает то, что дает mysqli->insert_id, если запрос не удался - insert_id возвращает 0, что нельзя считать нормальным ответом. Теперь в случае ошибки, db->insert_id() возвращает false. Аналогичное поведение сделал и для db->num_rows().
 - Пофиксил отображение брендов на страницах каталога.
+
 ## =================
 ## v0.0.8.1 05.11.2017
 ## =================

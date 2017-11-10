@@ -1,5 +1,5 @@
 {capture name=tabs}
-	{if in_array('pages', $manager['permissions'])}
+	{if isset($userperm['pages'])}
 	{foreach $menus  as $m}
 		<li {if $m->id == $menu->id}class="active"{/if}><a href='?module=PagesAdmin&menu_id={$m->id}'>{$m->name}</a></li>
 	{/foreach}

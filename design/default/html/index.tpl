@@ -112,8 +112,8 @@
 		<div id="account">
 			{if $user}
 				<span id="username">
-					<a href="user">{$user->name}</a>{if $group->discount>0},
-					ваша скидка &mdash; {$group->discount}%{/if}
+					<a href="user">{$user['email']}</a>{if $group['discount']>0},
+					ваша скидка &mdash; {$group['discount']}%{/if}
 				</span>
 				<a id="logout" href="user/logout">выйти</a>
 			{else}

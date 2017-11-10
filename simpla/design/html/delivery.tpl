@@ -1,10 +1,10 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('settings', $manager['permissions'])}<li><a href="?module=SettingsAdmin">Настройки</a></li>{/if}
-	{if in_array('currency', $manager['permissions'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
+	{if isset($userperm['settings'])}<li><a href="?module=SettingsAdmin">Настройки</a></li>{/if}
+	{if isset($userperm['currency'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
 	<li class="active"><a href="?module=DeliveriesAdmin">Доставка</a></li>
-	{if in_array('payment', $manager['permissions'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	{if in_array('managers', $manager['permissions'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
+	{if isset($userperm['payment'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
+	{if isset($userperm['managers'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
 {/capture}
 
 {if $delivery->id}

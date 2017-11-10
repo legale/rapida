@@ -75,25 +75,31 @@ class LoginView extends View
 			$password		= $this->request->post('password');
 			
 			$this->design->assign('email', $email);
-		
 			if($user_id = $this->users->check_password($email, $password))
 			{
 				$user = $this->users->get_user($email);
 				if($user['enabled'])
 				{
 					//Если запись администратора - запишем это в сессию
-					if(!empty($user['perm'])){
+					if($user['admin'] == 1){
 						$_SESSION['admin'] = $email;
 					}
+					$_SESSION['user_id'] = (int)$user['id'];
 					
-					$_SESSION['user_id'] = $user_id;
-					$this->users->update_user($user_id, array('last_ip'=>$_SERVER['REMOTE_ADDR']));
+					
+					$user_set['id'] = $user['id']; 
+					$user_set['last_login'] = 'CURRENT_TIMESTAMP()'; 
+					$user_set['last_ip'] = $_SERVER['REMOTE_ADDR'];
+					
+					$this->users->update_user($user_set);
+
 					
 					// Перенаправляем пользователя на прошлую страницу, если она известна
-					if(!empty($_SESSION['last_visited_page']))
-						header('Location: '.$_SESSION['last_visited_page']);				
-					else
-						header('Location: '.$this->config->root_url);				
+					if(!empty($_SESSION['last_visited_page'])){
+						header('Location: '.$_SESSION['last_visited_page']);
+					}else{
+						header('Location: '.$this->config->root_url);
+					}
 				}
 				else
 				{

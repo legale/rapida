@@ -1,8 +1,8 @@
 {capture name=tabs}
 	<li class="active"><a href="{url module=ProductsAdmin category_id=$product['category_id'] return=null brand_id=null id=null}">Товары</a></li>
-	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if in_array('brands', $manager['permissions'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
-	{if in_array('features', $manager['permissions'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
+	{if isset($userperm['categories'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if isset($userperm['brands'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
+	{if isset($userperm['features'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
 {if $product['id']}

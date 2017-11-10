@@ -1,8 +1,8 @@
 {* Вкладки *}
 {capture name=tabs}
 	<li class="active"><a href="?module=UsersAdmin">Покупатели</a></li>
-	{if in_array('groups', $manager['permissions'])}<li><a href="?module=GroupsAdmin">Группы</a></li>{/if}
-	{if in_array('coupons', $manager['permissions'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
+	{if isset($userperm['groups'])}<li><a href="?module=GroupsAdmin">Группы</a></li>{/if}
+	{if isset($userperm['coupons'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
 {/capture}
 
 {if $user['id']}
@@ -59,7 +59,7 @@
 				<li>
 				<div class="switcher">
 					<label class="switcher__text">Администратор</label>
-					<input class="switcher__input" value="1" type="checkbox" name="admin" id="admin_switch" {if $user['admin']}checked{/if}>
+					<input class="switcher__input" value="1" type="checkbox" name="admin" id="admin_switch" {if $user['admin'] }checked{/if}>
 					<label class="switcher__label" for="admin_switch">
 						<span class="switcher__text">Вкл.</span>
 					</label>
@@ -80,12 +80,13 @@
 				<li><label class=property>Email</label><input name="email"  type="text" value="{$user['email']|escape}" /></li>
 				<li><label class=property>Дата регистрации</label><input name="email"  type="text" disabled value="{$user['created']|date}" /></li>
 				<li><label class=property>Последний IP</label><input name="email"  type="text" disabled value="{$user['last_ip']|escape}" /></li>
+				<li><label class=property>Последний вход</label><input name="email"  type="text" disabled value="{$user['last_login']|escape}" /></li>
 			</ul>
 			<input class="button_green button_save" type="submit" name="user_info" value="Сохранить" />
 			
 		</div>
 
-		<!-- Параметры страницы (The End)-->			
+		<!-- Параметры страницы (The End)-->
 </div>
 	 
 	<!-- Левая колонка (The End)--> 
@@ -94,45 +95,18 @@
 	<div class=" column_right">
 		
 		<h2>Права доступа: </h2>
-		<div class="block"><label id="check_all" class="dash_link">Выбрать все</label></div>
+		<div class="block"><label id="check_all" class="dash_link">Включить все</label></div>
 
 		<!-- Параметры  -->
 		<div class="block">
-			<ul>
-			
-				{$perms = [
-					'products'   =>'Товары',
-					'categories' =>'Категории',
-					'brands'     =>'Бренды',
-					'features'   =>'Свойства товаров',
-					'orders'     =>'Заказы',
-					'labels'     =>'Метки заказов',
-					'users'      =>'Покупатели',
-					'groups'     =>'Группы покупателей',
-					'coupons'    =>'Купоны',
-					'pages'      =>'Страницы',
-					'blog'       =>'Блог',
-					'comments'   =>'Комментарии',
-					'feedbacks'  =>'Обратная связь',
-					'import'     =>'Импорт',
-					'export'     =>'Экспорт',
-					'backup'     =>'Бекап',
-					'stats'      =>'Статистика',
-					'design'     =>'Дизайн',
-					'settings'   =>'Настройки',
-					'currency'   =>'Валюты',
-					'delivery'   =>'Способы доставки',
-					'payment'    =>'Способы оплаты',
-					'managers'   =>'Менеджеры',
-					'license'    =>'Управление лицензией'
-				]}
+			<ul id="perms">
 				
-				{foreach $perms as $p=>$name}
+				{foreach $perm_list as $p=>$name}
 
 				<li>
 				<div class="switcher">
 					<label class="switcher__text">{$name}</label>
-					<input class="switcher__input" value="1" type="checkbox" name="permissions[]" id="{$p}_switch" {if $user['enabled']}checked{/if}>
+					<input class="switcher__input" value="1" type="checkbox" name="perm[{$p}]" id="{$p}_switch" {if isset($user['perm'][$p]) }checked{/if}>
 					<label class="switcher__label" for="{$p}_switch"></label>
 				</div>
 				</li>
@@ -219,8 +193,8 @@ $(function() {
 
 	// Выделить все
 	$("#check_all").click(function() {
-		$('#list input[type="checkbox"][name*="check"]').attr('checked', $('#list input[type="checkbox"][name*="check"]:not(:checked)').length>0);
-	});	
+		$('#perms input[type="checkbox"]').attr('checked', true);
+	});
 
 	// Удалить 
 	$("a.delete").click(function() {

@@ -14,7 +14,6 @@ class IndexAdmin extends Simpla
 		'BrandAdmin' => 'brands',
 		'FeaturesAdmin' => 'features',
 		'FeatureAdmin' => 'features',
-		'FeatureAdmin2' => 'features',
 		'OrdersAdmin' => 'orders',
 		'OrderAdmin' => 'orders',
 		'OrdersLabelsAdmin' => 'labels',
@@ -51,6 +50,11 @@ class IndexAdmin extends Simpla
 		'ManagersAdmin' => 'managers',
 		'ManagerAdmin' => 'managers',
 	);
+	//сюда будем писать разрешен ли доступ к модулю
+	public $access_granted;
+
+	//сюда будем писать все разрешения пользователя
+	public $user_perm;
 
 	// Конструктор
 	public function __construct()
@@ -65,28 +69,32 @@ class IndexAdmin extends Simpla
 		$this->design->assign('config', $this->config);
 		
 		// Администратор
-		$this->manager = $this->managers->get_manager();
-		$this->design->assign('manager', $this->manager);
+		$user = $this->users->get_user($_SESSION['user_id']);
+		//~ print_r($user);
+		//~ $this->manager = $this->managers->get_manager();
+		$this->design->assign('user', $user);
+		//~ $this->design->assign('manager', $this->manager);
 
  		// Берем название модуля из get-запроса
 		$module = $this->request->get('module', 'string');
-		$module = preg_replace("/[^A-Za-z0-9]+/", "", $module);
 		
-		// Если не запросили модуль - используем модуль первый из разрешенных
-		if (empty($module) || !is_file('simpla/' . $module . '.php'))
-			{
-			foreach ($this->modules_permissions as $m => $p)
-				{
-				if ($this->managers->access($p))
-					{
-					$module = $m;
-					break;
-				}
-			}
-		}
-		if (empty($module))
+		
+		if (empty($module)){
 			$module = 'ProductsAdmin';
+		}
 
+		// Проверка прав доступа к модулю
+		//это требуемое разрешение
+		$req_perm_id = array_flip($this->users->perm_list)[$this->modules_permissions[$module]];
+		
+		//проверяем у нашего пользователя
+		if(isset($user['perm'][$req_perm_id])){
+			
+			//запишем доступные пользователю права для шаблонов
+			$this->userperm = array_flip(array_intersect_key($this->users->perm_list, $user['perm']));
+			$this->access_granted = true;
+		}
+		
 		// Подключаем файл с необходимым модулем
 		require_once ('simpla/' . $module . '.php');  
 		
@@ -102,16 +110,15 @@ class IndexAdmin extends Simpla
 	{
 		$currency = $this->money->get_currency();
 		$this->design->assign("currency", $currency);
-		
-		// Проверка прав доступа к модулю
-		if (isset($this->modules_permissions[get_class($this->module)])
-			&& $this->managers->access($this->modules_permissions[get_class($this->module)]))
-			{
+		$this->design->assign("userperm", $this->userperm);
+
+		if($this->access_granted === true){
+			//~ print_r($this->userperm);
 			$content = $this->module->fetch();
 			$this->design->assign("content", $content);
 		}
 		else
-			{
+		{
 			$this->design->assign("content", "Permission denied");
 		}
 

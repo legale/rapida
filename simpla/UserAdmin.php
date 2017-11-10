@@ -7,36 +7,44 @@ class UserAdmin extends Simpla
 	{
 		$user = array();
 		if (!empty($_POST['user_info']))
-			{
+		{
 			$user['id'] = $this->request->post('id', 'integer');
 			$user['enabled'] = $this->request->post('enabled');
 			$user['admin'] = $this->request->post('admin');
+			$user['perm'] = $this->request->post('perm');
 			$user['name'] = $this->request->post('name');
 			$user['email'] = $this->request->post('email');
 			$user['group_id'] = $this->request->post('group_id');
 	
 			## Не допустить одинаковые email пользователей.
-			if (empty($user['name']))
-				{
+			if ( empty($user['name']) )
+			{
 				$this->design->assign('message_error', 'empty_name');
 			}
-			elseif (empty($user['email']))
-				{
+			elseif ( empty($user['email']) )
+			{
 				$this->design->assign('message_error', 'empty_email');
 			}
-			elseif ( ($u = $this->users->get_user($user['email'])) && $u['id'] != $user['id'])
-				{
+			elseif ( ($u = $this->users->get_user($user['email'])) && $u['id'] != $user['id'] )
+			{
 				$this->design->assign('message_error', 'login_existed');
 			}
 			else
-				{
-				$user['id'] = $this->users->update_user($user['id'], $user);
+			{
+				//если админ не передан, значит admin = 0
+				if( !isset($user['admin']) ){
+					$user['admin'] = 0;
+				}
+				//если админ не передан, значит admin = 0
+				if( !isset($user['admin']) ){
+					$user['perm'] = 0;
+				}
+				$user['id'] = $this->users->update_user($user);
 				$this->design->assign('message_success', 'updated');
-				$user = $this->users->get_user(intval($user['id']));
 			}
 		}
 		elseif ($this->request->post('check'))
-			{ 
+		{ 
 			// Действия с выбранными
 			$ids = $this->request->post('check');
 			if (is_array($ids))
@@ -61,11 +69,12 @@ class UserAdmin extends Simpla
 		}
 
 		$id = $this->request->get('id', 'integer');
-		if (!empty($id))
+		if (!empty($id)){
 			$user = $this->users->get_user(intval($id));
-
+		}
+		
 		if (!empty($user))
-			{
+		{
 			$this->design->assign('user', $user);
 
 			$orders = $this->orders->get_orders(array('user_id' => $user['id']));
@@ -75,7 +84,10 @@ class UserAdmin extends Simpla
 
 		$groups = $this->users->get_groups();
 		$this->design->assign('groups', $groups);
-
+		
+		//это список возможных прав
+		$this->design->assign('perm_list', $this->users->perm_list);
+		
 		return $this->design->fetch('user.tpl');
 	}
 

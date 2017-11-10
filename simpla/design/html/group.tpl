@@ -1,8 +1,8 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('users', $manager['permissions'])}<li><a href="?module=UsersAdmin">Покупатели</a></li>{/if}
+	{if isset($userperm['users'])}<li><a href="?module=UsersAdmin">Покупатели</a></li>{/if}
 	<li class="active"><a href="?module=GroupsAdmin">Группы</a></li>		
-	{if in_array('coupons', $manager['permissions'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
+	{if isset($userperm['coupons'])}<li><a href="?module=CouponsAdmin">Купоны</a></li>{/if}
 {/capture}
 
 {if $group['id']}

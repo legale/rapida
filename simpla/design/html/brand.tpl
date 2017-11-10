@@ -1,9 +1,9 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('products', $manager['permissions'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
-	{if in_array('categories', $manager['permissions'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
+	{if isset($userperm['products'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
+	{if isset($userperm['categories'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
 	<li class="active"><a href="?module=BrandsAdmin">Бренды</a></li>
-	{if in_array('features', $manager['permissions'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
+	{if isset($userperm['features'])}<li><a href="?module=FeaturesAdmin">Свойства</a></li>{/if}
 {/capture}
 
 {if $brand['id']}

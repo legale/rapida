@@ -1,6 +1,6 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if in_array('orders', $manager['permissions'])}
+	{if isset($userperm['orders'])}
 	<li {if $status===0}class="active"{/if}><a href="{url module=OrdersAdmin status=0 keyword=null id=null page=null label=null}">Новые</a></li>
 	<li {if $status==1}class="active"{/if}><a href="{url module=OrdersAdmin status=1 keyword=null id=null page=null label=null}">Приняты</a></li>
 	<li {if $status==2}class="active"{/if}><a href="{url module=OrdersAdmin status=2 keyword=null id=null page=null label=null}">Выполнены</a></li>
@@ -9,7 +9,7 @@
 	<li class="active"><a href="{url module=OrdersAdmin keyword=$keyword id=null label=null}">Поиск</a></li>
 	{/if}
 	{/if}
-	{if in_array('labels', $manager['permissions'])}
+	{if isset($userperm['labels'])}
 	<li><a href="{url module=OrdersLabelsAdmin keyword=null id=null page=null label=null}">Метки</a></li>
 	{/if}
 {/capture}

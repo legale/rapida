@@ -1,6 +1,6 @@
 {* Вкладки *}
 {capture name=tabs}
-		{if in_array('comments', $manager['permissions'])}<li><a href="?module=CommentsAdmin">Комментарии</a></li>{/if}
+		{if isset($userperm['comments'])}<li><a href="?module=CommentsAdmin">Комментарии</a></li>{/if}
 		<li class="active"><a href="?module=FeedbacksAdmin">Обратная связь</a></li>
 {/capture}
 

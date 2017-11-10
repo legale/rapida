@@ -25,71 +25,49 @@
 	<!-- Главное меню -->
 	<ul id="main_menu">
 		
-	{if in_array('products', $manager['permissions'])}
-		<li><a href="?module=ProductsAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
-	{elseif in_array('categories', $manager['permissions'])}
-		<li><a href="?module=CategoriesAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
-	{elseif in_array('brands', $manager['permissions'])}
-		<li><a href="?module=BrandsAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
-	{elseif in_array('features', $manager['permissions'])}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('products','categories','brands','features')) ))}
 		<li><a href="?module=FeaturesAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
 	{/if}
 		
-	{if in_array('orders', $manager['permissions'])}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('orders','labels')) ))}
 		<li>
 			<a href="?module=OrdersAdmin"><img src="design/images/menu/orders.png"><b>Заказы</b></a>
 			{if $new_orders_counter}<div class='counter'><span>{$new_orders_counter}</span></div>{/if}
 		</li>
-	{elseif in_array('labels', $manager['permissions'])}
-		<li><a href="?module=OrdersLabelsAdmin"><img src="design/images/menu/orders.png"><b>Заказы</b></a></li>
 	{/if}
 		
-	{if in_array('users', $manager['permissions'])}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('users','groups','coupons')) ))}
 		<li><a href="?module=UsersAdmin"><img src="design/images/menu/users.png"><b>Покупатели</b></a></li>
-	{elseif in_array('groups', $manager['permissions'])}
-		<li><a href="?module=GroupsAdmin"><img src="design/images/menu/users.png"><b>Покупатели</b></a></li>
-	{elseif in_array('coupons', $manager['permissions'])}
-		<li><a href="?module=CouponsAdmin"><img src="design/images/menu/users.png"><b>Покупатели</b></a></li>
 	{/if}
 		
-	{if in_array('pages', $manager['permissions'])}
+	{if isset($userperm['pages'])}
 		<li><a href="?module=PagesAdmin"><img src="design/images/menu/pages.png"><b>Страницы</b></a></li>
 	{/if}
 		
-	{if in_array('blog', $manager['permissions'])}
+	{if isset($userperm['blog'])}
 		<li><a href="?module=BlogAdmin"><img src="design/images/menu/blog.png"><b>Блог</b></a></li>
 	{/if}
 		
-	{if in_array('comments', $manager['permissions'])}
-		<li><a href="?module=CommentsAdmin"><img src="design/images/menu/comments.png"><b>Комментарии</b></a>
-		{if $new_comments_counter}<div class='counter'><span>{$new_comments_counter}</span></div>{/if}</li>
-	{elseif in_array('feedbacks', $manager['permissions'])}
-		<li><a href="?module=FeedbacksAdmin"><img src="design/images/menu/comments.png"><b>Комментарии</b></a>
+	{if !empty(array_intersect_key( $userperm, array_flip(array('comments','feedbacks','coupons')) ))}
+		<li>
+			<a href="?module=CommentsAdmin"><img src="design/images/menu/comments.png"><b>Комментарии</b></a>
+			{if $new_comments_counter}<div class='counter'><span>{$new_comments_counter}</span></div>{/if}
+		</li>
 	{/if}
-		
-	{if in_array('import', $manager['permissions'])}
-		<li><a href="?module=ImportAdmin"><img src="design/images/menu/wizards.png"><b>Автоматизация</b></a></li>
-	{elseif in_array('export', $manager['permissions'])}
-		<li><a href="?module=ExportAdmin"><img src="design/images/menu/wizards.png"><b>Автоматизация</b></a></li>
-	{elseif in_array('backup', $manager['permissions'])}
+	
+	{if !empty(array_intersect_key( $userperm, array_flip(array('import','export','backup')) ))}
 		<li><a href="?module=BackupAdmin"><img src="design/images/menu/wizards.png"><b>Автоматизация</b></a></li>
 	{/if}	
 		
-	{if in_array('stats', $manager['permissions'])}
+	{if isset($userperm['stats'])}
 		<li><a href="?module=StatsAdmin"><img src="design/images/menu/statistics.png"><b>Статистика</b></a></li>
 	{/if}
 	
-	{if in_array('design', $manager['permissions'])}
+	{if isset($userperm['design'])}
 		<li><a href="?module=ThemeAdmin"><img src="design/images/menu/design.png"><b>Дизайн</b></a></li>
 	{/if}
 	
-	{if in_array('settings', $manager['permissions'])}
-		<li><a href="?module=SettingsAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
-	{elseif in_array('delivery', $manager['permissions'])}
-		<li><a href="?module=DeliveriesAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
-	{elseif in_array('payment', $manager['permissions'])}
-		<li><a href="?module=PaymentMethodsAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
-	{elseif in_array('managers', $manager['permissions'])}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('settings','delivery','payment')) ))}
 		<li><a href="?module=ManagersAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
 	{/if}
 		

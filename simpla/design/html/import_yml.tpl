@@ -1,9 +1,9 @@
 {capture name=tabs}
-	{if in_array('import', $manager['permissions'])}<li><a href="?module=ImportAdmin">Импорт</a></li>{/if}
+	{if isset($userperm['import'])}<li><a href="?module=ImportAdmin">Импорт</a></li>{/if}
 	<li class="active"><a href="?module=ImportYmlAdmin">Импорт YML</a></li>
-	{if in_array('export', $manager['permissions'])}<li><a href="?module=ExportAdmin">Экспорт</a></li>{/if}
-	{if in_array('backup', $manager['permissions'])}<li><a href="?module=BackupAdmin">Бекап</a></li>{/if}
-	{if in_array('export', $manager['permissions'])}<li><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
+	{if isset($userperm['export'])}<li><a href="?module=ExportAdmin">Экспорт</a></li>{/if}
+	{if isset($userperm['backup'])}<li><a href="?module=BackupAdmin">Бекап</a></li>{/if}
+	{if isset($userperm['export'])}<li><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
 {/capture}
 {$meta_title='Импорт товаров' scope=parent}
 
