@@ -35,7 +35,7 @@
 			<h2>Настройки системы</h2>
 
 				<div class="switcher">
-<div class="switcher__title">Кеширование самых тяжелых запросов к БД</div>
+<label class="switcher__title">Кеширование самых тяжелых запросов к БД</label>
 					<input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch" {if $config->cache}checked{/if}>
 					<label class="switcher__label" for="cache_switch">
 						<span class="switcher__text">Вкл.</span>
@@ -43,7 +43,7 @@
 				</div>
 
 				<div class="switcher">
-<div class="switcher__title">Экономная (json_encode) запись кеша на диск вместо быстрой (serialize)</div>
+<label class="switcher__title">Экономная (json_encode) запись кеша на диск вместо быстрой (serialize)</label>
 					<input class="switcher__input" value="true" type="checkbox" name="json" id="json_switch" {if $config->json}checked{/if}>
 					<label class="switcher__label" for="json_switch">
 						<span class="switcher__text">Вкл.</span>
@@ -51,7 +51,7 @@
 				</div>
 
 				<div class="switcher">
-<div class="switcher__title">Отладчик работы системы (Появляется в конце каждой страницы)</div>
+<label class="switcher__title">Отладчик работы системы (Появляется в конце каждой страницы)</label>
 					<input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch" {if $config->debug}checked{/if}>
 					<label class="switcher__label" for="debug_switch">
 						<span class="switcher__text">Вкл.</span>

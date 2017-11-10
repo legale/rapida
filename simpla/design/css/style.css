@@ -7,10 +7,12 @@
 	width: 100%;
 	float: left;
     text-align: left;
+    padding: 5px 0 5px 0;
+    line-height: 20px;
 }
 
 .switcher__title {
-    margin: 0 0 20px;
+font: 1.2em Arial, sans-serif;
 }
 
 
@@ -96,7 +98,6 @@
 }
 
 .switcher__text {
-    line-height: 22px;
     float:none;
 }
 
