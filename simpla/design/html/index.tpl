@@ -68,7 +68,7 @@
 	{/if}
 	
 	{if !empty(array_intersect_key( $userperm, array_flip(array('settings','delivery','payment')) ))}
-		<li><a href="?module=ManagersAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
+		<li><a href="?module=SettingsAdmin"><img src="design/images/menu/settings.png"><b>Настройки</b></a></li>
 	{/if}
 		
 	</ul>
