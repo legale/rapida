@@ -42,7 +42,7 @@ class Brands extends Simpla
 			return false;
 		}
 
-		$q = $this->db->query("SELECT id, url FROM __brands WHERE 1 $id_filter");
+		$q = $this->db->query("SELECT id, name, url FROM __brands WHERE 1 $id_filter");
 		$res = $this->db->results_array( array('id' , 'name', 'url'), array('name' , 'id', 'id') );
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
 		if(is_null($ids)){

@@ -91,8 +91,18 @@ if (isset($_SESSION['admin'])) {
 	$features = $simpla->features->get_features_trans();
 	$ids = $simpla->features->get_options_ids();
 	
+	$brands = $simpla->brands->get_brands();
+	//~ print_r($brands);
+	foreach($brands as $b){
+		$b['url'] = translit_url($b['name']);
+		$id = $b['id'];
+		$set = array('url'=> $b['url']);
+		print $b['name']. " ". $b['url']."\n";
+		$simpla->brands->update_brand($b['id'], $set);
+	}
 	
-	print_r($ids);
+	
+	//~ print_r($ids);
 	//~ print_r($options);
 	//~ print_r ( get_defined_constants(true)['Core']['E_ALL'] );
 	print "</PRE>";
