@@ -2,12 +2,14 @@
 
 <h1>{$user->name|escape}</h1>
 
+
 {if $error}
 <div class="message_error">
 	{if $error == 'empty_name'}Введите имя
 	{elseif $error == 'empty_email'}Введите email
 	{elseif $error == 'empty_password'}Введите пароль
 	{elseif $error == 'user_exists'}Пользователь с таким email уже зарегистрирован
+	{elseif $error == 'updated'}Изменение успешно
 	{else}{$error}{/if}
 </div>
 {/if}

@@ -303,5 +303,48 @@ class Users extends Simpla
 			return $id;
 		return false;
 	}
+	
+	/*
+	 * Метод предназначен для проверки наличия конкретного права у пользователя текущей сессии
+	 * Возвращает true, если у пользователя есть нужное право, или false во всех остальных случаях
+	 * Может быть задан id разрешения или его название. Массив разрешений хранится в 
+	 * этом классе в переменной $this->perm_list
+	 */
+	public function check_access($perm)
+	{
+		//Если никто не авторизован - стоп
+		if(!isset($_SESSION['user_id'])){
+			return false;
+		}
+		//получаем пользователя - если нет - false и выводим в лог ошибку
+		if(!$user = $this->users->get_user($_SESSION['user_id'])){
+			dtimer::log(__METHOD__ . " unable to get autorized user!!!", 1);
+			return false;
+		}
+		
+		/*
+		 *  тут мы получаем id требуемого разрешения,
+		 * если у нас разрешение задано в виде строки
+		 */
+		if(is_string($perm)){
+			//перевернем массив, чтобы названия разрешений стали его ключами, а значения стали id
+			$flip = array_flip($this->users->perm_list);
+			//если такое разрешение существует
+			if(isset($flip[$perm])){
+				$req_perm_id = $flip[$perm];
+			}else{
+				dtimer::log(__METHOD__ . " unknown permission requested $perm", 2);
+				return false;
+			}
+		} else {
+			$req_perm_id = $perm;
+		}
+		//теперь проверим его у нашего пользователя
+		if(isset($user['perm'][$req_perm_id])){
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 }

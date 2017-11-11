@@ -2,11 +2,13 @@
 
 class dtimer
 {
+	
 	public static $enabled = true;
 	private static $color_array = array( 1 => '#f00', 2 => '#ff0', 3 => '#fff');
 	protected static $startTime;
 	protected static $points = array();
 
+	
 	public static function reset()
 	{
 		self::$points = null;

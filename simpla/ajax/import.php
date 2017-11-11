@@ -37,19 +37,15 @@ class ImportAjax extends Simpla
 
 	public function import()
 	{
-		//~ if(!$this->managers->access('import'))
-			//~ return false;
+		if(!$this->users->check_access('import')){
+			return false;
+		}
 
 		//сюда будем писать результат импорта
-		$result = new stdClass;
+		$result = array();
 		
 		//получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
 		$GLOBALS['features'] = $this->features->get_features_ids()[0];
-		//~ print "<PRE>";
-		//~ print_r($GLOBALS['features']);
-		//~ dtimer::show();
-		//~ die;
- 		
 		
 		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
 		// должно значительное ускорить импорт

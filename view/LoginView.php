@@ -9,10 +9,10 @@ class LoginView extends View
 		if(!isset($this->coMaster->uri_arr['path_arr']['url'])){
 			return false;
 		} else {
-			$url = $this->coMaster->uri_arr['path_arr']['url'];
+			$uri = $this->coMaster->uri_arr['path_arr']['url'];
 		}
 		// Выход
-		if($url == 'logout')
+		if($uri == 'logout')
 		{
 			unset($_SESSION['user_id']);
 			unset($_SESSION['admin']);
@@ -20,7 +20,7 @@ class LoginView extends View
 			exit();
 		}
 		// Вспомнить пароль
-		elseif($url == 'password_remind')
+		elseif($uri == 'password_remind')
 		{
 			// Если запостили email
 			if($this->request->method('post') && $this->request->post('email'))
@@ -47,15 +47,16 @@ class LoginView extends View
 				}
 			}
 			// Если к нам перешли по ссылке для восстановления пароля
-			elseif(isset($this->coMaster->uri_arr['path_arr']['code']) )
+			elseif($uri = 'password_remind' && isset($this->coMaster->uri_arr['path_arr']['arg']) )
 			{
 				// Проверяем существование сессии
 				if(!isset($_SESSION['password_remind_code']) || !isset($_SESSION['password_remind_user_id']))
 				return false;
 				
 				// Проверяем совпадение кода в сессии и в ссылке
-				if($this->request->get('code') != $_SESSION['password_remind_code'])
+				if($this->coMaster->uri_arr['path_arr']['arg'] != $_SESSION['password_remind_code']){
 					return false;
+				}
 				
 				// Выбераем пользователя из базы
 				$user = $this->users->get_user(intval($_SESSION['password_remind_user_id']));

@@ -1,4 +1,4 @@
-
+"use strict";
 /*
  * Очень простая функция для отправки ajax GET запроса.
  * url - строка с адресом и запросом
@@ -75,26 +75,28 @@ function apiAjax( data, success) {
  */
 function live(eventType, elements, event) {
 	//если у нас объект, то проверим какой именно
-	if(typeof(elements) === 'object'){
-		let type = elements.__proto__.constructor.name;
-		switch(type) {
-			//это HTML коллекция, тут сделаем обработчик для каждого элемента
-			case 'HTMLCollection':  
-				for(let k = 0 ; k < f.length; k++ ){
-					elements[k].addEventListener(eventType, event);
-				}
-				break;
-			//это HTML элемент, на него и будем вешать обработчик
-			case 'HTMLFormElement':
-				elements.addEventListener(eventType, event);
-				break;
-			default:
-				console.log('live func argument 2 is unk ' + type);
-				return false;				
-		}
-	} else {
+	if(typeof(elements) !== 'object'){
 		console.log('live func argument is not an obj ');
 		return false;
 	}
-	
+
+	let type = elements.__proto__.constructor.name;
+	switch(type) {
+		//это HTML коллекция или список узлов - сделаем рекурсию, 
+		//потому что нам нужны элементы, а не коллекции
+		case 'HTMLCollection':
+		case 'NodeList':  
+			for(let k = 0 ; k < elements.length; k++ ){
+				live(eventType, elements[k], event);
+			}
+			break;
+		//это HTML элемент, на него и будем вешать обработчик
+		case 'HTMLFormElement':
+		case 'HTMLAnchorElement':
+		case 'HTMLTableCellElement':
+		default:
+			elements.addEventListener(eventType, event);
+			break;
+	}
+
 }

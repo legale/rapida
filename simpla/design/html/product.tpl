@@ -509,7 +509,7 @@ overflow-y: auto;
 		<select name="brand_id">
 			<option value='0' {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
 			{foreach $brands as $brand}
-				<option value='{$brand->id}' {if $product['brand_id'] == $brand->id}selected{/if} brand_name='{$brand->name|escape}'>{$brand->name|escape}</option>
+				<option value='{$brand['id']}' {if $product['brand_id'] == $brand['id']}selected{/if} brand_name='{$brand['name']|escape}'>{$brand['name']|escape}</option>
 			{/foreach}
 		</select>
 	</div>

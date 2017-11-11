@@ -19,7 +19,7 @@
 	<label>Email</label>
 	<input type="text" name="email" data-format="email" data-notice="Введите email" value="{$email|escape}" maxlength="255" />
 
-    <label>Пароль (<a href="user/password_remind">напомнить</a>)</label>
+    <label>Пароль (<a href="login/password_remind">напомнить</a>)</label>
     <input type="password" name="password" data-format=".+" data-notice="Введите пароль" value="" />
 
 	<input type="submit" class="button" name="login" value="Войти">

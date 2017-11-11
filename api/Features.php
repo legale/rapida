@@ -810,6 +810,8 @@ class Features extends Simpla
 			return false;
 		}
 	}
+	
+
 
 	public function get_product_options($product_id)
 	{

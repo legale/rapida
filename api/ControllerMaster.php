@@ -25,6 +25,7 @@ class ControllerMaster extends Simpla
 	'brands'=> 'coSimpla',
 	'contact'=> 'coSimpla',
 	'user'=> 'coSimpla',
+	'login'=> 'coSimpla',
 	'register'=> 'coSimpla',
 	'cart'=> 'coSimpla',
 	'order'=> 'coSimpla',
@@ -41,7 +42,6 @@ class ControllerMaster extends Simpla
 		if (isset($_SERVER)) {
 			//запуск без параметров устанавливает контроллер $this->ctrl
 			$this->parse_uri();
-			//~ print_r($this->uri_arr);
 		}
 		else {
 			print "\n" . __CLASS__ . " is not for using via CLI\n";
@@ -148,6 +148,7 @@ class ControllerMaster extends Simpla
 	//парсим uri
 	public function parse_uri($uri = null)
 	{
+		dtimer::log(__METHOD__. " start");
 		if (!isset($uri)) {
 			$res = parse_url($_SERVER['REQUEST_URI']);
 			$this->uri_arr = $res;
@@ -181,10 +182,11 @@ class ControllerMaster extends Simpla
 		
 		//Если у нас в get запросе есть xhr, то сразу поставим контроллер туда, дальше ничего не парсим
 		if (isset($res['query_arr']['xhr'])) {
-			$res['ctrl'] = 'xhr';
+			$res['ctrl'] =  'coXhr';
 			if (!isset($uri)) {
 				$this->uri_arr['ctrl'] = $res['ctrl'];
 			}
+			$this->ctrl = $res['ctrl'];
 			return $res;
 		}
 		
@@ -235,7 +237,7 @@ class ControllerMaster extends Simpla
 		}
 		
 		//Если только 1 элемент после дроби, значит это модуль page
-		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search','admin','simpla') ) ){
+		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search','simpla','user') ) ){
 			return array('module' => 'page', 'url'=> array_shift($a) );
 		}
 		
@@ -253,6 +255,15 @@ class ControllerMaster extends Simpla
 			case 'page':
 			case 'blog':
 			$res['url'] = array_shift($a);
+			break;
+
+			case 'login':
+			$res['url'] = array_shift($a);
+			if(count($a) < 1){
+			} else {
+				$res['arg'] = array_shift($a);
+			}
+			
 			break;
 			
 			default:

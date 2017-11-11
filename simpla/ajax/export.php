@@ -32,13 +32,13 @@ class ExportAjax extends Simpla
 			
 	private $column_delimiter = ';';
 	private $subcategory_delimiter = '/';
-	private $products_count = 10;
+	private $products_count = 200;
 	private $export_files_dir = '../files/export/';
 	private $filename = 'export.csv';
 
 	public function fetch()
 	{
-		/* синхронизируем таблицы features и options, чтобы количество свойств из feautures 
+		/* синхронизируем таблицы features и options, чтобы количество свойств из features 
 		 * соответствовало столбцам в options
 		 * Если функция возвращает false, значит что-то пошло не так, останавливаемся
 		 */
@@ -47,10 +47,37 @@ class ExportAjax extends Simpla
 			die;
 		}
 		
-		if(!$this->managers->access('export'))
+		if(!$this->users->check_access('export')){
 			return false;
-
-	
+		}
+		
+		//получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
+		if(!$features = $this->features->get_features_ids()[1]){
+			return false;
+		}
+ 		ksort($features);
+		
+		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
+		// должно значительное ускорить экспорт
+		
+		//поставим выполнение запроса без кеша только для начала экспорта
+		
+		if( isset($_GET['page']) && $_GET['page'] != 1 )
+		{
+			$filter = array();
+		}
+		else
+		{
+			$filter = array('force_no_cache' => true);
+		}
+		
+		if(!$options = $this->features->get_options_ids($filter)[2]){
+			return false;
+		}		
+		//получим бренды
+		if(!$brands = $this->brands->get_brands_ids()[1]){
+			return false;
+		}	
 		// Страница, которую экспортируем
 		$page = $this->request->get('page');
 		if(empty($page) || $page==1)
@@ -65,102 +92,106 @@ class ExportAjax extends Simpla
 		$f = fopen($this->export_files_dir.$this->filename, 'ab');
 		
 		// Добавим в список колонок свойства товаров
-		if( $features = $this->features->get_features() ){
-			foreach($features as $feature){
-				$this->columns_names[$feature->name] = $feature->name;
-			}
-		}
- 			
+		$this->columns_names = array_merge($this->columns_names, array_combine($features,$features));
+			
 		// Если начали сначала - добавим в первую строку названия колонок
 		if($page == 1)
 		{
 			fputcsv($f, array_map('transcode', $this->columns_names) , $this->column_delimiter );
 		}
 		
-		// Все товары
-		$products = $this->products->get_products(array('page'=>$page, 'limit'=>$this->products_count));
- 		foreach($products as &$p){
-	 		// Свойства товаров
-	 		if ( isset($features) && $options = $this->features->get_product_options($p['id']) ) {
-				foreach($options as $fid=>$option) {
-					$feature = $features->{$fid}->name;
-					$p['$feature'] = str_replace(',', '.', trim($option['val']));
-				}
-			}
- 		}
-		//Уберем $p, чтобы никто больше не воспользовался этой ссылок
- 		unset($p);
+		//Несколько товаров
+		$products = $this->products->get_products(array('force_no_cache'=> true, 'page'=>$page, 'limit'=>$this->products_count));
  		
+ 		//получим опции от них
+ 		$this->db->query("SELECT * FROM __options WHERE 1 AND product_id in (?@)", array_keys($products)); 
+ 
+ 		$options_raw = $this->db->results_array(null, 'product_id', true);
+		
+		foreach($products as &$p){
+			foreach($options_raw[$p['id']] as $fid=>$vid){
+				$p[$features[$fid]] = !empty_($vid) ? $options[$vid] : '';
+			}
+		}
+		unset($p);
+
+
+		//~ print_r($products);
+		//~ die;
+
  		if(empty($products)){
  			return false;
  		}
  		
  		// Категории товаров
- 		foreach($products as $p_id=>&$product)
+ 		foreach($products as $pid=>&$p)
  		{
 	 		$categories = array();
-	 		$cats = $this->categories->get_product_categories($p_id);
+	 		$cats = $this->categories->get_product_categories($pid);
 	 		foreach($cats as $category){
 	 			$path = array();
-	 			$cat = $this->categories->get_category((int)$category->category_id);
+	 			$cat = $this->categories->get_category((int)$category['category_id']);
 	 			if(!empty($cat))
  				{
 	 				// Вычисляем составляющие категории
-	 				foreach($cat->path as $p)
-	 					$path[] = str_replace($this->subcategory_delimiter, '\\'.$this->subcategory_delimiter, $p->name);
+	 				foreach($cat['path'] as $el){
+	 					$path[] = str_replace($this->subcategory_delimiter, '\\'.$this->subcategory_delimiter, $el['name']);
+	 				}
 	 				// Добавляем категорию к товару 
 	 				$categories[] = implode('/', $path);
  				}
 	 		}
-	 		$product->category = implode(', ', $categories);
+	 		$p['category'] = implode(', ', $categories);
  		}
+ 		unset($p);
  		
  		// Изображения товаров
- 		$images = $this->products->get_images(array('product_id'=>array_keys((array)$products)));
+ 		$images = $this->products->get_images(array('product_id'=>array_keys($products)));
  		foreach($images as $image)
  		{
  			// Добавляем изображения к товару через запятую
- 			if(empty($products->{$image->product_id}->images))
- 				$products->{$image->product_id}->images = $image->filename;
+ 			if(empty($products[$image['product_id']]['images']))
+ 				$products[$image['product_id']]['images'] = $image['filename'];
  			else
- 				$products->{$image->product_id}->images .= ', '.$image->filename;
+ 				$products[$image['product_id']]['images'] .= ', '.$image['filename'];
  		}
  
- 		$variants = $this->variants->get_variants(array('product_id'=>array_keys((array)$products)));
+ 		$variants = $this->variants->get_variants(array('product_id'=>array_keys($products)));
 
 		foreach($variants as $variant)
  		{
- 			if(isset($products->{$variant->product_id}))
+ 			if(isset($products[$variant['product_id']]))
  			{
 	 			$v                    = array();
-	 			$v['variant']         = $variant->name;
-	 			$v['price']           = $variant->price;
-	 			$v['compare_price']   = $variant->compare_price;
-	 			$v['sku']             = $variant->sku;
-	 			$v['stock']           = $variant->stock;
-	 			if($variant->infinity)
+	 			$v['variant']         = $variant['name'];
+	 			$v['price']           = $variant['price'];
+	 			$v['compare_price']   = $variant['compare_price'];
+	 			$v['sku']             = $variant['sku'];
+	 			$v['stock']           = $variant['stock'];
+	 			if($variant['infinity']){
 	 				$v['stock']           = '';
-				$products->{$variant->product_id}->variants[] = $v;
+				}
+				$products[$variant['product_id']]['variants'][] = $v;
 	 		}
 		}
 		
-		foreach($products as &$product)
+		foreach($products as &$p)
  		{
- 			$variants = $product->variants;
- 			unset($product->variants);
+ 			$variants = $p['variants'];
+ 			unset($p['variants']);
  			
  			if(isset($variants))
- 			foreach($variants as $variant)
+ 			foreach($variants as $v)
  			{
  				$result = array();
- 				$result =  $product;
+ 				$result =  $p;
  				foreach($variant as $name=>$value)
- 					$result->{$name}=$value;
+ 					$result[$name]=$value;
 
 	 			foreach($this->columns_names as $internal_name=>$column_name)
 	 			{
-	 				if(isset($result->{$internal_name}))
-		 				$res[$internal_name] = $result->{$internal_name};
+	 				if(isset($result[$internal_name]))
+		 				$res[$internal_name] = $result[$internal_name];
 	 				else
 		 				$res[$internal_name] = '';
 	 			}

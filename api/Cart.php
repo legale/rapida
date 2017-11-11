@@ -52,7 +52,7 @@ class Cart extends Simpla
 						$products[$image['product_id']]['images'][$image['id']] = $image;
 				}
 
-				foreach ($items as $variant_id => $item)
+				foreach ($items as $varid => $item)
 					{
 					$purchase = null;
 					if (!empty($products[$item['variant']['product_id']]))
@@ -71,7 +71,7 @@ class Cart extends Simpla
 				// Пользовательская скидка
 				$cart['discount'] = 0;
 				if (isset($_SESSION['user_id']) && $user = $this->users->get_user(intval($_SESSION['user_id'])))
-					$cart['discount'] = $user->discount;
+					$cart['discount'] = $user['discount'];
 
 				$cart['total_price'] *= (100 - $cart['discount']) / 100;
 				
@@ -110,15 +110,15 @@ class Cart extends Simpla
 	 * Добавление варианта товара в корзину
 	 *
 	 */
-	public function add_item($variant_id, $amount = 1)
+	public function add_item($varid, $amount = 1)
 	{
 		$amount = max(1, $amount);
 
-		if (isset($_SESSION['shopping_cart'][$variant_id]))
-			$amount = max(1, $amount + $_SESSION['shopping_cart'][$variant_id]);
+		if (isset($_SESSION['shopping_cart'][$varid]))
+			$amount = max(1, $amount + $_SESSION['shopping_cart'][$varid]);
 
 		// Выберем товар из базы, заодно убедившись в его существовании
-		$variant = $this->variants->get_variant($variant_id);
+		$variant = $this->variants->get_variant($varid);
 
 		// Если товар существует, добавим его в корзину
 		if (!empty($variant) && ($variant['stock'] > 0))
@@ -126,7 +126,7 @@ class Cart extends Simpla
 			// Не дадим больше чем на складе
 			$amount = min($amount, $variant['stock']);
 
-			$_SESSION['shopping_cart'][$variant_id] = intval($amount);
+			$_SESSION['shopping_cart'][$varid] = intval($amount);
 		}
 	}
 	
@@ -135,12 +135,12 @@ class Cart extends Simpla
 	 * Обновление количества товара
 	 *
 	 */
-	public function update_item($variant_id, $amount = 1)
+	public function update_item($varid, $amount = 1)
 	{
 		$amount = max(1, $amount);
 		
 		// Выберем товар из базы, заодно убедившись в его существовании
-		$variant = $this->variants->get_variant($variant_id);
+		$variant = $this->variants->get_variant($varid);
 
 		// Если товар существует, добавим его в корзину
 		if (!empty($variant) && $variant['stock'] > 0)
@@ -148,7 +148,7 @@ class Cart extends Simpla
 			// Не дадим больше чем на складе
 			$amount = min($amount, $variant['stock']);
 
-			$_SESSION['shopping_cart'][$variant_id] = intval($amount);
+			$_SESSION['shopping_cart'][$varid] = intval($amount);
 		}
 
 	}
@@ -159,9 +159,16 @@ class Cart extends Simpla
 	 * Удаление товара из корзины
 	 *
 	 */
-	public function delete_item($variant_id)
+	public function delete_item($varid)
 	{
-		unset($_SESSION['shopping_cart'][$variant_id]);
+		if(is_scalar($varid) 
+		&& isset($_SESSION['shopping_cart']) 
+		&& isset($_SESSION['shopping_cart'][$varid])){
+			unset($_SESSION['shopping_cart'][$varid]);
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/*

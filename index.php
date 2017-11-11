@@ -10,7 +10,6 @@
 
 // Засекаем время
 $time_start = microtime(true);
-session_start();
 
 //запускаем наш главный контроллер, он выберет, что делать дальше
 require_once('api/Simpla.php');

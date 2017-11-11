@@ -34,6 +34,9 @@
 	
 	{* Ctrl-навигация на соседние товары *}
 	<script type="text/javascript" src="js/ctrlnavigate.js"></script>           
+
+	{* функции для работы с api системы *}
+	<script type="text/javascript" src="js/main.js"></script>           
 	
 	{* Аяксовая корзина *}
 	<script src="design/{$settings->theme}/js/jquery-ui.min.js"></script>
@@ -115,10 +118,10 @@
 					<a href="user">{$user['email']}</a>{if $group['discount']>0},
 					ваша скидка &mdash; {$group['discount']}%{/if}
 				</span>
-				<a id="logout" href="user/logout">выйти</a>
+				<a id="logout" href="login/logout">выйти</a>
 			{else}
 				<a id="register" href="register">Регистрация</a>
-				<a id="login" href="user/login">Вход</a>
+				<a id="login" href="login/login">Вход</a>
 			{/if}
 		</div>
 		<!-- Вход пользователя (The End)-->

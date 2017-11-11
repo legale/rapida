@@ -190,13 +190,16 @@ class Simpla
 		if (self::$virgin === true) {
 			
 			//убираем флаг, чтобы код ниже заводился только 1 раз
-
 			self::$virgin = false;
+			
+			//запустим сессию
+			session_start();
 
 			//уровень отображения ошибок
 			error_reporting($this->config->error_reporting);
 			dtimer::log('error_reporting config.ini: ' . $this->config->error_reporting . ' error_reporting() says: ' . error_reporting());
 			//выключатель отладчика
+			dtimer::log(__METHOD__ . ' debuger');
 			dtimer::$enabled = $this->config->debug;
 			//локаль
 			setlocale(LC_ALL, $this->config->locale);

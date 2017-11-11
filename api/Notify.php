@@ -52,7 +52,7 @@ class Notify extends Simpla
 		foreach ($purchases as &$purchase)
 			{
 			if (!empty($products->{$purchase['product_id']}))
-				$purchase['product'] = $products->{$purchase['product_id']};
+				$purchase['product'] = $products[$purchase['product_id']];
 			if (!empty($variants[$purchase['variant_id']]))
 				$purchase['variant'] = $variants[$purchase['variant_id']];
 		}
@@ -143,10 +143,10 @@ class Notify extends Simpla
 		if (! ($comment = $this->comments->get_comment(intval($comment_id))))
 			return false;
 
-		if ($comment->type == 'product')
-			$comment->product = $this->products->get_product(intval($comment->object_id));
-		if ($comment->type == 'blog')
-			$comment->post = $this->blog->get_post(intval($comment->object_id));
+		if ($comment['type'] == 'product')
+			$comment['product'] = $this->products->get_product(intval($comment['object_id']));
+		if ($comment['type'] == 'blog')
+			$comment['post'] = $this->blog->get_post(intval($comment['object_id']));
 
 		$this->design->assign('comment', $comment);
 
@@ -167,7 +167,7 @@ class Notify extends Simpla
 			// Отправляем письмо
 		$email_template = $this->design->fetch($this->config->root_dir . 'design/' . $this->settings->theme . '/html/email_password_remind.tpl');
 		$subject = $this->design->get_var('subject');
-		$this->email($user->email, $subject, $email_template, $this->settings->notify_from_email);
+		$this->email($user['email'], $subject, $email_template, $this->settings->notify_from_email);
 
 		$this->design->smarty->clearAssign('user');
 		$this->design->smarty->clearAssign('code');

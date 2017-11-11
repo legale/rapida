@@ -14,19 +14,19 @@
 <table id="purchases">
 
 {foreach $cart['purchases'] as $purchase}
-<tr>
+<tr varid="{$purchase['variant']['id']}">
 	{* Изображение товара *}
 	<td class="image">
 		{$image = $purchase['product']['images']|first}
 		{if $image}
-		<a href="products/{$purchase['product']['url']}"><img src="{$image->filename|resize:50:50}" alt="{$product->name|escape}"></a>
+		<a href="products/{$purchase['product']['url']}"><img src="{$image->filename|resize:50:50}" alt="{$product['name|escape']}"></a>
 		{/if}
 	</td>
 	
 	{* Название товара *}
 	<td class="name">
 		<a href="products/{$purchase['product']['url']}">{$purchase['product']['name']|escape}</a>
-		{$purchase['variant']['name']|escape}			
+		{$purchase['variant']['name']|escape}
 	</td>
 
 	{* Цена за единицу *}
@@ -50,7 +50,7 @@
 	
 	{* Удалить из корзины *}
 	<td class="remove">
-		<a href="cart/remove/{$purchase['variant']['id']}">
+		<a href="#">
 		<img src="design/{$settings->theme}/images/delete.png" title="Удалить из корзины" alt="Удалить из корзины">
 		</a>
 	</td>
@@ -130,21 +130,21 @@ $("input[name='coupon_code']").keypress(function(event){
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product->image}
+		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product->url}"><img src="{$product->image->filename|resize:200:200}" alt="{$product->name|escape}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']['filename|resize:200:200']}" alt="{$product['name|escape']}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product->id}" href="products/{$product->url}">{$product->name|escape}</a></h3>
+		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name|escape']}</a></h3>
 		<!-- Название товара (The End) -->
 
-		{if $product->variants|count > 0}
+		{if $product['variants|count'] > 0}
 		<!-- Выбор варианта товара -->
 			<table>
-			{foreach $product->variants as $v}
+			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
 					{if $v->name}<label class="variant_name" for="related_{$v->id}">{$v->name}</label>{/if}
@@ -235,3 +235,68 @@ $("input[name='coupon_code']").keypress(function(event){
 {else}
   В корзине нет товаров
 {/if}
+
+{literal}
+<script>
+"use strict";
+function test(e){
+	"use strict";
+	console.log("item variad: ");
+	console.log(e.getAttribute('varid'));
+	test(e.parentNode); 
+}
+
+
+function searchdel_item(e){
+	"use strict";
+
+	if(e.getAttribute('varid') === null){
+		searchdel_item(e.parentNode);
+		return;
+	}else if ( e.getAttribute('varid') !== null ) {
+		console.log("found: " + e.getAttribute('varid') );
+		delete_item(e);
+		return;
+	}
+}
+
+function delete_item(el){
+	"use strict";
+	let tr = el;
+	let id;
+	if(tr.getAttribute('varid') !== undefined){
+		id = tr.getAttribute('varid');
+	}else {
+		console.log(tr);
+		console.log('unable to find varid');
+	}
+
+	let req = {
+		class: 'cart',
+		method: 'delete_item',
+		args: {
+			'id': id
+		}
+	};
+	
+	apiAjax(req, function(a){
+		console.log(a);
+		tr.remove();
+	});
+return true;
+}
+
+document.addEventListener("DOMContentLoaded", ready);
+
+function ready(){
+	"use strict";
+	let col = document.querySelectorAll(".remove > a");
+live('click', col, function(a){
+	a.preventDefault();
+	console.log(a.target);
+	searchdel_item(a.target);
+	});
+}
+
+</script>
+{/literal}

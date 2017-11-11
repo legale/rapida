@@ -71,9 +71,7 @@ class IndexAdmin extends Simpla
 		// Администратор
 		$user = $this->users->get_user($_SESSION['user_id']);
 		//~ print_r($user);
-		//~ $this->manager = $this->managers->get_manager();
 		$this->design->assign('user', $user);
-		//~ $this->design->assign('manager', $this->manager);
 
  		// Берем название модуля из get-запроса
 		$module = $this->request->get('module', 'string');
@@ -84,7 +82,7 @@ class IndexAdmin extends Simpla
 		}
 
 		// Проверка прав доступа к модулю
-		//это требуемое разрешение
+		//это id требуемого разрешения
 		$req_perm_id = array_flip($this->users->perm_list)[$this->modules_permissions[$module]];
 		
 		//проверяем у нашего пользователя

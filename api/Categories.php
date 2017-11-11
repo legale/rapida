@@ -46,7 +46,7 @@ class Categories extends Simpla
 	{
 		$query = $this->db->placehold("SELECT product_id, category_id, position FROM __products_categories WHERE product_id in(?@) ORDER BY position", (array)$product_id);
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}	
 
 	// Функция возвращает id категорий для всех товаров
@@ -54,7 +54,7 @@ class Categories extends Simpla
 	{
 		$query = $this->db->placehold("SELECT product_id, category_id, position FROM __products_categories ORDER BY position");
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}	
 
 	// Функция возвращает дерево категорий
