@@ -20,7 +20,7 @@
 	if($products = $simpla->products->get_products($filter)){
 		if($variants = $simpla->variants->get_variants(array('product_id'=>array_keys($products), 'in_stock'=>true)) ) {
 			foreach($variants as &$variant){
-				$products[$variant->product_id]['variants'][] = $variant;
+				$products[$variant['product_id']]['variants'][] = $variant;
 			}
 			unset($variant);
 		}

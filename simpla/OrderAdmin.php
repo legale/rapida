@@ -53,7 +53,7 @@ class OrderAdmin extends Simpla
 						{
 						if (empty($purchases[$i]))
 							$purchases[$i] = array();
-						$purchases[$i]->$n = $v;
+						$purchases[$i][$n] = $v;
 					}
 				}
 				$posted_purchases_ids = array();
@@ -75,8 +75,8 @@ class OrderAdmin extends Simpla
 				// Удалить непереданные товары
 				if($ps = $this->orders->get_purchases(array('order_id' => $order['id']))){
 					foreach ($ps as $p){
-						if (!in_array($p->id, $posted_purchases_ids)){
-						$this->orders->delete_purchase($p->id);
+						if (!in_array($p['id'], $posted_purchases_ids)){
+						$this->orders->delete_purchase($p['id']);
 						}
 					}
 				}

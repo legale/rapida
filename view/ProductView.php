@@ -45,6 +45,8 @@ class ProductView extends View
 		// Свойства товара
 		$features = $this->features->get_features();
 		$options = $this->features->get_product_options($product['id']);
+		$this->design->assign('features', $features);
+		$this->design->assign('options', $options);
 
 	
 		// Автозаполнение имени для формы комментария
@@ -60,9 +62,9 @@ class ProductView extends View
 		// Принимаем комментарий
 		if ($this->request->method('post') && $this->request->post('comment'))
 		{
-			$comment = new stdClass;
-			$comment->name = $this->request->post('name');
-			$comment->text = $this->request->post('text');
+			$comment = array();
+			$comment['name'] = $this->request->post('name');
+			$comment['text'] = $this->request->post('text');
 			$captcha_code =  $this->request->post('captcha_code', 'string');
 			
 			
@@ -71,25 +73,25 @@ class ProductView extends View
 			{
 				$this->design->assign('error', 'captcha');
 			}
-			elseif (empty($comment->name))
+			elseif (empty($comment['name']))
 			{
 				$this->design->assign('error', 'empty_name');
 			}
-			elseif (empty($comment->text))
+			elseif (empty($comment['text']))
 			{
 				$this->design->assign('error', 'empty_comment');
 			}
 			else
 			{
 				// Создаем комментарий
-				$comment->object_id = $product['id'];
-				$comment->type      = 'product';
-				$comment->ip        = $_SERVER['REMOTE_ADDR'];
+				$comment['object_id'] = $product['id'];
+				$comment['type']      = 'product';
+				$comment['ip']        = $_SERVER['REMOTE_ADDR'];
 				
 				// Если были одобренные комментарии от текущего ip, одобряем сразу
-				$this->db->query("SELECT 1 FROM __comments WHERE approved=1 AND ip=? LIMIT 1", $comment->ip);
+				$this->db->query("SELECT 1 FROM __comments WHERE approved=1 AND ip=? LIMIT 1", $comment['ip']);
 				if($this->db->num_rows()>0)
-					$comment->approved = 1;
+					$comment['approved'] = 1;
 				
 				// Добавляем комментарий в базу
 				$comment_id = $this->comments->add_comment($comment);
@@ -104,8 +106,8 @@ class ProductView extends View
 		}
 				
 		// Передадим комментарий обратно в шаблон - при ошибке нужно будет заполнить форму
-		$this->design->assign('comment_text', isset($comment->text) ? $comment->text : '');
-		$this->design->assign('comment_name', isset($comment->name) ? $comment->name : '');
+		$this->design->assign('comment_text', isset($comment['text']) ? $comment['text'] : '');
+		$this->design->assign('comment_name', isset($comment['name']) ? $comment['name'] : '');
 		
 		// Связанные товары
 		$rp_ids = array();
@@ -159,8 +161,8 @@ class ProductView extends View
 		
 		// Категория и бренд товара
 		$product['categories'] = $this->categories->get_categories(array('product_id'=>$product['id']));
-		$this->design->assign('brand', $this->brands->get_brand(intval($product['brand_id'])));		
-		$this->design->assign('category', reset($product['categories']));		
+		$this->design->assign('brand', $this->brands->get_brand(intval($product['brand_id'])));
+		$this->design->assign('category', reset($product['categories']));
 		
 
 		// Добавление в историю просмотров товаров

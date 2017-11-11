@@ -198,7 +198,7 @@
 				<input type=hidden name=purchases[id][{$purchase['id']}] value='{$purchase['id']}'>
 				{$image = $purchase['product']['images']|first}
 				{if $image}
-				<img class=product_icon src='{$image->filename|resize:35:35}'>
+				<img class=product_icon src='{$image['filename']|resize:35:35}'>
 				{/if}
 			</div>
 			<div class="purchase_name cell">
@@ -208,10 +208,10 @@
 				<select name=purchases[variant_id][{$purchase['id']}] {if $purchase['product']['variants']|count==1 && $purchase['variant_name'] == '' && $purchase['variant']['sku'] == ''}style='display:none;'{/if}>					
 		    	{if !$purchase['variant']}<option price='{$purchase['price']}' amount='{$purchase['amount']}' value=''>{$purchase['variant_name']|escape} {if $purchase['sku']}(арт. {$purchase['sku']}){/if}</option>{/if}
 				{foreach $purchase['product']['variants'] as $v}
-					{if $v->stock>0 || $v->id == $purchase['variant']['id']}
-					<option price='{$v->price}' amount='{$v->stock}' value='{$v->id}' {if $v->id == $purchase['variant_id']}selected{/if} >
-					{$v->name}
-					{if $v->sku}(арт. {$v->sku}){/if}
+					{if $v['stock']>0 || $v['id'] == $purchase['variant']['id']}
+					<option price='{$v['price']}' amount='{$v['stock']}' value='{$v['id']}' {if $v['id'] == $purchase['variant_id']}selected{/if} >
+					{$v['name']}
+					{if $v[sku]}(арт. {$v['sku']}){/if}
 					</option>
 					{/if}
 				{/foreach}

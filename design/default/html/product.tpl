@@ -10,7 +10,7 @@
 	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
 	{/foreach}
 	{if $brand}
-	→ <a href="catalog/{$cat['url']}/{$brand->url}">{$brand->name|escape}</a>
+	→ <a href="catalog/{$cat['url']}/{$brand['url']}">{$brand['name']|escape}</a>
 	{/if}
 	→  {$product['name']|escape}                
 </div>
@@ -76,15 +76,15 @@
 	{/if}
 	<!-- Дополнительные фото продукта (The End)-->
 
-	
-	{if $product['features']}
+
+	{if $features}
 	<!-- Характеристики товара -->
 	<h2>Характеристики</h2>
 	<ul class="features">
-	{foreach $product['features'] as $f}
+	{foreach $options as $fid=>$o}
 	<li>
-		<label>{$f->name}</label>
-		<span>{$f->value}</span>
+		<label fid="{$fid}" vid="{$o['vid']}">{$features[$fid]['name']}</label>
+		<span>{$o['val']}</span>
 	</li>
 	{/foreach}
 	</ul>

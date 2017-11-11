@@ -839,6 +839,8 @@ class Features extends Simpla
 			foreach ($options as $fid => &$option) {
 				if (!empty_($option)) {
 					$option = array('fid' => $fid, 'vid' => $option, 'val' => $vals[$option]['val']);
+				} else {
+					unset($options[$fid]);
 				}
 			}
 			return $options;
