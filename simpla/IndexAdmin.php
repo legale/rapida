@@ -54,7 +54,7 @@ class IndexAdmin extends Simpla
 	public $access_granted;
 
 	//сюда будем писать все разрешения пользователя
-	public $user_perm;
+	public $userperm = array();
 
 	// Конструктор
 	public function __construct()
@@ -89,8 +89,10 @@ class IndexAdmin extends Simpla
 		if(isset($user['perm'][$req_perm_id])){
 			
 			//запишем доступные пользователю права для шаблонов
-			$this->userperm = array_flip(array_intersect_key($this->users->perm_list, $user['perm']));
-			$this->access_granted = true;
+			if(isset($user['perm']) && is_array($user['perm'])){
+				$this->userperm = array_flip(array_intersect_key($this->users->perm_list, $user['perm']));
+				$this->access_granted = true;
+			}
 		}
 		
 		// Подключаем файл с необходимым модулем
@@ -107,25 +109,25 @@ class IndexAdmin extends Simpla
 	function fetch()
 	{
 		$currency = $this->money->get_currency();
-		$this->design->assign("currency", $currency);
-		$this->design->assign("userperm", $this->userperm);
+		$this->design->assign('currency', $currency);
+		$this->design->assign('userperm', $this->userperm);
 
 		if($this->access_granted === true){
 			//~ print_r($this->userperm);
 			$content = $this->module->fetch();
-			$this->design->assign("content", $content);
+			$this->design->assign('content', $content);
 		}
 		else
 		{
-			$this->design->assign("content", "Permission denied");
+			$this->design->assign('content', 'Permission denied');
 		}
 
 		// Счетчики для верхнего меню
 		$new_orders_counter = $this->orders->count_orders(array('status' => 0));
-		$this->design->assign("new_orders_counter", $new_orders_counter);
+		$this->design->assign('new_orders_counter', $new_orders_counter);
 
 		$new_comments_counter = $this->comments->count_comments(array('approved' => 0));
-		$this->design->assign("new_comments_counter", $new_comments_counter);
+		$this->design->assign('new_comments_counter', $new_comments_counter);
 		
 		// Создаем текущую обертку сайта (обычно index.tpl)
 		$wrapper = $this->design->smarty->getTemplateVars('wrapper');

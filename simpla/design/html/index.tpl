@@ -25,6 +25,7 @@
 	<!-- Главное меню -->
 	<ul id="main_menu">
 		
+		
 	{if !empty(array_intersect_key( $userperm, array_flip(array('products','categories','brands','features')) ))}
 		<li><a href="?module=FeaturesAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
 	{/if}
