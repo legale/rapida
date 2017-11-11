@@ -46,8 +46,8 @@ function postAjax(url, data, success) {
  * пример: apiAjax( 
  * {'class': 'products', 'method': 'get_products', 'args': 
  * 		{'id': [1,2,3,4,5] }
- * } , function($e){
- * console.log(JSON.parse($e))
+ * } , function(e){
+ * console.log(JSON.parse(e))
  * });
  */ 
 function apiAjax( data, success) {

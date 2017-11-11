@@ -239,13 +239,6 @@ $("input[name='coupon_code']").keypress(function(event){
 {literal}
 <script>
 "use strict";
-function test(e){
-	"use strict";
-	console.log("item variad: ");
-	console.log(e.getAttribute('varid'));
-	test(e.parentNode); 
-}
-
 
 function searchdel_item(e){
 	"use strict";

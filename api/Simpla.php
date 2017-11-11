@@ -193,7 +193,7 @@ class Simpla
 			self::$virgin = false;
 			
 			//запустим сессию
-			session_start();
+			@session_start();
 
 			//уровень отображения ошибок
 			error_reporting($this->config->error_reporting);
