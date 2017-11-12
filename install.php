@@ -15,10 +15,13 @@ error_reporting(E_ALL);
   input{font-size:18px;}
   td{padding-right:15px;font-size:18px; font-family:tahoma, verdana;}
   p.error{color:red;}
-  div.maindiv{width: 600px; height: 300px; position: relative; left: 50%; top: 100px; margin-left: -300px; }
-</style>
+  textarea {width: 100%; height: 100%}
+  div.maindiv{width: 90%;
+    margin: 5% 5% 0 5%;
+    min-height: 300px;
+    position: relative;}</style>
 <body>
-<div style='width:100%; height:100%;'>
+<div>
   <div class="maindiv">
     <h1>Установка Rapida</h1>
     <?PHP install(); ?>
@@ -68,7 +71,7 @@ function install()
 function hello_screen()
 {
 	$readme = file_get_contents('README.md');
-	print "<textarea style='width:800; height:500;'>$readme</textarea>";
+	print "<textarea>$readme</textarea>";
 	print "<p><form method=get><input type='hidden' name='step' value='test'><input type='submit' value='Начать установку →'></form></p>";
 }
 
