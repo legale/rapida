@@ -117,22 +117,22 @@ class ImportAjax extends Simpla
  		$from = ftell($f);
  		
  		// И закончили ли полностью весь файл
- 		$result->end = feof($f);
+ 		$result['end'] = feof($f);
 
 		fclose($f);
 		$size = filesize($this->import_files_dir.$this->import_file);
 		
 		// Создаем объект результата
-		$result->from = $from;          // На каком месте остановились
-		$result->totalsize = $size;     // Размер всего файла
-		$result->items = $imported_items;   // Импортированные товары
+		$result['from'] = $from;          // На каком месте остановились
+		$result['totalsize'] = $size;     // Размер всего файла
+		$result['items'] = $imported_items;   // Импортированные товары
 		
 		return $result;
 	}
 	
 	// Импорт одного товара $item[column_name] = value;
 	private function import_item($item) {
-		$imported_item = new stdClass;
+		$imported_item = array();
 		
 		
 		
@@ -223,19 +223,19 @@ class ImportAjax extends Simpla
 		// Если задан артикул варианта, найдем этот вариант и соответствующий товар
 		if(!empty_(@$variant['sku'])) { 
 			$this->db->query('SELECT v.id as variant_id, v.product_id FROM __variants v, __products p WHERE v.sku=? AND v.product_id = p.id LIMIT 1', $variant['sku']);
-			$result = $this->db->result();
+			$result = $this->db->result_array();
 			if($result){
 				// и обновим товар
 				if(!empty_(@$product))
-					$this->products->update_product($result->product_id, $product);
+					$this->products->update_product($result['product_id'], $product);
 				// и вариант
 				if(!empty_(@$variant))
-					$this->variants->update_variant($result->variant_id, $variant);
+					$this->variants->update_variant($result['variant_id'], $variant);
 				
-				$pid = $result->product_id;
-				$varid = $result->variant_id;
+				$pid = $result['product_id'];
+				$varid = $result['variant_id'];
 				// Обновлен
-				$imported_item->status = 'updated';
+				$imported_item['status'] = 'updated';
 			}
 		}
 		
@@ -265,21 +265,21 @@ class ImportAjax extends Simpla
 			{
 				$this->variants->update_variant($varid, $variant);
 				$this->products->update_product($pid, $product);				
-				$imported_item->status = 'updated';		
+				$imported_item['status'] = 'updated';		
 			// Иначе - добавляем
 			}elseif(empty_(@$varid)) {
 				if(empty_(@$pid))
 					$pid = $this->products->add_product($product);
 
                 $this->db->query('SELECT max(v.position) as pos FROM __variants v WHERE v.product_id=? LIMIT 1', $pid);
-                $pos =  $this->db->result('pos');
+                $pos =  $this->db->result_array('pos');
 
 				$variant['position'] = $pos+1;
 				$variant['product_id'] = $pid;
 				if ( $varid = $this->variants->add_variant($variant) ) {
-					$imported_item->status = 'added';
+					$imported_item['status'] = 'added';
 				} else {
-					$imported_item->status = 'variant add failed';
+					$imported_item['status'] = 'variant add failed';
 				}
 			}
 		}
@@ -287,8 +287,8 @@ class ImportAjax extends Simpla
 		if(!empty_(@$varid) && !empty_(@$pid))
 		{
 			// Нужно вернуть обновленный товар
-			$imported_item->variant = $this->variants->get_variant(intval($varid));
-			$imported_item->product = $this->products->get_product(intval($pid));
+			$imported_item['variant'] = $this->variants->get_variant(intval($varid));
+			$imported_item['product'] = $this->products->get_product(intval($pid));
 	
 			// Добавляем категории к товару
 			if(!empty_(@$categories_ids))
@@ -310,7 +310,7 @@ class ImportAjax extends Simpla
 		 				
 		 				// Добавляем изображение только если такого еще нет в этом товаре
 						$this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $pid, $image_filename, $image);
-						if(!$this->db->result('filename'))
+						if(!$this->db->result_array('filename'))
 						{
 							$this->products->add_image($pid, $image);
 						}
@@ -388,7 +388,7 @@ class ImportAjax extends Simpla
 			{
 				// Найдем категорию по имени
 				$this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
-				$id = $this->db->result('id');
+				$id = $this->db->result_array('id');
 				
 				// Если не найдена - добавим ее
 				if(empty_(@$id))
