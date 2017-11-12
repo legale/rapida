@@ -1,6 +1,8 @@
 <?php
 
 require_once('../../api/Simpla.php');
+
+
 class ImportAjax extends Simpla
 {	
 	// Соответствие полей в базе и имён колонок в файле
@@ -101,22 +103,22 @@ class ImportAjax extends Simpla
 			// Читаем строку
 			$line = fgetcsv($f, 0, $this->column_delimiter);
 
-			$product = null;			
+			$product = null;
 
-			if(is_array($line))			
-			// Проходимся по колонкам строки
-			foreach($this->columns as $i=>$col)
-			{
-				// Создаем массив item[название_колонки]=значение
- 				if(isset($line[$i]) && !empty_(@$line) && !empty_(@$col))
-					$product[$col] = $line[$i];
+			if(is_array($line)){
+				// Проходимся по колонкам строки
+				foreach($this->columns as $i=>$col)
+				{
+					// Создаем массив item[название_колонки]=значение
+					if(isset($line[$i]) && !empty_(@$line) && !empty_(@$col))
+						$product[$col] = $line[$i];
+				}
 			}
 			
 			// Импортируем этот товар
 	 		if($imported_item = $this->import_item($product))
 				$imported_items[] = $imported_item;
 		}
-		
 		// Запоминаем на каком месте закончили импорт
  		$from = ftell($f);
  		
@@ -136,6 +138,7 @@ class ImportAjax extends Simpla
 	
 	// Импорт одного товара $item[column_name] = value;
 	private function import_item($item) {
+		
 		$imported_item = array();
 		
 		
@@ -360,6 +363,7 @@ class ImportAjax extends Simpla
 					
 	 			}
 	 		}
+	 		
 	 		//тут пишем разом все свойства, чьи id удалось найти
 	 		if( $this->features->update_options_direct(array('product_id' => $pid, 'features' => $features )) !== false ){
 				return $imported_item;
@@ -440,4 +444,6 @@ $import_ajax = new ImportAjax();
 
 		
 $json = json_encode($import_ajax->import());
+//~ dtimer::show();
+
 print $json;

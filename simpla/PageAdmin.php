@@ -34,9 +34,13 @@ class PageAdmin extends Simpla
 				}
 				else
 					{
-					$this->pages->update_page($page->id, $page);
-					$page = $this->pages->get_page($page->id);
-					$this->design->assign('message_success', 'updated');
+					if ( $this->pages->update_page($page->id, $page) )
+					{
+						$this->design->assign('message_success', 'updated');
+					} else
+					{
+						$this->design->assign('message_error', 'error');
+					} 
 				}
 			}
 		}

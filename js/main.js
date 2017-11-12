@@ -70,7 +70,7 @@ function apiAjax( data, success) {
  * Функция аналог Jquery .live
  * Предназначена для создания действия на событие
  * eventType - (строка) тип события
- * elements - HTML элемент или HTML коллекция, на которых должно срабатывать событие
+ * elements - HTML элемент или HTML коллекция, или NodeList на которых должно срабатывать событие
  * event - функция, которая будет выполнена при срабатывании события
  */
 function live(eventType, elements, event) {

@@ -36,9 +36,11 @@ class FeatureAdmin extends Simpla
 		}
 
 		$feature_categories = array();
-		if ($feature)
+		if ( isset($feature['id']) ){
+			if (!$feature_categories = $this->features->get_feature_categories($feature['id']) )
 			{
-			$feature_categories = $this->features->get_feature_categories($feature['id']);
+				$feature_categories = array();
+			}
 		}
 
 		$categories = $this->categories->get_categories_tree();

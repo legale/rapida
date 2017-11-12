@@ -98,6 +98,7 @@ class Features extends Simpla
 
 	function get_feature_categories($id)
 	{
+		dtimer::log(__METHOD__ . " start $id");
 		$query = $this->db->placehold("SELECT cf.category_id as category_id FROM __categories_features cf
 										WHERE cf.feature_id = ?", $id);
 		$this->db->query($query);
@@ -837,10 +838,15 @@ class Features extends Simpla
 		if ($this->db->query("SELECT id, val FROM __options_uniq WHERE id in (?@)", $options)) {
 			$vals = $this->db->results_array(null, 'id', true);
 			foreach ($options as $fid => &$option) {
-				if (!empty_($option)) {
-					$option = array('fid' => $fid, 'vid' => $option, 'val' => $vals[$option]['val']);
-				} else {
+				if (empty_($option) ) {
 					unset($options[$fid]);
+				}else{
+					if(isset($vals[$option]['val'])){
+						$option = array('fid' => $fid, 'vid' => $option, 'val' => $vals[$option]['val']);
+					}else{
+						dtimer::log(__METHOD__ . " value ".var_export($option,true)." not found!", 2);
+						unset($options[$fid]);
+					}
 				}
 			}
 			return $options;

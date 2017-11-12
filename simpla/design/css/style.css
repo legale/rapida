@@ -1,7 +1,7 @@
 @import url("reset.css");
 @import url("main.css");
 
-/* Стили для красивого переключателя */
+/* Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÐºÑ€Ð°ÑÐ¸Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ */
 .switcher {
 	box-sizing: border-box;
 	width: 100%;
@@ -25,7 +25,7 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__input:checked + .switcher__label:before {
-    background-color: #459300; /* фон */
+    background-color: #459300; /* Ñ„Ð¾Ð½ */
 }
 
 .switcher__input:checked + .switcher__label:after {
@@ -37,7 +37,7 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__input:checked + .switcher__label:active:before {
-    background-color: #A3E06C; /* цвет перехода */
+    background-color: #A3E06C; /* Ñ†Ð²ÐµÑ‚ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° */
 }
 
 .switcher__label {
@@ -94,18 +94,18 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__label:active:before {
-    background-color: #A3E06C; /* цвет перехода */
+    background-color: #A3E06C; /* Ñ†Ð²ÐµÑ‚ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° */
 }
 
 .switcher__text {
     float:none;
 }
 
-/* Стили для красивого переключателя (The end) */
+/* Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÐºÑ€Ð°ÑÐ¸Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ (The end) */
 
 
 
-/* Сообщение */
+/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ */
 .message { 
 	clear: both;
 	height: 25px;
@@ -155,27 +155,27 @@ font: 1.2em Arial, sans-serif;
 	opacity:1;
 	filter:alpha(opacity=100);	
 }
-/* Сообщение успешное */
+/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾Ðµ */
 .message_success { background-color: #c5ff8d; border: 1px dotted #8cbf32; }
 .message_success span.text{	background-image: url(../images/tick.png); }
 .message_success a.link { color: #3f8000; }
 .message_success a.link:hover {	color: #5dbd00; }
 
-/* Сообщение с ошибкой */
+/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ¾Ð¹ */
 .message_error { background-color: #ffcaca; border: 1px dotted #ff4545; }
 .message_error span.text { background-image: url(../images/icon_message_error.png); }
 .message_error a.link { color: #ff0000; }
 .message_error a.link:hover { color: #ff4f4f; }
 
 
-/* Блок названия */
+/* Ð‘Ð»Ð¾Ðº Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
  #name {
 	display: table;
 	width: 100%;
 	margin-bottom: 20px;
 	/*height: 30px;*/
 }
-/* Инпут названия */
+/* Ð˜Ð½Ð¿ÑƒÑ‚ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
 input.name {
 	font-size: 26px;
 	display: table-cell;
@@ -183,7 +183,7 @@ input.name {
     *float: left;
     *width: 70%;
 }
-/* Блок чекбоксов возле названия */
+/* Ð‘Ð»Ð¾Ðº Ñ‡ÐµÐºÐ±Ð¾ÐºÑÐ¾Ð² Ð²Ð¾Ð·Ð»Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
 .checkbox{
 	display: table-cell;
 	white-space: nowrap;
@@ -197,40 +197,40 @@ input.name {
     *width: 12%;
     *float: left;
 }
-/* Надпись возле чекбокса */
+/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð»Ðµ Ñ‡ÐµÐºÐ±Ð¾ÐºÑÐ° */
  .checkbox label {
 	cursor: pointer;
 }
-/* Блок с выбором бренда */
+/* Ð‘Ð»Ð¾Ðº Ñ Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ð¼ Ð±Ñ€ÐµÐ½Ð´Ð° */
 #product_brand {
 	float: left;
 	width: 300px;
 	display: block;
 }
-/* Надпись возде выбора бренда */
+/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð´Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ð±Ñ€ÐµÐ½Ð´Ð° */
 #product_brand label {
 	float: left;
 	margin-top: 5px;
 }
-/* Селект бренда */
+/* Ð¡ÐµÐ»ÐµÐºÑ‚ Ð±Ñ€ÐµÐ½Ð´Ð° */
 #product_brand select{
 	width: 200px;
 	margin-left: 10px;
 	font-size: 18px;
 }
 
-/* Блок категорий товара */
+/* Ð‘Ð»Ð¾Ðº ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¹ Ñ‚Ð¾Ð²Ð°Ñ€Ð° */
 #product_categories {
 	float: left;
 	overflow: hidden;
 	margin-bottom: 20px;
 }
-/* Надпись возде выбора категории */
+/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð´Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
 #product_categories label {
 	float: left;
 	margin-top: 5px;
 }
-/* Селект категории */
+/* Ð¡ÐµÐ»ÐµÐºÑ‚ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
 #product_categories select {
 	width: 300px;
 	margin-right: 15px;
@@ -239,20 +239,20 @@ input.name {
 #product_categories ul li { margin-bottom: 5px; }
 #product_categories div {float: left;	margin-left: 10px; width: 540px; }
 #product_categories span i { font-style: normal; }
-/* Добавление категории */
+/* Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
 #product_categories span.add { 
 	background-repeat: no-repeat;
 	padding-left: 20px;
 	background-image: url(../images/plus-circle.png);
 }
-/* Удаление категории */
+/* Ð£Ð´Ð°Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
 #product_categories span.delete {
 	background-image: url(../images/cross-circle-frame.png);
 	background-repeat: no-repeat;
 	padding-left: 20px;
 }
 
-/* Купоны */
+/* ÐšÑƒÐ¿Ð¾Ð½Ñ‹ */
 .block li select.coupon_type {
 	width: 70px;
 	font-size: 18px;
@@ -262,7 +262,7 @@ input.name {
 	font-size: 18px;
 }
 
-/* Варианты товара */
+/* Ð’Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ñ‹ Ñ‚Ð¾Ð²Ð°Ñ€Ð° */
 #variants_block {
 	background-color: #f0f0f0;
 	border: 1px dotted #d0d0d0;
@@ -351,7 +351,7 @@ input.name {
 	height: 16px;
 }
 
-/* Одиночный вариант */
+/* ÐžÐ´Ð¸Ð½Ð¾Ñ‡Ð½Ñ‹Ð¹ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ */
 #variants_block.single_variant ul li.variant_name, 
 #variants_block.single_variant ul li.variant_move
 #variants_block.single_variant #add_variant
@@ -395,7 +395,7 @@ input.name {
 	background-position: top;	
 }
 
-/*стиль для элементов списка в 1 строку*/
+/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² ÑÐ¿Ð¸ÑÐºÐ° Ð² 1 ÑÑ‚Ñ€Ð¾ÐºÑƒ*/
 .inrow {
 width:50%;
 padding: 0 5px 0 5px;
@@ -406,16 +406,16 @@ width:30%;
 input.inrow {
 width:70%;
 }
-/*стиль для элементов списка в 1 строку (The end) */
+/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² ÑÐ¿Ð¸ÑÐºÐ° Ð² 1 ÑÑ‚Ñ€Ð¾ÐºÑƒ (The end) */
 
-/*стиль для списка с элементами на всю ширину*/
+/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ¿Ð¸ÑÐºÐ° Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼Ð¸ Ð½Ð° Ð²ÑÑŽ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ*/
 .block ul.list li {
 clear: both;
 }
-/*стиль для списка с элементами на всю ширину (The end) */
+/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ¿Ð¸ÑÐºÐ° Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼Ð¸ Ð½Ð° Ð²ÑÑŽ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ (The end) */
 
 
-/* стили для дропзоны*/
+/* ÑÑ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ Ð´Ñ€Ð¾Ð¿Ð·Ð¾Ð½Ñ‹*/
 #holder { border: 10px dashed #ccc; width: 300px; min-height: 50px; margin: 20px auto;}
 .holder__text 
 {
@@ -433,7 +433,7 @@ progress:after { content: '%'; }
 .fail { background: #c00; padding: 2px; color: #fff; }
 .hidden { display: none !important;}
 
-/*стили для дропзоны (The end) */
+/*ÑÑ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ Ð´Ñ€Ð¾Ð¿Ð·Ð¾Ð½Ñ‹ (The end) */
 
 
 
@@ -559,7 +559,7 @@ div.images #add_image {
 }
 /* @end */
 
-/* Меню */
+/* ÐœÐµÐ½ÑŽ */
 #right_menu {
 	width: 180px;
 	display: block;
@@ -577,8 +577,11 @@ div.images #add_image {
 }
 #right_menu li {
 	font-size: 12px;
-	margin-bottom: 7px;
 }
+#right_menu li.selected {
+	margin-bottom:7px; 
+}
+
 #right_menu li a {
 	padding: 0px 0px 0px 0px;
 	color: #000000; 
@@ -590,6 +593,7 @@ div.images #add_image {
 	background-color: #18a5ff;
 	color: #ffffff;
 	text-decoration: none;
+	margin-bottom: 25px;
 }
 #right_menu .drop_active a{
 	color: green;
@@ -599,10 +603,10 @@ div.images #add_image {
 	color: white;
 	background-color: #4eee00; 
 }
-/* @end меню */
+/* @end Ð¼ÐµÐ½ÑŽ */
 
 
-/* @group Форма поиска */
+/* @group Ð¤Ð¾Ñ€Ð¼Ð° Ð¿Ð¾Ð¸ÑÐºÐ° */
 #search {
 	float: right;	
 	width: 175px;
@@ -629,7 +633,7 @@ div.images #add_image {
 /* @end */
  
  
-/* @group Постраничная навигация */
+/* @group ÐŸÐ¾ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ‡Ð½Ð°Ñ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ñ */
 #pagination {
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -674,7 +678,7 @@ div.images #add_image {
 /* @end */
 
 
-/* @group Свернуть - развернуть варианты */
+/* @group Ð¡Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ - Ñ€Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ñ‹ */
 div#expand
 {
 	margin-bottom: 10px;
@@ -688,7 +692,7 @@ div#expand a
 }
 /* @end */
 
-/* @group Ссылки для сортировки */
+/* @group Ð¡ÑÑ‹Ð»ÐºÐ¸ Ð´Ð»Ñ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ */
 div#sort_links
 {
 	margin-bottom: 10px;
@@ -701,7 +705,7 @@ div#sort_links a
 }
 /* @end */
 
-/* @group Список */
+/* @group Ð¡Ð¿Ð¸ÑÐ¾Ðº */
 #main_list.brands{ width:600px; }
 #main_list.categories{ width:600px; }
 #main_list.features{ width:600px; }
@@ -1038,7 +1042,7 @@ span.order_label
 	text-align: right;
 }
 
-/* Хэлпер для мультисорта */
+/* Ð¥ÑÐ»Ð¿ÐµÑ€ Ð´Ð»Ñ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÐ¾Ñ€Ñ‚Ð° */
 
 .sort-multi-helper{
 	border-top: 1px solid #D0D0D0
@@ -1052,7 +1056,7 @@ span.order_label
 }
 
 
-/* @group Комментарии */
+/* @group ÐšÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸ */
 #list .row.unapproved {
 	background-color: #fffde5;
 }
@@ -1123,7 +1127,7 @@ textarea.editor_small{
 /* @end */
 
 
-/* Валюты */
+/* Ð’Ð°Ð»ÑŽÑ‚Ñ‹ */
 #currencies_block {
 	background-color: #f0f0f0;
 	border: 1px dotted #d0d0d0;
@@ -1216,7 +1220,7 @@ span.alert {
 }
 
 
-/* Заказы */
+/* Ð—Ð°ÐºÐ°Ð·Ñ‹ */
 #list .note{
 	width: 100%;
 	clear: both;
@@ -1373,7 +1377,7 @@ form#order div.view_user{margin-bottom: 15px; font-size: 14px;}
 form#order div.edit_user{margin-bottom: 15px;}
 
 
-/* Импорт */
+/* Ð˜Ð¼Ð¿Ð¾Ñ€Ñ‚ */
 input.import_file {
 	width: 600px;
 	font-size: 18px;
@@ -1432,7 +1436,7 @@ ul#import_result li .status
 ul#import_result li .added { background-image: url(../images/accept.png); }
 ul#import_result li .updated { background-image: url(../images/update.png); }
 
-/* Темы */
+/* Ð¢ÐµÐ¼Ñ‹ */
 ul.themes
 {
 	width: 100%;

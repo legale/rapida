@@ -25,8 +25,8 @@
 {* Заголовок *}
 <div id="header">	
 	{if $products_count}
-		{if $category['name'] || $brand->name}
-			<h1>{$category['name']} {$brand->name} ({$products_count} {$products_count|plural:'товар':'товаров':'товара'})</h1>
+		{if $category['name'] || $brand['name']}
+			<h1>{$category['name']} {$brand['name']} ({$products_count} {$products_count|plural:'товар':'товаров':'товара'})</h1>
 		{elseif $keyword}
 			<h1>{$products_count|plural:'Найден':'Найдено':'Найдено'} {$products_count} {$products_count|plural:'товар':'товаров':'товара'}</h1>
 		{else}
@@ -153,7 +153,7 @@
 			<select name="target_brand">
 				<option value="0">Не указан</option>
 				{foreach $all_brands as $b}
-				<option value="{$b->id}">{$b->name}</option>
+				<option value="{$b['id']}">{$b['name']}</option>
 				{/foreach}
 			</select> 
 			</span>
@@ -205,9 +205,9 @@
 	{if $brands}
 	<!-- Бренды -->
 	<ul>
-		<li {if !$brand->id}class="selected"{/if}><a href="{url brand_id=null}">Все бренды</a></li>
+		<li {if !$brand['id']}class="selected"{/if}><a href="{url brand_id=null}">Все бренды</a></li>
 		{foreach $brands as $b}
-		<li brand_id="{$b->id}" {if $brand->id == $b->id}class="selected"{else}class="droppable brand"{/if}><a href="{url keyword=null page=null brand_id=$b->id}">{$b->name}</a></li>
+		<li brand_id="{$b['id']}" {if $brand['id'] == $b['id']}class="selected"{else}class="droppable brand"{/if}><a href="{url keyword=null page=null brand_id=$b['id']}">{$b['name']}</a></li>
 		{/foreach}
 	</ul>
 	<!-- Бренды (The End) -->

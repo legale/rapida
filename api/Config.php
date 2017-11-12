@@ -15,7 +15,7 @@ require_once ('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.8.1.2';
+	public $version = '0.0.8.1.3';
 	
 	//соль
 	public $salt = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
