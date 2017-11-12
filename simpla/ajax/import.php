@@ -56,9 +56,13 @@ class ImportAjax extends Simpla
 		if( !isset($_GET['from']) ){
 			$filter = array('force_no_cache' => true);
 		}
-		
-		$GLOBALS['options_uniq'] = array_flip($this->features->get_options_ids($filter)[2]);
-		
+		$array = $this->features->get_options_ids($filter)[2];
+		if(is_array($array)){
+			$GLOBALS['options_uniq'] = array_flip($array);
+		} else {
+			$GLOBALS['options_uniq'] = array();
+		}
+
 		
 		//~ print "<pre>";
 		//~ print_r($GLOBALS['options_uniq']);
