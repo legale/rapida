@@ -411,6 +411,6 @@ $import_ajax = new ImportAjax();
 
         
 $json = json_encode($import_ajax->import());
-//~ dtimer::show();
+dtimer::show();
 
-print $json;
+//~ print $json;

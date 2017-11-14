@@ -116,6 +116,7 @@ class Features extends Simpla
 
 	public function add_feature($feature)
 	{
+		dtimer::log(__METHOD__ . ' start');
 		if (is_object($feature)) {
 			$feature = (array)$feature;
 		}
@@ -176,14 +177,27 @@ class Features extends Simpla
 		
 		//сначала проверим, есть ли целевая таблица, создадим ее, если ее еще нет
 		if (!$this->db->query("SELECT 1 FROM __options LIMIT 1")) {
-			$this->db->query("CREATE TABLE __options (`product_id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT) ENGINE=MyISAM CHARSET=utf8");
+			$this->db->query("CREATE TABLE `s_options_uniq` (
+						 `id` int(11) NOT NULL AUTO_INCREMENT,
+						 `val` varchar(512) DEFAULT NULL,
+						 `trans` varchar(512) CHARACTER SET ascii DEFAULT NULL,
+						 `md4` binary(16) DEFAULT NULL,
+						 PRIMARY KEY (`id`),
+						 UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE
+						) ENGINE=MyISAM AUTO_INCREMENT=55410 DEFAULT CHARSET=utf8
+						");
 		}
 		if (!$this->db->query("SELECT 1 FROM __options_uniq LIMIT 1")) {
-			$this->db->query("CREATE TABLE __options_uniq (`id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
+			$this->db->query("CREATE TABLE __options_uniq (`id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
+			// добавим 1 строку для значения по умолчанию
+			$val = '';
+			$trans = '';
+			$optionhash = hash('md4', translit_url($val));
+			$this->db->query("INSERT INTO __options_uniq SET `id` = 0, `val`= '$val', `trans` = '$trans', `md4` = 0x$optionhash ");
 
 		}
 		if (!$this->db->query("SELECT `$id` FROM __options LIMIT 1")) {
-			$this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT NULL");
+			$this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT NOT NULL DEFAULT '0'");
 			//делаем индекс, только если это свойство будет в фильтре
 			if (isset($feature['in_filter']) && (bool)$feature['in_filter'] === true) {
 				$this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`)");
