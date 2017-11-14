@@ -50,7 +50,7 @@ CREATE TABLE `s_cache_integer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
 INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-11-12', 0xcc23865436abc431007759e15a11991a, 0);
+('2017-11-14', 0xcc23865436abc431007759e15a11991a, 0);
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -303,15 +303,13 @@ CREATE TABLE `s_options` (
   `50` mediumint(9) DEFAULT NULL,
   `51` mediumint(9) DEFAULT NULL,
   `52` mediumint(9) DEFAULT NULL,
-  `53` mediumint(9) DEFAULT NULL,
-  `54` mediumint(9) DEFAULT NULL,
-  `55` mediumint(9) DEFAULT NULL,
-  `56` mediumint(9) DEFAULT NULL,
-  `57` mediumint(9) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `23` (`product_id`),
   KEY `4` (`product_id`),
-  KEY `11` (`product_id`)
+  KEY `11` (`product_id`),
+  KEY `1` (`product_id`),
+  KEY `2` (`product_id`),
+  KEY `12` (`product_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
@@ -400,7 +398,7 @@ CREATE TABLE `s_pages` (
 ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /* Data for table s_pages */
 INSERT INTO `s_pages` (`id`,`url`,`name`,`meta_title`,`meta_description`,`meta_keywords`,`body`,`menu_id`,`position`,`visible`,`header`,`new_field`,`new_field2`) VALUES
-(1, '', 'Главная', 'Хиты продаж', 'Этот магазин является демонстрацией скрипта интернет-магазина  Simpla . Все материалы на этом сайте присутствуют исключительно в демострационных целях.', 'Хиты продаж', '<p>Этот магазин является демонстрацией скрипта интернет-магазина <a href=\"http://simplacms.ru\">Simpla</a>. Все материалы на этом сайте присутствуют исключительно в демострационных целях.</p>', 1, 1, 1, 'О магазине', '', ''),
+(1, '', 'Главная', 'Хиты продаж', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Хиты продаж', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas accumsan libero fermentum nisl auctor dapibus. Sed sed gravida enim. In non pharetra lacus. Donec sed erat a felis hendrerit maximus. Vivamus congue turpis nec risus bibendum, at euismod odio rutrum. Aliquam pulvinar sapien vitae justo volutpat tristique. Donec ut accumsan urna. Quisque accumsan scelerisque metus eget pretium. Cras tincidunt volutpat dui ac maximus. Morbi congue ligula rutrum, interdum lectus id, cursus velit. Nunc interdum sagittis erat, at mattis erat molestie ut. Praesent ut rhoncus mi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p><p>Nullam et scelerisque odio. Maecenas ut ante erat. Suspendisse in cursus lacus, ac blandit odio. Cras quis nulla eu mauris sagittis luctus vel ut est. Praesent placerat tincidunt justo. Fusce iaculis sem a tortor ullamcorper vehicula. Sed hendrerit rutrum fringilla.</p><p>Duis eleifend, metus ut varius aliquet, tortor nibh gravida nulla, nec maximus diam diam non ligula. Sed eu vestibulum nisl, nec elementum orci. Nam pellentesque arcu ligula, in luctus mauris sollicitudin in. Quisque fermentum pretium rhoncus. Donec mauris purus, sodales vitae dictum nec, volutpat a erat. Etiam a fringilla arcu. Sed fringilla eu libero viverra viverra. Nullam dui enim, varius sit amet risus ut, suscipit malesuada eros. Ut a arcu in leo tempus euismod. Nam tempor purus nisi, a finibus ante ultricies eget. Sed consectetur justo ut vulputate cursus. Mauris ullamcorper, urna euismod rhoncus rhoncus, tortor metus dapibus libero, sit amet suscipit purus magna in nisi. Vestibulum et bibendum magna, ac pellentesque orci. In blandit odio efficitur ligula vehicula euismod. Ut congue ligula eu diam rhoncus, sed varius ipsum euismod. Cras placerat nunc non velit blandit, vitae consequat enim fermentum.</p><p>Vivamus ultricies sollicitudin nisl, eu placerat sem sollicitudin at. Vestibulum luctus neque vel volutpat tempor. Cras laoreet lorem a neque interdum, ut placerat ligula eleifend. Nullam a varius dui. Donec vel ligula at magna tempus sagittis. In cursus laoreet ultrices. Mauris sodales sem non nibh imperdiet luctus. Nullam malesuada aliquam egestas. Sed suscipit, ipsum non tempus porttitor, nulla justo tincidunt nisl, in auctor ligula nunc eu lacus. Fusce lorem risus, venenatis vel sodales ut, auctor et lacus. Fusce sagittis efficitur neque eu viverra. Etiam tortor odio, ultrices vulputate nunc eget, iaculis rutrum justo. Vivamus rutrum, mauris vel tempor placerat, neque nulla volutpat urna, ac hendrerit mauris sapien ut nisi.</p>', 1, 1, 1, 'О магазине', '', ''),
 (2, 'oplata', 'Оплата', 'Оплата', 'Оплата', 'Оплата', '<h2><span>Наличными курьеру</span></h2><p>Вы можете оплатить заказ курьеру в гривнах непосредственно в момент доставки. Курьерская доставка осуществляется по Москве на следующий день после принятия заказа.</p><h2>Webmoney</h2><p>После оформления заказа вы сможете перейти на сайт webmoney для оплаты заказа, где сможете оплатить заказ в автоматическом режиме, а так же проверить наш сертификат продавца.</p><h2>Наличными в офисе Автолюкса</h2><p>При доставке заказа системой Автолюкс, вы сможете оплатить заказ в их офисе непосредственно в момент получения товаров.</p>', 1, 4, 1, 'Способы оплаты', '', ''),
 (3, 'dostavka', 'Доставка', 'Доставка', 'Доставка', 'Доставка', '<h2>Курьерская доставка по&nbsp;Москве</h2><p>Курьерская доставка осуществляется на следующий день после оформления заказа<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>если товар есть в&nbsp;наличии. Курьерская доставка осуществляется в&nbsp;пределах Томска и&nbsp;Северска ежедневно с&nbsp;10.00 до&nbsp;21.00. Заказ на&nbsp;сумму свыше 300 рублей доставляется бесплатно. <br /><br />Стоимость бесплатной доставки раcсчитывается от&nbsp;суммы заказа с&nbsp;учтенной скидкой. В&nbsp;случае если сумма заказа после применения скидки менее 300р<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>осуществляется платная доставка. <br /><br />При сумме заказа менее 300 рублей стоимость доставки составляет от 50 рублей.</p><h2>Самовывоз</h2><p>Удобный<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>бесплатный и быстрый способ получения заказа.<br />Адрес офиса: Москва<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>ул. Арбат<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>1/3<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>офис 419.</p><h2>Доставка с&nbsp;помощью предприятия<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo;</h2><p>Удобный и быстрый способ доставки в крупные города России. Посылка доставляется в офис<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo; в&nbsp;Вашем городе. Для получения необходимо предъявить паспорт и&nbsp;номер грузовой декларации<span style=\"margin-right: 0.3em;\"> </span><span style=\"margin-left: -0.3em;\">(</span>сообщит наш менеджер после отправки). Посылку желательно получить в&nbsp;течение 24 часов с&nbsp;момента прихода груза<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>иначе компания<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo; может взыскать с Вас дополнительную оплату за хранение. Срок доставки и стоимость Вы можете рассчитать на сайте компании.</p><h2>Наложенным платежом</h2><p>При доставке заказа наложенным платежом с помощью<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Почты России&raquo;, вы&nbsp;сможете оплатить заказ непосредственно в&nbsp;момент получения товаров.</p>', 1, 3, 1, 'Способы доставки', '', ''),
 (4, 'blog', 'Блог', 'Блог', '', 'Блог', '', 1, 2, 1, 'Блог', '', ''),
@@ -579,7 +577,7 @@ CREATE TABLE `s_users` (
   `admin` tinyint(1) DEFAULT '0',
   `perm` varchar(200) CHARACTER SET ascii DEFAULT NULL,
   `last_ip` varchar(15) DEFAULT NULL,
-  `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_login` timestamp NULL DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`) USING BTREE,
