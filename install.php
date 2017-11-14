@@ -116,7 +116,7 @@ function unzip()
 	$filename =	 $current_dir.'/rapida_source.zip';
 	if(!is_file($filename))
 	{
-		print "<p>Файл simpla_source.zip не найден.<br>Скопируйте файл simpla_source.zip в папку<br><code>$current_dir</code></p>";
+		print "<p>Файл rapida_source.zip не найден.<br>Скопируйте файл rapida_source.zip в папку<br><code>$current_dir</code></p>";
 		print "<p><form method=get><input type='hidden' name='step' value='unzip'><input type='submit' value='продолжить →'></form></p>";
 		return;
 	}
