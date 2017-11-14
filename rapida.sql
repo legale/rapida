@@ -175,6 +175,7 @@ CREATE TABLE `s_features` (
   `position` int(11) NOT NULL DEFAULT '0',
   `in_filter` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
   KEY `position` (`position`),
   KEY `in_filter` (`in_filter`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -303,6 +304,7 @@ CREATE TABLE `s_options` (
   `50` mediumint(9) NOT NULL DEFAULT '0',
   `51` mediumint(9) NOT NULL DEFAULT '0',
   `52` mediumint(9) NOT NULL DEFAULT '0',
+  `53` mediumint(9) NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options */
