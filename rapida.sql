@@ -50,7 +50,7 @@ CREATE TABLE `s_cache_integer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
 INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-11-14', 0xcc23865436abc431007759e15a11991a, 0);
+('2017-11-12', 0xcc23865436abc431007759e15a11991a, 0);
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -303,6 +303,16 @@ CREATE TABLE `s_options` (
   `50` mediumint(9) DEFAULT NULL,
   `51` mediumint(9) DEFAULT NULL,
   `52` mediumint(9) DEFAULT NULL,
+  `53` mediumint(9) DEFAULT NULL,
+  `54` mediumint(9) DEFAULT NULL,
+  `55` mediumint(9) DEFAULT NULL,
+  `56` mediumint(9) DEFAULT NULL,
+  `57` mediumint(9) DEFAULT NULL,
+  `58` mediumint(9) DEFAULT NULL,
+  `59` mediumint(9) DEFAULT NULL,
+  `60` mediumint(9) DEFAULT NULL,
+  `61` mediumint(9) DEFAULT NULL,
+  `62` mediumint(9) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `23` (`product_id`),
   KEY `4` (`product_id`),
