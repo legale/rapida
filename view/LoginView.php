@@ -98,8 +98,6 @@ class LoginView extends View
 					// Перенаправляем пользователя на прошлую страницу, если она известна
 					if(!empty($_SESSION['last_visited_page'])){
 						header('Location: '.$_SESSION['last_visited_page']);
-					}else{
-						header('Location: '.$this->config->root_url);
 					}
 				}
 				else
