@@ -132,19 +132,25 @@ class Features extends Simpla
 				$feature[$k] = trim($e);
 			}
 		}
+		//если имя не задано - останавливаемся
+		if(isset($feature['name'])){
+			$name = $feature['name'];
+		} else {
+			return false;
+		}
+		
+		//проверка, чтобы избежать дублирования свойств
+		if($this->db->query("SELECT id FROM __features WHERE 1 AND name = '$name'")){
+			$res = $this->db->result_array();
+			if(!empty_($res['id'])){
+				return false;
+			}
+		}
+		
 		
 		//используем транслит собственного приготовления
-		$feature['trans'] = translit_url($feature['name']);
-
-		//чтобы избежать повторов поля trans, проверим на уникальность в базе
-		//крутим пока не получим уникальное имя
-		while ($this->db->query("SELECT trans FROM __features WHERE trans = ?", $feature['trans']) && $this->db->num_rows() !== 0) {
-			if (preg_match('/(.+)([0-9]+)$/', $feature['trans'], $parts)) {
-				$feature['trans'] = $parts[1] . '' . ($parts[2] + 1);
-			}
-			else {
-				$feature['trans'] = $feature['trans'] . '2';
-			}
+		if(!isset($feature['trans'])){
+			$feature['trans'] = translit_url($feature['name']);
 		}
 
 		//вытаскиваем макс позицию из свойств
