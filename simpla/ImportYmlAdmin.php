@@ -199,7 +199,7 @@ class ImportYmlAdmin extends Simpla
 					 'code' => $yml_currency['id'], 
 					 'rate_from' => '1.00', 'rate_to' => '1.00'));
 					if( $yml_currency['dbid'] = $this->money->get_currency($yml_currency['id']) ) {
-						$yml_currency['dbid'] = $yml_currency['dbid']->id;
+						$yml_currency['dbid'] = $yml_currency['dbid']['id'];
 					}
 				} else {
 					$yml_currency['dbid'] = $db_currency->id;
