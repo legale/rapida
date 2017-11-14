@@ -14,6 +14,29 @@ require_once ('Simpla.php');
 class Variants extends Simpla
 {
 	/**
+	 * Функция возвращает варианты 1 конкретного товара
+	 * @param	$pid
+	 * @retval	array
+	 */
+	public function get_product_variants($pid)
+	{
+		dtimer::log(__METHOD__ . " start $pid");
+		//проверка аргумента
+		if(!is_scalar($pid)){
+			dtimer::log(__METHOD__ . " pid is not a scalar value");
+		}
+		//$pid у нас только число
+		$pid = (int)$pid;
+		
+		$this->db->query("SELECT * FROM __variants WHERE `product_id` = $pid");
+		if($res = $this->db->results_array(null, 'position')){
+			return $res;
+		}else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Функция возвращает варианты товара
 	 * @param	$filter
 	 * @retval	array
@@ -66,10 +89,15 @@ class Variants extends Simpla
 		return $variant;
 	}
 
-	public function update_variant($id, $variant)
+	public function update_variant($variant)
 	{
-		if (is_object($variant)) {
-			$variant = (array)$variant;
+		//получим varid
+		if(isset($variant['id'])){
+			$varid = $variant['id'];
+			unset($variant['id']);
+		}else{
+			dtimer::log(__METHOD__." varid is not set!", 2);
+			return false;
 		}
 
 		foreach ($variant as $k => $e) {
@@ -77,21 +105,28 @@ class Variants extends Simpla
 				unset($variant[$k]);
 			}
 		}
-		$query = $this->db->placehold("UPDATE __variants SET ?% WHERE id=? LIMIT 1", $variant, (int)$id);
-		$this->db->query($query);
-		return $id;
+		$query = $this->db->placehold("UPDATE __variants SET ?% WHERE id=? LIMIT 1", $variant, $varid);
+		if($this->db->query($query)){
+			return $varid;
+		}else{
+			return false;
+		}
 	}
-
-	public function add_variant($variant)
-	{
-
+	public function add_variant($variant){
 		if (is_object($variant)) {
 			$variant = (array)$variant;
 		}
+		//получим pid
+		if(!isset($variant['product_id'])){
+			dtimer::log(__METHOD__." pid is not set!", 2);
+			return false;
+		}
+
 		//удалим id, если он сюда закрался, при создании id быть не должно
 		if (isset($variant['id'])) {
 			unset($variant['id']);
 		}
+
 		foreach ($variant as $k => $e) {
 			if (empty_($e)) {
 				unset($variant[$k]);
@@ -117,18 +152,4 @@ class Variants extends Simpla
 			$this->db->query('UPDATE __purchases SET variant_id=NULL WHERE variant_id=?', intval($id));
 		}
 	}
-
-	public function delete_attachment($id)
-	{
-		$query = $this->db->placehold("SELECT attachment FROM __variants WHERE id=?", $id);
-		$this->db->query($query);
-		$filename = $this->db->result('attachment');
-		$query = $this->db->placehold("SELECT 1 FROM __variants WHERE attachment=? AND id!=?", $filename, $id);
-		$this->db->query($query);
-		$exists = $this->db->num_rows();
-		if (!empty($filename) && $exists == 0)
-			@unlink($this->config->root_dir . '/' . $this->config->downloads_dir . $filename);
-		$this->update_variant($id, array('attachment' => null));
-	}
-
 }

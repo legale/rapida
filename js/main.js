@@ -100,3 +100,39 @@ function live(eventType, elements, event) {
 	}
 
 }
+
+function search_tree(type, name, e){
+	"use strict";
+	if(e === undefined || e === null || e.classList === undefined){
+		console.log('element is empty');
+		return false;
+	}
+	
+	let t = false;
+	switch(type){
+		case 'class':
+		if(e.classList.contains(name) === true){
+			t = true;
+		}
+		break;
+		
+		case 'attribute':
+			if(e.getAttribute(name) !== undefined){
+				t = true;
+			}
+		break;
+		
+		default:
+		console.log(type + " is unknown");
+		return false;
+	}
+	
+	if(t === true){
+		return e;
+	}
+		
+	return search_tree(type, name, e.parentNode);
+	
+
+}
+	

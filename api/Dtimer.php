@@ -52,12 +52,12 @@ class dtimer
 		echo '
 			<table style="table-layout: fixed; overflow-wrap: break-word; width: calc(100% - 20px); margin: 10px; !important; box-sizing: border-box; right:0; top:0; z-index:200; background:#fff !important">
 			 <tr>
-				<th style="width:1.5%; box-sizing: border-box; border: 1px dotted;">T.</th>
-				<th style="width:85%; box-sizing: border-box; border: 1px dotted;">Message</th>
-				<th style="box-sizing: border-box; border: 1px dotted;">RAM</th>
-				<th style="box-sizing: border-box; border: 1px dotted;">Diff</th>
-				<th style="box-sizing: border-box; border: 1px dotted;">Perc</th>
-				<th style="box-sizing: border-box; border: 1px dotted;">Time</th>
+				<th style="width:2%; box-sizing: border-box; border: 1px dotted;">T.</th>
+				<th style="width:75%; box-sizing: border-box; border: 1px dotted;">Message</th>
+				<th style="width: 5.5%; box-sizing: border-box; border: 1px dotted;">RAM</th>
+				<th style="width: 6.5%; box-sizing: border-box; border: 1px dotted;">Diff</th>
+				<th style="width: 4.5%; box-sizing: border-box; border: 1px dotted;">Perc</th>
+				<th style="width: 6.5%; box-sizing: border-box; border: 1px dotted;">Time</th>
 			</tr>
 		';
 		$last = end(self::$points);

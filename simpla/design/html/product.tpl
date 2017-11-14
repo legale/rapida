@@ -421,6 +421,8 @@ function generate_url()
 	return url;
 }
 
+
+
 function translit(str)
 {
 	var ru=("А-а-Б-б-В-в-Ґ-ґ-Г-г-Д-д-Е-е-Ё-ё-Є-є-Ж-ж-З-з-И-и-І-і-Ї-ї-Й-й-К-к-Л-л-М-м-Н-н-О-о-П-п-Р-р-С-с-Т-т-У-у-Ф-ф-Х-х-Ц-ц-Ч-ч-Ш-ш-Щ-щ-Ъ-ъ-Ы-ы-Ь-ь-Э-э-Ю-ю-Я-я").split("-")   
@@ -453,20 +455,17 @@ overflow-y: auto;
 
 
 
-{if !$message_error}
+{if !$message_error && $message_success}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	{if $message_success}
-	<span class="text">{if $message_success=='added'}Товар добавлен{elseif $message_success=='updated'}Товар изменен{else}{$message_success|escape}{/if}</span>
+	<span 6class="text">{if $message_success=='added'}Товар добавлен{elseif $message_success=='updated'}Товар изменен{else}{$message_success|escape}{/if}</span>
 	{/if}
 	
 	<a class="link" target="_blank" href="../products/{$product['url']}">Открыть товар на сайте</a>
-	{if $smarty.get.return}
-	<a class="button" href="{$smarty.get.return}">Вернуться</a>
-	{/if}
 	
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&title={$product['name']|urlencode}&description={$product['annotation']|urlencode}&image={$product_images.0->filename|resize:1000:1000|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/products/{$product['url']|urlencode}&title={$product['name']|urlencode}&description={$product['annotation']|urlencode}&image={$product['images'].0->filename|resize:1000:1000|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
 		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
 		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/products/{$product['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
 		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
@@ -481,9 +480,6 @@ overflow-y: auto;
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error=='url_exists'}Товар с таким адресом уже существует{elseif $message_error=='empty_name'}Введите название{else}{$message_error|escape}{/if}</span>
-	{if $smarty.get.return}
-	<a class="button" href="{$smarty.get.return}">Вернуться</a>
-	{/if}
 </div>
 <!-- Системное сообщение (The End)-->
 {/if}
@@ -515,42 +511,46 @@ overflow-y: auto;
 	</div>
 	
 	
-	<div id="product_categories" {if !$categories}style='display:none;'{/if}>
+	<div id="product_categories" {if !$cats}style='display:none;'{/if}>
 		<label>Категория</label>
 		<div>
 			<ul>
-				{foreach $product_categories as $pc name=categories}
+			{if isset($product['cats'])}
+				{foreach $product['cats'] as $pc name=categories}
 				<li>
 					<select name="categories[]">
 						{function name=category_select level=0}
-						{foreach $categories as $category}
-								<option value="{$category['id']}" {if $category['id'] == $selected_id}selected{/if} category_name="{$category['name']|escape}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']|escape}</option>
-								{category_select categories=$category['subcategories'] selected_id=$selected_id  level=$level+1}
+						{foreach $categories as $cat}
+								<option value="{$cat['id']}" {if $cat['id'] == $selected_id}selected{/if} category_name="{$cat['name']|escape}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']|escape}</option>
+								{category_select categories=$cat['subcategories'] selected_id=$selected_id  level=$level+1}
 						{/foreach}
 						{/function}
-						{category_select categories=$categories selected_id=$pc['id']}
+						{category_select categories=$cats selected_id=$pc['id']}
 					</select>
-					<span {if not $smarty.foreach.categories.first}style='display:none;'{/if} class="add"><i class="dash_link">Дополнительная категория</i></span>
-					<span {if $smarty.foreach.categories.first}style='display:none;'{/if} class="delete"><i class="dash_link">Удалить</i></span>
 				</li>
 				{/foreach}
+				<span class="add"><i class="dash_link">Дополнительная категория</i></span>
+				<span {if !isset($product['cats'])}style='display:none;'{/if} class="delete"><i class="dash_link">Удалить</i></span>
+			
+			{/if}
+						
 			</ul>
 		</div>
 	</div>
 
 
 	<!-- Варианты товара -->
-	<div id="variants_block" {assign var=first_variant value=$product_variants|@first}{if $product_variants|@count <= 1 && !$first_variant->name}class=single_variant{/if}>
+	<div id="variants_block" {assign var=first_variant value=$product['variants']|@first}{if $product['variants']|@count <= 1 && !$first_variant['name']}class=single_variant{/if}>
 		<ul id="header">
 			<li class="variant_move"></li>
 			<li class="variant_name">Название варианта</li>	
 			<li class="variant_sku">Артикул</li>	
-			<li class="variant_price">Цена, {$currency->sign}</li>	
-			<li class="variant_discount">Старая, {$currency->sign}</li>	
+			<li class="variant_price">Цена, {$currency['sign']}</li>	
+			<li class="variant_discount">Старая, {$currency['sign']}</li>	
 			<li class="variant_amount">Кол-во</li>
 		</ul>
 		<div id="variants">
-		{foreach $product_variants as $variant}
+		{foreach $product['variants'] as $variant}
 		<ul>
 			<li class="variant_move"><div class="move_zone"></div></li>
 			<li class="variant_name">      <input name="variants[id][]"            type="hidden" value="{$variant['id']|escape}" /><input name="variants[name][]" type="" value="{$variant['name']|escape}" /> <a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
@@ -558,21 +558,6 @@ overflow-y: auto;
 			<li class="variant_price">     <input name="variants[price][]"         type="text"   value="{$variant['price']|escape}" /></li>
 			<li class="variant_discount">  <input name="variants[compare_price][]" type="text"   value="{$variant['compare_price']|escape}" /></li>
 			<li class="variant_amount">    <input name="variants[stock][]"         type="text"   value="{if $variant['infinity'] || $variant['stock'] == ''}∞{else}{$variant['stock']|escape}{/if}" />{$settings->units}</li>
-			<li class="variant_download">
-			
-				{if $variant['attachment']}
-					<span class=attachment_name>{$variant['attachment']|truncate:25:'...':false:true}</span>
-					<a href='#' class=remove_attachment><img src='design/images/bullet_delete.png'  title="Удалить цифровой товар"></a>
-					<a href='#' class=add_attachment style='display:none;'><img src="design/images/cd_add.png" title="Добавить цифровой товар" /></a>
-				{else}
-					<a href='#' class=add_attachment><img src="design/images/cd_add.png"  title="Добавить цифровой товар" /></a>
-				{/if}
-				<div class=browse_attachment style='display:none;'>
-					<input type=file name=attachment[]>
-					<input type=hidden name=delete_attachment[]>
-				</div>
-			
-			</li>
 		</ul>
 		{/foreach}		
 		</div>
@@ -647,8 +632,8 @@ overflow-y: auto;
 			<h2>Изображения товара
 			</h2>
 			<ul id="imagelist">
-			{if $product_images}
-			{foreach $product_images as $image}
+			{if $product['images']}
+			{foreach $product['images'] as $image}
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
 					<img src="{$image['filename']|resize:100:100}" alt="" />
@@ -733,14 +718,16 @@ overflow-y: auto;
 			<!-- Свойства товара -->
 		<div class="block layer" {if !$categories}style='display:none;'{/if}>
 			<h2>Свойства товара</h2>
+				{if $options}
 			<ul class="prop_ul">
-				{foreach $features as $fid=>$feature}
-					<li feature_id={$fid}>
-						<label class="property inrow">{$feature['name']}</label>
-						<input class="inrow" type="text" name=options[{$fid}] value="{$options[$fid]['val']|escape}" />
-					</li>
+				{foreach $options as $fid=>$o}
+				<li>
+					<label class="property inrow" fid="{$fid}" vid="{$o['vid']}">111{$features[$fid]['name']}</label>
+					<input class="inrow" type="text" name=options[{$fid}] value="{$o['val']}"/>
+				</li>
 				{/foreach}
 			</ul>
+			{/if}
 			<!-- Новые свойства -->
 			<ul class=new_features>
 				<li id=new_feature>

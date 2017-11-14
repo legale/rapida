@@ -87,6 +87,10 @@ function translit_url($string, $reverse = false)
 		trigger_error(__METHOD__ . 'argument type error');
 		return false;
 	}
+	//тут удаляем все кроме букв, цифр и _ + ~
+	$string = preg_replace("/[^\w\d\_\s\~\+]+/u", '', $string);
+	
+
 	//самая быстрая функция для замены подстроки в строке strtr пробел меняем на подчеркивание
 	$pairs = array(' ' => '_', '-' => '+');
 	if ($reverse === true) {
@@ -94,8 +98,6 @@ function translit_url($string, $reverse = false)
 	}
 	$string = strtr($string, $pairs);
 	
-	//тут удаляем все кроме букв, цифр и _ + ~
-	$string = preg_replace("/[^\w\d\_\~\+]+/u", '', $string);
 
 	$converter = array(
 		'а' => 'a', 'б' => 'b', 'в' => 'v',
@@ -108,7 +110,7 @@ function translit_url($string, $reverse = false)
 		'ф' => 'f', 'х' => 'h', 'ц' => 'c',
 		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
 		'ь' => '~', 'ы' => 'y', 'ъ' => '~~',
-		'э' => 'e', 'ю' => 'yu', 'я' => 'ya'
+		'э' => 'eh', 'ю' => 'yu', 'я' => 'ya'
 	);
 	if ($reverse === true) {
 		uasort($converter, function ($a, $b) {

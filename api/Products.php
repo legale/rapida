@@ -385,13 +385,23 @@ class Products extends Simpla
 		return $product;
 	}
 
-	public function update_product($id, $product)
+	public function update_product($product)
 	{
-		$query = $this->db->placehold("UPDATE __products SET ?% WHERE id in (?@) LIMIT ?", $product, (array)$id, count((array)$id));
-		if($this->db->query($query))
-			return $id;
-		else
+		//получим pid
+		if(isset($product['id'])){
+			$pid = $product['id'];
+			unset($product['id']);
+		}else{
+			dtimer::log(__METHOD__." pid is not set!", 2);
 			return false;
+		}
+		
+		$q = $this->db->placehold("UPDATE __products SET ?% WHERE id = ?", $product, $pid);
+		if($this->db->query($q)){
+			return $pid;
+		}else{
+			return false;
+		}
 	}
 	
 	public function add_product($product){
@@ -553,27 +563,25 @@ class Products extends Simpla
 	}
 
 	
-	public function get_related_products($product_id = array())
-	{
-		if(empty($product_id))
-			return array();
-
-		$product_id_filter = $this->db->placehold('AND product_id in(?@)', (array)$product_id);
-				
-		$query = $this->db->placehold("SELECT product_id, related_id, position
-					FROM __related_products
-					WHERE 
-					1
-					$product_id_filter   
-					ORDER BY position       
-					");
+	public function get_related_products($pid)
+	{		
+		dtimer::log(__METHOD__ . " start $pid");
+		//проверка аргумента
+		if(!is_scalar($pid)){
+			dtimer::log(__METHOD__ . " pid is not a scalar value");
+		}
+		//$pid у нас только число
+		$pid = (int)$pid;
 		
-		$this->db->query($query);
-		$res = $this->db->results_array(null, 'related_id');
-		return $res;
+		$this->db->query("SELECT * FROM __related_products WHERE `product_id` = $pid");
+		if($res = $this->db->results_array()){
+			return $res;
+		}else {
+			return false;
+		}
 	}
 	
-	// Функция возвращает связанные товары
+	// Добавляет связанный товар
 	public function add_related_product($product_id, $related_id, $position=0)
 	{
 		$query = $this->db->placehold("INSERT IGNORE INTO __related_products SET product_id=?, related_id=?, position=?", $product_id, $related_id, $position);
@@ -602,6 +610,29 @@ class Products extends Simpla
 									FROM __images AS i WHERE 1 $product_id_filter $group_by ORDER BY i.product_id, i.position");
 		$this->db->query($query);
 		return $this->db->results_array();
+	}
+	
+	/**
+	 * Функция возвращает изображения 1 конкретного товара
+	 * @param	$pid
+	 * @retval	array
+	 */
+	function get_product_images($pid)
+	{		
+		dtimer::log(__METHOD__ . " start $pid");
+		//проверка аргумента
+		if(!is_scalar($pid)){
+			dtimer::log(__METHOD__ . " pid is not a scalar value");
+		}
+		//$pid у нас только число
+		$pid = (int)$pid;
+		
+		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid");
+		if($res = $this->db->results_array()){
+			return $res;
+		}else {
+			return false;
+		}
 	}
 	
 	/* Метод для добавления изображений
@@ -649,14 +680,27 @@ class Products extends Simpla
 	
 	public function delete_image($id)
 	{
-		$query = $this->db->placehold("SELECT filename FROM __images WHERE id=?", $id);
+		$query = $this->db->placehold("SELECT * FROM __images WHERE id=?", $id);
 		$this->db->query($query);
-		$filename = $this->db->result('filename');
+		if($res = $this->db->result_array()){
+			$pid = $res['product_id'];
+			$filename = $res['filename'];
+			$pos = $res['position'];
+		} else {
+			return false;
+		}
+		//удалим картинку из таблицы s_products 
+		if($pos == 0){
+			$this->db->query("UPDATE __products SET image = '' WHERE 1 AND id = $pid AND image = '$filename'");
+		}
+		
 		$query = $this->db->placehold("DELETE FROM __images WHERE id=? LIMIT 1", $id);
 		$this->db->query($query);
+		
+		
 		$query = $this->db->placehold("SELECT count(*) as count FROM __images WHERE filename=? LIMIT 1", $filename);
 		$this->db->query($query);
-		$count = $this->db->result('count');
+		$count = $this->db->result_array('count');
 		if($count == 0)
 		{			
 			$file = pathinfo($filename, PATHINFO_FILENAME);

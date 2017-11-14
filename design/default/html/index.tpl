@@ -36,7 +36,7 @@
 	<script type="text/javascript" src="js/ctrlnavigate.js"></script>           
 
 	{* функции для работы с api системы *}
-	<script type="text/javascript" src="js/main.js"></script>           
+	<script type="text/javascript" src="/js/main.js"></script>           
 	
 	{* Аяксовая корзина *}
 	<script src="design/{$settings->theme}/js/jquery-ui.min.js"></script>

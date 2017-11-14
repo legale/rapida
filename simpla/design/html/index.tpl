@@ -11,6 +11,11 @@
 <script src="design/js/jquery/jquery.js"></script>
 <script src="design/js/jquery/jquery.form.js"></script>
 <script src="design/js/jquery/jquery-ui.min.js"></script>
+
+	{* функции для работы с api системы *}
+	<script type="text/javascript" src="/js/main.js"></script>   
+
+
 <link rel="stylesheet" type="text/css" href="design/js/jquery/jquery-ui.css" media="screen" />
 
 <meta name="viewport" content="width=1024">
@@ -27,7 +32,7 @@
 		
 		
 	{if !empty(array_intersect_key( $userperm, array_flip(array('products','categories','brands','features')) ))}
-		<li><a href="?module=FeaturesAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
+		<li><a href="?module=ProductsAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
 	{/if}
 		
 	{if !empty(array_intersect_key( $userperm, array_flip(array('orders','labels')) ))}
@@ -104,40 +109,3 @@
 
 </body>
 </html>
-
-
-{literal}
-<script>
-$(function() {
-
-	if($.browser.opera)
-		$("#logout").hide();
-	
-	$("#logout").click( function(event) {
-		event.preventDefault();
-
-		if($.browser.msie)
-		{
-			try{document.execCommand("ClearAuthenticationCache");}
-			catch (exception){} 
-			window.location.href='/';
-		}
-		else
-		{
-			$.ajax({
-				url: $(this).attr('href'),
-				username: '',
-				password: '',
-				complete: function () {
-					window.location.href='/';
-				},
-				beforeSend : function(req) {
-					req.setRequestHeader('Authorization', 'Basic');
-				}
-			});
-		}
-	});
-{/literal}
-
-});
-</script>

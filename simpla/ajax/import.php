@@ -3,437 +3,404 @@
 require_once('../../api/Simpla.php');
 
 
-class ImportAjax extends Simpla
-{	
-	// Соответствие полей в базе и имён колонок в файле
-	private $columns_names = array(
-			'name'=>             array('product', 'name', 'товар', 'название', 'наименование'),
-			'url'=>              array('url', 'адрес'),
-			'visible'=>          array('visible', 'published', 'видим'),
-			'featured'=>         array('featured', 'hit', 'хит', 'рекомендуемый'),
-			'category'=>         array('category', 'категория'),
-			'brand'=>            array('brand', 'бренд'),
-			'variant'=>          array('variant', 'вариант'),
-			'price'=>            array('price', 'цена'),
-			'compare_price'=>    array('compare price', 'старая цена'),
-			'sku'=>              array('sku', 'артикул'),
-			'stock'=>            array('stock', 'склад', 'на складе'),
-			'meta_title'=>       array('meta title', 'заголовок страницы'),
-			'meta_keywords'=>    array('meta keywords', 'ключевые слова'),
-			'meta_description'=> array('meta description', 'описание страницы'),
-			'annotation'=>       array('annotation', 'аннотация', 'краткое описание'),
-			'description'=>      array('description', 'описание'),
-			'images'=>           array('images', 'изображения')
-			);
-	
-	// Соответствие имени колонки и поля в базе
-	private $internal_columns_names = array();
+class ImportAjax extends Simpla{
 
-	private $import_files_dir      = '../files/import/'; // Временная папка		
-	private $import_file           = 'import.csv';           // Временный файл
-	private $category_delimiter = ',';                       // Разделитель каегорий в файле
-	private $subcategory_delimiter = '/';                    // Разделитель подкаегорий в файле
-	private $column_delimiter      = ';';
-	private $products_count        = 150;
-	private $columns               = array();
+    // Соответствие полей в базе и имён колонок в файле
+    private $columns_names = array(
+            'name'=>             array('product', 'name', 'товар', 'название', 'наименование'),
+            'url'=>              array('url', 'адрес'),
+            'visible'=>          array('visible', 'published', 'видим'),
+            'featured'=>         array('featured', 'hit', 'хит', 'рекомендуемый'),
+            'category'=>         array('category', 'категория'),
+            'brand'=>            array('brand', 'бренд'),
+            'variant'=>          array('variant', 'вариант'),
+            'price'=>            array('price', 'цена'),
+            'compare_price'=>    array('compare price', 'старая цена'),
+            'sku'=>              array('sku', 'артикул'),
+            'stock'=>            array('stock', 'склад', 'на складе'),
+            'meta_title'=>       array('meta title', 'заголовок страницы'),
+            'meta_keywords'=>    array('meta keywords', 'ключевые слова'),
+            'meta_description'=> array('meta description', 'описание страницы'),
+            'annotation'=>       array('annotation', 'аннотация', 'краткое описание'),
+            'description'=>      array('description', 'описание'),
+            'images'=>           array('images', 'изображения')
+            );
+    
+    // Соответствие имени колонки и поля в базе
+    private $internal_columns_names = array();
 
-	public function import()
-	{
-		if(!$this->users->check_access('import')){
-			return false;
-		}
+    private $import_files_dir      = '../files/import/'; // Временная папка
+    private $import_file           = 'import.csv';           // Временный файл
+    private $category_delimiter = ',';                       // Разделитель каегорий в файле
+    private $subcategory_delimiter = '/';                    // Разделитель подкаегорий в файле
+    private $column_delimiter      = ';';
+    private $products_count        = 150;
+    private $columns               = array();
 
-		//сюда будем писать результат импорта
-		$result = array();
-		
-		//получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
-		$GLOBALS['features'] = $this->features->get_features_ids()[0];
-		
-		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
-		// должно значительное ускорить импорт
-		
-		//поставим выполнение запроса без кеша только для первой позиции импорта
-		$filter = array();
-		dtimer::log(__METHOD__ . " from: " . var_export($this->request->get('from'), true) );
-		if( !isset($_GET['from']) ){
-			$filter = array('force_no_cache' => true);
-		}
-		$array = $this->features->get_options_ids($filter)[2];
-		if(is_array($array)){
-			$GLOBALS['options_uniq'] = array_flip($array);
-		} else {
-			$GLOBALS['options_uniq'] = array();
-		}
+    public function import()
+    {
+        if (!$this->users->check_access('import')) {
+            return false;
+        }
 
-		
-		//~ print "<pre>";
-		//~ print_r($GLOBALS['options_uniq']);
-		//~ die;
+        //сюда будем писать результат импорта
+        $result = array();
+        
+        //получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
+        $GLOBALS['features'] = $this->features->get_features_ids()[0];
+        
+        // Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
+        // должно значительное ускорить импорт
+        
+        //поставим выполнение запроса без кеша только для первой позиции импорта
+        $filter = array();
+        dtimer::log(__METHOD__ . " from: " . var_export($this->request->get('from'), true) );
+        if (!isset($_GET['from'])) {
+            $filter = array('force_no_cache' => true);
+        }
+        $array = $this->features->get_options_ids($filter)[2];
+        if (is_array($array)) {
+            $GLOBALS['options_uniq'] = array_flip($array);
+        } else {
+            $GLOBALS['options_uniq'] = array();
+        }
 
-		// Определяем колонки из первой строки файла
-		$f = fopen($this->import_files_dir.$this->import_file, 'r');
-		$this->columns = fgetcsv($f, null, $this->column_delimiter);
+        
+        //~ print "<pre>";
+        //~ print_r($GLOBALS['options_uniq']);
+        //~ die;
 
-		// Заменяем имена колонок из файла на внутренние имена колонок
-		foreach($this->columns as &$column)
-		{ 
-			if($internal_name = $this->internal_column_name($column))
-			{
-				$this->internal_columns_names[$column] = $internal_name;
-				$column = $internal_name;
-			}
-		}
+        // Определяем колонки из первой строки файла
+        $f = fopen($this->import_files_dir.$this->import_file, 'r');
+        $this->columns = fgetcsv($f, null, $this->column_delimiter);
 
-		// Если нет названия товара - не будем импортировать
-		if(!in_array('name', $this->columns) && !in_array('sku', $this->columns))
-			return false;
-	 	
-		// Переходим на заданную позицию, если импортируем не сначала
-		if($from = $this->request->get('from')){
-			fseek($f, $from);
-		}
-		
-		// Массив импортированных товаров
-		$imported_items = array();	
-		
-		// Проходимся по строкам, пока не конец файла
-		// или пока не импортировано достаточно строк для одного запроса
-		for($k=0; !feof($f) && $k<$this->products_count; $k++)
-		{ 
-			// Читаем строку
-			$line = fgetcsv($f, 0, $this->column_delimiter);
+        // Заменяем имена колонок из файла на внутренние имена колонок
+        foreach ($this->columns as &$column) {
+            if ($internal_name = $this->internal_column_name($column)) {
+                $this->internal_columns_names[$column] = $internal_name;
+                $column = $internal_name;
+            }
+        }
 
-			$product = null;
+        // Если нет названия товара - не будем импортировать
+        if (!in_array('name', $this->columns) && !in_array('sku', $this->columns)) {
+            return false;
+        }
+        
+        // Переходим на заданную позицию, если импортируем не сначала
+        if ($from = $this->request->get('from')) {
+            fseek($f, $from);
+        }
+        
+        // Массив импортированных товаров
+        $imported_items = array();
+        
+        // Проходимся по строкам, пока не конец файла
+        // или пока не импортировано достаточно строк для одного запроса
+        for ($k=0; !feof($f) && $k<$this->products_count; $k++) {
+            // Читаем строку
+            $line = fgetcsv($f, 0, $this->column_delimiter);
 
-			if(is_array($line)){
-				// Проходимся по колонкам строки
-				foreach($this->columns as $i=>$col)
-				{
-					// Создаем массив item[название_колонки]=значение
-					if(isset($line[$i]) && !empty_(@$line) && !empty_(@$col))
-						$product[$col] = $line[$i];
-				}
-			}
-			
-			// Импортируем этот товар
-	 		if($imported_item = $this->import_item($product))
-				$imported_items[] = $imported_item;
-		}
-		// Запоминаем на каком месте закончили импорт
- 		$from = ftell($f);
- 		
- 		// И закончили ли полностью весь файл
- 		$result['end'] = feof($f);
+            $product = null;
 
-		fclose($f);
-		$size = filesize($this->import_files_dir.$this->import_file);
-		
-		// Создаем объект результата
-		$result['from'] = $from;          // На каком месте остановились
-		$result['totalsize'] = $size;     // Размер всего файла
-		$result['items'] = $imported_items;   // Импортированные товары
-		
-		return $result;
-	}
-	
-	// Импорт одного товара $item[column_name] = value;
-	private function import_item($item) {
-		
-		$imported_item = array();
-		
-		
-		
-		// Проверим не пустое ли название и артинкул (должно быть хоть что-то из них)
-		if(empty_(@$item['name']) && empty_(@$item['sku']))
-			return false;
+            if (is_array($line)) {
+                // Проходимся по колонкам строки
+                foreach ($this->columns as $i => $col) {
+                    // Создаем массив item[название_колонки]=значение и сразу обрезаем пробелы по краям
+                    if (isset($line[$i]) && !empty_(@$line) && !empty_(@$col)) {
+                        $product[$col] = trim($line[$i]);
+                    }
+                }
+            }
+            
+            // Импортируем этот товар
+            if ($imported_item = $this->import_item($product)) {
+                $imported_items[] = $imported_item;
+            }
+        }
+        // Запоминаем на каком месте закончили импорт
+        $from = ftell($f);
+        
+        // И закончили ли полностью весь файл
+        $result['end'] = feof($f);
 
-		// Подготовим товар для добавления в базу
-		$product = array();
-		
-		if(isset($item['name']))
-			$product['name'] = trim($item['name']);
+        fclose($f);
+        $size = filesize($this->import_files_dir.$this->import_file);
+        
+        // Создаем объект результата
+        $result['from'] = $from;          // На каком месте остановились
+        $result['totalsize'] = $size;     // Размер всего файла
+        $result['items'] = $imported_items;   // Импортированные товары
+        
+        return $result;
+    }
+    
+    // Импорт одного товара $item[column_name] = value;
+    private function import_item($item)
+    {
+        
+        $imported_item = array();
+        
+        
+        
+        // Проверим не пустое ли название и артинкул (должно быть хоть что-то из них)
+        if (empty_(@$item['name']) && empty_(@$item['sku'])) {
+            return false;
+        }
 
-		if(isset($item['meta_title']))
-			$product['meta_title'] = trim($item['meta_title']);
+        // Подготовим товар для добавления в базу
+        $product = array();
+        
+        if (isset($item['name'])) {
+            $product['name'] = $item['name'];
+        }
 
-		if(isset($item['meta_keywords']))
-			$product['meta_keywords'] = trim($item['meta_keywords']);
+        if (isset($item['meta_title'])) {
+            $product['meta_title'] = $item['meta_title'];
+        }
 
-		if(isset($item['meta_description']))
-			$product['meta_description'] = trim($item['meta_description']);
+        if (isset($item['meta_keywords'])) {
+            $product['meta_keywords'] = $item['meta_keywords'];
+        }
 
-		if(isset($item['annotation']))
-			$product['annotation'] = trim($item['annotation']);
+        if (isset($item['meta_description'])) {
+            $product['meta_description'] = $item['meta_description'];
+        }
 
-		if(isset($item['description']))
-			$product['body'] = trim($item['description']);
-	
-		if(isset($item['visible']))
-			$product['visible'] = intval($item['visible']);
+        if (isset($item['annotation'])) {
+            $product['annotation'] = $item['annotation'];
+        }
 
-		if(isset($item['featured']))
-			$product['featured'] = intval($item['featured']);
-	
-		if(!empty_(@$item['url']))
-			$product['url'] = trim($item['url']);
-		elseif(!empty_(@$item['name']))
-			$product['url'] = $this->translit($item['name']);
-	
-		// Если задан бренд
-		if(!empty_(@$item['brand']))
-		{
-			$item['brand'] = trim($item['brand']);
-			// Найдем его по имени
-			if( $brand = $this->brands->get_brand($item['brand']) ){
-				$product['brand_id'] = $brand['id'];
-			}else{
-				// Создадим, если не найден
-				if( ($product['brand_id'] = $this->brands->add_brand(array('name'=>$item['brand']))) === false ){
-					dtimer::log(__METHOD__. " failed on add_brand", 1);
-					return false;
-				}
-			}
-		}
+        if (isset($item['description'])) {
+            $product['body'] = $item['description'];
+        }
+    
+        if (isset($item['visible'])) {
+            $product['visible'] = intval($item['visible']);
+        }
 
-		
-		// Если задана категория
-		$category_id = null;
-		$categories_ids = array();
-		if(!empty_(@$item['category']))
-		{
-			foreach(explode($this->category_delimiter, $item['category']) as $c)
-				$categories_ids[] = $this->import_category($c);
-			$category_id = reset($categories_ids);
-		}
-	
-		// Подготовим вариант товара
-		$variant = array();
-		
-		if(isset($item['variant']))
-			$variant['name'] = trim($item['variant']);
-			
-		if(isset($item['price']))
-			$variant['price'] = str_replace(',', '.', str_replace(' ', '', trim($item['price'])));
-			
-		if(isset($item['compare_price']))
-			$variant['compare_price'] = trim($item['compare_price']);
-			
-		if(isset($item['stock']))
-			if($item['stock'] == '')
-				$variant['stock'] = null;
-			else
-				$variant['stock'] = trim($item['stock']);
-			
-		if(isset($item['sku']))
-			$variant['sku'] = trim($item['sku']);
-		
-		// Если задан артикул варианта, найдем этот вариант и соответствующий товар
-		if(!empty_(@$variant['sku'])) { 
-			$this->db->query('SELECT v.id as variant_id, v.product_id FROM __variants v, __products p WHERE v.sku=? AND v.product_id = p.id LIMIT 1', $variant['sku']);
-			$result = $this->db->result_array();
-			if($result){
-				// и обновим товар
-				if(!empty_(@$product))
-					$this->products->update_product($result['product_id'], $product);
-				// и вариант
-				if(!empty_(@$variant))
-					$this->variants->update_variant($result['variant_id'], $variant);
-				
-				$pid = $result['product_id'];
-				$varid = $result['variant_id'];
-				// Обновлен
-				$imported_item['status'] = 'updated';
-			}
-		}
-		
-		// Если на прошлом шаге товар не нашелся, и задано хотя бы название товара
-		if((empty_(@$pid) || empty_(@$varid)) && isset($item['name']))
-		{
-			if(!empty_(@$variant['sku']) && empty_(@$variant['name'])){
-				$this->db->query('SELECT v.id as variant_id, p.id as product_id FROM __products p 
-				LEFT JOIN __variants v ON v.product_id=p.id WHERE v.sku=? LIMIT 1', $variant['sku']);
-				} elseif(isset($item['variant'])) {
-				$this->db->query('SELECT v.id as variant_id, p.id as product_id FROM __products p 
-				LEFT JOIN __variants v ON v.product_id=p.id AND v.name=? 
-				WHERE p.name=? LIMIT 1', $item['variant'], $item['name']);
-			}else{
-				$this->db->query('SELECT v.id as variant_id, p.id as product_id FROM __products p 
-				LEFT JOIN __variants v ON v.product_id=p.id WHERE p.name=? LIMIT 1', $item['name']);
-			}
-			
-			$r =  $this->db->result_array();
-			if($r)
-			{
-				$pid = $r['product_id'];
-				$varid = $r['variant_id'];
-			}
-			// Если вариант найден - обновляем,
-			if(!empty_(@$varid))
-			{
-				$this->variants->update_variant($varid, $variant);
-				$this->products->update_product($pid, $product);				
-				$imported_item['status'] = 'updated';		
-			// Иначе - добавляем
-			}elseif(empty_(@$varid)) {
-				if(empty_(@$pid))
-					$pid = $this->products->add_product($product);
+        if (isset($item['featured'])) {
+            $product['featured'] = intval($item['featured']);
+        }
+    
+        if (!empty_(@$item['url'])) {
+            $product['url'] = $item['url'];
+        } elseif (!empty_(@$item['name'])) {
+            $product['url'] = translit_url($item['name']);
+        }
+    
+        // Если задан бренд
+        if (!empty_(@$item['brand'])) {
+            $item['brand'] = $item['brand'];
+            // Найдем его по имени
+            if ($brand = $this->brands->get_brand($item['brand'])) {
+                $product['brand_id'] = $brand['id'];
+            } else {
+                // Создадим, если не найден
+                if (($product['brand_id'] = $this->brands->add_brand(array('name'=>$item['brand']))) === false) {
+                    dtimer::log(__METHOD__. " failed on add_brand", 1);
+                    return false;
+                }
+            }
+        }
 
-                $this->db->query('SELECT max(v.position) as pos FROM __variants v WHERE v.product_id=? LIMIT 1', $pid);
-                $pos =  $this->db->result_array('pos');
+        
+        // Если задана категория
+        $category_id = null;
+        $categories_ids = array();
+        if (!empty_(@$item['category'])) {
+            foreach (explode($this->category_delimiter, $item['category']) as $c) {
+                $categories_ids[] = $this->import_category($c);
+            }
+            $category_id = reset($categories_ids);
+        }
+    
+        // Подготовим вариант товара
+        $variant = array();
+        
+        if (isset($item['variant'])) {
+            $variant['name'] = $item['variant'];
+        }
 
-				$variant['position'] = $pos+1;
-				$variant['product_id'] = $pid;
-				if ( $varid = $this->variants->add_variant($variant) ) {
-					$imported_item['status'] = 'added';
-				} else {
-					$imported_item['status'] = 'variant add failed';
-				}
-			}
-		}
-		
-		if(!empty_(@$varid) && !empty_(@$pid))
-		{
-			// Нужно вернуть обновленный товар
-			$imported_item['variant'] = $this->variants->get_variant(intval($varid));
-			$imported_item['product'] = $this->products->get_product(intval($pid));
-	
-			// Добавляем категории к товару
-			if(!empty_(@$categories_ids))
-				foreach($categories_ids as $c_id)
-					$this->categories->add_product_category($pid, $c_id);
-	
-	 		// Изображения товаров
-	 		if(isset($item['images']))
-	 		{
-	 			// Изображений может быть несколько, через запятую
-	 			$images = explode(',', $item['images']);
-	 			foreach($images as $image)
-	 			{
-	 				$image = trim($image);
-	 				if(!empty_(@$image))
-	 				{
-		 				// Имя файла
-						$image_filename = pathinfo($image, PATHINFO_BASENAME);
-		 				
-		 				// Добавляем изображение только если такого еще нет в этом товаре
-						$this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $pid, $image_filename, $image);
-						if(!$this->db->result_array('filename'))
-						{
-							$this->products->add_image($pid, $image);
-						}
-					}
-	 			}
-	 		}
-	 		// Характеристики товаров
-	 		$features = array(); //массив для записи пар id свойства и id значения свойства
-	 		foreach($item as $feature_name=>$feature_value)
-	 		{
-				//сразу обрежем пробелы по краям
-				$feature_value = trim($feature_value);
-				$feature_name = trim($feature_name);
-				
-	 			// Если нет такого названия колонки, значит это название свойства
-	 			if(!in_array($feature_name, $this->internal_columns_names))
-	 			{ 
-	 				// Свойство добавляем только если для товара указана категория и непустое значение свойства
-					if($category_id && $feature_value!=='')
-					{
-						//если у нас уже есть id свойства, просто берем это значение
-						if ( isset($GLOBALS['features'][$feature_name]) ){
-							$feature_id = $GLOBALS['features'][$feature_name];
-						} else {
-							//иначе добавляем свойство в базу и пишем в наш глобальный массив
-							$feature_id = $this->features->add_feature(array('name'=>$feature_name));
-							$GLOBALS['features'][$feature_name] = $feature_id;
-						}
-							
-						
-						//Если у нас уже есть id значения опции, 
-						//пользуемся быстрым методом features->update_options_direct(), но сразу по всем найденным опциям
-						if ( isset($GLOBALS['options_uniq'][$feature_value]) ){
-							$vid = $GLOBALS['options_uniq'][$feature_value];
-							$features[$feature_id] = $vid; 
-						} else {
-							//иначе пользуемся обычной функцией, а результат записываем в наш суперглобальный массив
-							if( false !== ( $vid = $this->features->update_option($pid, $feature_id, $feature_value)) ){
-								$GLOBALS['options_uniq'][$feature_value] =  $vid ;
-							}
-						}
-					}
-					
-	 			}
-	 		}
-	 		
-	 		//тут пишем разом все свойства, чьи id удалось найти
-	 		if( $this->features->update_options_direct(array('product_id' => $pid, 'features' => $features )) !== false ){
-				return $imported_item;
-			} else {
-				dtimer::log(__METHOD__ . "unable to add options", 1);
-				return false;
-			}
-	 	}
-	}
-	
-	
-	// Отдельная функция для импорта категории
-	private function import_category($category)
-	{			
-		// Поле "категория" может состоять из нескольких имен, разделенных subcategory_delimiter-ом
-		// Только неэкранированный subcategory_delimiter может разделять категории
-		$delimiter = $this->subcategory_delimiter;
-		$regex = "/\\DELIMITER((?:[^\\\\\DELIMITER]|\\\\.)*)/";
-		$regex = str_replace('DELIMITER', $delimiter, $regex);
-		$names = preg_split($regex, $category, 0, PREG_SPLIT_DELIM_CAPTURE);
-		$id = null;   
-		$parent = 0; 
-		
-		// Для каждой категории
-		foreach($names as $name)
-		{
-			// Заменяем \/ на /
-			$name = trim(str_replace("\\$delimiter", $delimiter, $name));
-			if(!empty_(@$name))
-			{
-				// Найдем категорию по имени
-				$this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
-				$id = $this->db->result_array('id');
-				
-				// Если не найдена - добавим ее
-				if(empty_(@$id))
-					$id = $this->categories->add_category(array('name'=>$name, 'parent_id'=>$parent, 'meta_title'=>$name,  'meta_keywords'=>$name,  'meta_description'=>$name, 'url'=>$this->translit($name)));
+        if (isset($item['price'])) {
+            $variant['price'] = str_replace(',', '.', str_replace(' ', '', $item['price']));
+        }
+        if (isset($item['compare_price'])) {
+            $variant['compare_price'] = $item['compare_price'];
+        }
+        if (isset($item['stock'])) {
+            if ($item['stock'] == '') {
+                $variant['stock'] = null;
+            } else {
+                $variant['stock'] = $item['stock'];
+            }
+        }
 
-				$parent = $id;
-			}	
-		}
-		return $id;
-	}
+        //если нет артикула, значит мы его сгенерируем из имени
+        if (isset($item['sku'])) {
+            $variant['sku'] = $item['sku'];
+        } else {
+            $variant['sku'] = md5($item['name']);
+        }
+        
+        // Если задан артикул варианта, найдем этот вариант и id товара
 
-	private function translit($text)
-	{
-		$ru = explode('-', "А-а-Б-б-В-в-Ґ-ґ-Г-г-Д-д-Е-е-Ё-ё-Є-є-Ж-ж-З-з-И-и-І-і-Ї-ї-Й-й-К-к-Л-л-М-м-Н-н-О-о-П-п-Р-р-С-с-Т-т-У-у-Ф-ф-Х-х-Ц-ц-Ч-ч-Ш-ш-Щ-щ-Ъ-ъ-Ы-ы-Ь-ь-Э-э-Ю-ю-Я-я"); 
-		$en = explode('-', "A-a-B-b-V-v-G-g-G-g-D-d-E-e-E-e-E-e-ZH-zh-Z-z-I-i-I-i-I-i-J-j-K-k-L-l-M-m-N-n-O-o-P-p-R-r-S-s-T-t-U-u-F-f-H-h-TS-ts-CH-ch-SH-sh-SCH-sch---Y-y---E-e-YU-yu-YA-ya");
+        $this->db->query('SELECT * FROM __variants WHERE sku = ?', $variant['sku']);
+        
+        if ($res = $this->db->result_array()) {
+            //запишем себе pid и varid
+            $pid = $res['product_id'];
+            $varid = $res['id'];
 
-	 	$res = str_replace($ru, $en, $text);
-		$res = preg_replace("/[\s]+/ui", '-', $res);
-		$res = preg_replace('/[^\p{L}\p{Nd}\d-]/ui', '', $res);
-	 	$res = strtolower($res);
-	    return $res;  
-	}
-	
-	// Фозвращает внутреннее название колонки по названию колонки в файле
-	private function internal_column_name($name)
-	{
- 		$name = trim($name);
- 		$name = str_replace('/', '', $name);
- 		$name = str_replace('\/', '', $name);
-		foreach($this->columns_names as $i=>$names)
-		{
-			foreach($names as $n)
-				if(!empty_(@$name) && preg_match("/^".preg_quote($name)."$/ui", $n))
-					return $i;
-		}
-		return false;
-	}
+            // и обновим товар
+            if (!empty_(@$product)) {
+                $product['id'] = $pid;
+                $this->products->update_product($product);
+            }
+            // и вариант
+            if (!empty_(@$variant)) {
+                $variant['id'] = $varid;
+                $this->variants->update_variant($variant);
+            }
+            
+
+            // Обновлен
+            $imported_item['status'] = 'updated';
+        } else {
+        //Если ничего не удалось найти, значит такого товара у нас нет
+            if (false !== ($pid = $this->products->add_product($product))) { //сначала добавим товар
+                $variant['product_id'] = $pid;
+                if (false !== ($varid = $this->variants->add_variant($variant))) {
+                    $imported_item['status'] = 'added';
+                } else {
+                    //вернем false
+                    return false;
+                }
+            }
+        }
+        
+        if (!empty_(@$varid) && !empty_(@$pid)) {
+            // Нужно вернуть обновленный товар
+            $imported_item['variant'] = $this->variants->get_variant(intval($varid));
+            $imported_item['product'] = $this->products->get_product(intval($pid));
+    
+            // Добавляем категории к товару
+            if (!empty_(@$categories_ids)) {
+                foreach ($categories_ids as $c_id) {
+                    $this->categories->add_product_category($pid, $c_id);
+                }
+            }
+    
+            // Изображения товаров
+            if (isset($item['images'])) {
+                // Изображений может быть несколько, через запятую
+                $images = explode(',', $item['images']);
+                foreach ($images as $image) {
+                    $image = $image;
+                    if (!empty_(@$image)) {
+                        // Имя файла
+                        $image_filename = pathinfo($image, PATHINFO_BASENAME);
+                        
+                        // Добавляем изображение только если такого еще нет в этом товаре
+                        $this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $pid, $image_filename, $image);
+                        if (!$this->db->result_array('filename')) {
+                            $this->products->add_image($pid, $image);
+                        }
+                    }
+                }
+            }
+            // Характеристики товаров
+            $features = array(); //массив для записи пар id свойства и id значения свойства
+            foreach ($item as $feature_name => $feature_value) {
+                // Если нет такого названия колонки, значит это название свойства
+                if (!in_array($feature_name, $this->internal_columns_names)) {
+                    // Свойство добавляем только если для товара указана категория и непустое значение свойства
+                    if ($category_id && $feature_value!=='') {
+                        //если у нас уже есть id свойства, просто берем это значение
+                        if (isset($GLOBALS['features'][$feature_name])) {
+                            $feature_id = $GLOBALS['features'][$feature_name];
+                        } else {
+                            //иначе добавляем свойство в базу и пишем в наш глобальный массив
+                            $feature_id = $this->features->add_feature(array('name'=>$feature_name));
+                            $GLOBALS['features'][$feature_name] = $feature_id;
+                        }
+                            
+                        
+                        //Если у нас уже есть id значения опции,
+                        //пользуемся быстрым методом features->update_options_direct(), но сразу по всем найденным опциям
+                        if (isset($GLOBALS['options_uniq'][$feature_value])) {
+                            $vid = $GLOBALS['options_uniq'][$feature_value];
+                            $features[$feature_id] = $vid;
+                        } else {
+                            //иначе пользуемся обычной функцией, а результат записываем в наш суперглобальный массив
+                            if (false !== ( $vid = $this->features->update_option($pid, $feature_id, $feature_value))) {
+                                $GLOBALS['options_uniq'][$feature_value] =  $vid ;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //тут пишем разом все свойства, чьи id удалось найти
+            if ($this->features->update_options_direct(array('product_id' => $pid, 'features' => $features )) !== false) {
+                return $imported_item;
+            } else {
+                dtimer::log(__METHOD__ . "unable to add options", 1);
+                return false;
+            }
+        }
+    }
+    
+    
+    // Отдельная функция для импорта категории
+    private function import_category($category)
+    {
+        // Поле "категория" может состоять из нескольких имен, разделенных subcategory_delimiter-ом
+        // Только неэкранированный subcategory_delimiter может разделять категории
+        $delimiter = $this->subcategory_delimiter;
+        $regex = "/\\DELIMITER((?:[^\\\\\DELIMITER]|\\\\.)*)/";
+        $regex = str_replace('DELIMITER', $delimiter, $regex);
+        $names = preg_split($regex, $category, 0, PREG_SPLIT_DELIM_CAPTURE);
+        $id = null;
+        $parent = 0;
+        
+        // Для каждой категории
+        foreach ($names as $name) {
+            // Заменяем \/ на /
+            $name = str_replace("\\$delimiter", $delimiter, $name);
+            if (!empty_(@$name)) {
+                // Найдем категорию по имени
+                $this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
+                $id = $this->db->result_array('id');
+                
+                // Если не найдена - добавим ее
+                if (empty_(@$id)) {
+                    $id = $this->categories->add_category(array('name'=>$name, 'parent_id'=>$parent, 'meta_title'=>$name,  'meta_keywords'=>$name,  'meta_description'=>$name, 'url'=>translit_url($name)));
+                }
+
+                $parent = $id;
+            }
+        }
+        return $id;
+    }
+
+
+    
+    // Фозвращает внутреннее название колонки по названию колонки в файле
+    private function internal_column_name($name)
+    {
+        $name = $name;
+        $name = str_replace('/', '', $name);
+        $name = str_replace('\/', '', $name);
+        foreach ($this->columns_names as $i => $names) {
+            foreach ($names as $n) {
+                if (!empty_(@$name) && preg_match("/^".preg_quote($name)."$/ui", $n)) {
+                    return $i;
+                }
+            }
+        }
+        return false;
+    }
 }
 
 $import_ajax = new ImportAjax();
@@ -442,8 +409,8 @@ $import_ajax = new ImportAjax();
 //~ header("Pragma: no-cache");
 //~ header("Expires: -1");	
 
-		
+        
 $json = json_encode($import_ajax->import());
-//~ dtimer::show();
+dtimer::show();
 
-print $json;
+// print $json;

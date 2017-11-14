@@ -36,17 +36,15 @@ class Money extends Simpla
 	{
 		$this->currencies = array();
 		// Выбираем из базы валюты
-		$query = "SELECT id, name, sign, code, rate_from, rate_to, cents, position, enabled FROM __currencies ORDER BY position";
-		$this->db->query($query);
+		$q = "SELECT * FROM __currencies ORDER BY position ASC";
+		$this->db->query($q);
 
-		$results = $this->db->results();
-
-		foreach ($results as $c)
-			{
-			$this->currencies[$c->id] = $c;
+		if($this->currencies = $this->db->results_array(null, 'id')){
+			$this->currency = reset($this->currencies);
+			return true;			
+		} else {
+			return false;
 		}
-
-		$this->currency = reset($this->currencies);
 
 	}
 
@@ -55,7 +53,7 @@ class Money extends Simpla
 	{
 		$currencies = array();
 		foreach ($this->currencies as $id => $currency)
-			if ( (isset($filter['enabled']) && $filter['enabled'] == 1 && $currency->enabled) || empty($filter['enabled']))
+			if ( (isset($filter['enabled']) && $filter['enabled'] == 1 && $currency['enabled']) || empty($filter['enabled']))
 			$currencies[$id] = $currency;
 
 		return $currencies;
@@ -70,7 +68,7 @@ class Money extends Simpla
 			{
 			foreach ($this->currencies as $currency)
 				{
-				if ($currency->code == $id)
+				if ($currency['code'] == $id)
 					return $currency;
 			}
 		}
@@ -156,10 +154,10 @@ class Money extends Simpla
 		if (!empty($currency))
 			{		
 			// Умножим на курс валюты
-			$result = $result * $currency->rate_from / $currency->rate_to;
+			$result = $result * $currency['rate_from'] / $currency['rate_to'];
 			
 			// Точность отображения, знаков после запятой
-			$precision = isset($currency->cents) ? $currency->cents : 2;
+			$precision = isset($currency['cents']) ? $currency['cents'] : 2;
 		}
 		
 		// Форматирование цены
