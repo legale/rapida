@@ -223,8 +223,8 @@ overflow-y: auto;
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 
 	<div id="name">
-		<input class="name" name=name type="text" value="{$product['name']|escape}"/> 
-		<input name=id type="hidden" value="{$product['id']|escape}"/> 
+		<input class="name" name="save[product][name]" type="text" value="{$product['name']|escape}"/> 
+		<input name="save[product][id]" type="hidden" value="{$product['id']|escape}"/> 
 		<div class="checkbox">
 			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $product['visible']}checked{/if}/> <label for="active_checkbox">Активен</label>
 		</div>
@@ -233,9 +233,9 @@ overflow-y: auto;
 		</div>
 	</div> 
 	
-	<div id="product_brand" {if !$brands}style='display:none;'{/if}>
+	<div id="product_brand" {if !isset($brands)}style='display:none;'{/if}>
 		<label>Бренд</label>
-		<select name="brand_id">
+		<select name="save[product][brand_id]">
 			<option value='0' {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
 			{foreach $brands as $brand}
 				<option value='{$brand['id']}' {if $product['brand_id'] == $brand['id']}selected{/if} brand_name='{$brand['name']|escape}'>{$brand['name']|escape}</option>
@@ -257,18 +257,22 @@ overflow-y: auto;
 			{if isset($cats)}
 				{foreach $product['cats'] as $pc name=categories}
 				<li>
-					<select name="categories[]">
+					<select name="save[cats][]">
 						{category_select categories=$cats selected_id=$pc['id']}
 					</select>
 				</li>
 				{/foreach}
 			{/if}
+			
+			<!-- Шаблон для новой категории -->
 				<li class="tpl" style="display:none;">
-					<select name="categories[]">
+					<select name="save[new_cats][]">
 						{category_select categories=$cats selected_id=$pc['id']}
 					</select>
 					<a class="icons delete"></a>
 				</li>
+			<!-- Шаблон для новой категории (The end) -->
+
 				<span class="add" id="add_category"><i class="dash_link">Дополнительная категория</i></span>
 			</ul>
 		</div>
@@ -288,21 +292,22 @@ overflow-y: auto;
 		<div id="variants">
 		<ul class="tpl" style='display:none;'>
 			<li class="variant_move"><div class="move_zone"></div></li>
-			<li class="variant_name"><input name="variants[id][]" type="hidden" value="" /><input name="variants[name][]" type="" value="" /><a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
-			<li class="variant_sku"><input name="variants[sku][]" type="" value="" /></li>
-			<li class="variant_price"><input  name="variants[price][]" type="" value="" /></li>
-			<li class="variant_discount"><input name="variants[compare_price][]" type="" value="" /></li>
-			<li class="variant_amount"><input name="variants[stock][]" type="" value="∞" />{$settings->units}</li>
+			<input name="save[new_variants][id][]" type="hidden" value="" />
+			<li class="variant_name"><input name="save[new_variants][name][]" type="" value="" /></li>
+			<li class="variant_sku"><input name="save[new_variants][sku][]" type="" value="" /></li>
+			<li class="variant_price"><input  name="save[new_variants][price][]" type="" value="" /></li>
+			<li class="variant_discount"><input name="save[new_variants][compare_price][]" type="" value="" /></li>
+			<li class="variant_amount"><input name="save[new_variants][stock][]" type="" value="∞" />{$settings->units}</li>
 			<a class="icons delete"></a>
 		</ul>
-		{foreach $product['variants'] as $variant}
+		{foreach $save['variants'] as $variant}
 		<ul>
 			<li class="variant_move"><div class="move_zone"></div></li>
-			<li class="variant_name">      <input name="variants[id][]"            type="hidden" value="{$variant['id']|escape}" /><input name="variants[name][]" type="" value="{$variant['name']|escape}" /> <a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
-			<li class="variant_sku">       <input name="variants[sku][]"           type="text"   value="{$variant['sku']|escape}" /></li>
-			<li class="variant_price">     <input name="variants[price][]"         type="text"   value="{$variant['price']|escape}" /></li>
-			<li class="variant_discount">  <input name="variants[compare_price][]" type="text"   value="{$variant['compare_price']|escape}" /></li>
-			<li class="variant_amount">    <input name="variants[stock][]"         type="text"   value="{if $variant['infinity'] || $variant['stock'] == ''}∞{else}{$variant['stock']|escape}{/if}" />{$settings->units}</li>
+			<li class="variant_name">      <input name="save[variants][id][]"            type="hidden" value="{$variant['id']|escape}" /><input name="save[variants][name][]" type="" value="{$variant['name']|escape}" /> <a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
+			<li class="variant_sku">       <input name="save[variants][sku][]"           type="text"   value="{$variant['sku']|escape}" /></li>
+			<li class="variant_price">     <input name="save[variants][price][]"         type="text"   value="{$variant['price']|escape}" /></li>
+			<li class="variant_discount">  <input name="save[variants][compare_price][]" type="text"   value="{$variant['compare_price']|escape}" /></li>
+			<li class="variant_amount">    <input name="save[variants][stock][]"         type="text"   value="{if $variant['infinity'] || $variant['stock'] == ''}∞{else}{$variant['stock']|escape}{/if}" />{$settings->units}</li>
 		</ul>
 		{/foreach}		
 		</div>
@@ -322,36 +327,24 @@ overflow-y: auto;
 			<ul class="list">
 				<li><label class=property>Адрес</label>
 					<div class="page_url"> /products/</div>
-					<input name="url" class="page_url" type="text" value="{$product['url']|escape}" />
+					<input name="save[product][url]" class="page_url" type="text" value="{$product['url']|escape}" />
 				</li>
 				<li><label class=property>Заголовок</label>
-					<input name="meta_title"  type="text" value="{$product['meta_title']|escape}" />
+					<input name="save[product][meta_title]"  type="text" value="{$product['meta_title']|escape}" />
 				</li>
 				<li>
 					<label class=property>Ключевые слова</label>
-					<input name="meta_keywords"  type="text" value="{$product['meta_keywords']|escape}" />
+					<input name="save[product][meta_keywords]"  type="text" value="{$product['meta_keywords']|escape}" />
 				</li>
 				<li>
 					<label class=property>Описание</label>
-					<textarea name="meta_description"  />{$product['meta_description']|escape}</textarea>
+					<textarea name="save[product][meta_description]"  />{$product['meta_description']|escape}</textarea>
 				</li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
 
-		
-		{*
-		<!-- Экспорт-->
-		<div class="block">
-			<h2>Экспорт товара</h2>
-			<ul>
-				<li><input id="exp_yad" type="checkbox" /> <label for="exp_yad">Яндекс Маркет</label> Бид <input  type="" name="" value="12" /> руб.</li>
-				<li><input id="exp_goog" type="checkbox" /> <label for="exp_goog">Google Base</label> </li>
-			</ul>
-		</div>
-		<!-- Экспорт (The End)-->
-		*}
-			
+
 	</div>
 	<!-- Левая колонка свойств товара (The End)--> 
 	
@@ -368,7 +361,7 @@ overflow-y: auto;
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
 					<img src="{$image['filename']|resize:100:100}" alt="" />
-					<input type="hidden" name='images[]' value="{$image['id']}">
+					<input type="hidden" name="save[product]['images'][]" value="{$image['id']}">
 				</li>{/foreach}
 			{/if}
 			</ul>
@@ -407,39 +400,41 @@ overflow-y: auto;
 						<div class="move_zone"></div>
 					</div>
 					<div class="image cell">
-					<input type=hidden name=related_products[] value='{$related_product->id}'>
-					<a href="{url id=$related_product->id}">
-					<img class=product_icon src='{$related_product->images[0]->filename|resize:35:35}'>
+					<input type="hidden" name="save[related][]" value="{$related_product['id']}">
+					<a href="{url id=$related_product['id']}">
+					<img class="product_icon" src="{$related_product['image']|resize:35:35}'>
 					</a>
 					</div>
 					<div class="name cell">
-					<a href="{url id=$related_product->id}">{$related_product->name}</a>
+					<a href="{url id=$related_product['id']}">{$related_product['name']}</a>
 					</div>
 					<div class="icons cell">
-					<a href='#' class="delete"></a>
+					<a class="delete"></a>
 					</div>
 					<div class="clear"></div>
 				</div>
 				{/foreach}
 				{/if}
+				
 				<div id="new_related_product" class="row" style='display:none;'>
 					<div class="move cell">
 						<div class="move_zone"></div>
 					</div>
 					<div class="image cell">
-					<input type=hidden name=related_products[] value=''>
+					<input type=hidden name="save[new_related][]" value=''>
 					<img class=product_icon src=''>
 					</div>
 					<div class="name cell">
 					<a class="related_product_name" href=""></a>
 					</div>
 					<div class="icons cell">
-					<a href='#' class="delete"></a>
+					<a class="delete"></a>
 					</div>
 					<div class="clear"></div>
 				</div>
+				
 			</div>
-			<input type=text name=related id='related_products' class="input_autocomplete" placeholder='Выберите товар чтобы добавить его'>
+			<input type="text" id="related_products" class="input_autocomplete" placeholder='Выберите товар чтобы добавить его'>
 		</div>
 
 		<input class="button_green button_save" type="submit" name="" value="Сохранить" />
@@ -452,22 +447,24 @@ overflow-y: auto;
 			<!-- Новые свойства -->
 			<ul class="tpl">
 				<li>
-					<label class="property inrow"><input type=text class="inrow" name=new_features_names[]></label>
-					<input class="inrow" type="text" name=new_features_values[] />
+					<label class="property inrow"><input type=text class="inrow" name="save[new_features][]"></label>
+					<input class="inrow" type="text" name="save[new_options][]" />
 				</li>
 			</ul>
+			<!-- Новые свойства (The end) -->
 			{if isset($product['options'])}
 			<ul class="prop_ul">
 				{foreach $product['options'] as $fid=>$o}
 				<li>
 					<label class="property inrow" fid="{$fid}" vid="{$o['vid']}">{$features[$fid]['name']}</label>
-					<input class="inrow" type="text" name=options[{$fid}] value="{$o['val']}"/>
+					<input class="inrow" type="text" name="save[features][{$fid}]" value="{$o['val']}"/>
 				</li>
 				{/foreach}
 			</ul>
 			{/if}
 
-			<input class="button_green button_save" type="submit" name="" value="Сохранить" />			
+			<div class="clear"></div>
+			<input class="button_green button_save" type="submit" name="" value="Сохранить" />
 			<span class="add"><i class="dash_link" id="add_new_feature">Добавить новое свойство</i></span>
 		</div>
 		
@@ -475,12 +472,12 @@ overflow-y: auto;
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Краткое описание</h2>
-		<textarea name="annotation" class="editor_small">{$product['annotation']|escape}</textarea>
+		<textarea name="save[product][annotation]" class="editor_small">{$product['annotation']|escape}</textarea>
 	</div>
 		
 	<div class="block">		
 		<h2>Полное  описание</h2>
-		<textarea name="body" class="editor_large">{$product['body']|escape}</textarea>
+		<textarea name="save[product][body]" class="editor_large">{$product['body']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

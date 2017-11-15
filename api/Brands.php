@@ -79,8 +79,9 @@ class Brands extends Simpla
 			$where_flag = true;
 		}
 		
-		$where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $category_id_filter)";
-		
+		if($where_flag === true){
+			$where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $category_id_filter)";
+		}
 		// Выбираем все бренды
 		$query = $this->db->placehold("SELECT b.id, b.name, b.url, b.meta_title,
 		 b.meta_keywords, b.meta_description, b.description, b.image

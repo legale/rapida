@@ -388,7 +388,7 @@ class Products extends Simpla
 	public function update_product($product)
 	{
 		//получим pid
-		if(isset($product['id'])){
+		if(isset($product['id']) && !empty_($product['id']) ){
 			$pid = $product['id'];
 			unset($product['id']);
 		}else{
@@ -398,7 +398,7 @@ class Products extends Simpla
 		
 		$q = $this->db->placehold("UPDATE __products SET ?% WHERE id = ?", $product, $pid);
 		if($this->db->query($q)){
-			return $pid;
+			return (int)$pid;
 		}else{
 			return false;
 		}
@@ -412,18 +412,25 @@ class Products extends Simpla
 		if( isset($product['id']) ){
 			unset($product['id']);
 		}
-		
-		foreach ($product as $k=>$e){
-			if( empty_($e) ){
-				unset($product[$k]);
-			}
+		//если имя не задано - выходим
+		if(!isset($product['name']) || empty_($product['name']) ){
+			dtimer::log(__METHOD__ . " product name is emtpy", 2);
+			return false;
 		}
-		$product = (array) $product;
+		
+		//если не указан бренд, поставим 0, что значит без бренда
+		if(!isset($product['brand_id']) || empty_($product['brand_id']) ){
+			$product['brand_id'] = 0;
+		}
+		
+		foreach ($product as &$e){
+			$e = trim($e);
+		}
+		unset($e);
 		
 		if(empty($product['url']))
 		{
-			$product['url'] = preg_replace("/[\s]+/ui", '-', $product['name']);
-			$product['url'] = strtolower(preg_replace("/[^0-9a-zа-я\-]+/ui", '', $product['url']));
+			$product['url'] = translit_url($product['name']);
 		}
 
 		// Если есть товар с таким URL, добавляем к нему число
@@ -434,12 +441,20 @@ class Products extends Simpla
 			else
 				$product['url'] = $product['url'].'_2';
 		}
-
+		
+		//узнаем позицию последнего товара
+		if( $this->db->query("SELECT MAX(position) as pos FROM __products") ){
+			$pos = $this->db->result_array('pos');
+			if(empty_($pos)){
+				$pos = 0;
+			}else{
+				$product['position'] = (int)$pos + 1;
+			}
+		}
+		
 		if($this->db->query("INSERT INTO __products SET ?%", $product))
 		{
-			$id = $this->db->insert_id();
-			$this->db->query("UPDATE __products SET position=id WHERE id=?", $id);		
-			return $id;
+			return (int)$this->db->insert_id();
 		}
 		else 
 		{

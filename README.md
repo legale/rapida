@@ -32,6 +32,9 @@ ALTER TABLE `s_users` CHANGE `last_login` `last_login` TIMESTAMP NULL DEFAULT NU
 ```
 ALTER TABLE `s_features` ADD UNIQUE(`name`);
 ```
+- Дополнительные проверки входных данных на методы products->add_product() products->update_product() для возможности упрощения контроллеров админки. 
+- Устранение ошибки в методе brands->get_brands().
+
 
 ## =================
 ## v0.0.8.1.2 11.11.2017

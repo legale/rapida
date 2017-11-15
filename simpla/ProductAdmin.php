@@ -70,27 +70,50 @@ class ProductAdmin extends Simpla
         $this->design->assign('cats', $cats);
         $this->design->assign('brands', $brands);
     }
+
+
+
     //3-4. сценарий. Сохранение товара
+    //Это самые сложные сценарии, они будут разложены на составляющие
     private function product_save()
     {
-        print "<pre>";
-        print_r($_POST);
-        print "</pre>";
-        //Сначала надо получить все аргументы из POST запроса
-        $product = $_POST['product'];
-        $product['variants'] = $_POST['product']['variants'];
-        $product['images'] = $_POST['product']['images'];
-        $product['options'] = $_POST['product']['options'];
-        $product['cats'] = $_POST['product']['cats'];
-        $product['related'] = $_POST['product']['related'];
+		//сначала получим данные для сохранения
+		$save = $this->get_data();
+		
+		
+		//сначала обновим или создадим сам товар
+		if(isset($save['product']['id']) && !empty_($save['product']['id']) ){
+			if(!$pid = $this->products->update_product($save['product'])){
+				$this->design->assign('message_error', 'update_product_failed');
+				return false;
+			}
+		} else {
+			if(!$pid = $this->products->add_product($save['product'])){
+				$this->design->assign('message_error', 'add_product_failed');
+				return false;
+			}
+		}
+		
+		//теперь получим сохраненный товар назад
+		$product = $this->products->get_product($pid);
+		
+		//теперь обновляем варианты, если они есть
+		if(isset($save['variants']) && is_array($save['variants'])){
+			foreach($save['variants'] as $v){
+				$this->variant->update_variant($v);
+			}
+		}
+		
+		//теперь обновляем варианты, если они есть
+		if(isset($save['variants']) && is_array($save['variants'])){
+			foreach($save['variants'] as $v){
+				$this->variant->update_variant($v);
+			}
+		}
+		
+		$product['variants'] = $this->variants->get_variants($pid);
 
-
-        $product['new_variants'] = $_POST['product']['new_variants'];
-        $product['new_images'] = $_POST['product']['images'];
-        $product['new_options'] = $_POST['product']['new_options'];
-        $product['new_cats'] = $_POST['product']['new_cats'];
-
-        //тут все очень просто, нам нужны только категории и бренды
+        //берем категории и бренды
         $cats = $this->categories->get_categories();
         $brands = $this->brands->get_brands();
 
@@ -99,4 +122,27 @@ class ProductAdmin extends Simpla
         $this->design->assign('cats', $cats);
         $this->design->assign('brands', $brands);
     }
+    
+    private function get_data(){
+		print "<pre>";
+        print_r($_POST);
+        print "</pre>";
+        
+        $save = array();
+        //Сначала надо получить все аргументы из POST запроса
+        //это уже по существующим
+        $save['product'] = @$_POST['save']['product'];
+        $save['variants'] = @$_POST['save']['variants'];
+        $save['images'] = @$_POST['save']['images'];
+        $save['options'] = @$_POST['save']['options'];
+        $save['cats'] = @$_POST['save']['cats'];
+        $save['related'] = @$_POST['save']['related'];
+
+		//это по вновь добавляемым 
+        $save['new_variants'] = @$_POST['save']['new_variants'];
+        $save['new_images'] = @$_POST['save']['new_images'];
+        $save['new_options'] = @$_POST['save']['new_options'];
+        $save['new_cats'] = @$_POST['save']['new_cats'];
+        return $save;
+	}
 }

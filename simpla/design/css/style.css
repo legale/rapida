@@ -714,7 +714,7 @@ div#sort_links a
 }
 #list #list{ border-bottom: none; }
 
-#list .clear{clear:both;}
+.clear {clear:both;}
 
 #list .row{
 	border-top: 1px solid #d0d0d0;
