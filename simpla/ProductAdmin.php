@@ -50,7 +50,7 @@ class ProductAdmin extends Simpla
         $brands = $this->brands->get_brands();
 
         //Теперь все это запилим в шаблон
-        $this->design->assign('message_success', 'ok');
+        $this->design->assign('message_success', ' ');
         $this->design->assign('product', $product);
         $this->design->assign('features', $features);
         $this->design->assign('cats', $cats);
@@ -83,6 +83,12 @@ class ProductAdmin extends Simpla
         $product['options'] = $_POST['product']['options'];
         $product['cats'] = $_POST['product']['cats'];
         $product['related'] = $_POST['product']['related'];
+
+
+        $product['new_variants'] = $_POST['product']['new_variants'];
+        $product['new_images'] = $_POST['product']['images'];
+        $product['new_options'] = $_POST['product']['new_options'];
+        $product['new_cats'] = $_POST['product']['new_cats'];
 
         //тут все очень просто, нам нужны только категории и бренды
         $cats = $this->categories->get_categories();

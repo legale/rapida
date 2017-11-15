@@ -1,7 +1,7 @@
 @import url("reset.css");
 @import url("main.css");
 
-/* Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÐºÑ€Ð°ÑÐ¸Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ */
+/* Стили для красивого переключателя */
 .switcher {
 	box-sizing: border-box;
 	width: 100%;
@@ -25,7 +25,7 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__input:checked + .switcher__label:before {
-    background-color: #459300; /* Ñ„Ð¾Ð½ */
+    background-color: #459300; /* фон */
 }
 
 .switcher__input:checked + .switcher__label:after {
@@ -37,7 +37,7 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__input:checked + .switcher__label:active:before {
-    background-color: #A3E06C; /* Ñ†Ð²ÐµÑ‚ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° */
+    background-color: #A3E06C; /* цвет перехода */
 }
 
 .switcher__label {
@@ -94,18 +94,18 @@ font: 1.2em Arial, sans-serif;
 }
 
 .switcher__label:active:before {
-    background-color: #A3E06C; /* Ñ†Ð²ÐµÑ‚ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° */
+    background-color: #A3E06C; /* цвет перехода */
 }
 
 .switcher__text {
     float:none;
 }
 
-/* Ð¡Ñ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ ÐºÑ€Ð°ÑÐ¸Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ (The end) */
+/* Стили для красивого переключателя (The end) */
 
 
 
-/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ */
+/* Сообщение */
 .message { 
 	clear: both;
 	height: 25px;
@@ -155,27 +155,27 @@ font: 1.2em Arial, sans-serif;
 	opacity:1;
 	filter:alpha(opacity=100);	
 }
-/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾Ðµ */
+/* Сообщение успешное */
 .message_success { background-color: #c5ff8d; border: 1px dotted #8cbf32; }
 .message_success span.text{	background-image: url(../images/tick.png); }
 .message_success a.link { color: #3f8000; }
 .message_success a.link:hover {	color: #5dbd00; }
 
-/* Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ¾Ð¹ */
+/* Сообщение с ошибкой */
 .message_error { background-color: #ffcaca; border: 1px dotted #ff4545; }
 .message_error span.text { background-image: url(../images/icon_message_error.png); }
 .message_error a.link { color: #ff0000; }
 .message_error a.link:hover { color: #ff4f4f; }
 
 
-/* Ð‘Ð»Ð¾Ðº Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
+/* Блок названия */
  #name {
 	display: table;
 	width: 100%;
 	margin-bottom: 20px;
 	/*height: 30px;*/
 }
-/* Ð˜Ð½Ð¿ÑƒÑ‚ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
+/* Инпут названия */
 input.name {
 	font-size: 26px;
 	display: table-cell;
@@ -183,7 +183,7 @@ input.name {
     *float: left;
     *width: 70%;
 }
-/* Ð‘Ð»Ð¾Ðº Ñ‡ÐµÐºÐ±Ð¾ÐºÑÐ¾Ð² Ð²Ð¾Ð·Ð»Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ */
+/* Блок чекбоксов возле названия */
 .checkbox{
 	display: table-cell;
 	white-space: nowrap;
@@ -197,40 +197,40 @@ input.name {
     *width: 12%;
     *float: left;
 }
-/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð»Ðµ Ñ‡ÐµÐºÐ±Ð¾ÐºÑÐ° */
+/* Надпись возле чекбокса */
  .checkbox label {
 	cursor: pointer;
 }
-/* Ð‘Ð»Ð¾Ðº Ñ Ð²Ñ‹Ð±Ð¾Ñ€Ð¾Ð¼ Ð±Ñ€ÐµÐ½Ð´Ð° */
+/* Блок с выбором бренда */
 #product_brand {
 	float: left;
 	width: 300px;
 	display: block;
 }
-/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð´Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ð±Ñ€ÐµÐ½Ð´Ð° */
+/* Надпись возде выбора бренда */
 #product_brand label {
 	float: left;
 	margin-top: 5px;
 }
-/* Ð¡ÐµÐ»ÐµÐºÑ‚ Ð±Ñ€ÐµÐ½Ð´Ð° */
+/* Селект бренда */
 #product_brand select{
 	width: 200px;
 	margin-left: 10px;
 	font-size: 18px;
 }
 
-/* Ð‘Ð»Ð¾Ðº ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¹ Ñ‚Ð¾Ð²Ð°Ñ€Ð° */
+/* Блок категорий товара */
 #product_categories {
 	float: left;
 	overflow: hidden;
 	margin-bottom: 20px;
 }
-/* ÐÐ°Ð´Ð¿Ð¸ÑÑŒ Ð²Ð¾Ð·Ð´Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð° ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
+/* Надпись возде выбора категории */
 #product_categories label {
 	float: left;
 	margin-top: 5px;
 }
-/* Ð¡ÐµÐ»ÐµÐºÑ‚ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
+/* Селект категории */
 #product_categories select {
 	width: 300px;
 	margin-right: 15px;
@@ -239,20 +239,20 @@ input.name {
 #product_categories ul li { margin-bottom: 5px; }
 #product_categories div {float: left;	margin-left: 10px; width: 540px; }
 #product_categories span i { font-style: normal; }
-/* Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
+/* Добавление категории */
 #product_categories span.add { 
 	background-repeat: no-repeat;
 	padding-left: 20px;
 	background-image: url(../images/plus-circle.png);
 }
-/* Ð£Ð´Ð°Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ */
+/* Удаление категории */
 #product_categories span.delete {
 	background-image: url(../images/cross-circle-frame.png);
 	background-repeat: no-repeat;
 	padding-left: 20px;
 }
 
-/* ÐšÑƒÐ¿Ð¾Ð½Ñ‹ */
+/* Купоны */
 .block li select.coupon_type {
 	width: 70px;
 	font-size: 18px;
@@ -262,7 +262,7 @@ input.name {
 	font-size: 18px;
 }
 
-/* Ð’Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ñ‹ Ñ‚Ð¾Ð²Ð°Ñ€Ð° */
+/* Варианты товара */
 #variants_block {
 	background-color: #f0f0f0;
 	border: 1px dotted #d0d0d0;
@@ -351,7 +351,7 @@ input.name {
 	height: 16px;
 }
 
-/* ÐžÐ´Ð¸Ð½Ð¾Ñ‡Ð½Ñ‹Ð¹ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ */
+/* Одиночный вариант */
 #variants_block.single_variant ul li.variant_name, 
 #variants_block.single_variant ul li.variant_move
 #variants_block.single_variant #add_variant
@@ -395,7 +395,7 @@ input.name {
 	background-position: top;	
 }
 
-/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² ÑÐ¿Ð¸ÑÐºÐ° Ð² 1 ÑÑ‚Ñ€Ð¾ÐºÑƒ*/
+/*стиль для элементов списка в 1 строку*/
 .inrow {
 width:50%;
 padding: 0 5px 0 5px;
@@ -406,16 +406,16 @@ width:30%;
 input.inrow {
 width:70%;
 }
-/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² ÑÐ¿Ð¸ÑÐºÐ° Ð² 1 ÑÑ‚Ñ€Ð¾ÐºÑƒ (The end) */
+/*стиль для элементов списка в 1 строку (The end) */
 
-/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ¿Ð¸ÑÐºÐ° Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼Ð¸ Ð½Ð° Ð²ÑÑŽ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ*/
+/*стиль для списка с элементами на всю ширину*/
 .block ul.list li {
 clear: both;
 }
-/*ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ ÑÐ¿Ð¸ÑÐºÐ° Ñ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°Ð¼Ð¸ Ð½Ð° Ð²ÑÑŽ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ (The end) */
+/*стиль для списка с элементами на всю ширину (The end) */
 
 
-/* ÑÑ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ Ð´Ñ€Ð¾Ð¿Ð·Ð¾Ð½Ñ‹*/
+/* стили для дропзоны*/
 #holder { border: 10px dashed #ccc; width: 300px; min-height: 50px; margin: 20px auto;}
 .holder__text 
 {
@@ -433,7 +433,7 @@ progress:after { content: '%'; }
 .fail { background: #c00; padding: 2px; color: #fff; }
 .hidden { display: none !important;}
 
-/*ÑÑ‚Ð¸Ð»Ð¸ Ð´Ð»Ñ Ð´Ñ€Ð¾Ð¿Ð·Ð¾Ð½Ñ‹ (The end) */
+/*стили для дропзоны (The end) */
 
 
 
@@ -559,7 +559,7 @@ div.images #add_image {
 }
 /* @end */
 
-/* ÐœÐµÐ½ÑŽ */
+/* Меню */
 #right_menu {
 	width: 180px;
 	display: block;
@@ -577,11 +577,8 @@ div.images #add_image {
 }
 #right_menu li {
 	font-size: 12px;
+	margin-bottom: 7px;
 }
-#right_menu li.selected {
-	margin-bottom:7px; 
-}
-
 #right_menu li a {
 	padding: 0px 0px 0px 0px;
 	color: #000000; 
@@ -593,7 +590,6 @@ div.images #add_image {
 	background-color: #18a5ff;
 	color: #ffffff;
 	text-decoration: none;
-	margin-bottom: 25px;
 }
 #right_menu .drop_active a{
 	color: green;
@@ -603,10 +599,10 @@ div.images #add_image {
 	color: white;
 	background-color: #4eee00; 
 }
-/* @end Ð¼ÐµÐ½ÑŽ */
+/* @end меню */
 
 
-/* @group Ð¤Ð¾Ñ€Ð¼Ð° Ð¿Ð¾Ð¸ÑÐºÐ° */
+/* @group Форма поиска */
 #search {
 	float: right;	
 	width: 175px;
@@ -633,7 +629,7 @@ div.images #add_image {
 /* @end */
  
  
-/* @group ÐŸÐ¾ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ‡Ð½Ð°Ñ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ñ */
+/* @group Постраничная навигация */
 #pagination {
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -678,7 +674,7 @@ div.images #add_image {
 /* @end */
 
 
-/* @group Ð¡Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ - Ñ€Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ñ‹ */
+/* @group Свернуть - развернуть варианты */
 div#expand
 {
 	margin-bottom: 10px;
@@ -692,7 +688,7 @@ div#expand a
 }
 /* @end */
 
-/* @group Ð¡ÑÑ‹Ð»ÐºÐ¸ Ð´Ð»Ñ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸ */
+/* @group Ссылки для сортировки */
 div#sort_links
 {
 	margin-bottom: 10px;
@@ -705,7 +701,7 @@ div#sort_links a
 }
 /* @end */
 
-/* @group Ð¡Ð¿Ð¸ÑÐ¾Ðº */
+/* @group Список */
 #main_list.brands{ width:600px; }
 #main_list.categories{ width:600px; }
 #main_list.features{ width:600px; }
@@ -988,7 +984,18 @@ span.order_label
 .icons  a.enable				{ background-image: url(../images/lightbulb.png); }
 .invisible .icons a.enable		{ background-image: url(../images/lightbulb_off.png); }
 .icons a.preview				{ background-image: url(../images/monitor.png); }
-.icons a.delete 				{ background-image: url(../images/delete.png); }
+a.delete 				{ background-image: url(../images/delete.png); }
+a.icons
+{
+	padding: 8px;
+	margin: 2px;
+    *display: inline;
+    zoom:1;
+	background-position: center center;
+	background-repeat: no-repeat;
+	
+}
+
 .icons a.print					{ background-image: url(../images/printer_small.png); }
 .icons a.featured 				{ background-image: url(../images/star_gray.png); }
 .icons a.in_filter				{ background-image: url(../images/filter_gray.png); }
@@ -1042,7 +1049,7 @@ span.order_label
 	text-align: right;
 }
 
-/* Ð¥ÑÐ»Ð¿ÐµÑ€ Ð´Ð»Ñ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÐ¾Ñ€Ñ‚Ð° */
+/* Хэлпер для мультисорта */
 
 .sort-multi-helper{
 	border-top: 1px solid #D0D0D0
@@ -1056,7 +1063,7 @@ span.order_label
 }
 
 
-/* @group ÐšÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸ */
+/* @group Комментарии */
 #list .row.unapproved {
 	background-color: #fffde5;
 }
@@ -1127,7 +1134,7 @@ textarea.editor_small{
 /* @end */
 
 
-/* Ð’Ð°Ð»ÑŽÑ‚Ñ‹ */
+/* Валюты */
 #currencies_block {
 	background-color: #f0f0f0;
 	border: 1px dotted #d0d0d0;
@@ -1220,7 +1227,7 @@ span.alert {
 }
 
 
-/* Ð—Ð°ÐºÐ°Ð·Ñ‹ */
+/* Заказы */
 #list .note{
 	width: 100%;
 	clear: both;
@@ -1377,7 +1384,7 @@ form#order div.view_user{margin-bottom: 15px; font-size: 14px;}
 form#order div.edit_user{margin-bottom: 15px;}
 
 
-/* Ð˜Ð¼Ð¿Ð¾Ñ€Ñ‚ */
+/* Импорт */
 input.import_file {
 	width: 600px;
 	font-size: 18px;
@@ -1436,7 +1443,7 @@ ul#import_result li .status
 ul#import_result li .added { background-image: url(../images/accept.png); }
 ul#import_result li .updated { background-image: url(../images/update.png); }
 
-/* Ð¢ÐµÐ¼Ñ‹ */
+/* Темы */
 ul.themes
 {
 	width: 100%;

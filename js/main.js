@@ -111,7 +111,11 @@ function search_tree(type, name, e){
 	let t = false;
 	switch(type){
 		case 'class':
+		//~ console.log(e.classList);
 		if(e.classList.contains(name) === true){
+			t = true;
+		}else if (e.getElementsByClassName(name).length !== 0 ){
+			e = e.getElementsByClassName(name)[0];
 			t = true;
 		}
 		break;
@@ -122,16 +126,29 @@ function search_tree(type, name, e){
 			}
 		break;
 		
+		case 'tag':
+			if(e.tagName === name.toUpperCase() ){
+				t = true;
+			}
+		break;
+		
 		default:
 		console.log(type + " is unknown");
 		return false;
 	}
 	
 	if(t === true){
-		return e;
+		return new Promise(function(resolve, reject) {
+			resolve(e);
+			reject('error');
+		});
 	}
 		
-	return search_tree(type, name, e.parentNode);
+	return new Promise(function(resolve, reject) {
+			resolve(search_tree(type, name, e.parentNode));
+			reject('error');
+	});
+	
 	
 
 }

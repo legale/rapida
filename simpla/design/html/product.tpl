@@ -27,26 +27,31 @@ function ready(){
 	"use strict";
 	// ссылка на добавление
 	function add_link(e) {
-	"use strict";
-		let t = document.getElementById('category_tpl');
-		let n = t.cloneNode(true);
-		t.parentNode.insertBefore(n,t);
-		n.removeAttribute('id');
-		n.setAttribute('style','');
+		"use strict";
+		search_tree('class', 'tpl', e.target).then(function(t){
+			let n = t.cloneNode(true);
+			t.parentNode.insertBefore(n,t);
+			n.removeAttribute('id');
+			n.setAttribute('style','');
+			search_tree('class', 'delete', n).then(function(l){
+				live('click', l, delete_link);
+			});
+		});
 	}
 	// ссылка на удаление
+	function delete_block(e) {
+		"use strict";
+		e.target.remove();
+	}
+	
 	function delete_link(e) {
-	"use strict";
-		let t = document.getElementById('category_tpl');
-		let n = t.cloneNode(true);
-		t.parentNode.insertBefore(n,t);
-		n.removeAttribute('id');
-		n.setAttribute('style','');
+		"use strict";
+		search_tree('class', 'tpl', e.target).then(function(v){v.remove()});
 	}
 	
 	//включаем обработчик на все такие ссылки
-	live('click', document.getElementsByClass('add'), add_link);
-	live('click', document.getElementByClass('delete'), delete_link);
+	live('click', document.getElementsByClassName('add'), add_link);
+	live('click', document.getElementsByClassName('delete'), delete_link);
 
 
 
@@ -239,7 +244,7 @@ overflow-y: auto;
 	</div>
 	
 	
-	<div id="product_categories" {if !$cats}style='display:none;'{/if}>
+	<div id="product_categories">
 		<label>Категория</label>
 		<div>
 			<ul>
@@ -249,7 +254,7 @@ overflow-y: auto;
 					{category_select categories=$cat['subcategories'] selected_id=$selected_id  level=$level+1}
 			{/foreach}
 			{/function}
-			{if isset($product['cats'])}
+			{if isset($cats)}
 				{foreach $product['cats'] as $pc name=categories}
 				<li>
 					<select name="categories[]">
@@ -258,14 +263,13 @@ overflow-y: auto;
 				</li>
 				{/foreach}
 			{/if}
-				<li id="category_tpl" class="icons">
+				<li class="tpl" style="display:none;">
 					<select name="categories[]">
 						{category_select categories=$cats selected_id=$pc['id']}
 					</select>
-					<a class="delete"></a>
+					<a class="icons delete"></a>
 				</li>
 				<span class="add" id="add_category"><i class="dash_link">Дополнительная категория</i></span>
-				<span {if !isset($product['cats'])}style='display:none;'{/if} class="delete"><i class="dash_link">Удалить</i></span>
 			</ul>
 		</div>
 	</div>
@@ -282,6 +286,15 @@ overflow-y: auto;
 			<li class="variant_amount">Кол-во</li>
 		</ul>
 		<div id="variants">
+		<ul class="tpl" style='display:none;'>
+			<li class="variant_move"><div class="move_zone"></div></li>
+			<li class="variant_name"><input name="variants[id][]" type="hidden" value="" /><input name="variants[name][]" type="" value="" /><a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
+			<li class="variant_sku"><input name="variants[sku][]" type="" value="" /></li>
+			<li class="variant_price"><input  name="variants[price][]" type="" value="" /></li>
+			<li class="variant_discount"><input name="variants[compare_price][]" type="" value="" /></li>
+			<li class="variant_amount"><input name="variants[stock][]" type="" value="∞" />{$settings->units}</li>
+			<a class="icons delete"></a>
+		</ul>
 		{foreach $product['variants'] as $variant}
 		<ul>
 			<li class="variant_move"><div class="move_zone"></div></li>
@@ -293,21 +306,7 @@ overflow-y: auto;
 		</ul>
 		{/foreach}		
 		</div>
-		<ul id=new_variant style='display:none;'>
-			<li class="variant_move"><div class="move_zone"></div></li>
-			<li class="variant_name"><input name="variants[id][]" type="hidden" value="" /><input name="variants[name][]" type="" value="" /><a class="del_variant" href=""><img src="design/images/cross-circle-frame.png" alt="" /></a></li>
-			<li class="variant_sku"><input name="variants[sku][]" type="" value="" /></li>
-			<li class="variant_price"><input  name="variants[price][]" type="" value="" /></li>
-			<li class="variant_discount"><input name="variants[compare_price][]" type="" value="" /></li>
-			<li class="variant_amount"><input name="variants[stock][]" type="" value="∞" />{$settings->units}</li>
-			<li class="variant_download">
-				<a href='#' class=add_attachment><img src="design/images/cd_add.png" alt="" /></a>
-				<div class=browse_attachment style='display:none;'>
-					<input type=file name=attachment[]>
-					<input type=hidden name=delete_attachment[]>
-				</div>
-			</li>
-		</ul>
+
 
 		<input class="button_green button_save" type="submit" name="" value="Сохранить" />
 		<span class="add" id="add_variant"><i class="dash_link">Добавить вариант</i></span>
@@ -450,7 +449,14 @@ overflow-y: auto;
 			<!-- Свойства товара -->
 		<div class="block layer">
 			<h2>Свойства товара</h2>
-				{if isset($product['options'])}
+			<!-- Новые свойства -->
+			<ul class="tpl">
+				<li>
+					<label class="property inrow"><input type=text class="inrow" name=new_features_names[]></label>
+					<input class="inrow" type="text" name=new_features_values[] />
+				</li>
+			</ul>
+			{if isset($product['options'])}
 			<ul class="prop_ul">
 				{foreach $product['options'] as $fid=>$o}
 				<li>
@@ -460,15 +466,9 @@ overflow-y: auto;
 				{/foreach}
 			</ul>
 			{/if}
-			<!-- Новые свойства -->
-			<ul class=new_features>
-				<li id=new_feature>
-					<label class="property inrow"><input type=text class="inrow" name=new_features_names[]></label>
-					<input class="inrow" type="text" name=new_features_values[] />
-				</li>
-			</ul>
-			<span class="add"><i class="dash_link" id="add_new_feature">Добавить новое свойство</i></span>
+
 			<input class="button_green button_save" type="submit" name="" value="Сохранить" />			
+			<span class="add"><i class="dash_link" id="add_new_feature">Добавить новое свойство</i></span>
 		</div>
 		
 		<!-- Свойства товара (The End)-->
