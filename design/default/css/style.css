@@ -378,7 +378,7 @@ e[type="button"] {
 	padding-bottom: 6px;
 	vertical-align: middle;
 }
-.product .compare_price {
+.product .old_price {
 	font-size: 14px;
 	text-decoration: line-through;
 	white-space: nowrap;

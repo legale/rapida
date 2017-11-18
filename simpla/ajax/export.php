@@ -19,7 +19,7 @@ class ExportAjax extends Simpla
 			'featured'=>         'Рекомендуемый',
 			'brand'=>            'Бренд',
 			'variant'=>          'Вариант',
-			'compare_price'=>    'Старая цена',
+			'old_price'=>    'Старая цена',
 			'sku'=>              'Артикул',
 			'stock'=>            'Склад',
 			'meta_title'=>       'Заголовок страницы',
@@ -165,7 +165,7 @@ class ExportAjax extends Simpla
 	 			$v                    = array();
 	 			$v['variant']         = $variant['name'];
 	 			$v['price']           = $variant['price'];
-	 			$v['compare_price']   = $variant['compare_price'];
+	 			$v['old_price']   = $variant['old_price'];
 	 			$v['sku']             = $variant['sku'];
 	 			$v['stock']           = $variant['stock'];
 	 			if($variant['infinity']){

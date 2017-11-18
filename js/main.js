@@ -43,13 +43,19 @@ function postAjax(url, data, success) {
  * 2 аргумента:
  * data - объект с параметрами
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
- * пример: apiAjax( 
- * {'class': 'products', 'method': 'get_products', 'args': 
- * 		{'id': [1,2,3,4,5] }
- * } , function(e){
- * console.log(JSON.parse(e))
- * });
- */ 
+ * пример: 
+ * 
+apiAjax( 
+{'class': 'products', 'method': 'get_products_ids', 'args': 
+	{filter:
+			{
+	'id': [1,2,3,4] 
+			}
+	}
+} , function(e){
+  console.log(JSON.parse(e))
+  });
+*/ 
 function apiAjax( data, success) {
 	let l = window.location;
 	let params = 'json=' + JSON.stringify(data);
@@ -90,10 +96,7 @@ function live(eventType, elements, event) {
 				live(eventType, elements[k], event);
 			}
 			break;
-		//это HTML элемент, на него и будем вешать обработчик
-		case 'HTMLFormElement':
-		case 'HTMLAnchorElement':
-		case 'HTMLTableCellElement':
+		//если это не коллекция или лист, значит элемент, на него и будем вешать обработчик
 		default:
 			elements.addEventListener(eventType, event);
 			break;
@@ -106,47 +109,43 @@ function search_tree(type, name, e){
 	if(e === undefined || e === null || e.classList === undefined){
 		console.log('element is empty');
 		return false;
+	} else {
+		console.log(e);
 	}
+
 	
 	let t = false;
 	switch(type){
 		case 'class':
-		//~ console.log(e.classList);
-		if(e.classList.contains(name) === true){
-			t = true;
-		}else if (e.getElementsByClassName(name).length !== 0 ){
-			e = e.getElementsByClassName(name)[0];
-			t = true;
-		}
-		break;
-		
-		case 'attribute':
-			if(e.getAttribute(name) !== undefined){
+			if(e.classList.contains(name) === true){
 				t = true;
 			}
-		break;
+			break;
+		
+		case 'attribute':
+			if(e.getAttribute(name) !== null){
+				t = true;
+			}
+			break;
 		
 		case 'tag':
 			if(e.tagName === name.toUpperCase() ){
 				t = true;
 			}
-		break;
+			break;
 		
 		default:
-		console.log(type + " is unknown");
-		return false;
+			console.log(type + " is unknown");
+			return false;
 	}
 	
 	if(t === true){
-		return new Promise(function(resolve, reject) {
-			resolve(e);
-			reject('error');
-		});
+		return e;
 	}
 		
 	return new Promise(function(resolve, reject) {
 			resolve(search_tree(type, name, e.parentNode));
-			reject('error');
+			reject();
 	});
 	
 	

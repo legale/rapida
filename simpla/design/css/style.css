@@ -161,6 +161,12 @@ font: 1.2em Arial, sans-serif;
 .message_success a.link { color: #3f8000; }
 .message_success a.link:hover {	color: #5dbd00; }
 
+/* Сообщение с предупреждением */
+.message_warning { background-color: #FDFF8A; border: 1px dotted #ff4545; }
+.message_warning span.text { background-image: url(../images/icon_message_error.png); }
+.message_warning a.link { color: #ff0000; }
+.message_warning a.link:hover { color: #ff4f4f; }
+
 /* Сообщение с ошибкой */
 .message_error { background-color: #ffcaca; border: 1px dotted #ff4545; }
 .message_error span.text { background-image: url(../images/icon_message_error.png); }
@@ -268,10 +274,11 @@ input.name {
 	border: 1px dotted #d0d0d0;
 	clear: both;
 	overflow: hidden;
-	padding-top: 15px;
-	padding-bottom: 15px;
+	/* padding-top: 15px; */
+	/* padding-bottom: 15px; */
 	margin-bottom: 20px;
 	width: 100%;
+	padding: 0;
 }
 #variants_block ul  {
 	overflow: hidden;
@@ -287,8 +294,6 @@ input.name {
 }
 #variants_block ul#header li {
 	font-size: 13px;
-	padding-left: 3px;
-	margin-left: -2px;
 }
 #variants_block ul li {
 	float: left;
@@ -301,29 +306,26 @@ input.name {
 #variants_block ul li input {
 	height: 20px;
 	font-size: 14px;
-	color: #636363;
-	margin-top: 0px;
-	padding-top: 2px;
-	margin-left: 2px;
+	width: 100%;
 }
 #variants_block li.variant_move {	width: 20px; height:16px; padding-top: 5px;}
-#variants_block li.variant_name { width: 270px;	padding-left: 5px; }
+#variants_block li.variant_name {width: 230px;}
 #variants_block li.variant_name input {
 	font-size: 16px;
 	color: #000;
-	width: 220px;
+	width: 100%;
 	float: left;
-	margin-right: 2px;
+	/* margin-right: 0; */
+	box-sizing: border-box;
 }
 #variants_block li.variant_name a.del_variant {
 	display: block;
 	padding-top: 6px;
 }
-#variants_block li.variant_sku { width: 120px; }
-#variants_block li.variant_sku input { width: 95px; }
-#variants_block li.variant_price { width: 120px; }
+#variants_block li {padding-left:5px}
+#variants_block li.variant_sku {width: 100px;}
+#variants_block li.variant_price {width: 95px;}
 #variants_block li.variant_price input {
-	width: 95px;
 	font-size: 15px;
 	font-weight: bold;
 	color: #000;
@@ -361,7 +363,7 @@ input.name {
 
 .button_save {
 	float: right;
-	margin-top: 20px;
+	margin: 20px;
 }
 
 .button_delete {
@@ -507,8 +509,6 @@ progress:after { content: '%'; }
 	display: block;
 	width: 15px;
 	height: 15px;
-	margin-top: -40px;
-	margin-left: 82px;
 	position:absolute;
 	visibility: hidden;
 }
@@ -871,7 +871,7 @@ div#sort_links a
 	text-align: right;
 	margin-right: 3px;
 }
-#list .variants ul .compare_price {
+#list .variants ul .old_price {
 	color: #dd0063;
 }
 #list .variants ul .stock {

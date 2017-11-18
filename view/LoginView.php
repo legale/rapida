@@ -79,6 +79,7 @@ class LoginView extends View
 			if($user_id = $this->users->check_password($email, $password))
 			{
 				$user = $this->users->get_user($email);
+				$this->design->assign('user', $user);
 				if($user['enabled'])
 				{
 					//Если запись администратора - запишем это в сессию

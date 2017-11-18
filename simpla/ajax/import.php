@@ -15,7 +15,7 @@ class ImportAjax extends Simpla{
             'brand'=>            array('brand', 'бренд'),
             'variant'=>          array('variant', 'вариант'),
             'price'=>            array('price', 'цена'),
-            'compare_price'=>    array('compare price', 'старая цена'),
+            'old_price'=>    array('compare price', 'старая цена'),
             'sku'=>              array('sku', 'артикул'),
             'stock'=>            array('stock', 'склад', 'на складе'),
             'meta_title'=>       array('meta title', 'заголовок страницы'),
@@ -225,8 +225,8 @@ class ImportAjax extends Simpla{
         if (isset($item['price'])) {
             $variant['price'] = str_replace(',', '.', str_replace(' ', '', $item['price']));
         }
-        if (isset($item['compare_price'])) {
-            $variant['compare_price'] = $item['compare_price'];
+        if (isset($item['old_price'])) {
+            $variant['old_price'] = $item['old_price'];
         }
         if (isset($item['stock'])) {
             if ($item['stock'] == '') {

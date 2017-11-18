@@ -15,6 +15,11 @@
 	{* функции для работы с api системы *}
 	<script type="text/javascript" src="/js/main.js"></script>   
 
+	{* Тут библиотека для autocomplete *}
+	<script type="text/javascript" src="/js/auto-complete/auto-complete.js"></script>   
+	<link href="/js/auto-complete/auto-complete.css" rel="stylesheet" type="text/css" />
+
+
 
 <link rel="stylesheet" type="text/css" href="design/js/jquery/jquery-ui.css" media="screen" />
 

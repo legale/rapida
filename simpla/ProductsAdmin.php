@@ -242,7 +242,6 @@ class ProductsAdmin extends Simpla
 			foreach($products as &$product)
 			{
 				$product['variants'] = array();
-				$product['images'] = array();
 				$product['properties'] = array();
 			}
 		
@@ -253,11 +252,6 @@ class ProductsAdmin extends Simpla
 				}
 			}
 			
-			if ( $images = $this->products->get_images(array('product_id'=>$products_ids)) ) {
-				foreach($images as $image) {
-					$products[$image['product_id']]['images'][$image['id']] = $image;
-				}
-			}
 		}
 	 
 		$this->design->assign('products', $products);

@@ -29,7 +29,6 @@ class Features extends Simpla
 		// Выбираем свойства
 		$q = $this->db->placehold("SELECT id, name, trans FROM __features");
 		if(!$this->db->query($q)){
-			dtimer::log(__METHOD__ . ' query error', 1);
 			return false;
 		}
 		$this->features_ids = $this->db->results_array(array('id','name', 'trans'), array('name','id', 'id'));
@@ -54,8 +53,8 @@ class Features extends Simpla
 		
 		// Выбираем свойства
 		$query = $this->db->placehold("SELECT id, name, trans, position, in_filter FROM __features AS f
-									WHERE 1
-									$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
+			WHERE 1
+			$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
 		$this->db->query($query);
 		$res = $this->db->results_array(null, 'id');
 		dtimer::log(__METHOD__ . ' return');
@@ -79,8 +78,8 @@ class Features extends Simpla
 		
 		// Выбираем свойства
 		$query = $this->db->placehold("SELECT id, trans FROM __features AS f
-									WHERE 1
-									$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
+			WHERE 1
+			$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
 		$this->db->query($query);
 		dtimer::log(__METHOD__ . " query: '$query'");
 		$res = $this->db->results_array('id', 'trans');
@@ -183,15 +182,11 @@ class Features extends Simpla
 		
 		//сначала проверим, есть ли целевая таблица, создадим ее, если ее еще нет
 		if (!$this->db->query("SELECT 1 FROM __options LIMIT 1")) {
-			$this->db->query("CREATE TABLE `s_options_uniq` (
-						 `id` int(11) NOT NULL AUTO_INCREMENT,
-						 `val` varchar(512) DEFAULT NULL,
-						 `trans` varchar(512) CHARACTER SET ascii DEFAULT NULL,
-						 `md4` binary(16) DEFAULT NULL,
-						 PRIMARY KEY (`id`),
-						 UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE
-						) ENGINE=MyISAM AUTO_INCREMENT=55410 DEFAULT CHARSET=utf8
-						");
+			$this->db->query("CREATE TABLE `s_options` (
+				 `id` int(11) NOT NULL AUTO_INCREMENT,
+				 PRIMARY KEY (`id`),
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8
+				");
 		}
 		if (!$this->db->query("SELECT 1 FROM __options_uniq LIMIT 1")) {
 			$this->db->query("CREATE TABLE __options_uniq (`id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
@@ -259,29 +254,30 @@ class Features extends Simpla
 	}
 
 
-	public function update_option($product_id, $feature_id, $value)
+	public function update_option($product_id, $feature_id, $val)
 	{
-		dtimer::log(__METHOD__ . " arguments '$product_id' '$feature_id' '$value'");
-		if (!isset($product_id) || !isset($feature_id) || !isset($value)) {
-			dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", 1);
+		dtimer::log(__METHOD__ . " arguments '$product_id' '$feature_id' '$val'");
+		if (!isset($product_id) || !isset($feature_id) || !isset($val)) {
+			dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$val'", 1);
 			return false;
 		}
 		
 		//получим значение для записи в таблицу options из таблицы s_options_uniq
 		//сделаем хеш 
-		$val = trim((string)$value);
+		$val = trim((string)$val);
 		$fid = (int)$feature_id;
 		$pid = (int)$product_id;
+		$trans = translit_url($val);
 		//Хеш будем получать не по чистому значению $val, а по translit_url($val), чтобы можно было из ЧПУ вернуться к хешу
-		$optionhash = hash('md4', translit_url($val));
+		$optionhash = hash('md4', $trans);
 		$this->db->query("SELECT `id` FROM __options_uniq WHERE `md4`= 0x$optionhash ");
 		
 		//Если запись уже есть - продолжаем работу, если нет добавляем запись в таблицу
 		if ($this->db->affected_rows() > 0) {
-			$vid = $this->db->result('id');
+			$vid = $this->db->result_array('id');
 		}
 		else {
-			$trans = translit_url($val);
+			
 			$this->db->query("INSERT INTO __options_uniq SET `val`= '$val', `trans` = '$trans', `md4` = 0x$optionhash ");
 			$vid = $this->db->insert_id();
 		}
@@ -836,7 +832,7 @@ class Features extends Simpla
 
 	public function get_product_options($product_id)
 	{
-
+		dtimer::log(__METHOD__ . " start");
 		if (!isset($product_id)) {
 			return false;
 		}
@@ -858,7 +854,7 @@ class Features extends Simpla
 		if ($this->db->query("SELECT id, val FROM __options_uniq WHERE id in (?@)", $options)) {
 			$vals = $this->db->results_array(null, 'id', true);
 			foreach ($options as $fid => &$option) {
-				if (empty_($option) ) {
+				if (empty($option) ) {
 					unset($options[$fid]);
 				}else{
 					if(isset($vals[$option]['val'])){

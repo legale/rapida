@@ -109,7 +109,7 @@ class Database extends Simpla
 		
 		//для долгих перерывов между запросами обновляем соединение с БД
 		if (time() - $this->started > 45) {
-			dtimer::log(__METHOD__ . "Mysql ping сработал", 2);
+			dtimer::log(__METHOD__ . " Last query was more than 45s ago", 2);
 			$this->connect(true);
 		}
 		
@@ -123,16 +123,14 @@ class Database extends Simpla
 		//обновляем время с последнего запроса
 		$this->started = time();
 		$this->res = $this->mysqli->query($q);
-
-		if ($this->mysqli->affected_rows === -1) {
-			$this->error_msg = "Query error $q ";
+		if(!$this->res){
 			dtimer::log(__METHOD__ . " query error: $q ", 1);
-			return false;
-		}
-		else {
+		} else {
 			dtimer::log(__METHOD__ . " query completed: $q ");
 			return true;
-		}
+		} 
+		
+
 	}
 
 	/**
@@ -150,7 +148,8 @@ class Database extends Simpla
 	public function placehold()
 	{
 		$args = func_get_args();
-		$tmpl = array_shift($args);
+		//берем 1 аргумент и обрезаем пробелы по краям
+		$tmpl = trim(array_shift($args));
 		// Заменяем все __ на префикс, но только необрамленные кавычками
 		$tmpl = preg_replace('/([^"\'0-9a-z_])__([a-z_]+[^"\'])/i', "\$1" . $this->config->db_prefix . "\$2", $tmpl);
 		if (!empty($args))
@@ -372,6 +371,16 @@ class Database extends Simpla
 	public function affected_rows()
 	{
 		return $this->mysqli->affected_rows;
+	}
+	
+	private function get_type($q)
+	{
+		if(empty($q) || !is_string($q)){
+			dtimer::log(__METHOD__ . " empty query or not a string");
+			return false;
+		}
+		
+		return strtoupper(mb_substr($q,0,mb_strpos($q,' ')));
 	}
 
 	/**

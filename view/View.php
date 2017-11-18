@@ -84,6 +84,7 @@ class View extends Simpla
 			// Передаем в дизайн то, что может понадобиться в нем
 			$this->design->assign('currencies',	$this->currencies);
 			$this->design->assign('currency',	$this->currency);
+			dtimer::log(__METHOD__ . ' before user assign');
 			$this->design->assign('user',       $this->user);
 			$this->design->assign('group',      $this->group);
 			

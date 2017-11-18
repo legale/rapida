@@ -37,9 +37,10 @@ class Image extends Simpla
 		// Если файл удаленный (http://), зальем его себе
 		if (substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://') {
 			// Имя оригинального файла
-			if (!$original_file = $this->download_image($source_file))
+			if (!$original_file = $this->download_image($source_file)){
+				dtimer::log(__METHOD__ . " download failed", 2);
 				return false;
-
+			}
 			$resized_file = $this->add_resize_params($original_file, $width, $height, $set_watermark);
 		}
 		else
@@ -112,7 +113,8 @@ class Image extends Simpla
 
 		dtimer::log(__METHOD__ . " $filename");
 		// Заливаем только есть такой файл есть в базе
-		$this->db->query('SELECT product_id as pid, position as pos FROM __images WHERE filename=? LIMIT 1', $filename);
+		$this->db->query('SELECT product_id as pid, position as pos FROM __images WHERE filename = ? LIMIT 1', $filename);
+		
 		if (!$res = $this->db->result_array()) {
 			return false;
 		}

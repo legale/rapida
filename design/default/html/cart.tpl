@@ -150,7 +150,7 @@ $("input[name='coupon_code']").keypress(function(event){
 					{if $v->name}<label class="variant_name" for="related_{$v->id}">{$v->name}</label>{/if}
 				</td>
 				<td>
-					{if $v->compare_price > 0}<span class="compare_price">{$v->compare_price|convert}</span>{/if}
+					{if $v->old_price > 0}<span class="old_price">{$v->old_price|convert}</span>{/if}
 					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
 				</td>
 				<td>

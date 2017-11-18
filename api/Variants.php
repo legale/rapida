@@ -1,18 +1,28 @@
 <?php
 
 /**
- * Работа с вариантами товаров
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
+ * Класс моделей вариантов товаров
  */
 
 require_once ('Simpla.php');
 
 class Variants extends Simpla
 {
+	//в этой переменном у нас записано к какому типу данных относятся поля в таблице s_variants
+	private $types = array(
+		'id' => 'i',
+		'product_id' => 'i',
+		'name' => 's',
+		'sku' => 's',
+		'price' => 'f',
+		'price1' => 'f',
+		'price2' => 'f',
+		'price3' => 'f',
+		'stock' => 'i',
+		'old_price' => 'f',
+		'position' => 'i',
+	);
+	
 	/**
 	 * Функция возвращает варианты 1 конкретного товара
 	 * @param	$pid
@@ -28,12 +38,12 @@ class Variants extends Simpla
 		//$pid у нас только число
 		$pid = (int)$pid;
 		
-		$this->db->query("SELECT * FROM __variants WHERE `product_id` = $pid");
-		if($res = $this->db->results_array(null, 'position')){
-			return $res;
-		}else {
+		if (!$this->db->query("SELECT * FROM __variants WHERE `product_id` = $pid")){
 			return false;
 		}
+		
+		$res = $this->db->results_array(null, 'id');
+		return $res;
 	}
 	
 	/**
@@ -59,7 +69,7 @@ class Variants extends Simpla
 		if (!$product_id_filter && !$variant_id_filter)
 			return array();
 
-		$query = $this->db->placehold("SELECT v.id, v.product_id , v.price, NULLIF(v.compare_price, 0) as compare_price, v.sku, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.name, v.attachment, v.position
+		$q = $this->db->placehold("SELECT *
 					FROM __variants AS v
 					WHERE 
 					1
@@ -69,7 +79,9 @@ class Variants extends Simpla
 					ORDER BY v.position       
 					", $this->settings->max_order_amount);
 
-		$this->db->query($query);
+		if (!$this->db->query($q)){
+			return false;
+		}
 		$res = $this->db->results_array(null, 'id');
 		return $res;
 	}
@@ -80,13 +92,15 @@ class Variants extends Simpla
 		if (empty($id))
 			return false;
 
-		$query = $this->db->placehold("SELECT v.id, v.product_id , v.price, NULLIF(v.compare_price, 0) as compare_price, v.sku, IFNULL(v.stock, ?) as stock, (v.stock IS NULL) as infinity, v.name, v.attachment
+		$q = $this->db->placehold("SELECT *
 					FROM __variants v WHERE v.id=?
-					LIMIT 1", $this->settings->max_order_amount, $id);
+					LIMIT 1", $id);
 
-		$this->db->query($query);
-		$variant = $this->db->result_array();
-		return $variant;
+		if (!$this->db->query($q)){
+			return false;
+		}
+		$res = $this->db->result_array();
+		return $res;
 	}
 
 	public function update_variant($variant)
@@ -100,25 +114,49 @@ class Variants extends Simpla
 			return false;
 		}
 
-		foreach ($variant as $k => $e) {
-			if (empty_($e)) {
-				unset($variant[$k]);
+		//поставим правильный тип для полей
+		foreach ($variant as $k => &$e) {
+			switch(@$this->types[$k]){
+				case 'i':
+				$e = (int)$e;
+				break;
+				
+				case 'f':
+				$e = (float)$e;
+				break;
+				
+				case 's':
+				$e = (string)$e;
+				break;
 			}
 		}
+		unset($e);
+		
 		$query = $this->db->placehold("UPDATE __variants SET ?% WHERE id=? LIMIT 1", $variant, $varid);
-		if($this->db->query($query)){
+		if ($this->db->query($query)){
 			return $varid;
 		}else{
 			return false;
 		}
 	}
+	
+	
+	
 	public function add_variant($variant){
 		if (is_object($variant)) {
 			$variant = (array)$variant;
 		}
 		//получим pid
-		if(!isset($variant['product_id'])){
+		if(!isset($variant['product_id']) || empty_($variant['product_id'])){
 			dtimer::log(__METHOD__." pid is not set!", 2);
+			return false;
+		} else {
+			$pid = $variant['product_id'];
+		}
+
+		//проверим артикул, он не может быть пустым
+		if(!isset($variant['sku']) || empty_($variant['sku'])){
+			dtimer::log(__METHOD__." sku is not set!", 2);
 			return false;
 		}
 
@@ -127,29 +165,58 @@ class Variants extends Simpla
 			unset($variant['id']);
 		}
 
-		foreach ($variant as $k => $e) {
-			if (empty_($e)) {
-				unset($variant[$k]);
+
+		//поставим правильный тип для полей
+		foreach ($variant as $k => &$e) {
+			switch(@$this->types[$k]){
+				case 'i':
+				$e = (int)$e;
+				break;
+				
+				case 'f':
+				$e = (float)$e;
+				break;
+				
+				case 's':
+				$e = (string)$e;
+				break;
 			}
 		}
+		unset($e);
+		
+		//узнаем позицию последнего варианта для этого товара
+		$this->db->query("SELECT MAX(position) as pos FROM __variants WHERE product_id = $pid");
+		$pos = $this->db->result_array('pos');
+		if( !empty_($pos) ){
+			$pos = $pos + 1;
+		} else {
+			$pos = 0;
+		}
+		$variant['position'] = $pos;
+
 
 		$query = $this->db->placehold("INSERT INTO __variants SET ?%", $variant);
-		if ($this->db->query($query)) {
-			return $this->db->insert_id();
-		}
-		else {
+		if (!$this->db->query($query)) {
 			return false;
 		}
+		return $this->db->insert_id();
 	}
 
 	public function delete_variant($id)
 	{
-		if (!empty($id))
-			{
-			$this->delete_attachment($id);
-			$query = $this->db->placehold("DELETE FROM __variants WHERE id = ? LIMIT 1", intval($id));
-			$this->db->query($query);
-			$this->db->query('UPDATE __purchases SET variant_id=NULL WHERE variant_id=?', intval($id));
+		if (empty_($id)){
+			dtimer::log(__METHOD__." id is empty!", 2);
+			return false;
 		}
+
+		$q = $this->db->placehold("DELETE FROM __variants WHERE id = ? LIMIT 1", intval($id));
+		$q1 = $this->db->placehold("UPDATE __purchases SET variant_id=0 WHERE variant_id=?", intval($id));
+
+		if(!$this->db->query($q) 
+		|| !$this->db->query($q1)
+		){
+			return false;
+		}
+		return true;
 	}
 }

@@ -44,17 +44,20 @@ class Categories extends Simpla
 	// Функция возвращает id категорий для заданного товара
 	public function get_product_categories($product_id)
 	{
-		$query = $this->db->placehold("SELECT product_id, category_id, position FROM __products_categories WHERE product_id in(?@) ORDER BY position", (array)$product_id);
+		$query = $this->db->placehold("SELECT product_id, category_id, position 
+		FROM __products_categories WHERE product_id in(?@)", (array)$product_id);
 		$this->db->query($query);
-		return $this->db->results_array();
+		return $this->db->results_array(null, 'category_id');
 	}	
 
 	// Функция возвращает id категорий для всех товаров
 	public function get_products_categories()
 	{
-		$query = $this->db->placehold("SELECT product_id, category_id, position FROM __products_categories ORDER BY position");
+		$query = $this->db->placehold("SELECT product_id, category_id, position 
+		FROM __products_categories");
 		$this->db->query($query);
-		return $this->db->results_array();
+		$res = $this->db->results_array(null, 'category_id');
+		return $res;
 	}	
 
 	// Функция возвращает дерево категорий
@@ -153,17 +156,18 @@ class Categories extends Simpla
 	}
 	
 	// Добавить категорию к заданному товару
-	public function add_product_category($product_id, $category_id, $position = 0)
+	public function add_product_category($product_id, $category_id, $pos = 0)
 	{
-		$query = $this->db->placehold("INSERT IGNORE INTO __products_categories SET product_id=?, category_id=?, position=?", $product_id, $category_id, $position);
-		$this->db->query($query);
+		$query = $this->db->placehold("INSERT INTO __products_categories 
+		SET product_id=?, category_id=?, position=? ON DUPLICATE KEY UPDATE position = ? ", $product_id, $category_id, $pos, $pos);
+		return $this->db->query($query);
 	}
 
 	// Удалить категорию заданного товара
 	public function delete_product_category($product_id, $category_id)
 	{
 		$query = $this->db->placehold("DELETE FROM __products_categories WHERE product_id=? AND category_id=? LIMIT 1", intval($product_id), intval($category_id));
-		$this->db->query($query);
+		return $this->db->query($query);
 	}
 	
 	// Удалить изображение категории
