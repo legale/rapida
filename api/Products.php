@@ -799,8 +799,7 @@ class Products extends Simpla
 			$product_id_filter = $this->db->placehold('AND i.product_id in(?@)', (array)$filter['product_id']);
 
 		// images
-		$query = $this->db->placehold("SELECT i.id, i.product_id, i.name, i.filename, i.position
-									FROM __images AS i WHERE 1 $product_id_filter $group_by ORDER BY i.product_id, i.position");
+		$query = $this->db->placehold("SELECT * FROM __images AS i WHERE 1 $product_id_filter $group_by ORDER BY i.product_id, i.position");
 		$this->db->query($query);
 		return $this->db->results_array(null, 'id');
 	}
