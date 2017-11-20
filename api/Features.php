@@ -720,7 +720,7 @@ class Features extends Simpla
 		
 		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
 		if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0 ) {
-			if($f = $this->features->get_features_trans(array('in_filter'=>1))){
+				if($f = $this->features->get_features_ids(array('in_filter'=>1, return => array ('key' => 'id', 'col' => 'id')) )){
 				$filter['feature_id'] = array_values( $f );
 			} else {
 				//если у нас нет свойств в фильтре, значит и выбирать нечего
