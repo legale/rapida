@@ -20,8 +20,6 @@ class Features extends Simpla
 
 	function get_features_ids($filter = array() )
 	{
-		print_r($filter);
-		return;
 		dtimer::log(__METHOD__ . ' start');
 		//это вариант по умолчанию id=>val
 		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
@@ -728,7 +726,7 @@ class Features extends Simpla
 		
 		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
 		if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0 ) {
-				if($f = $this->features->get_features_ids(array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'id')) )){
+				if($f = $this->get_features_ids(array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'id')) )){
 				$filter['feature_id'] = $f;
 			} else {
 				//если у нас нет свойств в фильтре, значит и выбирать нечего
