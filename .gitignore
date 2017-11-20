@@ -5,6 +5,8 @@
 /compiled/**
 /cache/**
 /design/**
+/.vscode/**
+
 /simpla/design/compiled/**
 
 # добавлены отдельные файлы .gitignore

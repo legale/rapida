@@ -37,7 +37,7 @@ class Design extends Simpla
 
 		// Создаем папку для скомпилированных шаблонов текущей темы
 		if (!is_dir($this->smarty->compile_dir))
-			mkdir($this->smarty->compile_dir, 0777);
+			mkdir($this->smarty->compile_dir, 0777, true);
 
 		$this->smarty->cache_dir = 'cache';
 
