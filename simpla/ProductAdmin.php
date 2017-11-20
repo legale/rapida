@@ -381,7 +381,7 @@ class ProductAdmin extends Simpla
 			return false;
 		}
 		//получим имена свойств и их id
-		$fnames = $this->features->get_features_ids()[0];
+		$fnames = $this->features->get_features_ids( array('return' => array('key' => 'name', 'col' => 'id')) );
 		
 		
 		//сюда будем записывать готовые для записи

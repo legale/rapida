@@ -51,31 +51,33 @@ class ExportAjax extends Simpla
 			return false;
 		}
 		
-		//получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
-		if(!$features = $this->features->get_features_ids()[1]){
+		$filter = array('return' => array('key' => 'id', 'col' => 'name')) ;
+		//получим все значения id=>название свойства
+		if( !$features = $this->features->get_features_ids() ){
 			return false;
 		}
  		ksort($features);
+ 		//~ print_r($features);
+ 		//~ die;
 		
 		// Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
 		// должно значительное ускорить экспорт
 		
 		//поставим выполнение запроса без кеша только для начала экспорта
 		
-		if( isset($_GET['page']) && $_GET['page'] != 1 )
+		
+		$filter = array('return' => array('key' => 'id', 'col' => 'val')) ;
+		if( !isset($_GET['page']) || $_GET['page'] != 1 )
 		{
-			$filter = array();
-		}
-		else
-		{
-			$filter = array('force_no_cache' => true);
+			$filter['force_no_cache'] = true;
 		}
 		
-		if(!$options = $this->features->get_options_ids($filter)[2]){
+		if(!$options = $this->features->get_options_ids($filter)){
 			return false;
-		}		
+		}	
+	
 		//получим бренды
-		if(!$brands = $this->brands->get_brands_ids()[1]){
+		if(!$brands = $this->brands->get_brands_ids()){
 			return false;
 		}	
 		// Страница, которую экспортируем
@@ -110,7 +112,7 @@ class ExportAjax extends Simpla
 		
 		foreach($products as &$p){
 			foreach($options_raw[$p['id']] as $fid=>$vid){
-				$p[$features[$fid]] = !empty_($vid) ? $options[$vid] : '';
+				$p[$features[$fid]] = !empty($vid) ? $options[$vid] : '';
 			}
 		}
 		unset($p);
@@ -168,9 +170,7 @@ class ExportAjax extends Simpla
 	 			$v['old_price']   = $variant['old_price'];
 	 			$v['sku']             = $variant['sku'];
 	 			$v['stock']           = $variant['stock'];
-	 			if($variant['infinity']){
-	 				$v['stock']           = '';
-				}
+
 				$products[$variant['product_id']]['variants'][] = $v;
 	 		}
 		}
