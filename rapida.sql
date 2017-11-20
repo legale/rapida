@@ -50,7 +50,7 @@ CREATE TABLE `s_cache_integer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
 INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-11-20', 0xcc23865436abc431007759e15a11991a, 0);
+('2017-11-18', 0xcc23865436abc431007759e15a11991a, 0);
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -507,15 +507,14 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
 INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
 (1, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (2, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (3, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (4, 0x526d10ed9397bdf3d2faf6881eb41821, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'63886\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(8, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(12, 0x5a538e57ec192f9fbc0d5c14a1d5e73d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'22784\',\n    1 => \'10752\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
+(8, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -526,15 +525,14 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
 INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
 (1, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (2, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (3, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
 (4, 0x526d10ed9397bdf3d2faf6881eb41821, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'63886\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(5, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(6, 0x5a538e57ec192f9fbc0d5c14a1d5e73d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'22784\',\n    1 => \'10752\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
+(5, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
