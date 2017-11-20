@@ -20,6 +20,8 @@ class Features extends Simpla
 
 	function get_features_ids($filter = array() )
 	{
+		print_r($filter);
+		return;
 		dtimer::log(__METHOD__ . ' start');
 		//это вариант по умолчанию id=>val
 		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
