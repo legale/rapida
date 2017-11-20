@@ -133,6 +133,7 @@ CREATE TABLE `s_currencies` (
   `position` int(11) NOT NULL DEFAULT '0',
   `enabled` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`) USING BTREE,
   KEY `position` (`position`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_currencies */
@@ -306,7 +307,15 @@ CREATE TABLE `s_options` (
   `53` mediumint(9) NOT NULL DEFAULT '0',
   `54` mediumint(9) NOT NULL DEFAULT '0',
   `55` mediumint(9) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`product_id`)
+  `56` mediumint(9) NOT NULL DEFAULT '0',
+  `57` mediumint(9) NOT NULL DEFAULT '0',
+  `58` mediumint(9) NOT NULL DEFAULT '0',
+  `59` mediumint(9) NOT NULL DEFAULT '0',
+  `60` mediumint(9) NOT NULL DEFAULT '0',
+  `61` mediumint(9) NOT NULL DEFAULT '0',
+  `62` mediumint(9) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`product_id`),
+  KEY `13` (`13`,`product_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
