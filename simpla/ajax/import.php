@@ -311,14 +311,14 @@ class ImportAjax extends Simpla{
                 // Если нет такого названия колонки, значит это название свойства
                 if (!in_array($feature_name, $this->internal_columns_names)) {
                     // Свойство добавляем только если для товара указана категория и непустое значение свойства
-                    if ($category_id && $feature_value!=='') {
+                    if ($feature_value!=='') {
                         //если у нас уже есть id свойства, просто берем это значение
                         if (isset($GLOBALS['features'][$feature_name])) {
-                            $feature_id = $GLOBALS['features'][$feature_name];
+                            $fid = $GLOBALS['features'][$feature_name];
                         } else {
                             //иначе добавляем свойство в базу и пишем в наш глобальный массив
-                            $feature_id = $this->features->add_feature(array('name'=>$feature_name));
-                            $GLOBALS['features'][$feature_name] = $feature_id;
+                            $fid = $this->features->add_feature(array('name'=>$feature_name));
+                            $GLOBALS['features'][$feature_name] = $fid;
                         }
                             
                         
@@ -326,10 +326,10 @@ class ImportAjax extends Simpla{
                         //пользуемся быстрым методом features->update_options_direct(), но сразу по всем найденным опциям
                         if (isset($GLOBALS['options_uniq'][$feature_value])) {
                             $vid = $GLOBALS['options_uniq'][$feature_value];
-                            $features[$feature_id] = $vid;
+                            $features[$fid] = $vid;
                         } else {
                             //иначе пользуемся обычной функцией, а результат записываем в наш суперглобальный массив
-                            if (false !== ( $vid = $this->features->update_option($pid, $feature_id, $feature_value))) {
+                            if (false !== ( $vid = $this->features->update_option($pid, $fid, $feature_value))) {
                                 $GLOBALS['options_uniq'][$feature_value] =  $vid ;
                             }
                         }
@@ -407,6 +407,6 @@ $import_ajax = new ImportAjax();
 
         
 $json = json_encode($import_ajax->import());
-//~ dtimer::show();
+dtimer::show();
 
-print $json;
+//~ print $json;

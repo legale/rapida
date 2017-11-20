@@ -112,14 +112,11 @@ class ExportAjax extends Simpla
 		
 		foreach($products as &$p){
 			foreach($options_raw[$p['id']] as $fid=>$vid){
-				$p[$features[$fid]] = !empty($vid) ? $options[$vid] : '';
+				$p[$features[$fid]] = !empty_($vid) && isset($options[$vid]) ? $options[$vid] : '';
 			}
 		}
 		unset($p);
 
-
-		//~ print_r($products);
-		//~ die;
 
  		if(empty($products)){
  			return false;
