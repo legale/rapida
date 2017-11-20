@@ -400,13 +400,14 @@ class ImportAjax extends Simpla{
 }
 
 $import_ajax = new ImportAjax();
-//~ header("Content-type: application/json; charset=UTF-8");
-//~ header("Cache-Control: must-revalidate");
-//~ header("Pragma: no-cache");
-//~ header("Expires: -1");	
 
         
 $json = json_encode($import_ajax->import());
-dtimer::show();
+//~ dtimer::show();
 
-//~ print $json;
+
+header("Content-type: application/json; charset=UTF-8");
+header("Cache-Control: must-revalidate");
+header("Pragma: no-cache");
+header("Expires: -1");	
+print $json;
