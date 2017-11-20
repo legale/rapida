@@ -46,29 +46,25 @@ class ImportAjax extends Simpla{
         //сюда будем писать результат импорта
         $result = array();
         
-        //получим все значения id названий свойств, чтобы не делать это постоянно на каждом свойстве
-        $GLOBALS['features'] = $this->features->get_features_ids()[0];
+        //получим массив id=>название свойства
+        //Чтобы не делать это постоянно на каждом свойстве
+        $GLOBALS['features'] = $this->features->get_features_ids(array('return'=> array('key' => 'name' , 'col' => 'id')) );
         
         // Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
         // должно значительное ускорить импорт
         
         //поставим выполнение запроса без кеша только для первой позиции импорта
-        $filter = array();
+        $filter = array('return'=> array('key' => 'val' , 'col' => 'id'));
         dtimer::log(__METHOD__ . " from: " . var_export($this->request->get('from'), true) );
         if (!isset($_GET['from'])) {
-            $filter = array('force_no_cache' => true);
+            $filter['force_no_cache'] = true;
         }
-        $array = $this->features->get_options_ids($filter)[2];
-        if (is_array($array)) {
-            $GLOBALS['options_uniq'] = array_flip($array);
-        } else {
+        $GLOBALS['options_uniq'] = $this->features->get_options_ids($filter)[2];
+        
+        if (!is_array($GLOBALS['options_uniq'])) {
             $GLOBALS['options_uniq'] = array();
         }
 
-        
-        //~ print "<pre>";
-        //~ print_r($GLOBALS['options_uniq']);
-        //~ die;
 
         // Определяем колонки из первой строки файла
         $f = fopen($this->import_files_dir.$this->import_file, 'r');
