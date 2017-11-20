@@ -18,10 +18,10 @@
 	<a href="/">Главная</a>
 	{if $category}
 	{foreach $category['path'] as $cat}
-	→ <a href="catalog/{$cat->url}">{$cat->name|escape}</a>
+	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
 	{/foreach}  
 	{if $brand}
-	→ <a href="catalog/{$cat->url}/{$brand['url']}">{$brand['name']|escape}</a>
+	→ <a href="catalog/{$cat['url']}/{$brand['url']}">{$brand['name']|escape}</a>
 	{/if}
 	{elseif $brand}
 	→ <a href="brands/{$brand['url']}">{$brand['name']|escape}</a>
@@ -35,7 +35,7 @@
 {if $keyword}
 <h1>Поиск {$keyword|escape}</h1>
 {elseif $page}
-<h1>{$page->name|escape}</h1>
+<h1>{$page['name']|escape}</h1>
 {else}
 <h1>{$category['name']|escape} {$brand['name']|escape}</h1>
 {/if}

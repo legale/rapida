@@ -167,7 +167,7 @@ class Orders extends Simpla
 		}
 
 
-		$order['url'] = md5(uniqid($this->config->salt, true));
+		$order['url'] = md5(uniqid($this->config->salt_word, true));
 		$query = $this->db->placehold("INSERT INTO __orders SET ?%", $order);
 		dtimer::log(__METHOD__ . " query: $query");
 		

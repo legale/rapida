@@ -15,12 +15,16 @@ class ControllerSimpla extends Simpla
 		dtimer::log(__METHOD__ . ' constructor');
 	}
 
-	public function action()
+	public function action($url = null)
 	{
 
 		require_once ('view/IndexView.php');
 		$view = new IndexView();
 
+		if($url === '404'){
+			print $view->fetch('404');
+			return true;
+		}
 
 
 
@@ -41,13 +45,7 @@ class ControllerSimpla extends Simpla
 		}
 		else
 			{ 
-			// Иначе страница об ошибке
-			header("http/1.0 404 not found");
-			
-			// Подменим переменную GET, чтобы вывести страницу 404
-			$_GET['page_url'] = '404';
-			$_GET['module'] = 'PageView';
-			print $view->fetch();
+			print $view->fetch('404');
 		}
 
 	}

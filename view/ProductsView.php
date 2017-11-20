@@ -36,7 +36,7 @@ class ProductsView extends View
 		if( isset($this->coMaster->uri_arr['path_arr']['brand']) ){
 			$brands_urls = $this->coMaster->uri_arr['path_arr']['brand'];
 			//для экономии памяти присваиваем по ссылке
-			$brands_ids = $this->brands->get_brands_ids()[2];
+			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'url')) );
 			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
 		}
 		
@@ -83,7 +83,7 @@ class ProductsView extends View
 		
 		if ( (!empty($category))  ) {
 			//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
-			$features_trans = $this->features->get_features_trans(array('in_filter'=>1));
+			$features_trans = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => 'trans', 'col' => 'id')) );
 			$features = $this->features->get_features(array('category_id'=>$category['id'], 'in_filter'=>1));
 
 			//~ print_r($features_trans);
@@ -93,7 +93,7 @@ class ProductsView extends View
 			if( isset($this->coMaster->uri_arr['path_arr']['filter']) ){
 				//перебираем массив
 				foreach($this->coMaster->uri_arr['path_arr']['filter'] as $name=>$vals){
-					
+
 					//если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq 
 					if( isset($features_trans[$name]) ){
 						//~ print $name . "\n";
@@ -105,7 +105,7 @@ class ProductsView extends View
 						dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
 
 						//получим id уникальных значений по их хешам
-						$ids = $this->features->get_options_md4($vals);
+						$ids = $this->features->get_options_ids(array('md4'=> $vals, 'return'=>array('key'=>'id', 'col'=>'id')) );
 						
 						//тут проверим количество переданных значений опций и количество полученных из базы,
 						//если не совпадает - return false
@@ -115,8 +115,6 @@ class ProductsView extends View
 						
 						//~ print_r($ids);
 						//добавим в фильтр по свойствам массив с id значений опций
-						$ids = array_values($ids);
-						$ids = array_combine($ids, $ids);
 						$filter['features'][$features_trans[$name]] = $ids;
 					}
 				}

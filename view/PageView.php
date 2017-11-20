@@ -14,15 +14,18 @@ require_once('View.php');
 
 class PageView extends View
 {
-	function fetch()
+	function fetch($url = null)
 	{
-		$url = $this->coMaster->uri_arr['path_arr']['url'];
-
+		if(!isset($url)){
+			$url = $this->coMaster->uri_arr['path_arr']['url'];
+		}
 		$page = $this->pages->get_page($url);
 		
-		// Отображать скрытые страницы только админу
-		if(empty($page) || (!$page->visible && empty($_SESSION['admin'])))
-			return false;
+		// Отображать скрытые страницы только админу, иначе 404
+		if(empty($page) || (!$page->visible && empty($_SESSION['admin']))){
+			header("http/1.0 404 not found");
+			$page = $this->pages->get_page('404');
+		}
 		
 		$this->design->assign('page', $page);
 		$this->design->assign('meta_title', $page->meta_title);

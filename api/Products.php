@@ -37,7 +37,7 @@ class Products extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if(!isset($force_no_cache)){
 			dtimer::log("get_products_ids normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, true);
+			$res = $this->cache->get_cache_nosql($keyhash);
 		
 		
 		
@@ -223,7 +223,7 @@ class Products extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if(!isset($force_no_cache)){
 			dtimer::log("get_products normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, true);
+			$res = $this->cache->get_cache_nosql($keyhash);
 		
 		
 		

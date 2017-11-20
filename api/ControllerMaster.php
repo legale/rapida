@@ -56,7 +56,7 @@ class ControllerMaster extends Simpla
 		if(!empty($this->ctrl)){
 			return $this->{$this->ctrl}->action();
 		} else {
-			return false;
+			return $this->coSimpla->action('404');
 		}
 	}
 	

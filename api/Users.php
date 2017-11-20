@@ -157,7 +157,7 @@ class Users extends Simpla
 			}
 		}
 		if (isset($user['password']))
-			$user['password'] = md5($this->config->salt . $user['password'] . md5($user['password']));
+			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user['password']));
 
 		$query = $this->db->placehold("SELECT count(*) as count FROM __users WHERE email=?", $user['email']);
 		$this->db->query($query);
@@ -200,7 +200,7 @@ class Users extends Simpla
 		}
 		
 		if (isset($user['password'])){
-			$user['password'] = md5($this->config->salt . $user['password'] . md5($user['password']));
+			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user['password']));
 		}
 		$query = $this->db->placehold("UPDATE __users SET $last_login ?% WHERE id=? LIMIT 1", $user, intval($id));
 		
@@ -296,7 +296,7 @@ class Users extends Simpla
 
 	public function check_password($email, $password)
 	{
-		$encpassword = md5($this->config->salt . $password . md5($password));
+		$encpassword = md5($this->config->salt_word . $password . md5($password));
 		$query = $this->db->placehold("SELECT id FROM __users WHERE email=? AND password=? LIMIT 1", $email, $encpassword);
 		$this->db->query($query);
 		if ($id = $this->db->result_array('id'))

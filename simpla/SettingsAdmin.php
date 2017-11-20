@@ -35,8 +35,8 @@ class SettingsAdmin extends Simpla
 			
 			//кеш
 			$this->config->cache = $this->request->post('cache');	
-			//Экономный кеш через json
-			$this->config->json = $this->request->post('json');
+			//Способ сохранения кеша на диск
+			$this->config->method = $this->request->post('method');
 			//отладчик
 			$this->config->debug = $this->request->post('debug');
 			

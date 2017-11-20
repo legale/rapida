@@ -49,7 +49,7 @@ class IndexView extends View
 	 * Отображение
 	 *
 	 */
-	function fetch()
+	function fetch($url = null)
 	{
 		dtimer::log(__METHOD__ . " fetch");
 		// Содержимое корзины
@@ -61,33 +61,45 @@ class IndexView extends View
 		// Страницы
 		$pages = $this->pages->get_pages(array('visible'=>1));
 		$this->design->assign('pages', $pages);
-							
-		// Текущий модуль (для отображения центрального блока)
-		$module = $this->modules[$this->coMaster->uri_arr['path_arr']['module']];
-		dtimer::log(__METHOD__ . " module: $module");
 		
-		// Если не задан - берем из настроек
-		if(empty($module))
-			return false;
+		if($url !== '404'){
+		
+			// Текущий модуль (для отображения центрального блока)
+			$module = $this->modules[$this->coMaster->uri_arr['path_arr']['module']];
+			dtimer::log(__METHOD__ . " module: $module");
+			
+			// Если не задан - берем из настроек
+			if(empty($module))
+				return false;
 
-		// Создаем соответствующий класс
-		if (is_file($this->modules_dir."$module.php"))
+			// Создаем соответствующий класс
+			if (is_file($this->modules_dir."$module.php"))
+			{
+					include_once($this->modules_dir."$module.php");
+					if (class_exists($module))
+					{
+						$this->main = new $module($this);
+					} else {
+						return false;
+					}
+			} else {
+				return false;
+			}
+		}
+
+		// Создаем основной блок страницы, в случае ошибки сделаем 404
+		if ($url === '404' || !$content = $this->main->fetch())
 		{
+			$module = 'PageView';
+			if(!class_exists($module)){
 				include_once($this->modules_dir."$module.php");
-				if (class_exists($module))
-				{
-					$this->main = new $module($this);
-				} else return false;
-		} else return false;
-
-		// Создаем основной блок страницы
-		if (!$content = $this->main->fetch())
-		{
-			return false;
-		}		
+			}
+			$this->main = new $module($this);
+			$content = $this->main->fetch('404');
+		}
 
 		// Передаем основной блок в шаблон
-		$this->design->assign('content', $content);		
+		$this->design->assign('content', $content);
 		
 		// Передаем название модуля в шаблон, это может пригодиться
 		$this->design->assign('module', $module);

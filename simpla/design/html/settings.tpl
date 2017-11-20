@@ -35,7 +35,7 @@
 			<h2>Настройки системы</h2>
 
 				<div class="switcher">
-<label class="switcher__title">Кеширование самых тяжелых запросов к БД</label>
+<label class="switcher__title">Кеширование запросов к БД</label>
 					<input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch" {if $config->cache}checked{/if}>
 					<label class="switcher__label" for="cache_switch">
 						<span class="switcher__text">Вкл.</span>
@@ -43,11 +43,12 @@
 				</div>
 
 				<div class="switcher">
-<label class="switcher__title">Экономная (json_encode) запись кеша на диск вместо быстрой (serialize)</label>
-					<input class="switcher__input" value="true" type="checkbox" name="json" id="json_switch" {if $config->json}checked{/if}>
-					<label class="switcher__label" for="json_switch">
-						<span class="switcher__text">Вкл.</span>
-					</label>
+<label class="switcher__title">Способ сохранения кеша на диск</label>
+		<select name="method">
+			<option value="json" {if $config->method === 'json'}selected{/if}>json</option>
+			<option value="serialize" {if $config->method === 'serialize'}selected{/if}>serialize</option>
+			<option value="var_export" {if $config->method === 'var_export'}selected{/if}>var_export</option>
+		</select>
 				</div>
 
 				<div class="switcher">

@@ -13,7 +13,7 @@ require_once ('Simpla.php');
 
 class Brands extends Simpla
 {
-	public $brands_ids;
+	public $brands;
 
 	/*
 	 *
@@ -21,21 +21,26 @@ class Brands extends Simpla
 	 * @param $ids array
 	 *
 	 */
-	public function get_brands_ids($ids = null)
+	public function get_brands_ids( $filter = array() )
 	{
 		dtimer::log(__METHOD__ . " start");
-		//переменные
+		//это вариант по умолчанию id=>name
+		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
+		$key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
+		
+
 		$id_filter = '';
+
 
 		//фильтр
 
-		if (is_null($ids)) {
-			if(isset($this->brands_ids)){
+		if ( empty_(@$filter['id']) ) {
+			if(isset($this->brands[ $key ."_". $col ])){
 				dtimer::log(__METHOD__ . " end");
-				return $this->brands_ids;
+				return $this->brands[ $key ."_". $col ];
 			}
 		}
-		elseif (!is_null($ids) && is_array($ids) && count($ids) > 0) {
+		elseif ( !empty($ids) && count($ids) > 0) {
 			$id_filter = $this->db->placehold("AND id in (?@)", $ids);
 		}
 		else {
@@ -43,10 +48,12 @@ class Brands extends Simpla
 		}
 
 		$q = $this->db->query("SELECT id, name, url FROM __brands WHERE 1 $id_filter");
-		$res = $this->db->results_array( array('id' , 'name', 'url'), array('name' , 'id', 'id') );
+		
+		
+		$res = $this->db->results_array($col , $key  );
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-		if(is_null($ids)){
-			$this->brands_ids = $res;
+		if( empty_(@$filter[' id']) ){
+			$this->brands[ $key ."_". $col ] = $res;
 		}
 		dtimer::log(__METHOD__ . " end");
 		return $res;

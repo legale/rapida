@@ -3,22 +3,16 @@
 /**
  * Класс-обертка для конфигурационного файла с настройками магазина
  * В отличие от класса Settings, Config оперирует низкоуровневыми настройками, например найстройками базы данных.
- *
- *
- * @copyright 	2017 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  */
 
 require_once ('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.8.1.3';
+	public $version = '0.0.8.1.4';
 	
-	//соль
-	public $salt = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
+	//слова для формирования соли
+	public $salt_word = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
 	
 	// Файлы для хранения настроек
 	public $config_file = '';
@@ -92,7 +86,7 @@ class Config
 		$this->vars['max_upload_filesize'] = min($max_upload, $max_post, $memory_limit) * 1024 * 1024;
 		
 		// Соль для повышения надежности хеширования
-		$this->vars['salt'] = md5('sale marino. il sale iodato. il sale e il pepe. solo il sale.');
+		$this->vars['salt'] = md5($this->salt_word);
 		
 		// Часовой пояс
 		if (!empty($this->vars['php_timezone']['value']))

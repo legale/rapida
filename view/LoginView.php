@@ -6,6 +6,7 @@ class LoginView extends View
 {
 	function fetch()
 	{
+		dtimer::log(__METHOD__ . " start");
 		if(!isset($this->coMaster->uri_arr['path_arr']['url'])){
 			return false;
 		} else {

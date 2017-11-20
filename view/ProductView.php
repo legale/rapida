@@ -16,9 +16,10 @@ class ProductView extends View
 	{   
 		$product_url = $this->coMaster->uri_arr['path_arr']['url'];
 		
-		if(empty($product_url))
+		if(empty($product_url)){
 			return false;
-
+		}
+			
 		// Выбираем товар из базы
 		$product = $this->products->get_product((string)$product_url);
 		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin'])))

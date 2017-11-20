@@ -13,17 +13,21 @@ require_once ('Simpla.php');
 
 class Features extends Simpla
 {
-	//тут будут хранится уникальные значения опций с ключами по id
-	public $options_ids;
-	//тут будут хранится уникальные значений имен свойств и id
-	public $features_ids;
+	//тут будут хранится значения опций
+	public $options;
+	//тут будут хранится опции
+	public $features;
 
-	function get_features_ids()
+	function get_features_ids($filter = array() )
 	{
 		dtimer::log(__METHOD__ . ' start');
-		if(isset($this->features_ids)){
+		//это вариант по умолчанию id=>val
+		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
+		$key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
+
+		if(isset($this->features[$key . "_" . $col ])){
 			dtimer::log(__METHOD__ . ' return class var');
-			return $this->features_ids;
+			return $this->features[$key . "_" . $col ];
 		}
 		
 		// Выбираем свойства
@@ -31,9 +35,9 @@ class Features extends Simpla
 		if(!$this->db->query($q)){
 			return false;
 		}
-		$this->features_ids = $this->db->results_array(array('id','name', 'trans'), array('name','id', 'id'));
+		$this->features[$key . "_" . $col ] = $this->db->results_array($col, $key);
 		dtimer::log(__METHOD__ . ' return');
-		return $this->features_ids;
+		return $this->features[$key . "_" . $col ];
 	}
 	
 	function get_features($filter = array())
@@ -61,32 +65,6 @@ class Features extends Simpla
 		return $res;
 	}
 	
-	function get_features_trans($filter = array())
-	{
-		dtimer::log(__METHOD__ . ' start');
-		$category_id_filter = '';
-		if (isset($filter['category_id']))
-			$category_id_filter = $this->db->placehold('AND id in(SELECT feature_id FROM __categories_features AS cf WHERE cf.category_id in(?@))', (array)$filter['category_id']);
-
-		$in_filter_filter = '';
-		if (isset($filter['in_filter']))
-			$in_filter_filter = $this->db->placehold('AND f.in_filter=?', intval($filter['in_filter']));
-
-		$id_filter = '';
-		if (!empty($filter['id']))
-			$id_filter = $this->db->placehold('AND f.id in(?@)', (array)$filter['id']);
-		
-		// Выбираем свойства
-		$query = $this->db->placehold("SELECT id, trans FROM __features AS f
-			WHERE 1
-			$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
-		$this->db->query($query);
-		dtimer::log(__METHOD__ . " query: '$query'");
-		$res = $this->db->results_array('id', 'trans');
-		dtimer::log(__METHOD__ . ' return');
-		return $res;
-	}
-
 	function get_feature($id)
 	{
 		// Выбираем свойство
@@ -423,7 +401,7 @@ class Features extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if (!isset($force_no_cache)) {
 			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, true);
+			$res = $this->cache->get_cache_nosql($keyhash);
 		
 		
 		
@@ -469,17 +447,21 @@ class Features extends Simpla
 	}
 
 
-	public function get_options_ids($filter = array())
+	public function get_options_ids($filter = array() )
 	{
 		dtimer::log(__METHOD__ . " start");
 		dtimer::log(__METHOD__ . " filter: ". var_export($filter, true));
 		
+		//это вариант по умолчанию id=>val
+		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'val';
+		$key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
+		
 		//фильтр
-		if (!isset($filter['ids'])) {
-			$ids = null;
-			if(isset($this->options_ids)){
+		if ( empty_(@$filter['id']) ) {
+
+			if(isset($this->options[  $key ."_" . $col ] )){
 				dtimer::log(__METHOD__ . " using saved class variable");
-				return $this->options_ids;
+				return $this->options[  $key ."_" . $col ];
 			}
 		}
 
@@ -502,11 +484,11 @@ class Features extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if (!isset($force_no_cache)) {
 			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, true, false);
+			$res = $this->cache->get_cache_nosql($keyhash);
 
 			//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-			if(is_null($ids)){
-				$this->options_ids = $res;
+			if( empty_(@$filter['id']) ){
+				$this->options[$key . "_" . $col] = $res;
 			}		
 		
 		
@@ -531,56 +513,37 @@ class Features extends Simpla
 
 		//переменные
 		$id_filter = '';
+		$md4_filter = '';
 
-
-		if (!is_null($ids) && is_array($ids) && count($ids) > 0) {
-			$id_filter = $this->db->placehold("AND id in (?@)", $ids);
+		if (!empty_(@$filter['id']) && count(@$filter['id']) > 0) {
+			$id_filter = $this->db->placehold("AND id in (?@)", $filter['id']);
 		}
 
-		$this->db->query("SELECT id, val, trans, HEX(md4) as md4 FROM __options_uniq WHERE 1 $id_filter");
-		$res = $this->db->results_array( array('md4', 'id', 'val', 'trans'), array('id', 'md4', 'id', 'id') );
+		if (!empty_(@$filter['md4']) && count(@$filter['md4']) > 0) {
+			$md4_filter = $this->db->placehold("AND md4 in (?$)", $filter['md4']);
+		}
+
+		$this->db->query("SELECT id, val, trans, HEX(md4) as md4 FROM __options_uniq 
+		WHERE 1 
+		$id_filter
+		$md4_filter");
+		
+		
+		$res = $this->db->results_array( $col, $key );
+		
+		
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-		if(is_null($ids)){
+		if( empty_(@$filter['id']) ){
 			dtimer::log(__METHOD__ . " save res to class variable");
-			$this->options_ids = $res;
+			$this->options[$key . "_" . $col] = $res;
 		}
 		dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-		$this->cache->set_cache_nosql($keyhash, $res, false);
+		$this->cache->set_cache_nosql($keyhash, $res);
+
 		dtimer::log(__METHOD__ . ' return db');
 		return $res;
 	}
 	
-	public function get_options_md4($ids = null)
-	{
-		dtimer::log(__METHOD__ . " start");
-		//переменные
-		$id_filter = '';
-
-		//фильтр
-		if (is_null($ids)) {
-			if(isset($this->options_ids)){
-				dtimer::log(__METHOD__ . " end");
-				return $this->options_ids;
-			}
-		}
-		elseif (!is_null($ids) && is_array($ids) && count($ids) > 0) {
-			$id_filter = $this->db->placehold("AND md4 in (?$)", $ids);
-		}
-		else {
-			return false;
-		}
-
-		$this->db->query("SELECT id, md4 FROM __options_uniq WHERE 1 $id_filter");
-		$res = $this->db->results_array( 'id', 'md4' );
-		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-		if(is_null($ids)){
-			$this->options_ids = $res;
-		}
-		dtimer::log(__METHOD__ . " end");
-		return $res;
-	}
-
-
 	/*
 	 * Этот метод предоставляет комбинированные данные опций, в т.ч. все возможные опции без учета уже выбранных,
 	 * доступные для выбора опции с учетом уже выбранных. Т.е. если выбрана страна, например, Россия, другие 
@@ -589,15 +552,60 @@ class Features extends Simpla
 	public function get_options_mix($filter = array())
 	{
 		dtimer::log(__METHOD__ . " start");
-		$res = array();
+		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+		$filter_ = $filter;
+		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
+		unset($filter_['method']);
+		if (isset($filter_['force_no_cache'])) {
+			$force_no_cache = $filter_['force_no_cache'];
+			unset($filter_['force_no_cache']);
+		}
 		
+		
+		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+		ksort($filter_);
+		$filter_string = var_export($filter_, true);
+		$keyhash = hash('md4', 'get_options_mix' . $filter_string);
+
+		//если запуск был не из очереди - пробуем получить из кеша
+		if (!isset($force_no_cache)) {
+			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
+			$res = $this->cache->get_cache_nosql($keyhash);
+
+		
+		
+			//запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+			//функция выполнялась полностью
+			$filter_['force_no_cache'] = true;
+			$filter_string = var_export($filter_, true);
+			dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+
+			$task = '$this->features->get_options_mix(';
+			$task .= $filter_string;
+			$task .= ');';
+			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+		}
+
+		if (isset($res) && !empty_($res)) {
+			dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+			return $res;
+		}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+		//это для результата
+		$res = array();
+	
+		//это понадобится в любом случае
+		//массив id=>значение
+		$vals = $this->get_options_ids( array('return'=> array('col'=> 'val', 'key' => 'id')) );
+		
+		//массив id=>значение транслитом
+		$trans = $this->get_options_ids(array('return'=> array('col'=> 'trans', 'key' => 'id')) );
+
 		//Самый простой вариант - если не заданы фильтры по свойствам
 		if(!isset($filter['features'])){
 			
-			//2 массив со значениями
-			$vals = $this->get_options_ids()[2];
-			//3 массив с транслитом
-			$trans = $this->get_options_ids()[3];
 			if($res['filter'] = $this->get_options_raw($filter)){
 				foreach($res['filter'] as $fid=>$ids){
 					$res['full'][$fid] = array(
@@ -636,10 +644,7 @@ class Features extends Simpla
 			$filter_ = $filter;
 			unset($filter_['features']);
 			$res['full'] = $this->get_options_raw($filter_);
-			//2 массив со значениями
-			$vals = $this->get_options_ids()[2];
-			//3 массив с транслитом
-			$trans = $this->get_options_ids()[3];
+
 			foreach($res['full'] as $fid=>$ids){
 				$res['full'][$fid] = array(
 				'vals' => array_intersect_key($vals, $res['full'][$fid]),
@@ -647,8 +652,13 @@ class Features extends Simpla
 				);
 			} 
 		}
+
+		dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
+		$this->cache->set_cache_nosql($keyhash, $res);
 		dtimer::log(__METHOD__ . " end");
 		return $res;
+		
+		
 	}
 
 	/*
@@ -676,7 +686,7 @@ class Features extends Simpla
 		//если запуск был не из очереди - пробуем получить из кеша
 		if (!isset($force_no_cache)) {
 			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-			$res = $this->cache->get_cache_nosql($keyhash, true);
+			$res = $this->cache->get_cache_nosql($keyhash);
 		
 		
 		
