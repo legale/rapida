@@ -32,8 +32,13 @@ class Features extends Simpla
 			return $this->features[$key . "_" . $col ];
 		}
 		
+		$in_filter_filter = '';
+		if (isset($filter['in_filter'])){
+			$in_filter_filter = $this->db->placehold('AND in_filter=?', intval($filter['in_filter']));
+		}
+				
 		// Выбираем свойства
-		$q = $this->db->placehold("SELECT id, name, trans FROM __features");
+		$q = $this->db->placehold("SELECT id, name, trans FROM __features WHERE 1 $in_filter_filter");
 		if(!$this->db->query($q)){
 			return false;
 		}
@@ -50,8 +55,9 @@ class Features extends Simpla
 			$category_id_filter = $this->db->placehold('AND id in(SELECT feature_id FROM __categories_features AS cf WHERE cf.category_id in(?@))', (array)$filter['category_id']);
 
 		$in_filter_filter = '';
-		if (isset($filter['in_filter']))
+		if (isset($filter['in_filter'])){
 			$in_filter_filter = $this->db->placehold('AND f.in_filter=?', intval($filter['in_filter']));
+		}
 
 		$id_filter = '';
 		if (!empty($filter['id']))
@@ -722,7 +728,7 @@ class Features extends Simpla
 		
 		//если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
 		if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0 ) {
-				if($f = $this->features->get_features_ids(array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'name')) )){
+				if($f = $this->features->get_features_ids(array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'id')) )){
 				$filter['feature_id'] = array_values( $f );
 			} else {
 				//если у нас нет свойств в фильтре, значит и выбирать нечего
