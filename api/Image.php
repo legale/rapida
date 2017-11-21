@@ -33,6 +33,7 @@ class Image extends Simpla
 		dtimer::log(__METHOD__ . " $filename");
 		list($source_file, $width, $height, $set_watermark) = $this->get_resize_params($filename);
 		dtimer::log(__METHOD__ . " source_file: $source_file");
+		//~ dtimer::show();
 
 		// Если файл удаленный (http://), зальем его себе
 		if (substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://') {
@@ -93,9 +94,11 @@ class Image extends Simpla
 
 	public function get_resize_params($filename)
 	{
+		dtimer::log(__METHOD__. " start");
 		// Определаяем параметры ресайза
-		if (!preg_match('/(.+)\.([0-9]*)x([0-9]*)(w)?\.([^\.]+)$/', $filename, $matches)) {
-			return false;
+		if (!preg_match('/(.+)\.([0-9]*)(?=x)([0-9]*)(w)?\.([^\.]+)$/', $filename, $matches)) {
+		dtimer::log(__METHOD__. " unable to resize return array with original filename");
+			return array($filename, '', '', '');
 		}
 
 		$file = $matches[1];					// имя запрашиваемого файла
