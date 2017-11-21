@@ -51,7 +51,7 @@ class IndexView extends View
 	 */
 	function fetch($url = null)
 	{
-		dtimer::log(__METHOD__ . " fetch");
+		dtimer::log(__METHOD__ . " start");
 		// Содержимое корзины
 		$this->design->assign('cart',		$this->cart->get_cart());
 	

@@ -77,11 +77,11 @@
 	<!-- Дополнительные фото продукта (The End)-->
 
 
-	{if $options}
+	{if $product['options']}
 	<!-- Характеристики товара -->
 	<h2>Характеристики</h2>
 	<ul class="features">
-	{foreach $options as $fid=>$o}
+	{foreach $product['options'] as $fid=>$o}
 	<li>
 		<label fid="{$fid}" vid="{$o['vid']}">{$features[$fid]['name']}</label>
 		<span>{$o['val']}</span>

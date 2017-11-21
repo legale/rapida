@@ -45,9 +45,9 @@ class ProductView extends View
 		}
 		// Свойства товара
 		$features = $this->features->get_features();
-		$options = $this->features->get_product_options($product['id']);
+		$product['options'] = $this->features->get_product_options($product['id']);
 		$this->design->assign('features', $features);
-		$this->design->assign('options', $options);
+
 
 	
 		// Автозаполнение имени для формы комментария

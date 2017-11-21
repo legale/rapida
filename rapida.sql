@@ -109,7 +109,7 @@ DROP TABLE IF EXISTS `s_coupons`;
 CREATE TABLE `s_coupons` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(256) NOT NULL,
-  `expire` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `expire` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` enum('absolute','percentage') NOT NULL DEFAULT 'absolute',
   `value` decimal(10,2) NOT NULL DEFAULT '0.00',
   `min_order_price` decimal(10,2) DEFAULT '0.00',
@@ -332,9 +332,9 @@ CREATE TABLE `s_orders` (
   `delivery_price` decimal(10,2) NOT NULL DEFAULT '0.00',
   `payment_method_id` int(11) DEFAULT '0',
   `paid` int(1) NOT NULL DEFAULT '0',
-  `payment_date` timestamp NULL DEFAULT '1970-01-01 02:01:00',
+  `payment_date` timestamp NOT NULL DEFAULT '1970-01-01 02:01:00',
   `closed` tinyint(1) DEFAULT '0',
-  `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) DEFAULT '0',
   `name` varchar(255) DEFAULT '',
   `address` varchar(255) DEFAULT '',
@@ -443,7 +443,7 @@ CREATE TABLE `s_products` (
   `meta_title` varchar(500) NOT NULL DEFAULT '',
   `meta_keywords` varchar(500) NOT NULL DEFAULT '',
   `meta_description` varchar(500) NOT NULL DEFAULT '',
-  `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `featured` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `url` (`url`),
@@ -499,13 +499,6 @@ CREATE TABLE `s_queue` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
-/* Data for table s_queue */
-INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(2, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(3, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(4, 0x526d10ed9397bdf3d2faf6881eb41821, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'63886\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(8, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -517,13 +510,6 @@ CREATE TABLE `s_queue_full` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-/* Data for table s_queue_full */
-INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(2, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(3, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(4, 0x526d10ed9397bdf3d2faf6881eb41821, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'63886\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(5, 0x4d164cea4f503042fac6b3bafebc7a6d, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'6771\',\n    1 => \'6777\',\n    2 => \'6773\',\n    3 => \'5438\',\n    4 => \'171\',\n    5 => \'5440\',\n    6 => \'8\',\n    7 => \'10\',\n    8 => \'9\',\n    9 => \'7\',\n    10 => \'1\',\n    11 => \'3\',\n    12 => \'2\',\n    13 => \'4\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
@@ -574,7 +560,7 @@ CREATE TABLE `s_users` (
   `admin` tinyint(1) DEFAULT '0',
   `perm` varchar(200) CHARACTER SET ascii DEFAULT '',
   `last_ip` varchar(15) DEFAULT '',
-  `last_login` timestamp NULL DEFAULT '1970-01-01 02:01:00',
+  `last_login` timestamp NOT NULL DEFAULT '1970-01-01 02:01:00',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`) USING BTREE,

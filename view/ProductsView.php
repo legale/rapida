@@ -26,7 +26,8 @@ class ProductsView extends View
 		//~ print "<PRE>";
 		//~ print_r($this->coMaster->uri_arr);
 		//~ print "</PRE>";
-		dtimer::log(__METHOD__ . " fetch");
+		dtimer::log(__METHOD__ . " start");
+				
 		$category_url = $this->coMaster->uri_arr['path_arr']['url'];
 		
 		$filter = array();
@@ -39,6 +40,7 @@ class ProductsView extends View
 			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'url')) );
 			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
 		}
+				
 		
 		
 		$filter['visible'] = 1;	
@@ -50,16 +52,24 @@ class ProductsView extends View
 			}
 			
 			if (empty($brand)){
+				dtimer::log(__METHOD__ . __LINE__ ." empty brand ", 2 );
 				return false;
 			}
 			$this->design->assign('brand', $brand);
 		}
+				
 		
 		// Выберем текущую категорию
 		if (  (!empty($category_url)) ) {
+							
+
 			$category = $this->categories->get_category((string)$category_url);
-			if (empty($category) || (!$category['visible'] && empty($_SESSION['admin'])))
+				
+
+			if (empty($category) || (!$category['visible'] && empty($_SESSION['admin']))){
+				dtimer::log(__METHOD__ . __LINE__ ." empty category ", 2 );
 				return false;
+			}
 			$this->design->assign('category', $category);
 			$filter['category_id'] = $category['children'];
 		}
@@ -69,6 +79,7 @@ class ProductsView extends View
 			$this->design->assign('keyword', $keyword);
 			$filter['keyword'] = $keyword;
 		}
+				
 
 		// Сортировка товаров, сохраняем в сесси, чтобы текущая сортировка оставалась для всего сайта
 		if($sort = $this->request->get('sort', 'string'))
@@ -78,6 +89,7 @@ class ProductsView extends View
 		else
 			$filter['sort'] = 'position';			
 		$this->design->assign('sort', $filter['sort']);
+				
 		
 		// Свойства товаров
 		
@@ -110,6 +122,8 @@ class ProductsView extends View
 						//тут проверим количество переданных значений опций и количество полученных из базы,
 						//если не совпадает - return false
 						if(count($ids) !== count($vals)){
+					
+						dtimer::log(__METHOD__ . __LINE__ ." count($ids) !== count($vals) ", 2 );
 							return false;
 						}
 						
@@ -155,7 +169,8 @@ class ProductsView extends View
 		$this->design->assign('current_page_num', $current_page);
 		// Вычисляем количество страниц
 		$products_count = $this->products->count_products($filter);
-		
+					
+	
 		// Показать все страницы сразу
 		if($this->request->get('page') == 'all')
 			$items_per_page = $products_count;	
@@ -234,6 +249,7 @@ class ProductsView extends View
 		{
 			$this->design->assign('category', $category);
 			$this->design->assign('meta_title', $category['meta_title']);
+				
 			$this->design->assign('meta_keywords', $category['meta_keywords']);
 			$this->design->assign('meta_description', $category['meta_description']);
 		}
@@ -250,6 +266,7 @@ class ProductsView extends View
 		
 			
 		$this->body = $this->design->fetch('products.tpl');
+		dtimer::log(__METHOD__ . " return ");
 		return $this->body;
 	}
 	

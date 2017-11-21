@@ -42,6 +42,8 @@ class ControllerMaster extends Simpla
 		if (isset($_SERVER)) {
 			//запуск без параметров устанавливает контроллер $this->ctrl
 			$this->parse_uri();
+			dtimer::log(__METHOD__ . __LINE__ ." parsed_uri: " . var_export($this->uri_arr, true));
+
 		}
 		else {
 			print "\n" . __CLASS__ . " is not for using via CLI\n";
@@ -169,7 +171,8 @@ class ControllerMaster extends Simpla
 					$c[urldecode($b[0])] = urldecode($b[1]);
 				}
 				else {
-					dtimer::log(__METHOD__ . ' parse uri query part failed ');
+					dtimer::log(__METHOD__ . ' parse uri query part failed ', 2);
+					dtimer::log(__METHOD__ . __LINE__ ." error", 2);
 					return false;
 				}
 			}
@@ -278,6 +281,7 @@ class ControllerMaster extends Simpla
 			if(count($explode) === 2){
 				list($f, $o) = $explode;
 			} else {
+				dtimer::log(__METHOD__ . __LINE__ ." error", 2);
 				return false;
 			}
 			
@@ -293,6 +297,7 @@ class ControllerMaster extends Simpla
 				if(count($explode) === 2){
 					list($f, $o) = $explode;
 				} else {
+					dtimer::log(__METHOD__ . __LINE__ ." error", 2);
 					return false;
 				}
 			}
@@ -310,6 +315,7 @@ class ControllerMaster extends Simpla
 				if(count($explode) === 2){
 					list($f, $o) = $explode;
 				} else {
+					dtimer::log(__METHOD__ . __LINE__ ." error", 2);
 					return false;
 				}
 				$res['filter'][$f] = explode('.', $o);

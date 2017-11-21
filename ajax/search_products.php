@@ -13,10 +13,10 @@
 	if(!empty($products)){
 		foreach($products as $product){
 			$suggestion = new stdClass();
-			if(!empty($product->image))
-				$product->image = $simpla->design->resize_modifier($product->image, 35, 35);
+			if(!empty($product['image']))
+				$product['image'] = $simpla->design->resize_modifier($product['image'], 35, 35);
 				
-			$suggestion->value = $product->name;
+			$suggestion->value = $product['name'];
 			$suggestion->data = $product;
 			$suggestions[] = $suggestion;
 		}

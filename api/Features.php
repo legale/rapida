@@ -462,8 +462,8 @@ class Features extends Simpla
 		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'val';
 		$key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
 		
-		//фильтр
-		if ( empty_(@$filter['id']) ) {
+		//выводим из сохраненного массива, если у нас не заданы фильтры по id и md4
+		if ( !isset($filter['id']) && !isset($filter['md4']) ) {
 
 			if(isset($this->options[  $key ."_" . $col ] )){
 				dtimer::log(__METHOD__ . " using saved class variable");
@@ -539,7 +539,7 @@ class Features extends Simpla
 		
 		
 		//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-		if( empty_(@$filter['id']) ){
+		if ( !isset($filter['id']) && !isset($filter['md4']) ) {
 			dtimer::log(__METHOD__ . " save res to class variable");
 			$this->options[$key . "_" . $col] = $res;
 		}

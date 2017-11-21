@@ -72,7 +72,7 @@
 {if $features}
 <table id="features">
 	{*$filter['features']|@debug_print_var*}
-	{foreach $features as $key=>$f}
+	{foreach $features as $fid=>$f}
 	<tr>
 	<td class="feature_name" data-feature="{$f['id']}">
 		{$f['name']}:
