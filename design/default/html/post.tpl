@@ -1,22 +1,22 @@
 {* Страница отдельной записи блога *}
 
 {* Канонический адрес страницы *}
-{$canonical="/blog/{$post->url}" scope=parent}
+{$canonical="/blog/{$post['url']}" scope=parent}
 
 <!-- Заголовок /-->
-<h1 data-post="{$post->id}">{$post->name|escape}</h1>
-<p>{$post->date|date}</p>
+<h1 data-post="{$post['id']}">{$post['name']|escape}</h1>
+<p>{$post['date']|date}</p>
 
 <!-- Тело поста /-->
-{$post->text}
+{$post['text']}
 
 <!-- Соседние записи /-->
 <div id="back_forward">
 	{if $prev_post}
-		←&nbsp;<a class="prev_page_link" href="blog/{$prev_post->url}">{$prev_post->name}</a>
+		←&nbsp;<a class="prev_page_link" href="blog/{$prev_post['url']}">{$prev_post['name']}</a>
 	{/if}
 	{if $next_post}
-		<a class="next_page_link" href="blog/{$next_post->url}">{$next_post->name}</a>&nbsp;→
+		<a class="next_page_link" href="blog/{$next_post['url']}">{$next_post['name']}</a>&nbsp;→
 	{/if}
 </div>
 
@@ -29,17 +29,17 @@
 	<!-- Список с комментариями -->
 	<ul class="comment_list">
 		{foreach $comments as $comment}
-		<a name="comment_{$comment->id}"></a>
+		<a name="comment_{$comment['id']}"></a>
 		<li>
 			<!-- Имя и дата комментария-->
 			<div class="comment_header">	
-				{$comment->name|escape} <i>{$comment->date|date}, {$comment->date|time}</i>
-				{if !$comment->approved}<b>ожидает модерации</b>{/if}
+				{$comment['name']|escape} <i>{$comment['date']|date}, {$comment['date']|time}</i>
+				{if !$comment['approved']}<b>ожидает модерации</b>{/if}
 			</div>
 			<!-- Имя и дата комментария (The End)-->
 			
 			<!-- Комментарий -->
-			{$comment->text|escape|nl2br}
+			{$comment['text']|escape|nl2br}
 			<!-- Комментарий (The End)-->
 		</li>
 		{/foreach}

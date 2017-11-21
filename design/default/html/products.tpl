@@ -42,7 +42,7 @@
 
 
 {* Описание страницы (если задана) *}
-{$page->body}
+{$page['body']}
 
 {if $current_page_num==1}
 {* Описание категории *}
@@ -150,7 +150,7 @@
 				</td>
 				<td>
 					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}

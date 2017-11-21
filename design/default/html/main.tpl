@@ -8,10 +8,10 @@
 {$canonical="" scope=parent}
 
 {* Заголовок страницы *}
-<h1>{$page->header}</h1>
+<h1>{$page['header']}</h1>
 
 {* Тело страницы *}
-{$page->body}
+{$page['body']}
 
 
 {* Рекомендуемые товары *}
@@ -52,7 +52,7 @@
 				</td>
 				<td>
 					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
@@ -110,7 +110,7 @@
 				</td>
 				<td>
 					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
@@ -167,7 +167,7 @@
 				</td>
 				<td>
 					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}

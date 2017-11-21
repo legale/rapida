@@ -6,7 +6,7 @@
 <!-- Хлебные крошки /-->
 <div id="path">
 	<a href="./">Главная</a>
-	{foreach $category->path as $cat}
+	{foreach $category['path'] as $cat}
 	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
 	{/foreach}
 	{if $brand}
@@ -52,7 +52,7 @@
 			</td>
 			<td>
 				{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-				<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+				<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 			</td>
 		</tr>
 		{/foreach}
@@ -94,10 +94,10 @@
 	<!-- Соседние товары /-->
 	<div id="back_forward">
 		{if $prev_product}
-			←&nbsp;<a class="prev_page_link" href="products/{$prev_product->url}">{$prev_product->name|escape}</a>
+			←&nbsp;<a class="prev_page_link" href="products/{$prev_product['url']}">{$prev_product['name']|escape}</a>
 		{/if}
 		{if $next_product}
-			<a class="next_page_link" href="products/{$next_product->url}">{$next_product->name|escape}</a>&nbsp;→
+			<a class="next_page_link" href="products/{$next_product['url']}">{$next_product['name']|escape}</a>&nbsp;→
 		{/if}
 	</div>
 	
@@ -114,32 +114,32 @@
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $related_product->image}
+		{if $related_product['image']}
 		<div class="image">
-			<a href="products/{$related_product->url}"><img src="{$related_product->image->filename|resize:200:200}" alt="{$related_product->name|escape}"/></a>
+			<a href="products/{$related_product['url']}"><img src="{$related_product['image']['filename']|resize:200:200}" alt="{$related_product['name']|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$related_product->id}" href="products/{$related_product->url}">{$related_product->name|escape}</a></h3>
+		<h3><a data-product="{$related_product['id']}" href="products/{$related_product['url']}">{$related_product['name']|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
-		{if $related_product->variants|count > 0}
+		{if $related_product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">
 			<table>
-			{foreach $related_product->variants as $v}
+			{foreach $related_product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					<input id="related_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton"  {if $v@first}checked{/if} {if $related_product->variants|count<2} style="display:none;"{/if}/>
+					<input id="related_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton"  {if $v@first}checked{/if} {if $related_product['variants']|count<2} style="display:none;"{/if}/>
 				</td>
 				<td>
 					{if $v['name']}<label class="variant_name" for="related_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
 					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
-					<span class="price">{$v['price']|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 			</tr>
 			{/foreach}
@@ -167,17 +167,17 @@
 	<!-- Список с комментариями -->
 	<ul class="comment_list">
 		{foreach $comments as $comment}
-		<a name="comment_{$comment->id}"></a>
+		<a name="comment_{$comment['id']}"></a>
 		<li>
 			<!-- Имя и дата комментария-->
 			<div class="comment_header">	
-				{$comment->name|escape} <i>{$comment->date|date}, {$comment->date|time}</i>
-				{if !$comment->approved}ожидает модерации</b>{/if}
+				{$comment['name']|escape} <i>{$comment['date']|date}, {$comment['date']|time}</i>
+				{if !$comment['approved']}ожидает модерации</b>{/if}
 			</div>
 			<!-- Имя и дата комментария (The End)-->
 			
 			<!-- Комментарий -->
-			{$comment->text|escape|nl2br}
+			{$comment['text']|escape|nl2br}
 			<!-- Комментарий (The End)-->
 		</li>
 		{/foreach}

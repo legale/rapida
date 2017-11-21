@@ -29,7 +29,7 @@
 
 	{* Цена за единицу *}
 	<td class="price">
-		{($purchase['price'])|convert}&nbsp;{$currency->sign}
+		{($purchase['price'])|convert}&nbsp;{$currency['sign']}
 	</td>
 
 	{* Количество *}
@@ -39,7 +39,7 @@
 
 	{* Цена *}
 	<td class="price">
-		{($purchase['price']*$purchase['amount'])|convert}&nbsp;{$currency->sign}
+		{($purchase['price']*$purchase['amount'])|convert}&nbsp;{$currency['sign']}
 	</td>
 </tr>
 {/foreach}
@@ -63,7 +63,7 @@
 	<th class="price"></th>
 	<th class="amount"></th>
 	<th class="price">
-		&minus;{$order['coupon_discount']|convert}&nbsp;{$currency->sign}
+		&minus;{$order['coupon_discount']|convert}&nbsp;{$currency['sign']}
 	</th>
 </tr>
 {/if}
@@ -71,11 +71,11 @@
 {if !$order['separate_delivery'] && $order['delivery_price']>0}
 <tr>
 	<td class="image"></td>
-	<td class="name">{$delivery->name|escape}</td>
+	<td class="name">{$delivery['name']|escape}</td>
 	<td class="price"></td>
 	<td class="amount"></td>
 	<td class="price">
-		{$order['delivery_price']|convert}&nbsp;{$currency->sign}
+		{$order['delivery_price']|convert}&nbsp;{$currency['sign']}
 	</td>
 </tr>
 {/if}
@@ -86,18 +86,18 @@
 	<th class="price"></th>
 	<th class="amount"></th>
 	<th class="price">
-		{$order['total_price']|convert}&nbsp;{$currency->sign}
+		{$order['total_price']|convert}&nbsp;{$currency['sign']}
 	</th>
 </tr>
 {* Если стоимость доставки не входит в сумму заказа *}
 {if $order['separate_delivery']}
 <tr>
 	<td class="image"></td>
-	<td class="name">{$delivery->name|escape}</td>
+	<td class="name">{$delivery['name']|escape}</td>
 	<td class="price"></td>
 	<td class="amount"></td>
 	<td class="price">
-		{$order['delivery_price']|convert}&nbsp;{$currency->sign}
+		{$order['delivery_price']|convert}&nbsp;{$currency['sign']}
 	</td>
 </tr>
 {/if}
@@ -178,11 +178,11 @@
     {foreach $payment_methods as $payment_method}
     	<li>
     		<div class="checkbox">
-    			<input type=radio name=payment_method_id value='{$payment_method->id}' {if $payment_method@first}checked{/if} id=payment_{$payment_method->id}>
+    			<input type=radio name=payment_method_id value='{$payment_method['id']}' {if $payment_method@first}checked{/if} id=payment_{$payment_method['id']}>
     		</div>			
-			<h3><label for=payment_{$payment_method->id}>	{$payment_method->name}, к оплате {$order['total_price']|convert:$payment_method->currency_id}&nbsp;{$all_currencies[$payment_method->currency_id]->sign}</label></h3>
+			<h3><label for=payment_{$payment_method['id']}>	{$payment_method['name']}, к оплате {$order['total_price']|convert:$payment_method['currency_id']}&nbsp;{$all_currencies[$payment_method['currency_id']]->sign}</label></h3>
 			<div class="description">
-			{$payment_method->description}
+			{$payment_method['description']}
 			</div>
     	</li>
     {/foreach}
@@ -192,18 +192,18 @@
 
 {* Выбраный способ оплаты *}
 {elseif $payment_method}
-<h2>Способ оплаты &mdash; {$payment_method->name}
+<h2>Способ оплаты &mdash; {$payment_method['name']}
 <form method=post><input type=submit name='reset_payment_method' value='Выбрать другой способ оплаты'></form>	
 </h2>
 <p>
-{$payment_method->description}
+{$payment_method['description']}
 </p>
 <h2>
-К оплате {$order['total_price']|convert:$payment_method->currency_id}&nbsp;{$all_currencies[$payment_method->currency_id]->sign}
+К оплате {$order['total_price']|convert:$payment_method['currency_id']}&nbsp;{$all_currencies[$payment_method['currency_id']]->sign}
 </h2>
 
 {* Форма оплаты, генерируется модулем оплаты *}
-{checkout_form order_id=$order['id'] module=$payment_method->module}
+{checkout_form order_id=$order['id'] module=$payment_method['module']}
 {/if}
 
 {/if}

@@ -19,7 +19,7 @@
 	<td class="image">
 		{$image = $purchase['product']['images']|first}
 		{if $image}
-		<a href="products/{$purchase['product']['url']}"><img src="{$image->filename|resize:50:50}" alt="{$product['name|escape']}"></a>
+		<a href="products/{$purchase['product']['url']}"><img src="{$image['filename']|resize:50:50}" alt="{$product['name|escape']}"></a>
 		{/if}
 	</td>
 	
@@ -31,7 +31,7 @@
 
 	{* Цена за единицу *}
 	<td class="price">
-		{($purchase['variant']['price'])|convert} {$currency->sign}
+		{($purchase['variant']['price'])|convert} {$currency['sign']}
 	</td>
 
 	{* Количество *}
@@ -45,7 +45,7 @@
 
 	{* Цена *}
 	<td class="price">
-		{($purchase['variant']['price']*$purchase['amount'])|convert}&nbsp;{$currency->sign}
+		{($purchase['variant']['price']*$purchase['amount'])|convert}&nbsp;{$currency['sign']}
 	</td>
 	
 	{* Удалить из корзины *}
@@ -57,14 +57,14 @@
 			
 </tr>
 {/foreach}
-{if isset($user->discount)}
+{if isset($user['discount'])}
 <tr>
 	<th class="image"></th>
 	<th class="name">скидка</th>
 	<th class="price"></th>
 	<th class="amount"></th>
 	<th class="price">
-		{$user->discount}&nbsp;%
+		{$user['discount']}&nbsp;%
 	</th>
 	<th class="remove"></th>
 </tr>
@@ -82,14 +82,14 @@
 		<div>
 		<input type="text" name="coupon_code" value="{$cart['coupon']['code']|escape}" class="coupon_code">
 		</div>
-		{if $cart['coupon']['min_order_price']>0}(купон {$cart['coupon']['code']|escape} действует для заказов от {$cart['coupon']['min_order_price']|convert} {$currency->sign}){/if}
+		{if $cart['coupon']['min_order_price']>0}(купон {$cart['coupon']['code']|escape} действует для заказов от {$cart['coupon']['min_order_price']|convert} {$currency['sign']}){/if}
 		<div>
 		<input type="button" name="apply_coupon"  value="Применить купон" onclick="document.cart.submit();">
 		</div>
 	</th>
 	<th class="price">
 		{if $cart['coupon_discount']>0}
-		&minus;{$cart['coupon_discount']|convert}&nbsp;{$currency->sign}
+		&minus;{$cart['coupon_discount']|convert}&nbsp;{$currency['sign']}
 		{/if}
 	</th>
 	<th class="remove"></th>
@@ -114,7 +114,7 @@ $("input[name='coupon_code']").keypress(function(event){
 	<th class="name"></th>
 	<th class="price" colspan="4">
 		Итого
-		{$cart['total_price']|convert}&nbsp;{$currency->sign}
+		{$cart['total_price']|convert}&nbsp;{$currency['sign']}
 	</th>
 </tr>
 </table>
@@ -147,14 +147,14 @@ $("input[name='coupon_code']").keypress(function(event){
 			{foreach $product['variants'] as $v}
 			<tr class="variant">
 				<td>
-					{if $v->name}<label class="variant_name" for="related_{$v->id}">{$v->name}</label>{/if}
+					{if $v['name']}<label class="variant_name" for="related_{$v['id']}">{$v['name']}</label>{/if}
 				</td>
 				<td>
-					{if $v->old_price > 0}<span class="old_price">{$v->old_price|convert}</span>{/if}
-					<span class="price">{$v->price|convert} <span class="currency">{$currency->sign|escape}</span></span>
+					{if $v['old_price'] > 0}<span class="old_price">{$v['old_price']|convert}</span>{/if}
+					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 				<td>
-					<a href="cart?variant={$v->id}">в корзину</a>
+					<a href="cart?variant={$v['id']}">в корзину</a>
 				</td>
 			</tr>
 			{/foreach}
@@ -179,21 +179,21 @@ $("input[name='coupon_code']").keypress(function(event){
 	{foreach $deliveries as $delivery}
 	<li>
 		<div class="checkbox">
-			<input type="radio" name="delivery_id" value="{$delivery->id}" {if $delivery_id==$delivery->id}checked{elseif $delivery@first}checked{/if} id="deliveries_{$delivery->id}">
+			<input type="radio" name="delivery_id" value="{$delivery['id']}" {if $delivery_id==$delivery['id']}checked{elseif $delivery@first}checked{/if} id="deliveries_{$delivery['id']}">
 		</div>
 		
 			<h3>
-			<label for="deliveries_{$delivery->id}">
-			{$delivery->name}
-			{if $cart['total_price'] < $delivery->free_from && $delivery->price>0}
-				({$delivery->price|convert}&nbsp;{$currency->sign})
-			{elseif $cart['total_price'] >= $delivery->free_from}
+			<label for="deliveries_{$delivery['id']}">
+			{$delivery['name']}
+			{if $cart['total_price'] < $delivery['free_from'] && $delivery['price']>0}
+				({$delivery['price']|convert}&nbsp;{$currency['sign']})
+			{elseif $cart['total_price'] >= $delivery['free_from']}
 				(бесплатно)
 			{/if}
 			</label>
 			</h3>
 			<div class="description">
-			{$delivery->description}
+			{$delivery['description']}
 			</div>
 	</li>
 	{/foreach}

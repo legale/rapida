@@ -1,11 +1,11 @@
 {* Страница с формой обратной связи *}
 
 {* Канонический адрес страницы *}
-{$canonical="/{$page->url}" scope=parent}
+{$canonical="/{$page['url']}" scope=parent}
 
-<h1>{$page->name|escape}</h1>
+<h1>{$page['name']|escape}</h1>
 
-{$page->body}
+{$page['body']}
 
 <h2>Обратная связь</h2>
 

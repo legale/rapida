@@ -31,7 +31,7 @@ class Pages extends Simpla
 		          FROM __pages $where LIMIT 1";
 
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 	
 	/*
@@ -57,8 +57,7 @@ class Pages extends Simpla
 
 		$this->db->query($query);
 
-		foreach ($this->db->results() as $page)
-			$pages[$page->id] = $page;
+		$pages = $this->db->results_array(null, 'id');
 
 		return $pages;
 	}
@@ -132,8 +131,7 @@ class Pages extends Simpla
 		$menus = array();
 		$query = "SELECT * FROM __menu ORDER BY position";
 		$this->db->query($query);
-		foreach ($this->db->results() as $menu)
-			$menus[$menu->id] = $menu;
+		$menus = $this->db->results_array(null, 'id');
 		return $menus;
 	}
 	
@@ -147,7 +145,7 @@ class Pages extends Simpla
 	{
 		$query = $this->db->placehold("SELECT * FROM __menu WHERE id=? LIMIT 1", intval($menu_id));
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 
 }

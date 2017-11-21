@@ -95,9 +95,9 @@
 		<ul id="menu">
 			{foreach $pages as $p}
 				{* Выводим только страницы из первого меню *}
-				{if $p->menu_id == 1}
-				<li {if $page && $page->id == $p->id}class="selected"{/if}>
-					<a data-page="{$p->id}" href="{$p->url}">{$p->name|escape}</a>
+				{if $p['menu_id'] == 1}
+				<li {if $page && $page['id'] == $p['id']}class="selected"{/if}>
+					<a data-page="{$p['id']}" href="{$p['url']}">{$p['name']|escape}</a>
 				</li>
 				{/if}
 			{/foreach}
@@ -177,7 +177,7 @@
 				{if $c['visible']}
 					<li>
 						{if $c['image']}<img src="{$config->categories_images_dir}{$c['image']}" alt="{$c['name']|escape}">{/if}
-						<a {if $category->id == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
+						<a {if $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
 						{categories_tree categories=$c['subcategories']}
 					</li>
 				{/if}
@@ -197,10 +197,10 @@
 			<div id="all_brands">
 				<h2>Все бренды:</h2>
 				{foreach $all_brands as $b}	
-					{if $b->image}
-					<a href="brands/{$b->url}"><img src="{$config->brands_images_dir}{$b->image}" alt="{$b->name|escape}"></a>
+					{if $b['image']}
+					<a href="brands/{$b['url']}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
 					{else}
-					<a href="brands/{$b->url}">{$b->name}</a>
+					<a href="brands/{$b['url']}">{$b['name']}</a>
 					{/if}
 				{/foreach}
 			</div>
@@ -214,8 +214,8 @@
 				<h2>Валюта</h2>
 				<ul>
 					{foreach $currencies as $c}
-					{if $c->enabled} 
-					<li class="{if $c->id==$currency->id}selected{/if}"><a href='{url currency_id=$c->id}'>{$c->name|escape}</a></li>
+					{if $c['enabled']} 
+					<li class="{if $c['id']==$currency['id']}selected{/if}"><a href='{url currency_id=$c['id']}'>{$c['name']|escape}</a></li>
 					{/if}
 					{/foreach}
 				</ul>
@@ -232,7 +232,7 @@
 				<ul id="browsed_products">
 				{foreach $browsed_products as $browsed_product}
 					<li>
-					<a href="products/{$browsed_product->url}"><img src="{$browsed_product->image->filename|resize:50:50}" alt="{$browsed_product->name|escape}" title="{$browsed_product->name|escape}"></a>
+					<a href="products/{$browsed_product['url']}"><img src="{$browsed_product['image']['filename']|resize:50:50}" alt="{$browsed_product['name']|escape}" title="{$browsed_product['name']|escape}"></a>
 					</li>
 				{/foreach}
 				</ul>
@@ -248,7 +248,7 @@
 				<h2>Новые записи в <a href="blog">блоге</a></h2>
 				{foreach $last_posts as $post}
 				<ul>
-					<li data-post="{$post->id}">{$post->date|date} <a href="blog/{$post->url}">{$post->name|escape}</a></li>
+					<li data-post="{$post['id']}">{$post['date']|date} <a href="blog/{$post['url']}">{$post['name']|escape}</a></li>
 				</ul>
 				{/foreach}
 			</div>
