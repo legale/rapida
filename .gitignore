@@ -2,10 +2,11 @@
 #Это мы не включаем в GIT
 #########################
 
-/compiled/**
-/cache/**
-/design/**
-/.vscode/**
+compiled/**
+cache/**
+design/**
+.vscode/**
+
 
 /simpla/design/compiled/**
 
