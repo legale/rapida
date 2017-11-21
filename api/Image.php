@@ -34,6 +34,7 @@ class Image extends Simpla
 		list($source_file, $width, $height, $set_watermark) = $this->get_resize_params($filename);
 		dtimer::log(__METHOD__ . " source_file: $source_file");
 		//~ dtimer::show();
+		
 
 		// Если файл удаленный (http://), зальем его себе
 		if (substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://') {
@@ -72,7 +73,6 @@ class Image extends Simpla
 			$this->image_constrain_imagick($originals_dir . $original_file, $preview_dir . $resized_file, $width, $height, $watermark, $watermark_offet_x, $watermark_offet_y, $watermark_transparency, $sharpen);
 		else
 			$this->image_constrain_gd($originals_dir . $original_file, $preview_dir . $resized_file, $width, $height, $watermark, $watermark_offet_x, $watermark_offet_y, $watermark_transparency);
-
 		return $preview_dir . $resized_file;
 	}
 
@@ -96,8 +96,8 @@ class Image extends Simpla
 	{
 		dtimer::log(__METHOD__. " start");
 		// Определаяем параметры ресайза
-		if (!preg_match('/(.+)\.([0-9]*)(?=x)([0-9]*)(w)?\.([^\.]+)$/', $filename, $matches)) {
-		dtimer::log(__METHOD__. " unable to resize return array with original filename");
+		if (!preg_match('/(.+)\.([0-9]+)x([0-9]+)(w)?\.([^\.]+)$/', $filename, $matches)) {
+		dtimer::log(__METHOD__. " unable to resize return array with original filename", 2);
 			return array($filename, '', '', '');
 		}
 
@@ -119,6 +119,7 @@ class Image extends Simpla
 		$this->db->query('SELECT product_id as pid, position as pos FROM __images WHERE filename = ? LIMIT 1', $filename);
 		
 		if (!$res = $this->db->result_array()) {
+			dtimer::log(__METHOD__ . " $filename not found in DB", 2);
 			return false;
 		}
 		
