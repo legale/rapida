@@ -50,7 +50,7 @@ CREATE TABLE `s_cache_integer` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
 INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-11-18', 0xcc23865436abc431007759e15a11991a, 0);
+('2017-11-21', 0xcc23865436abc431007759e15a11991a, 0);
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -306,7 +306,14 @@ CREATE TABLE `s_options` (
   `52` mediumint(9) NOT NULL DEFAULT '0',
   `53` mediumint(9) NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`),
-  KEY `13` (`13`,`product_id`)
+  KEY `13` (`13`,`product_id`),
+  KEY `23` (`23`,`product_id`),
+  KEY `22` (`22`,`product_id`),
+  KEY `21` (`21`,`product_id`),
+  KEY `20` (`20`,`product_id`),
+  KEY `14` (`14`,`product_id`),
+  KEY `15` (`15`,`product_id`),
+  KEY `16` (`16`,`product_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
@@ -498,7 +505,9 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/* Data for table s_queue */
+;
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -509,7 +518,9 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/* Data for table s_queue_full */
+;
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */

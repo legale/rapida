@@ -790,17 +790,6 @@ class Products extends Simpla
 	}
 	
 	
-	function if_image_exists($basename)
-	{	
-		if(!is_string($basename)){
-			dtimer::log(__METHOD__. " wrong arg '$basename' is not a string", 1);
-		}
-		$this->db->query("SELECT id FROM __images WHERE 1 AND filename = ? ", $basename);
-		//вернем true если результат есть, или false в противном случае
-		return ($this->db->num_rows() > 0) ? true : false;
-	}
-	
-	
 	function get_images($filter = array())
 	{		
 		$product_id_filter = '';
