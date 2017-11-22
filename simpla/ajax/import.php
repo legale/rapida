@@ -15,7 +15,7 @@ class ImportAjax extends Simpla{
             'brand'=>            array('brand', 'бренд'),
             'variant'=>          array('variant', 'вариант'),
             'price'=>            array('price', 'цена'),
-            'old_price'=>    array('compare price', 'старая цена'),
+            'old_price'=>        array('compare price', 'старая цена'),
             'sku'=>              array('sku', 'артикул'),
             'stock'=>            array('stock', 'склад', 'на складе'),
             'meta_title'=>       array('meta title', 'заголовок страницы'),
@@ -48,7 +48,12 @@ class ImportAjax extends Simpla{
         
         //получим массив id=>название свойства
         //Чтобы не делать это постоянно на каждом свойстве
-        $GLOBALS['features'] = $this->features->get_features_ids(array('return'=> array('key' => 'name' , 'col' => 'id')) );
+        $filter = array('return'=> array('key' => 'name' , 'col' => 'id'));
+        //получим без кеша на первом цикле
+        if(empty($_GET['from'])){
+			$filter['force_no_cache'] = true;
+		}
+        $GLOBALS['features'] = $this->features->get_features_ids( $filter );
         
         // Сначала получим уникальные значения свойств товаров, чтобы, не искать их постоянно
         // должно значительное ускорить импорт
@@ -56,7 +61,7 @@ class ImportAjax extends Simpla{
         //поставим выполнение запроса без кеша только для первой позиции импорта
         $filter = array('return'=> array('key' => 'val' , 'col' => 'id'));
         dtimer::log(__METHOD__ . " from: " . var_export($this->request->get('from'), true) );
-        if (!isset($_GET['from'])) {
+        if (empty($_GET['from'])) {
             $filter['force_no_cache'] = true;
         }
         $GLOBALS['options_uniq'] = $this->features->get_options_ids($filter);

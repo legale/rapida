@@ -103,8 +103,12 @@
 	{foreach $purchases as $purchase}
 	<tr>
 		<td align="center" style="padding:6px; width:100; padding:6px; background-color:#ffffff; border:1px solid #e0e0e0;font-family:arial;">
-			{$image = $purchase['product']['images'][0]}
-			<a href="{$config->root_url}/products/{$purchase['product']['url']}"><img border="0" src="{$image['filename']|resize:50:50}"></a>
+			{$image = $purchase['product']['image']}
+			{$url = $purchase['product']['url']}
+			{$pid = $purchase['product']['id']}
+			{$name = $purchase['product']['name']}
+			
+			<a href="{$config->root_url}/products/{$url}"><img border="0" src="{$image|resize:50:50:false:$pid}"></a>
 		</td>
 		<td style="padding:6px; width:250; padding:6px; background-color:#f0f0f0; border:1px solid #e0e0e0;font-family:arial;">
 			<a href="{$config->root_url}/products/{$purchase['product']['url']}">{$purchase['product_name']}</a>

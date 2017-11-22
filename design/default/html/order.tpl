@@ -12,15 +12,19 @@
 <table id="purchases">
 
 {foreach $purchases as $purchase}
+			{$pid = $purchase['product']['id']}
+			{$url = $purchase['product']['url']}
+			{$name = $purchase['product']['name']}
+			{$image = $purchase['product']['image']}
 <tr>
 	{* Изображение товара *}
 	<td class="image">
-		<a href="products/{$purchase['product']['url']}"><img src="{$purchase['product']['image']|resize:50:50}" alt="{$purchase['product']['name']|escape}"></a>
+		<a href="products/{$url}"><img src="{$image|resize:50:50:false:$pid}" alt="{$name|escape}"></a>
 	</td>
 	
 	{* Название товара *}
 	<td class="name">
-		<a href="/products/{$purchase['product']['url']}">{$purchase['product_name']|escape}</a>
+		<a href="/products/{$url}">{$name|escape}</a>
 		{$purchase['variant_name']|escape}
 		{if $order['paid'] && $purchase['variant']['attachment']}
 			<a class="download_attachment" href="order/{$order['url']}/{$purchase['variant']['attachment']}">скачать файл</a>

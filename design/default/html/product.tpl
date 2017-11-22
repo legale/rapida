@@ -15,16 +15,20 @@
 	→  {$product['name']|escape}                
 </div>
 <!-- Хлебные крошки #End /-->
+			{$pid = $product['id']}
+			{$url = $product['url']}
+			{$name = $product['name']}
+			{$image = $product['image']}
 
-<h1 data-product="{$product['id']}">{$product['name']|escape}</h1>
+<h1 data-product="{$product['id']}">{$name|escape}</h1>
 
 <div class="product">
 
 	<!-- Большое фото -->
-	{if $product['image']['filename']}
+	{if $image}
 	<div class="image">
-		<a href="{$product['image']['filename']|resize:800:600:w}" class="zoom" rel="group">
-			<img src="{$product['image']['filename']|resize:300:300}" alt="{$product['name']|escape}" /></a>
+		<a href="{$image|resize:800:600:w:$pid}" class="zoom" rel="group">
+			<img src="{$image|resize:300:300:false:$pid}" alt="{$name|escape}" /></a>
 	</div>
 	{/if}
 	<!-- Большое фото (The End)-->
@@ -70,7 +74,7 @@
 	<div class="images">
 		{* cut удаляет первую фотографию, если нужно начать 2-й - пишем cut:2 и тд *}
 		{foreach $product['images']|cut as $i=>$image}
-			<a href="{$image['filename']|resize:800:600:w}" class="zoom" rel="group"><img src="{$image['filename']|resize:95:95}" alt="{$product['name']|escape}" /></a>
+			<a href="{$image['filename']|resize:800:600:w:$pid}" class="zoom" rel="group"><img src="{$image['filename']|resize:95:95:false:$pid}" alt="{$name|escape}" /></a>
 		{/foreach}
 	</div>
 	{/if}
@@ -110,19 +114,23 @@
 <!-- Список каталога товаров-->
 <ul class="tiny_products">
 	{foreach $related_products as $related_product}
+			{$pid = $related_product['id']}
+			{$url = $related_product['url']}
+			{$name = $related_product['name']}
+			{$image = $related_product['image']}
 	<!-- Товар-->
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $related_product['image']}
+		{if $image}
 		<div class="image">
-			<a href="products/{$related_product['url']}"><img src="{$related_product['image']['filename']|resize:200:200}" alt="{$related_product['name']|escape}"/></a>
+			<a href="products/{$related_product['url']}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$related_product['id']}" href="products/{$related_product['url']}">{$related_product['name']|escape}</a></h3>
+		<h3><a data-product="{$pid}" href="products/{$url}">{$name|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
 		{if $related_product['variants']|count > 0}

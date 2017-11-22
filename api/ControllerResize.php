@@ -22,9 +22,18 @@ class ControllerResize extends Simpla
 		
 		$dirname = $this->coMaster->uri_arr['path_arr']['dir'];
 		$basename = $this->coMaster->uri_arr['path_arr']['url'];
-		//Если ссылки нет в пути адресной строки - возьмем ее из get query
+		//Если ссылки нет в пути адресной строки - возьмем id товара из get query
 		if(empty($basename) && !empty($this->coMaster->uri_arr['query_arr']['url']) ) {
-			$basename = $this->coMaster->uri_arr['query_arr']['url'];
+			$pid = $this->coMaster->uri_arr['query_arr']['url'];
+			//получим главное изображение товара из таблицы s_images
+			if(!$basename = $this->products->get_product_image($pid)){
+				return false;
+			} else {
+				$w = @$this->coMaster->uri_arr['query_arr']['w'];
+				$h = @$this->coMaster->uri_arr['query_arr']['h'];
+				$wm = @$this->coMaster->uri_arr['query_arr']['wm'];
+				$basename = $this->image->add_resize_params($basename['filename'], $w, $h, $wm);
+			}
 		} 
 		
 		dtimer::log(__METHOD__ . " basename: $basename");

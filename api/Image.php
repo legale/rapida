@@ -30,33 +30,35 @@ class Image extends Simpla
 	 */
 	function resize($filename)
 	{
-		dtimer::log(__METHOD__ . " $filename");
-		list($source_file, $width, $height, $set_watermark) = $this->get_resize_params($filename);
-		dtimer::log(__METHOD__ . " source_file: $source_file");
-		//~ dtimer::show();
-		
-
-		// Если файл удаленный (http://), зальем его себе
-		if (substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://') {
-			// Имя оригинального файла
-			if (!$original_file = $this->download_image($source_file)){
-				dtimer::log(__METHOD__ . " download failed", 2);
-				return false;
-			}
-			$resized_file = $this->add_resize_params($original_file, $width, $height, $set_watermark);
-		}
-		else
-			{
-			$original_file = $source_file;
-		}
-
-		$resized_file = $this->add_resize_params($original_file, $width, $height, $set_watermark);			
-		
-	
+		dtimer::log(__METHOD__ . " start $filename");
 		// Пути к папкам с картинками
 		$originals_dir = $this->config->root_dir . $this->config->original_images_dir;
 		$preview_dir = $this->config->root_dir . $this->config->resized_images_dir;
 
+		//если файл существует, сразу вернем его
+		if(file_exists($preview_dir.$filename)){
+			return $preview_dir.$filename;
+		} elseif(file_exists($originals_dir.$filename)){
+			return $originals_dir.$filename;
+		}
+			
+		
+		list($source_file, $width, $height, $set_watermark) = $this->get_resize_params($filename);
+		dtimer::log(__METHOD__ . " source_file: $source_file");
+		//~ dtimer::show();
+		
+		// Если файл удаленный (http://), зальем его себе		
+		if (substr($source_file, 0, 7) == 'http://' || substr($source_file, 0, 8) == 'https://') {
+			// Имя оригинального файла
+			if (!$source_file = $this->download_image($source_file)){
+				dtimer::log(__METHOD__ . " download failed", 2);
+				return false;
+			}
+		}
+		
+		$original_file = $source_file;
+		$resized_file = $this->add_resize_params($original_file, $width, $height, $set_watermark);			
+		
 		$watermark_offet_x = $this->settings->watermark_offset_x;
 		$watermark_offet_y = $this->settings->watermark_offset_y;
 
@@ -113,7 +115,6 @@ class Image extends Simpla
 
 	public function download_image($filename)
 	{
-
 		dtimer::log(__METHOD__ . " $filename");
 		// Заливаем только есть такой файл есть в базе
 		$this->db->query('SELECT product_id as pid, position as pos FROM __images WHERE filename = ? LIMIT 1', $filename);

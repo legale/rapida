@@ -28,13 +28,17 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			{$pid = $product['id']}
+			{$url = $product['url']}
+			{$name = $product['name']}
+			{$image = $product['image']}
+			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
+		<h3><a data-product="{$pid}" href="products/{$url}">{$name|escape}</a></h3>
 		<!-- Название товара (The End) -->
 		
 
@@ -80,20 +84,23 @@
 <ul class="tiny_products">
 
 	{foreach $new_products as $product}
-
+			{$pid = $product['id']}
+			{$url = $product['url']}
+			{$name = $product['name']}
+			{$image = $product['image']}
 	<!-- Товар-->
 	<li class="product">
 		
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
+		<h3><a data-product="{$pid}" href="products/{$url}">{$name|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
 		{if $product['variants']|count > 0}
@@ -138,19 +145,23 @@
 <ul class="tiny_products">
 
 	{foreach $discounted_products as $product}
+			{$pid = $product['id']}
+			{$url = $product['url']}
+			{$name = $product['name']}
+			{$image = $product['image']}
 	<!-- Товар-->
 	<li class="product">
 		
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
+		<h3><a data-product="{$pid}" href="products/{$url}">{$name|escape}</a></h3>
 		<!-- Название товара (The End) -->
 		
 		{if $product['variants']|count > 0}

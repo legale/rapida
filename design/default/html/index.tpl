@@ -232,7 +232,11 @@
 				<ul id="browsed_products">
 				{foreach $browsed_products as $browsed_product}
 					<li>
-					<a href="products/{$browsed_product['url']}"><img src="{$browsed_product['image']|resize:50:50}" alt="{$browsed_product['name']|escape}" title="{$browsed_product['name']|escape}"></a>
+					{$pid = $browsed_product['id']}
+					{$url = $browsed_product['url']}
+					{$name = $browsed_product['name']}
+					{$image = $browsed_product['image']}
+					<a href="products/{$url}"><img src="{$image|resize:50:50:false:$pid}" alt="{$name|escape}" title="{$name|escape}"></a>
 					</li>
 				{/foreach}
 				</ul>

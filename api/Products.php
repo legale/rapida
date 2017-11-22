@@ -790,20 +790,54 @@ class Products extends Simpla
 	}
 	
 	
+	function if_image_exists($basename)
+	{	
+		if(!is_string($basename)){
+			dtimer::log(__METHOD__. " wrong arg '$basename' is not a string", 1);
+		}
+		$this->db->query("SELECT id FROM __images WHERE 1 AND filename = ? ", $basename);
+		//вернем true если результат есть, или false в противном случае
+		return ($this->db->num_rows() > 0) ? true : false;
+	}
+	
+	
 	function get_images($filter = array())
 	{		
 		$product_id_filter = '';
 		$group_by = '';
 
-		if(!empty($filter['product_id']))
+		if(!empty($filter['product_id'])){
 			$product_id_filter = $this->db->placehold('AND i.product_id in(?@)', (array)$filter['product_id']);
-
+		}
 		// images
-		$query = $this->db->placehold("SELECT * FROM __images AS i WHERE 1 $product_id_filter $group_by ORDER BY i.product_id, i.position");
+		$query = $this->db->placehold("SELECT * FROM __images AS i WHERE 1 $product_id_filter ORDER BY i.product_id, i.position");
 		$this->db->query($query);
 		return $this->db->results_array(null, 'id');
 	}
 	
+	/**
+	 * Функция возвращает основное изображение товара
+	 * @param	$pid
+	 * @retval	array
+	 */
+	function get_product_image($pid)
+	{
+		dtimer::log(__METHOD__ . " start $pid");
+		//проверка аргумента
+		if(!is_scalar($pid)){
+			dtimer::log(__METHOD__ . " pid is not a scalar value");
+		}
+		//$pid у нас только число
+		$pid = (int)$pid;
+		
+		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid AND position = 0");
+		if($res = $this->db->result_array(null, 'id')){
+			return $res;
+		}else {
+			return false;
+		}
+	}
+
 	/**
 	 * Функция возвращает изображения 1 конкретного товара
 	 * @param	$pid

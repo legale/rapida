@@ -116,20 +116,24 @@
 <ul class="products">
 
 	{foreach $products as $product}
+			{$pid = $product['id']}
+			{$url = $product['url']}
+			{$name = $product['name']}
+			{$image = $product['image']}
 	<!-- Товар-->
 	<li class="product">
 		
 		<!-- Фото товара -->
-		{if $product['image']}
+		{if $image}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']|resize:200:200}" alt="{$product['name']|escape}"/></a>
+			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<div class="product_info">
 		<!-- Название товара -->
-		<h3 class="{if $product['featured']}featured{/if}"><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name']|escape}</a></h3>
+		<h3 class="{if $product['featured']}featured{/if}"><a data-product="{$pid}" href="products/{$url}">{$name|escape}</a></h3>
 		<!-- Название товара (The End) -->
 
 		<!-- Описание товара -->
