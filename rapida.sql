@@ -505,9 +505,10 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
-;
+INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
+(1, 0xa4f97aeb53b7d8d8b1d3762edc740368, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'13\',\n    1 => \'2\',\n    2 => \'301\',\n    3 => \'10752\',\n    4 => \'22784\',\n    5 => \'14595\',\n    6 => \'14629\',\n    7 => \'9984\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -518,9 +519,10 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
-;
+INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
+(1, 0xa4f97aeb53b7d8d8b1d3762edc740368, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'13\',\n    1 => \'2\',\n    2 => \'301\',\n    3 => \'10752\',\n    4 => \'22784\',\n    5 => \'14595\',\n    6 => \'14629\',\n    7 => \'9984\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
