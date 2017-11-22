@@ -339,7 +339,7 @@ CREATE TABLE `s_orders` (
   `delivery_price` decimal(10,2) NOT NULL DEFAULT '0.00',
   `payment_method_id` int(11) DEFAULT '0',
   `paid` int(1) NOT NULL DEFAULT '0',
-  `payment_date` timestamp NOT NULL DEFAULT '1970-01-01 02:01:00',
+  `payment_date` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
   `closed` tinyint(1) DEFAULT '0',
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) DEFAULT '0',
@@ -358,7 +358,7 @@ CREATE TABLE `s_orders` (
   `coupon_discount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `coupon_code` varchar(255) DEFAULT '',
   `separate_delivery` int(1) NOT NULL DEFAULT '0',
-  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
   PRIMARY KEY (`id`),
   KEY `login` (`user_id`),
   KEY `written_off` (`closed`),
@@ -505,10 +505,9 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
-INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0xa4f97aeb53b7d8d8b1d3762edc740368, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'13\',\n    1 => \'2\',\n    2 => \'301\',\n    3 => \'10752\',\n    4 => \'22784\',\n    5 => \'14595\',\n    6 => \'14629\',\n    7 => \'9984\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
+;
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -519,10 +518,9 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
-INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0xa4f97aeb53b7d8d8b1d3762edc740368, '', '$this->products->get_products(array (\n  \'id\' => \n  array (\n    0 => \'13\',\n    1 => \'2\',\n    2 => \'301\',\n    3 => \'10752\',\n    4 => \'22784\',\n    5 => \'14595\',\n    6 => \'14629\',\n    7 => \'9984\',\n  ),\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
+;
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
@@ -573,7 +571,7 @@ CREATE TABLE `s_users` (
   `admin` tinyint(1) DEFAULT '0',
   `perm` varchar(200) CHARACTER SET ascii DEFAULT '',
   `last_ip` varchar(15) DEFAULT '',
-  `last_login` timestamp NOT NULL DEFAULT '1970-01-01 02:01:00',
+  `last_login` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`) USING BTREE,
@@ -584,7 +582,7 @@ CREATE TABLE `s_users` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /* Data for table s_users */
 INSERT INTO `s_users` (`id`,`email`,`password`,`name`,`group_id`,`enabled`,`admin`,`perm`,`last_ip`,`last_login`,`created`) VALUES
-(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 03:14:23', '2017-11-12 03:08:40');
+(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 04:14:23', '2017-11-12 04:08:40');
 /* Drop for table s_variants */
 DROP TABLE IF EXISTS `s_variants`;
 /* Create table s_variants */
