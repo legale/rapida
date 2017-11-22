@@ -582,7 +582,7 @@ CREATE TABLE `s_users` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /* Data for table s_users */
 INSERT INTO `s_users` (`id`,`email`,`password`,`name`,`group_id`,`enabled`,`admin`,`perm`,`last_ip`,`last_login`,`created`) VALUES
-(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 04:14:23', '2017-11-12 04:08:40');
+(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 05:14:23', '2017-11-12 05:08:40');
 /* Drop for table s_variants */
 DROP TABLE IF EXISTS `s_variants`;
 /* Create table s_variants */
