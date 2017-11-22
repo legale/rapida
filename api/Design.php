@@ -206,7 +206,7 @@ class Design extends Simpla
 	}
 
 
-	public function resize_modifier($filename, $width = 0, $height = 0, $set_watermark = false, $pid = null)
+	public function resize_modifier($filename, $width = 0, $height = 0, $set_watermark = false, $pid = null, $pos = 0)
 	{
 		dtimer::log(__METHOD__ . " $filename");
 		$resized_filename = $this->image->add_resize_params($filename, $width, $height, $set_watermark);
@@ -215,7 +215,7 @@ class Design extends Simpla
 		if (substr($resized_filename_encoded, 0, 7) == 'http://' || substr($resized_filename_encoded, 0, 8) == 'https://') {
 			if($pid !== null){
 				dtimer::log(__METHOD__ . " remote image file $resized_filename_encoded");
-				$resized_filename_encoded = '?url=' . $pid . '&w='. $width . '&h=' . $height. '&wm=' . $set_watermark;
+				$resized_filename_encoded = '?url=' . $pid . '&w='. $width . '&h=' . $height. '&wm=' . $set_watermark . '&pos=' . $pos;
 			}else{
 				return false;
 			}

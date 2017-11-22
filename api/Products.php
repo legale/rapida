@@ -812,7 +812,7 @@ class Products extends Simpla
 		// images
 		$query = $this->db->placehold("SELECT * FROM __images AS i WHERE 1 $product_id_filter ORDER BY i.product_id, i.position");
 		$this->db->query($query);
-		return $this->db->results_array(null, 'id');
+		return $this->db->results_array(null, 'position');
 	}
 	
 	/**
@@ -820,7 +820,7 @@ class Products extends Simpla
 	 * @param	$pid
 	 * @retval	array
 	 */
-	function get_product_image($pid)
+	function get_product_image($pid, $pos = 0)
 	{
 		dtimer::log(__METHOD__ . " start $pid");
 		//проверка аргумента
@@ -829,8 +829,9 @@ class Products extends Simpla
 		}
 		//$pid у нас только число
 		$pid = (int)$pid;
+		$pos = (int)$pos;
 		
-		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid AND position = 0");
+		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid AND position = $pos");
 		if($res = $this->db->result_array(null, 'id')){
 			return $res;
 		}else {

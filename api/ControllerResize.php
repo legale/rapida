@@ -24,9 +24,10 @@ class ControllerResize extends Simpla
 		$basename = $this->coMaster->uri_arr['path_arr']['url'];
 		//Если ссылки нет в пути адресной строки - возьмем id товара из get query
 		if(empty($basename) && !empty($this->coMaster->uri_arr['query_arr']['url']) ) {
-			$pid = $this->coMaster->uri_arr['query_arr']['url'];
+			$pid = @$this->coMaster->uri_arr['query_arr']['url'];
+			$pos = @$this->coMaster->uri_arr['query_arr']['pos'];
 			//получим главное изображение товара из таблицы s_images
-			if(!$basename = $this->products->get_product_image($pid)){
+			if(!$basename = $this->products->get_product_image($pid, $pos)){
 				return false;
 			} else {
 				$w = @$this->coMaster->uri_arr['query_arr']['w'];
