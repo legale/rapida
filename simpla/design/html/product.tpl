@@ -517,6 +517,7 @@ function add_item_related(el) {
 				<li>
 					<label class="property inrow" fid="{$fid}" vid="{$o['vid']}">{$features[$fid]['name']}</label>
 					<input type="hidden" name="save[options][fid][]" value="{$fid}"/>
+					<input type="hidden" name="save[options][fname][]" value="{$features[$fid]['name']}"/>
 					<input class="inrow" type="text" name="save[options][val][]" value="{$o['val']}"/>
 				</li>
 				{/foreach}
@@ -526,6 +527,7 @@ function add_item_related(el) {
 			<!-- Шаблон для новой опции -->
 			<ul container="true" container_id="option" style="display: none;">
 				<li>
+					<input type="hidden" name="save[options][fid][]" value=""/>
 					<label class="property inrow">
 						<input type="text" class="inrow" name="save[options][fname][]">
 					</label>

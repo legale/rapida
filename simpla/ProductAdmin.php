@@ -202,6 +202,9 @@ class ProductAdmin extends Simpla
 		
 		//тут поменяем порядок связанных товаров и добавим новые
 		for($i = 0, $c = count($raw); $i < $c; $i++){
+			if(empty_(@$raw[$i])){
+				continue;
+			}
 			$this->products->add_related_product( $pid, $raw[$i], $i  );
 		}
 	}
@@ -233,6 +236,9 @@ class ProductAdmin extends Simpla
 		
 		//тут поменяем порядок связанных товаров и добавим новые
 		for($i = 0, $c = count($raw); $i < $c; $i++){
+			if(empty_(@$raw[$i])){
+				continue;
+			}
 			$this->categories->add_product_category($pid, $raw[$i], $i  );
 		}
 	}
@@ -406,13 +412,19 @@ class ProductAdmin extends Simpla
 			}elseif( !empty_(@$o['fname']) && isset($fnames[trim($o['fname'])]) ){
 				$fid = $fnames[trim($o['fname'])];
 			} elseif ( !empty_(@$o['fname']) ) {
-				$fid = $this->features->add_feature(array('name' => $o['fname']));
+				$fname = $o['fname'];
+				$fid = $this->features->add_feature(array('name' => $fname));
 				if($fid === false){
 					$this->status[] = array(
 						'status' => 2,
 						'message' => 'Не удалось создать опцию',
 					);
 					continue;
+				} else {
+					$this->status[] = array(
+						'status' => 3,
+						'message' => "Создана новая опция id: $fid, название: $fname",
+					);
 				}
 			} else {
 				//если $fid получить не удалось, значит нечего и менять переходим к следующей итерации

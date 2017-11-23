@@ -23,6 +23,7 @@
 - Аналогичные проблемы page->* и menu-> устранены в шаблонах pages.tpl, page.tpl и контроллерах simpla/PageAdmin.php, simpla/PagesAdmin.php.
 - Мелкие доработки контроллера IndexAdmin.php.
 - Устранена ошибка ImportYmlAdmin.php, приводящая к созданию валюты несколько раз.
+- Исправлена проблема создания опций товаров из карточки самого товара. Изменения внесены simpla/design/product.tpl и simpla/productAdmin.php.
 
 ### improvements:
 - Включено кеширование для метода brands->get_brands()
