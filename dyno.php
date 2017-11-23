@@ -90,7 +90,6 @@ print "<pre>";
 
 }elseif(isset($_POST['start']) && !isset($_SESSION['admin'])){
 	print "\n LOGIN AS ADMIN TO ENTER QUERIES"; 
-	print "\n". print_r($_SESSION); 
 }
 
 
