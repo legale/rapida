@@ -15,7 +15,6 @@ class ControllerMaster extends Simpla
 	
 	//здесь массив соответствия модулей и контроллеров
 	private $modules = array(
-	'admin' => 'coAdmin',
 	'simpla' => 'coAdmin',
 	'/' => 'coSimpla',
 	'page' => 'coSimpla',
@@ -198,6 +197,7 @@ class ControllerMaster extends Simpla
 			$res['path_arr'] = $this->parse_uri_path($res['path']);
 			
 			//если у нас нет соответствующего модулю контроллера  - ставим ''
+			dtimer::log(__METHOD__ . " before module choise: " . $res['path_arr']['module']);
 			if(isset($this->modules[$res['path_arr']['module']]) ){
 				$res['ctrl'] = $this->modules[$res['path_arr']['module']];
 			} else {

@@ -61,8 +61,8 @@ class PagesAdmin extends Simpla
   
 
 	// Отображение
-		if (isset($menu->id)) {
-			$pages = $this->pages->get_pages(array('menu_id' => $menu->id));
+		if (isset($menu['id'])) {
+			$pages = $this->pages->get_pages(array('menu_id' => $menu['id']));
 		}
 		else {
 			$pages = array();

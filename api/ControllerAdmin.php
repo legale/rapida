@@ -24,6 +24,8 @@ class ControllerAdmin extends Simpla
 		header("Expires: -1");
 		Header("Pragma: no-cache");
 
+			
+
 		$_SESSION['id'] = session_id();
 		
 		//Проверим авторизацию 

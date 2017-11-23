@@ -83,7 +83,12 @@ class IndexAdmin extends Simpla
 
 		// Проверка прав доступа к модулю
 		//это id требуемого разрешения
-		$req_perm_id = array_flip($this->users->perm_list)[$this->modules_permissions[$module]];
+		if (isset($this->modules_permissions[$module])){
+			$req_perm_id = array_flip($this->users->perm_list)[$this->modules_permissions[$module]];
+		}else{
+			return false;
+		}
+			
 		
 		//проверяем у нашего пользователя
 		if(isset($user['perm'][$req_perm_id])){

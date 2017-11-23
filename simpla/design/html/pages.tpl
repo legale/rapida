@@ -2,17 +2,17 @@
 {capture name=tabs}
 	{if isset($userperm['pages'])}
 	{foreach $menus as $m}
-		<li {if $m->id == $menu->id}class="active"{/if}><a href="{url module=PagesAdmin menu_id=$m->id}">{$m->name}</a></li>
+		<li {if $m['id'] == $menu['id']}class="active"{/if}><a href="{url module=PagesAdmin menu_id=$m['id']}">{$m['name']}</a></li>
 	{/foreach}
 	{/if}
 {/capture}
 
 {* Title *}
-{$meta_title = {$menu->name} scope=parent}
+{$meta_title = {$menu['name']} scope=parent}
 
 {* Заголовок *}
 <div id="header">
-	<h1>{$menu->name}</h1>
+	<h1>{$menu['name']}</h1>
 	<a class="add" href="{url module=PageAdmin}">Добавить страницу</a>
 </div>
 
@@ -23,17 +23,17 @@
 		<input type="hidden" name="session_id" value="{$smarty.session.id}">
 		<div id="list">		
 			{foreach $pages as $page}
-			<div class="{if !$page->visible}invisible{/if} row">
-				<input type="hidden" name="positions[{$page->id}]" value="{$page->position}">
+			<div class="{if !$page['visible']}invisible{/if} row">
+				<input type="hidden" name="positions[{$page['id']}]" value="{$page['position']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$page->id}" />				
+					<input type="checkbox" name="check[]" value="{$page['id']}" />				
 				</div>
 				<div class="name cell">
-					<a href="{url module=PageAdmin id=$page->id return=$smarty.server.REQUEST_URI}">{$page->header|escape}</a>
+					<a href="{url module=PageAdmin id=$page['id'] return=$smarty.server.REQUEST_URI}">{$page['header']|escape}</a>
 				</div>
 				<div class="icons cell">
-					<a class="preview" title="Предпросмотр в новом окне" href="../{$page->url}" target="_blank"></a>
+					<a class="preview" title="Предпросмотр в новом окне" href="../{$page['url']}" target="_blank"></a>
 					<a class="enable" title="Активна" href="#"></a>
 					<a class="delete" title="Удалить" href="#"></a>
 				</div>
