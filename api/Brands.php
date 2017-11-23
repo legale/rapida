@@ -68,6 +68,46 @@ class Brands extends Simpla
 	public function get_brands($filter = array())
 	{
 		dtimer::log(__METHOD__ . ' start');
+		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+		$filter_ = $filter;
+		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
+		unset($filter_['method']);
+		if (isset($filter_['force_no_cache'])) {
+			$force_no_cache = $filter_['force_no_cache'];
+			unset($filter_['force_no_cache']);
+		}
+		
+		
+		//сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+		ksort($filter_);
+		$filter_string = var_export($filter_, true);
+		$keyhash = hash('md4', 'get_brands' . $filter_string);
+
+		//если запуск был не из очереди - пробуем получить из кеша
+		if (!isset($force_no_cache)) {
+			dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
+			$res = $this->cache->get_cache_nosql($keyhash);
+
+		
+		
+			//запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+			//функция выполнялась полностью
+			$filter_['force_no_cache'] = true;
+			$filter_string = var_export($filter_, true);
+			dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+
+			$task = '$this->brand->get_brands(';
+			$task .= $filter_string;
+			$task .= ');';
+			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+		}
+
+		if (isset($res) && !empty_($res)) {
+			dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+			return $res;
+		}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		$category_id_filter = '';
 		$visible_filter = '';
 		$in_stock_filter = '';
@@ -95,10 +135,13 @@ class Brands extends Simpla
 								 		FROM __brands b WHERE 1 $where ");
 		$this->db->query($query);
 		
-		dtimer::log(__METHOD__ . ' end');
 		$res = $this->db->results_array(null, 'id');
-		return $res; 
+		dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
+		$this->cache->set_cache_nosql($keyhash, $res);
+		dtimer::log(__METHOD__ . " end");
+		return $res;
 	}
+	
 
 	/*
 	 *

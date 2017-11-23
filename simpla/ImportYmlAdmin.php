@@ -193,7 +193,7 @@ class ImportYmlAdmin extends Simpla
 				//изменять стандартный метод не стал, поэтому пришлось городить такой огород)
 
 				$db_currency = $this->money->get_currency($yml_currency['id']);
-				if(!isset($db_currency->code) || $db_currency->code != $yml_currency['id']){
+				if(!isset($db_currency['code']) || $db_currency['code'] != $yml_currency['id']){
 					$this->money->add_currency(array(
 					'name' => $yml_currency['id'], 'sign' => $yml_currency['id'],
 					 'code' => $yml_currency['id'], 
@@ -202,7 +202,7 @@ class ImportYmlAdmin extends Simpla
 						$yml_currency['dbid'] = $yml_currency['dbid']['id'];
 					}
 				} else {
-					$yml_currency['dbid'] = $db_currency->id;
+					$yml_currency['dbid'] = $db_currency['id'];
 				}
 		
 				
