@@ -96,7 +96,7 @@ class Brands extends Simpla
 			$filter_string = var_export($filter_, true);
 			dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
 
-			$task = '$this->brand->get_brands(';
+			$task = '$this->brands->get_brands(';
 			$task .= $filter_string;
 			$task .= ');';
 			$this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);

@@ -442,9 +442,10 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
-;
+INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
+(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -455,9 +456,10 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
-;
+INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
+(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
