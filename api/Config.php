@@ -41,18 +41,19 @@ class Config
 		foreach ($configs as $file => $ini) {
 			if (is_array($ini)) {
 				foreach ($ini as $section => $content) {
-					$this->vars_sections[$section] = $content;
 					foreach ($content as $name => $value) {
 						if( $value === strval((int)$value) ){
 							$value = (bool)$value;
 						}
-
+						$this->vars_sections[$section][$name] = $value;
 						$this->vars[$name] = array('value' => $value, 'section' => $section, 'file' => $file);
 					}
 				}
 			}
 		}
+		//~ print "<PRE>";
 		//~ var_dump($this->vars);
+		//~ print "</PRE>";
 
 
 		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое
