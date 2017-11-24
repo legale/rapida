@@ -251,7 +251,62 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`product_id`)
+  `1` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `2` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `3` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `4` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `5` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `6` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `7` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `8` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `9` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `10` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `11` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `12` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `13` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `14` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `15` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `16` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `17` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `18` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `19` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `20` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `21` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `22` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `23` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `24` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `25` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `26` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `27` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `28` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `29` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `30` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `31` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `32` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `33` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `34` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `35` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `36` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `37` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `38` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `39` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `40` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `41` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `42` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `43` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `44` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `45` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `46` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `47` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `48` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `49` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `50` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `51` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `52` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `53` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`product_id`),
+  KEY `12` (`12`,`product_id`),
+  KEY `13` (`13`,`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
@@ -440,10 +495,9 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
-INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
-(3, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brand->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
+;
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -454,10 +508,9 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
-INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
-(2, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brand->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
+;
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */

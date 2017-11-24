@@ -145,7 +145,9 @@ class Cache extends Simpla
 			}
 
 			$this->tmp[$full_pathx] = true;
-			$this->htaccessGen($full_path, array_key_exists('htaccess', self::$config) ? self::$config['htaccess'] : false);
+			if (self::$config["htaccess"] == true){
+				$this->htaccessGen($full_path);
+			}
 		}
 
 		return realpath($full_path);
@@ -154,29 +156,24 @@ class Cache extends Simpla
 
 
 	/**
-	 * Auto Create .htaccess to protect cache folder
-	 * @param string $path
-	 * @throws \phpfastcacheCoreException
+	 * Create .htaccess to deny access to folder
 	 */
-	protected function htaccessGen($path = "")
+	public function htaccessGen($path = "")
 	{
-		if (self::$config["htaccess"] == true) {
-			if (!file_exists($path . "/.htaccess")) {
-				//   echo "write me";
-				$html = "order deny, allow \r\n
+		dtimer::log(__METHOD__ . " start");
+		if (!file_exists($path . "/.htaccess")) {
+			//   echo "write me";
+			$html = "order deny, allow \r\n
 deny from all \r\n
 allow from 127.0.0.1";
 
-				$f = @fopen($path . "/.htaccess", "w+");
-				if (!$f) {
-					dtimer::log("Can't create .htaccess", 97);
-				}
-				@fwrite($f, $html);
-				@fclose($f);
-			} /*else {
-				//   echo "got me";
-			}*/
-		}
+			$f = @fopen($path . "/.htaccess", "w+");
+			if (!$f) {
+				dtimer::log("Can't create .htaccess", 97);
+			}
+			@fwrite($f, $html);
+			@fclose($f);
+		} 
 	}
 
 	private function getFilePath($keyword, $skip = false)

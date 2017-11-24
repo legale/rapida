@@ -10,8 +10,14 @@ class ImportAdmin extends Simpla
 	public function fetch()
 	{
 		$this->design->assign('import_files_dir', $this->import_files_dir);
-		if (!is_writable($this->import_files_dir))
+		if (!file_exists($this->import_files_dir)){
+			mkdir($this->import_files_dir, true);
+			$this->cache->htaccessGen($this->import_files_dir);
+		}
+		
+		if (!is_writable($this->import_files_dir)){
 			$this->design->assign('message_error', 'no_permission');
+		}
 		
 		// Проверяем локаль
 		if (setlocale(LC_ALL, 0) != $this->config->locale)
