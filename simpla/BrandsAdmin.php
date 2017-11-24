@@ -23,8 +23,8 @@ class BrandsAdmin extends Simpla
                 }
             }
         }
-
-        $brands = $this->brands->get_brands();
+		$filter = array('force_no_cache' => true);
+        $brands = $this->brands->get_brands($filter);
 
         $this->design->assign('brands', $brands);
         return $this->body = $this->design->fetch('brands.tpl');
