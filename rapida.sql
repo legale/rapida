@@ -49,7 +49,8 @@ CREATE TABLE `s_cache_integer` (
   KEY `updated` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
-;
+INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
+('2017-11-24', 0xcc23865436abc431007759e15a11991a, 0);
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -442,10 +443,13 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
 INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
+(4, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
+(7, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
+(8, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
+(12, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -456,10 +460,15 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
 INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
+(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));'),
+(2, 0x91923e9d5da2b60659e270172d7b5d52, '', '$this->brands->get_brands(array (\n  \'category_id\' => NULL,\n  \'force_no_cache\' => true,\n));'),
+(3, 0x2c6a792b7b16a07d80381e81066e4836, '', '$this->brands->get_brands(array (\n  \'force_no_cache\' => true,\n));'),
+(4, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
+(5, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
+(6, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */

@@ -22,11 +22,20 @@
 - Поправлен метод db->query() Ошибка была в том, что в случае, если запрос не выполнялся, метод возвращал null, а не false. Теперь все правильно, в случае ошибки возвращает false.
 - Если каталога simpla/files/import не существует, контроллеры ImportYmlAdmin.php и ImportAdmin.php создают этот каталог.
 - Ошибка в brands->get_brands(). Неверно записывалось задание на обновление кеша. 
+- Устранены ошибки в плугинах для смарти:
+"get_posts"					
+"get_brands"			
+"get_browsed_products"		
+"get_featured_products"		
+"get_new_products"	
+"get_discounted_products"
+
 
 
 ### improvements:
 - Для ускорения из таблицы s_products_categories удалено поле position и изменены индексы. Удалена вторая часть составного индекса category_id -> product_id, поскольку мускуль все равно прицепляет primary key к любому индексу.
 - Все цифровые значения сделаны unsigned, чтобы увеличить их диапазон. За счет этого некоторые поля удалось уменьшить до smallint или mediumint.
+- Все плугина смарти перенесены из view/view.php, в api/design.php к остальным плугинам смарти.
 
 ## =================
 ## v0.0.8.1.6 23.12.2017

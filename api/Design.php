@@ -40,7 +40,7 @@ class Design extends Simpla
 			mkdir($this->smarty->compile_dir, 0777, true);
 
 		$this->smarty->cache_dir = 'cache';
-
+		
 		$this->smarty->registerPlugin('modifier', 'resize', array($this, 'resize_modifier'));
 		$this->smarty->registerPlugin('modifier', 'token', array($this, 'token_modifier'));
 		$this->smarty->registerPlugin('modifier', 'plural', array($this, 'plural_modifier'));
@@ -52,8 +52,18 @@ class Design extends Simpla
 		$this->smarty->registerPlugin('modifier', 'time', array($this, 'time_modifier'));
 		$this->smarty->registerPlugin('function', 'api', array($this, 'api_plugin'));
 
-		if ($this->config->smarty_html_minify)
+		// Настраиваем плагины для смарти
+		$this->smarty->registerPlugin("function", "get_posts",					array($this, 'get_posts_plugin'));
+		$this->smarty->registerPlugin("function", "get_brands",					array($this, 'get_brands_plugin'));
+		$this->smarty->registerPlugin("function", "get_browsed_products",		array($this, 'get_browsed_products'));
+		$this->smarty->registerPlugin("function", "get_featured_products",		array($this, 'get_featured_products_plugin'));
+		$this->smarty->registerPlugin("function", "get_new_products",			array($this, 'get_new_products_plugin'));
+		$this->smarty->registerPlugin("function", "get_discounted_products",	array($this, 'get_discounted_products_plugin'));
+
+
+		if ($this->config->smarty_html_minify){
 			$this->smarty->loadFilter('output', 'trimwhitespace');
+		}
 	}
 
 	public function assign($var, $value)
@@ -315,6 +325,192 @@ class Design extends Simpla
 		unset($params['method']);
 		unset($params['var']);
 		$res = $this->$module->$method($params);
-		$smarty->assign($var, $res);
+		$this->smarty->assign($var, $res);
 	}
+	
+
+
+
+	/**
+	 *
+	 * Плагины для смарти
+	 *
+	 */	
+	public function get_posts_plugin($params, &$smarty)
+	{
+		if(!isset($params['visible']))
+			$params['visible'] = 1;
+		if(!empty($params['var']))
+			$smarty->assign($params['var'], $this->blog->get_posts($params));
+	}
+
+	public function get_brands_plugin($params, &$smarty)
+	{
+		if(!empty($params['var']))
+			$smarty->assign($params['var'], $this->brands->get_brands($params));
+	}
+	
+	public function get_browsed_products($params, &$smarty)
+	{
+		if(!empty($_COOKIE['browsed_products']))
+		{
+			$ids = explode(',', $_COOKIE['browsed_products']);
+			$ids = array_reverse($ids);
+			if(isset($params['limit']))
+				$ids = array_slice($ids, 0, $params['limit']);
+
+			$products = $this->products->get_products(array('id'=>$ids, 'visible'=>1));
+			
+			if ( $images = $this->products->get_images(array('product_id'=>$ids)) ) {
+				foreach($images as $image) {
+					if(isset($products[$image['product_id']])) {
+						$products[$image['product_id']]['images'][] = $image;
+					}
+				}
+			}
+
+			$smarty->assign($params['var'], $products);
+		}
+	}
+		
+	public function get_featured_products_plugin($params, &$smarty)
+	{
+		if(!isset($params['visible']))
+			$params['visible'] = 1;
+		$params['featured'] = 1;
+		if(!empty($params['var']))
+		{
+			$products = $this->products->get_products($params);
+
+			if(!empty($products))
+			{
+				// id выбраных товаров
+				$products_ids = array_keys((array)$products);
+		
+				// Выбираем варианты товаров
+				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
+				
+				// Для каждого варианта
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products[$variant['product_id']])){
+							$products[$variant['product_id']]['variants'][] = $variant;
+						}
+					}
+				}
+				
+
+	
+				foreach($products as $k=>&$product)
+				{
+					if(!isset($product['variants'])){
+						unset($products[$k]);
+					}elseif(isset($product['variants'][0])){
+						$product['variant'] = $product['variants'][0];
+					}
+				}
+			}
+
+			$smarty->assign($params['var'], $products);
+			
+		}
+	}
+		
+	public function get_new_products_plugin($params, &$smarty)
+	{
+		if(!isset($params['visible']))
+			$params['visible'] = 1;
+		if(!isset($params['sort']))
+			$params['sort'] = 'created';
+		if(!empty($params['var']))
+		{
+			//~ print_r($params);
+			$products = $this->products->get_products($params);
+
+			if(isset($products) && !empty_($products))
+			{
+				// id выбраных товаров
+				$products_ids = array_keys((array)$products);
+				// Выбираем варианты товаров
+				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
+
+				// Для каждого варианта
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products[$variant['product_id']])){
+							$products[$variant['product_id']]['variants'][] = $variant;
+						}
+					}
+				}
+				// Выбираем изображения товаров
+				$images = $this->products->get_images(array('product_id'=>$products_ids));
+	
+				foreach($products as $k=>&$product)
+				{
+					if(!isset($product['variants'])){
+						unset($products[$k]);
+					}elseif(isset($product['variants'][0])){
+						$product['variant'] = $product['variants'][0];
+					}
+				}
+
+			}
+
+			$smarty->assign($params['var'], $products);
+			
+		}
+	}
+	
+	public function get_discounted_products_plugin($params, &$smarty)
+	{
+		if(!isset($params['visible']))
+			$params['visible'] = 1;
+		$params['discounted'] = 1;
+		if(!empty($params['var']))
+		{
+			$products = $this->products->get_products($params);
+
+			if(!empty($products))
+			{
+				// id выбраных товаров
+				$products_ids = array_keys((array)$products);
+		
+				// Выбираем варианты товаров
+				$variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true));
+				
+				// Для каждого варианта
+				if(!empty($variants)){
+					foreach($variants as &$variant)
+					{
+						// добавляем вариант в соответствующий товар
+						if(isset($products[$variant['product_id']])){
+							$products[$variant['product_id']]['variants'][] = $variant;
+						}
+					}
+				}
+				
+				// Выбираем изображения товаров
+				$images = $this->products->get_images(array('product_id'=>$products_ids));
+
+	
+				foreach($products as $k=>&$product)
+				{
+					if(!isset($product['variants'])){
+						unset($products[$k]);
+					}elseif(isset($product['variants'][0])){
+						$product['variant'] = $product['variants'][0];
+					}
+				}
+
+			}
+
+			$smarty->assign($params['var'], $products);
+			
+		}
+	}	
+
 }
