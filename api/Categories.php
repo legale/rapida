@@ -26,7 +26,7 @@ class Categories extends Simpla
 
 		if (!empty($filter['product_id']))
 			{
-			$query = $this->db->placehold("SELECT category_id FROM __products_categories WHERE product_id in(?@) ORDER BY position", (array)$filter['product_id']);
+			$query = $this->db->placehold("SELECT category_id FROM __products_categories WHERE product_id in(?@) ", (array)$filter['product_id']);
 			$this->db->query($query);
 			$categories_ids = $this->db->results('category_id');
 			$result = array();
@@ -44,8 +44,7 @@ class Categories extends Simpla
 	// Функция возвращает id категорий для заданного товара
 	public function get_product_categories($product_id)
 	{
-		$query = $this->db->placehold("SELECT product_id, category_id, position 
-		FROM __products_categories WHERE product_id in(?@)", (array)$product_id);
+		$query = $this->db->placehold("SELECT * FROM __products_categories WHERE product_id in(?@)", (array)$product_id);
 		$this->db->query($query);
 		return $this->db->results_array(null, 'category_id');
 	}	
@@ -53,8 +52,7 @@ class Categories extends Simpla
 	// Функция возвращает id категорий для всех товаров
 	public function get_products_categories()
 	{
-		$query = $this->db->placehold("SELECT product_id, category_id, position 
-		FROM __products_categories");
+		$query = $this->db->placehold("SELECT * FROM __products_categories");
 		$this->db->query($query);
 		$res = $this->db->results_array(null, 'category_id');
 		return $res;
@@ -156,10 +154,10 @@ class Categories extends Simpla
 	}
 	
 	// Добавить категорию к заданному товару
-	public function add_product_category($product_id, $category_id, $pos = 0)
+	public function add_product_category($product_id, $category_id)
 	{
-		$query = $this->db->placehold("INSERT INTO __products_categories 
-		SET product_id=?, category_id=?, position=? ON DUPLICATE KEY UPDATE position = ? ", $product_id, $category_id, $pos, $pos);
+		$query = $this->db->placehold("INSERT IGNORE INTO __products_categories 
+		SET product_id=?, category_id=? ", $product_id, $category_id);
 		return $this->db->query($query);
 	}
 
