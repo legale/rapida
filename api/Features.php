@@ -173,7 +173,7 @@ class Features extends Simpla
 				");
 		}
 		if (!$this->db->query("SELECT 1 FROM __options_uniq LIMIT 1")) {
-			$this->db->query("CREATE TABLE __options_uniq (`id` INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
+			$this->db->query("CREATE TABLE __options_uniq (`id` INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
 			// добавим 1 строку для значения по умолчанию
 			$val = '';
 			$trans = '';
@@ -182,7 +182,7 @@ class Features extends Simpla
 
 		}
 		if (!$this->db->query("SELECT `$id` FROM __options LIMIT 1")) {
-			$this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT NOT NULL DEFAULT '0'");
+			$this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0'");
 			//делаем индекс, только если это свойство будет в фильтре
 			if (isset($feature['in_filter']) && (bool)$feature['in_filter'] === true) {
 				$this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`)");
