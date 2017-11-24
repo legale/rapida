@@ -125,6 +125,7 @@ class Database extends Simpla
 		$this->res = $this->mysqli->query($q);
 		if(!$this->res){
 			dtimer::log(__METHOD__ . " query error: $q ", 1);
+			return false;
 		} else {
 			dtimer::log(__METHOD__ . " query completed: $q ");
 			return true;

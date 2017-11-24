@@ -1,5 +1,4 @@
 <?php
-var_dump(INI_SCANNER_TYPED);
 
 session_start();
 
@@ -8,7 +7,7 @@ session_start();
 	$r1 = 10;
 	$r2 = 10;
 	
-if(isset($_POST['start']) && isset($_SESSION['admin'])){
+if(isset($_POST['start']) ){
 	$query1 = $_POST['q1']['sql'];
 	$query2 = $_POST['q2']['sql'];
 	$r1 = $_POST['q1']['rounds'];
@@ -100,16 +99,15 @@ function query_time($query, $qty){
 	}
 	require_once( dirname(__FILE__) . '/api/Simpla.php');
 	$simpla = new Simpla();
-
-	$simpla->db->query($query);
-
 	
 	$count = 0;
 	$array = array ();
 
 	while ( $count < $qty){
 		$time = microtime(true);
-		$simpla->db->query($query);
+		if($simpla->db->query($query) === false){
+			return false;
+		}
 		$time = microtime(true)-$time;
 		$time_ms = $time * 1000;
 		$array[] = $time_ms;
@@ -117,4 +115,5 @@ function query_time($query, $qty){
 	}
 	return $array;
 }
+
 ?>
