@@ -32,23 +32,29 @@ class Config
 
 		// Читаем настройки из файлов с секциями
 		$configs = array(
-			$this->config_file => parse_ini_file($this->config_file, true, INI_SCANNER_TYPED),
-			$this->db_config_file => parse_ini_file($this->db_config_file, true, INI_SCANNER_TYPED)
+			$this->config_file => parse_ini_file($this->config_file, true),
+			$this->db_config_file => parse_ini_file($this->db_config_file, true)
 		);
 		
 		// Записываем настройки как переменную класса
-		//~ var_dump($configs);
 
 		foreach ($configs as $file => $ini) {
 			if (is_array($ini)) {
 				foreach ($ini as $section => $content) {
 					$this->vars_sections[$section] = $content;
 					foreach ($content as $name => $value) {
+						if( $value === strval((int)$value) ){
+							$value = (bool)$value;
+						}
+
 						$this->vars[$name] = array('value' => $value, 'section' => $section, 'file' => $file);
 					}
 				}
 			}
 		}
+		//~ var_dump($this->vars);
+
+
 		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое
 		$localpath = getenv("SCRIPT_NAME");
 		$absolutepath = getenv("SCRIPT_FILENAME");

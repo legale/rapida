@@ -1,4 +1,5 @@
 <?php
+var_dump(INI_SCANNER_TYPED);
 
 session_start();
 
