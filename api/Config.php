@@ -42,7 +42,7 @@ class Config
 			if (is_array($ini)) {
 				foreach ($ini as $section => $content) {
 					foreach ($content as $name => $value) {
-						if( $value === strval((int)$value) ){
+						if( $value < 2 && $value === strval((int)$value) ){
 							$value = (bool)$value;
 						}
 						$this->vars_sections[$section][$name] = $value;
