@@ -22,6 +22,9 @@
 </div>
 </form>
 	
+{*$products|@debug_print_var*}
+	
+	
 {* Заголовок *}
 <div id="header">	
 	{if $products_count}
@@ -66,7 +69,7 @@
 				<input type="checkbox" name="check[]" value="{$product['id']}"/>				
 			</div>
 			<div class="image cell">
-				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|escape|resize:35:35}" /></a>
+				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|escape|resize:35:35:false:$product['id']}" /></a>
 			</div>
 			<div class="name product_name cell">
 			 	

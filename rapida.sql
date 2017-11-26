@@ -49,8 +49,7 @@ CREATE TABLE `s_cache_integer` (
   KEY `updated` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_cache_integer */
-INSERT INTO `s_cache_integer` (`updated`,`keyhash`,`value`) VALUES
-('2017-11-24', 0xcc23865436abc431007759e15a11991a, 0);
+;
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -252,6 +251,59 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `1` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `2` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `3` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `4` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `5` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `6` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `7` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `8` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `9` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `10` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `11` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `12` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `13` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `14` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `15` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `16` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `17` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `18` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `19` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `20` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `21` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `22` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `23` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `24` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `25` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `26` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `27` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `28` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `29` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `30` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `31` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `32` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `33` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `34` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `35` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `36` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `37` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `38` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `39` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `40` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `41` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `42` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `43` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `44` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `45` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `46` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `47` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `48` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `49` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `50` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `51` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `52` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `53` mediumint(8) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`product_id`),
   KEY `12` (`product_id`),
   KEY `13` (`product_id`)
@@ -443,13 +495,10 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /* Data for table s_queue */
 INSERT INTO `s_queue` (`id`,`keyhash`,`method`,`task`) VALUES
-(4, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(7, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(8, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(12, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
+(3, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brand->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -460,15 +509,10 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /* Data for table s_queue_full */
 INSERT INTO `s_queue_full` (`id`,`keyhash`,`method`,`task`) VALUES
-(1, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brands->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));'),
-(2, 0x91923e9d5da2b60659e270172d7b5d52, '', '$this->brands->get_brands(array (\n  \'category_id\' => NULL,\n  \'force_no_cache\' => true,\n));'),
-(3, 0x2c6a792b7b16a07d80381e81066e4836, '', '$this->brands->get_brands(array (\n  \'force_no_cache\' => true,\n));'),
-(4, 0x096825714b728be3b404b4fa61fdb780, '', '$this->products->get_products(array (\n  \'featured\' => 1,\n  \'var\' => \'featured_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(5, 0x023748823d4bb42c7996a105448b75c2, '', '$this->products->get_products(array (\n  \'limit\' => 3,\n  \'sort\' => \'created\',\n  \'var\' => \'new_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));'),
-(6, 0x7d16a307635efeccdc9724a26fff05c9, '', '$this->products->get_products(array (\n  \'discounted\' => 1,\n  \'limit\' => 9,\n  \'var\' => \'discounted_products\',\n  \'visible\' => 1,\n  \'force_no_cache\' => true,\n));');
+(2, 0x2eb6578788b3557c787f3a8d5252f1ec, '', '$this->brand->get_brands(array (\n  \'var\' => \'all_brands\',\n  \'force_no_cache\' => true,\n));');
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
@@ -530,7 +574,7 @@ CREATE TABLE `s_users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /* Data for table s_users */
 INSERT INTO `s_users` (`id`,`email`,`password`,`name`,`group_id`,`enabled`,`admin`,`perm`,`last_ip`,`last_login`,`created`) VALUES
-(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 04:14:23', '2017-11-12 04:08:40');
+(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-11-12 05:14:23', '2017-11-12 05:08:40');
 /* Drop for table s_variants */
 DROP TABLE IF EXISTS `s_variants`;
 /* Create table s_variants */

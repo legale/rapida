@@ -73,7 +73,7 @@
 	<div class="images">
 		{* cut удаляет первую фотографию, если нужно начать 2-й - пишем cut:2 и тд *}
 		{foreach $product['images']|cut as $i=>$image}
-			<a href="{$image['filename']|resize:800:600:w:$pid:$i}" class="zoom" rel="group"><img src="{$image['filename']|resize:95:95:false:$pid:$i}" alt="{$name|escape}" /></a>
+			<a href="{$image['filename']|resize:800:600:w:$pid:$i}" class="zoom" rel="group"><img src="{$image['filename']|resize:95:95:false:$pid:$image['position']}" alt="{$name|escape}" /></a>
 		{/foreach}
 	</div>
 	{/if}

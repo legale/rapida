@@ -70,7 +70,7 @@ class Config
 
 
 		//Если запуск был из командной строки, пропустим этот блок
-		if(!isset($_SERVER)){
+		if(isset($_SERVER)){
 			// Протокол
 			$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https' ? 'https' : 'http';
 			if ($_SERVER["SERVER_PORT"] == 443)

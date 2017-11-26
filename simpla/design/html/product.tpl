@@ -360,7 +360,7 @@ function ready(){
 			{foreach $product['images'] as $image}
 				<li container="true">
 					<a delete_link="true" class="delete"></a>
-					<img id="{$image['id']}" src="{$image['filename']|resize:100:100}" alt="" />
+					<img id="{$image['id']}" src="{$image['filename']|resize:100:100:false:$product['id']:$image['position']}" alt="" />
 					<input type="hidden" name="save[images][]" value="{$image['id']}">
 				</li>{/foreach}
 			{/if}

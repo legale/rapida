@@ -51,7 +51,7 @@ class ProductView extends View
 	
 		// Автозаполнение имени для формы комментария
 		if(!empty($this->user->name)){
-			$this->design->assign('comment_name', $this->user->name);
+			$this->design->assign('comment_name', $this->user['name']);
 		}else{
 			$this->design->assign('comment_name', '');
 		}
