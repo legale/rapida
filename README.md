@@ -35,6 +35,7 @@
 {bender output="/compiled/bender.css"}
 {bender output="/compiled/bender.js"}
 ```
+- Удален мусор (js/ctrlnavigate.js)
 
 ## =================
 ## v0.0.8.1.7  b2 26.12.2017
