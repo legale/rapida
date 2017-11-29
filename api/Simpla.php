@@ -171,6 +171,7 @@ class Simpla
 		'managers' => 'Managers',
 		'queue' => 'Queue',
 		'sys' => 'System',
+		'bender' => 'Bender', //js css joiner and minifier
 		'coAdmin' => 'ControllerAdmin',
 		'coMaster' => 'ControllerMaster',
 		'coSimpla' => 'ControllerSimpla', /* Контроллер Симплы, которые запускает view/indexView.php */

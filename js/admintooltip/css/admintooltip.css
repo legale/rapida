@@ -5,7 +5,7 @@ a.admin_bookmark
 	top:0px;
 	width: 12px;
 	height: 35px;
-	background-image: url('../i/bookmark.gif');
+	background-image: url('/js/admintooltip/i/bookmark.gif');
 	background-repeat: no-repeat;
 }
 
@@ -22,12 +22,12 @@ a.admin_bookmark
 	background-color: #f5f5f5;
 }
 
-a.admin_tooltip_edit { background-image:url('../i/edit.png'); }
-a.admin_tooltip_delete { background-image:url('../i/invisible.png'); }
-a.admin_tooltip_hit { background-image:url('../i/hit.png'); }
-a.admin_tooltip_up { background-image:url('../i/up.png'); }
-a.admin_tooltip_down { background-image:url('../i/down.png'); }
-a.admin_tooltip_add { background-image:url('../i/add.png'); }
+a.admin_tooltip_edit { background-image:url('/js/admintooltip/i/edit.png'); }
+a.admin_tooltip_delete { background-image:url('/js/admintooltip/i/invisible.png'); }
+a.admin_tooltip_hit { background-image:url('/js/admintooltip/i/hit.png'); }
+a.admin_tooltip_up { background-image:url('/js/admintooltip/i/up.png'); }
+a.admin_tooltip_down { background-image:url('/js/admintooltip/i/down.png'); }
+a.admin_tooltip_add { background-image:url('/js/admintooltip/i/add.png'); }
 
 .tooltip {
 	width: 187px;
@@ -58,11 +58,11 @@ a.admin_tooltip_add { background-image:url('../i/add.png'); }
 }
 
 .tooltipHeaderDirect {
-	background-image: url(../i/tooltip-header.gif);
+	background-image: url('/js/admintooltip/i/tooltip-header.gif');
 }
 
 .tooltipHeaderFlip {
-	background-image: url(../i/tooltip-header-flip.gif);
+	background-image: url('/js/admintooltip/i/tooltip-header-flip.gif');
 }
 
 .tooltipFooter {
@@ -72,7 +72,7 @@ a.admin_tooltip_add { background-image:url('../i/add.png'); }
 	margin: 0;
 	font-size: 0;
 	line-height: 0;
-	background-image: url(../i/tooltip-footer.gif);
+	background-image: url('/js/admintooltip/i/tooltip-footer.gif');
 	background-repeat: no-repeat;
 
 	display: block;
@@ -88,7 +88,7 @@ a.admin_tooltip_add { background-image:url('../i/add.png'); }
 	margin: 0;
 	font: normal normal 12px/14px Verdana, Arial, serif;
 	line-height: 140%;
-	background-image: url(../i/tooltip-body.gif);
+	background-image: url('/js/admintooltip/i/tooltip-body.gif');
 	background-repeat: repeat-y;
 
 	display: block;

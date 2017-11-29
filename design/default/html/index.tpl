@@ -19,71 +19,35 @@
 	{if isset($canonical)}<link rel="canonical" href="{$config->root_url}{$canonical}"/>{/if}
 	
 	{* Стили *}
-	<link href="design/{$settings->theme|escape}/css/style.css" rel="stylesheet" type="text/css" media="screen"/>
+	{bender src="design/{$settings->theme|escape}/css/style.css"}
 	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="icon"          type="image/x-icon"/>
 	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
 	
 	{* JQuery *}
-	<script src="js/jquery/jquery.js"  type="text/javascript"></script>
+	{bender src="js/jquery/jquery.js"}
 	
-	{* Всплывающие подсказки для администратора *}
+	{* Всплывающие подсказки для администратора из в бендера не кладем, чтобы не смешивать*}
 	{if $smarty.session.admin}
-	<script src ="js/admintooltip/admintooltip.js" type="text/javascript"></script>
-	<link   href="js/admintooltip/css/admintooltip.css" rel="stylesheet" type="text/css" /> 
+	{bender src="js/admintooltip/admintooltip.js"}
+	{bender src="js/admintooltip/css/admintooltip.css"} 
 	{/if}
-	
-	{* Ctrl-навигация на соседние товары *}
-	<script type="text/javascript" src="js/ctrlnavigate.js"></script>           
+         
 
 	{* функции для работы с api системы *}
-	<script type="text/javascript" src="/js/main.js"></script>           
+	{bender src="js/main.js"}           
 	
 	{* Аяксовая корзина *}
-	<script src="design/{$settings->theme}/js/jquery-ui.min.js"></script>
-	<script src="design/{$settings->theme}/js/ajax_cart.js"></script>
-	
+	{bender src="design/{$settings->theme}/js/jquery-ui.min.js"}
+	{bender src="design/{$settings->theme}/js/ajax_cart.js"}
 	{* js-проверка форм *}
-	<script src="js/baloon/js/baloon.js" type="text/javascript"></script>
-	<link   href="js/baloon/css/baloon.css" rel="stylesheet" type="text/css" /> 
+	{bender src="js/baloon/js/baloon.js"}
+	{bender src="js/baloon/css/baloon.css"} 
 	
 	{* Автозаполнитель поиска *}
-	{literal}
-	<script src="js/autocomplete/jquery.autocomplete-min.js" type="text/javascript"></script>
-	<style>
-		.autocomplete-suggestions{
-		background-color: #ffffff;
-		overflow: hidden;
-		border: 1px solid #e0e0e0;
-		overflow-y: auto;
-		}
-		.autocomplete-suggestions .autocomplete-suggestion{cursor: default;}
-		.autocomplete-suggestions .selected { background:#F0F0F0; }
-		.autocomplete-suggestions div { padding:2px 5px; white-space:nowrap; }
-		.autocomplete-suggestions strong { font-weight:normal; color:#3399FF; }
-	</style>	
-	<script>
-	$(function() {
-		//  Автозаполнитель поиска
-		$(".input_search").autocomplete({
-			serviceUrl:'ajax/search_products.php',
-			minChars:1,
-			noCache: false, 
-			onSelect:
-				function(suggestion){
-					 $(".input_search").closest('form').submit();
-				},
-			formatResult:
-				function(suggestion, currentValue){
-					var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g');
-					var pattern = '(' + currentValue.replace(reEscape, '\\$1') + ')';
-	  				return (suggestion.data.image?"<img align=absmiddle src='"+suggestion.data.image+"'> ":'') + suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
-				}	
-		});
-	});
-	</script>
-	{/literal}
-		
-			
+	{bender src="js/autocomplete/jquery.autocomplete-min.js"}
+
+	{*сжатые стили*}		
+	{bender output="compiled/{$settings->theme}/combined.css"}
 </head>
 <body>
 
@@ -268,7 +232,48 @@
 	<div id="footer">
 	</div>
 	<!-- Футер (The End)--> 
-	
+
+
+	{*сжатые js*}		
+	{bender output="compiled/{$settings->theme}/combined.js"}
+
+	{literal}
+	<style>
+		.autocomplete-suggestions{
+		background-color: #ffffff;
+		overflow: hidden;
+		border: 1px solid #e0e0e0;
+		overflow-y: auto;
+		}
+		.autocomplete-suggestions .autocomplete-suggestion{cursor: default;}
+		.autocomplete-suggestions .selected { background:#F0F0F0; }
+		.autocomplete-suggestions div { padding:2px 5px; white-space:nowrap; }
+		.autocomplete-suggestions strong { font-weight:normal; color:#3399FF; }
+	</style>	
+	<script>
+	$(function() {
+		//  Автозаполнитель поиска
+		$(".input_search").autocomplete({
+			serviceUrl:'ajax/search_products.php',
+			minChars:1,
+			noCache: false, 
+			onSelect:
+				function(suggestion){
+					 $(".input_search").closest('form').submit();
+				},
+			formatResult:
+				function(suggestion, currentValue){
+					var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g');
+					var pattern = '(' + currentValue.replace(reEscape, '\\$1') + ')';
+	  				return (suggestion.data.image?"<img align=absmiddle src='"+suggestion.data.image+"'> ":'') + suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+				}	
+		});
+	});
+	</script>
+	{/literal}
+
+
+
 </body>
 </html>
 {/strip}
