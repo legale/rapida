@@ -58,7 +58,7 @@ class Bender
 		$filename = $output_array['filename'];
 		$ext = $output_array['extension'];
 		$dirname = $output_array['dirname'];
-		$outputfile = "$root/$dirname/{$filename}_{$srchash}.$ext"; 
+		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext"; 
 
 		$scripts = "{$ext}_array";
 		$scripts = $this->$scripts;
@@ -75,7 +75,7 @@ class Bender
 		$filename = $output_array['filename'];
 		$ext = $output_array['extension'];
 		$dirname = $output_array['dirname'];
-		$outputfile = "$root/$dirname/{$filename}_{$srchash}.$ext"; 
+		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext"; 
 
 		$str = $this->join_files( $scripts );
 
@@ -170,27 +170,26 @@ class Bender
 	 */
 	protected function check_recombine( $output_array, $files )
 	{
-		//~ print_r($files);
 		$root = $this->root_dir;
 		$filename = $output_array['filename'];
 		$dirname = $output_array['dirname'];
-		$ext = $output_array['ext'];
+		$ext = $output_array['extension'];
 		$srchash = hash("md4", implode('', $files) );
 		
-		$outputfile = "$root/$dirname/{$filename}_{$srchash}.$ext";
+		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext";
 		//if outputfile is not exists set $outfile_mtime = 0
 		if ( file_exists( $outputfile ) ){
 			$outputfile_mtime = filemtime( $outputfile );
-			$this->recombine = true;
 		} else {
 			$outputfile_mtime = 0;
+			$this->recombine = true;
 		}
 
 		
 		//check modify time of each source file, if at least 1 file is newer than $outfile - set $this->recombine = true
 		foreach ( $files as $file )
 		{
-			if ( $outputfile_mtime < filemtime( "$root/$file" ) ){
+			if ( $outputfile_mtime < filemtime( "$root$file" ) ){
 				$this->recombine = true;
 			}
 		}
