@@ -1,4 +1,4 @@
-@import url("reset.css");
+
 
 /* @group Общий стиль */
 html,
@@ -216,7 +216,7 @@ e[type="button"] {
 	width: 32px;
 	height: 28px;
 	background-position-y: middle;
-	background: url(../images/search.png) no-repeat;
+	background: url('/design/default/images/search.png') no-repeat;
 	border-style: none;
 	cursor: pointer;
 	cursor: hand;
@@ -444,7 +444,7 @@ e[type="button"] {
 	font-weight: normal;
 }
 .tiny_products .product h3.featured{
-	background: url(../images/star.png) no-repeat;
+	background: url('/design/default/images/star.png') no-repeat;
 	background-position: left middle;
 	padding-left: 20px;
 }
@@ -486,7 +486,7 @@ e[type="button"] {
 	font-weight: normal;
 }
 .products .product h3.featured{
-	background: url(../images/star.png) no-repeat;
+	background: url('/design/default/images/star.png') no-repeat;
 	background-position: left middle;
 	padding-left: 20px;
 }

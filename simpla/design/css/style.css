@@ -133,7 +133,7 @@ font: 1.2em Arial, sans-serif;
 	padding: 5px 10px;
 	border: 1px solid #a3a5a5;
 	color: #0000;
-	background: #f5f5f5 url(../images/message_button_bgd.jpg) 0 -26px;
+	background: #f5f5f5 url('/simpla/design/images/message_button_bgd.jpg') 0 -26px;
 }
 .message a.button:hover {
 	background-position: 0 0;
@@ -157,19 +157,19 @@ font: 1.2em Arial, sans-serif;
 }
 /* Сообщение успешное */
 .message_success { background-color: #c5ff8d; border: 1px dotted #8cbf32; }
-.message_success span.text{	background-image: url(../images/tick.png); }
+.message_success span.text{	background-image: url('/simpla/design/images/tick.png'); }
 .message_success a.link { color: #3f8000; }
 .message_success a.link:hover {	color: #5dbd00; }
 
 /* Сообщение с предупреждением */
 .message_warning { background-color: #FDFF8A; border: 1px dotted #ff4545; }
-.message_warning span.text { background-image: url(../images/icon_message_error.png); }
+.message_warning span.text { background-image: url('/simpla/design/images/icon_message_error.png'); }
 .message_warning a.link { color: #ff0000; }
 .message_warning a.link:hover { color: #ff4f4f; }
 
 /* Сообщение с ошибкой */
 .message_error { background-color: #ffcaca; border: 1px dotted #ff4545; }
-.message_error span.text { background-image: url(../images/icon_message_error.png); }
+.message_error span.text { background-image: url('/simpla/design/images/icon_message_error.png'); }
 .message_error a.link { color: #ff0000; }
 .message_error a.link:hover { color: #ff4f4f; }
 
@@ -249,11 +249,11 @@ input.name {
 #product_categories span.add { 
 	background-repeat: no-repeat;
 	padding-left: 20px;
-	background-image: url(../images/plus-circle.png);
+	background-image: url('/simpla/design/images/plus-circle.png');
 }
 /* Удаление категории */
 #product_categories span.delete {
-	background-image: url(../images/cross-circle-frame.png);
+	background-image: url('/simpla/design/images/cross-circle-frame.png');
 	background-repeat: no-repeat;
 	padding-left: 20px;
 }
@@ -346,7 +346,7 @@ input.name {
 	display: block;
 	background-repeat: no-repeat;
 	padding-left: 20px;	
-	background-image: url(../images/plus-circle.png);
+	background-image: url('/simpla/design/images/plus-circle.png');
 }
 #variants_block .variant_move div{
 	width:20px;
@@ -393,7 +393,7 @@ input.name {
 .layer {
 	padding-top: 15px;
 	background-repeat: repeat-x;
-	background-image: url('../images/gradient.jpg');
+	background-image: url('/simpla/design/images/gradient.jpg');
 	background-position: top;	
 }
 
@@ -462,7 +462,7 @@ progress:after { content: '%'; }
  .block span.add { 
 	background-repeat: no-repeat;
 	padding-left: 20px;
-	background-image: url(../images/plus-circle.png);
+	background-image: url('/simpla/design/images/plus-circle.png');
 }
  .block li input.page_url {
 	font: 12px;
@@ -528,8 +528,8 @@ div.images  span.upload_image, #product div.images  span.add_image_url{
 	padding-left: 20px;	
 	margin-right: 5px;
 } 
-div.images  span.upload_image { background-image: url(../images/picture_add.png); }
-div.images  span.add_image_url { background-image: url(../images/world_link.png); margin-left: 5px;}
+div.images  span.upload_image { background-image: url('/simpla/design/images/picture_add.png'); }
+div.images  span.add_image_url { background-image: url('/simpla/design/images/world_link.png'); margin-left: 5px;}
 
 div.images input.upload_image, #product div.images input.remote_image{ 
 	font-size: 12px;
@@ -620,7 +620,7 @@ div.images #add_image {
 	width: 23px;
 	height: 25px;
 	background-position-y: middle;
-	background: url(../images/but_search.gif) no-repeat;
+	background: url('/simpla/design/images/but_search.gif') no-repeat;
 	border-style: none;
 	margin-left: 4px;
 	cursor: pointer;
@@ -930,7 +930,7 @@ span.order_label_big
 	height:32px;
 	margin-right:5px;
 	background-color: #e0e0e0;
-	background-image:url(../images/label_big.png);
+	background-image:url('/simpla/design/images/label_big.png');
 }
 
 span.order_label
@@ -942,7 +942,7 @@ span.order_label
 	height:16px;
 	margin-right:5px;
 	background-color: #e0e0e0;
-	background-image:url(../images/label.png);
+	background-image:url('/simpla/design/images/label.png');
 }
 .order_name span.order_label{margin-right:0px;float:right;}
 
@@ -951,7 +951,7 @@ span.order_label
        only screen and (-o-min-device-pixel-ratio: 200/100),
        only screen and (min-device-pixel-ratio: 2.0) {
            span.order_label {
-              background-image:url('../images/label@2x.png');
+              background-image:url('/simpla/design/images/label@2x.png');
               -webkit-background-size: 64px 16px;
               -moz-background-size: 64px 16px;
               background-size: 64px 16px;
@@ -981,10 +981,10 @@ span.order_label
 	background-repeat: no-repeat;
 	
 }
-.icons  a.enable				{ background-image: url(../images/lightbulb.png); }
-.invisible .icons a.enable		{ background-image: url(../images/lightbulb_off.png); }
-.icons a.preview				{ background-image: url(../images/monitor.png); }
-a.delete 				{ background-image: url(../images/delete.png); }
+.icons  a.enable				{ background-image: url('/simpla/design/images/lightbulb.png'); }
+.invisible .icons a.enable		{ background-image: url('/simpla/design/images/lightbulb_off.png'); }
+.icons a.preview				{ background-image: url('/simpla/design/images/monitor.png'); }
+a.delete 				{ background-image: url('/simpla/design/images/delete.png'); }
 a.icons
 {
 	padding: 8px;
@@ -996,22 +996,22 @@ a.icons
 	
 }
 
-.icons a.print					{ background-image: url(../images/printer_small.png); }
-.icons a.featured 				{ background-image: url(../images/star_gray.png); }
-.icons a.in_filter				{ background-image: url(../images/filter_gray.png); }
-.in_filter .icons a.in_filter	{ background-image: url(../images/filter.png); }
-.icons a.duplicate				{ background-image: url(../images/page_copy.png); }
-.featured .icons a.featured		{ background-image: url(../images/star.png); }
-.icons a.cents					{ background-image: url(../images/coin_stack_gold_off.png); }
-.cents  .icons a.cents			{ background-image: url(../images/coin_stack_gold.png); }
-.icons a.loading_icon			{ background-image: url(../images/loader.gif); }
-.icons a.restore				{ background-image: url(../images/clock_history_frame.png); }
+.icons a.print					{ background-image: url('/simpla/design/images/printer_small.png'); }
+.icons a.featured 				{ background-image: url('/simpla/design/images/star_gray.png'); }
+.icons a.in_filter				{ background-image: url('/simpla/design/images/filter_gray.png'); }
+.in_filter .icons a.in_filter	{ background-image: url('/simpla/design/images/filter.png'); }
+.icons a.duplicate				{ background-image: url('/simpla/design/images/page_copy.png'); }
+.featured .icons a.featured		{ background-image: url('/simpla/design/images/star.png'); }
+.icons a.cents					{ background-image: url('/simpla/design/images/coin_stack_gold_off.png'); }
+.cents  .icons a.cents			{ background-image: url('/simpla/design/images/coin_stack_gold.png'); }
+.icons a.loading_icon			{ background-image: url('/simpla/design/images/loader.gif'); }
+.icons a.restore				{ background-image: url('/simpla/design/images/clock_history_frame.png'); }
 
 .phone	{
 	padding-right:20px;
 	background-position: right center;
 	background-repeat: no-repeat;
-	background-image: url(../images/phone.png);
+	background-image: url('/simpla/design/images/phone.png');
 	cursor: pointer;
 }
 
@@ -1019,20 +1019,20 @@ a.icons
        only screen and (min--moz-device-pixel-ratio: 2.0),
        only screen and (-o-min-device-pixel-ratio: 200/100),
        only screen and (min-device-pixel-ratio: 2.0) {
-			.icons  a.enable				{ background-image: url(../images/lightbulb@2x.png); }
-			.invisible .icons a.enable		{ background-image: url(../images/lightbulb_off@2x.png); }
-			.icons a.preview				{ background-image: url(../images/monitor@2x.png); }
-			.icons a.delete 				{ background-image: url(../images/delete@2x.png); }
-			.icons a.print					{ background-image: url(../images/printer_small@2x.png); }
-			.icons a.featured 				{ background-image: url(../images/star_gray@2x.png); }
-			.icons a.in_filter				{ background-image: url(../images/filter_gray@2x.png); }
-			.in_filter .icons a.in_filter	{ background-image: url(../images/filter@2x.png); }
-			.icons a.duplicate				{ background-image: url(../images/page_copy@2x.png); }
-			.featured .icons a.featured		{ background-image: url(../images/star@2x.png); }
-			.icons a.cents					{ background-image: url(../images/coin_stack_gold_off@2x.png); }
-			.cents  .icons a.cents			{ background-image: url(../images/coin_stack_gold@2x.png); }
-			.icons a.loading_icon			{ background-image: url(../images/loader@2x.gif); }
-			.icons a.restore				{ background-image: url(../images/clock_history_frame@2x.png); }
+			.icons  a.enable				{ background-image: url('/simpla/design/images/lightbulb@2x.png'); }
+			.invisible .icons a.enable		{ background-image: url('/simpla/design/images/lightbulb_off@2x.png'); }
+			.icons a.preview				{ background-image: url('/simpla/design/images/monitor@2x.png'); }
+			.icons a.delete 				{ background-image: url('/simpla/design/images/delete@2x.png'); }
+			.icons a.print					{ background-image: url('/simpla/design/images/printer_small@2x.png'); }
+			.icons a.featured 				{ background-image: url('/simpla/design/images/star_gray@2x.png'); }
+			.icons a.in_filter				{ background-image: url('/simpla/design/images/filter_gray@2x.png'); }
+			.in_filter .icons a.in_filter	{ background-image: url('/simpla/design/images/filter@2x.png'); }
+			.icons a.duplicate				{ background-image: url('/simpla/design/images/page_copy@2x.png'); }
+			.featured .icons a.featured		{ background-image: url('/simpla/design/images/star@2x.png'); }
+			.icons a.cents					{ background-image: url('/simpla/design/images/coin_stack_gold_off@2x.png'); }
+			.cents  .icons a.cents			{ background-image: url('/simpla/design/images/coin_stack_gold@2x.png'); }
+			.icons a.loading_icon			{ background-image: url('/simpla/design/images/loader@2x.gif'); }
+			.icons a.restore				{ background-image: url('/simpla/design/images/clock_history_frame@2x.png'); }
 			.icons a{
               -webkit-background-size: 16px 16px;
               -moz-background-size: 16px 16px;
@@ -1210,7 +1210,7 @@ textarea.editor_small{
 	display: block;
 	background-repeat: no-repeat;
 	padding-left: 20px;	
-	background-image: url(../images/plus-circle.png);
+	background-image: url('/simpla/design/images/plus-circle.png');
 }
 #currencies_block .variant_move div{
 	width:20px;
@@ -1220,7 +1220,7 @@ textarea.editor_small{
 
 
 span.alert {
-	background-image: url(../images/bullet_error.png);
+	background-image: url('/simpla/design/images/bullet_error.png');
 	background-repeat: no-repeat;
 	padding-left: 15px;
 	color: red;
@@ -1436,12 +1436,12 @@ ul#import_result li .count
 ul#import_result li .status
 {
 	padding: 0 26px 16px 0;
-	background-image: url(../images/exclamation.png);
+	background-image: url('/simpla/design/images/exclamation.png');
 	background-repeat: no-repeat;
 
 }
-ul#import_result li .added { background-image: url(../images/accept.png); }
-ul#import_result li .updated { background-image: url(../images/update.png); }
+ul#import_result li .added { background-image: url('/simpla/design/images/accept.png'); }
+ul#import_result li .updated { background-image: url('/simpla/design/images/update.png'); }
 
 /* Темы */
 ul.themes
@@ -1504,7 +1504,7 @@ ul.themes li img.preview
 	vertical-align:middle;
 	background-color: #ffffff;
 	text-align: center;
-	background-image: url(../images/transparent.gif);
+	background-image: url('/simpla/design/images/transparent.gif');
 }
 .theme_images li a img{
 	max-width: 170px;
@@ -1551,7 +1551,7 @@ ul.themes li img.preview
 	float:left;
 }
 h1.locked{
-	background-image: url(../images/lock.png);
+	background-image: url('/simpla/design/images/lock.png');
 	background-repeat: no-repeat;
 	background-position: left center;
 	padding-left: 35px;
@@ -1572,7 +1572,7 @@ div.upload_image span#upload_image{
 	padding-left: 20px;	
 	margin-right: 5px;
 } 
-div.upload_image span#upload_image{ background-image: url(../images/picture_add.png); }
+div.upload_image span#upload_image{ background-image: url('/simpla/design/images/picture_add.png'); }
 div.upload_image input{
 	display: block;
 	width: 400px;
@@ -1582,7 +1582,7 @@ div.upload_image input{
 
 
 .input_autocomplete{
-	background-image: url(../images/combobox.png);
+	background-image: url('/simpla/design/images/combobox.png');
 	background-repeat: no-repeat;
 	background-position: right center;
 	font-size: 12px;

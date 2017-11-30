@@ -5,6 +5,7 @@
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
  */ 
 function getAjax(url, success) {
+	"use strict";
 	let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
 	xhr.open('GET', url);
 	xhr.onreadystatechange = function() {
@@ -22,6 +23,7 @@ function getAjax(url, success) {
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
  */
 function postAjax(url, data, success) {
+	"use strict";
 	let params = typeof data == 'string' ? data : Object.keys(data).map(
 			function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) }
 		).join('&');
@@ -57,6 +59,7 @@ apiAjax(
   });
 */ 
 function apiAjax( data, success) {
+	"use strict";
 	let l = window.location;
 	let params = 'json=' + JSON.stringify(data);
 
@@ -80,6 +83,7 @@ function apiAjax( data, success) {
  * event - функция, которая будет выполнена при срабатывании события
  */
 function live(eventType, elements, event) {
+	"use strict";
 	//если у нас объект, то проверим какой именно
 	if(typeof(elements) !== 'object'){
 		console.log('live func argument is not an obj ');

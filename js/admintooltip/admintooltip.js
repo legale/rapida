@@ -1,6 +1,8 @@
+"use strict";
 $(function() {
+	"use strict";
 	$("<a href='simpla/' class='admin_bookmark'></a>").appendTo('body');
-	tooltip = $("<div class='tooltip'><div class='tooltipHeader'></div><div class='tooltipBody'></div><div class='tooltipFooter'></div></div>").appendTo($('body'));		
+	let tooltip = $("<div class='tooltip'><div class='tooltipHeader'></div><div class='tooltipBody'></div><div class='tooltipFooter'></div></div>").appendTo($('body'));		
 	$('.tooltip').live('mouseleave', function(){tooltipcanclose=true;setTimeout("close_tooltip();", 300);});
 	$('.tooltip').live('mouseover', function(){tooltipcanclose=false;});
 	
@@ -11,9 +13,10 @@ $(function() {
 	$('[data-post]').live('mouseover', show_tooltip);
 	$('[data-feature]').live('mouseover', show_tooltip);
 });
-
+ 
 function show_tooltip()
 {
+	"use strict";
 	tooltipcanclose=false;
 	tooltip.show();
 	$(this).live('mouseleave', function(){tooltipcanclose=true;setTimeout("close_tooltip();", 500);});
@@ -66,6 +69,7 @@ function show_tooltip()
 
 function close_tooltip()
 {
+	"use strict";
 	if(tooltipcanclose)
 	{
 		tooltipcanclose=false;
@@ -74,6 +78,7 @@ function close_tooltip()
 }
 
 function SetTooltips() {
+	"use strict";
 	elements = document.getElementsByTagName("body")[0].getElementsByTagName("*");
 
 	for (i = 0; i <elements.length; i++)
@@ -116,7 +121,7 @@ function SetTooltips() {
 
 
 function ShowTooltip(i, content) {
-
+	"use strict";
 	tooltip = document.getElementById('tooltip');
 
 	document.getElementById('tooltipBody').innerHTML = content;

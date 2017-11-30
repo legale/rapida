@@ -19,6 +19,7 @@
 	{if isset($canonical)}<link rel="canonical" href="{$config->root_url}{$canonical}"/>{/if}
 	
 	{* Стили *}
+	{bender src="design/{$settings->theme|escape}/css/reset.css"}
 	{bender src="design/{$settings->theme|escape}/css/style.css"}
 	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="icon"          type="image/x-icon"/>
 	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>

@@ -1,9 +1,6 @@
 {* Постраничный вывод *}
 
 {if $total_pages_num>1}
-{* Скрипт для листания через ctrl → *}
-{* Ссылки на соседние страницы должны иметь id PrevLink и NextLink *}
-<script type="text/javascript" src="js/ctrlnavigate.js"></script>           
 
 <!-- Листалка страниц -->
 <div class="pagination">

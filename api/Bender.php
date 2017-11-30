@@ -189,7 +189,8 @@ class Bender
 		//check modify time of each source file, if at least 1 file is newer than $outfile - set $this->recombine = true
 		foreach ( $files as $file )
 		{
-			if ( $outputfile_mtime < filemtime( "$root$file" ) ){
+			//~ print "mtime bundle " . $outputfile_mtime . " mtime src " . filemtime( $root.$file ) . $root.$file;
+			if ( $outputfile_mtime < filemtime( $root.$file ) ){
 				$this->recombine = true;
 			}
 		}
