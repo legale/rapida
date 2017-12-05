@@ -1,18 +1,10 @@
 <?php
 
-/**
- * Simpla CMS
- *
- * @copyright	2011 Denis Pikusov
- * @link		http://simplacms.ru
- * @author		Denis Pikusov
- *
- */
-
 require_once ('Simpla.php');
 
 class Image extends Simpla
 {
+
 	private $allowed_extentions = array('png', 'gif', 'jpg', 'jpeg', 'ico');
 
 	public function __construct()
@@ -66,10 +58,11 @@ class Image extends Simpla
 		$watermark_transparency = 1 - min(100, $this->settings->watermark_transparency) / 100;
 
 
-		if ($set_watermark && is_file($this->config->root_dir . $this->config->watermark_file))
+		if ($set_watermark && $this->config->watermark == true && is_file($this->config->root_dir . $this->config->watermark_file)){
 			$watermark = $this->config->root_dir . $this->config->watermark_file;
-		else
+		}else{
 			$watermark = null;
+		}
 
 		if (class_exists('Imagick') && $this->config->use_imagick)
 			$this->image_constrain_imagick($originals_dir . $original_file, $preview_dir . $resized_file, $width, $height, $watermark, $watermark_offet_x, $watermark_offet_y, $watermark_transparency, $sharpen);
@@ -141,19 +134,25 @@ class Image extends Simpla
 			else
 				$new_name = $base . '_1.' . $ext;
 		}
+
+		
+		
+		if(!$tmp = $this->curl->download($filename)){
+			dtimer::log(__METHOD__ . " download failed");
+			return false;
+		}
+		
 		$this->db->query('UPDATE __images SET filename=? WHERE filename=?', $new_name, $filename);
 		
 		//если картинка с position 0, дополнительно обновим таблицу s_products
 		if ($res['pos'] == 0) {
 			$this->db->query('UPDATE __products SET image=? WHERE id=?', $new_name, $res['pid']);
 		}
-		
-		
-		// Перед долгим копированием займем это имя
-		fclose(fopen($this->config->root_dir . $this->config->original_images_dir . $new_name, 'w'));
-		copy($filename, $this->config->root_dir . $this->config->original_images_dir . $new_name);
+
+		rename($tmp, $this->config->root_dir . $this->config->original_images_dir . $new_name);
 		return $new_name;
 	}
+
 
 	public function upload_image($filename, $name)
 	{
