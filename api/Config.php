@@ -9,7 +9,7 @@ require_once ('Simpla.php');
 
 class Config
 {
-	public $version = '0.0.8.1.7';
+	public $version = '0.0.8.1.8';
 	
 	//слова для формирования соли
 	public $salt_word = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
