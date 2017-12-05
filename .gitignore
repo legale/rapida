@@ -6,7 +6,7 @@ compiled/**
 cache/**
 design/**
 .vscode/**
-
+sandbox/*
 
 /simpla/design/compiled/**
 
