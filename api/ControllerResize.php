@@ -13,8 +13,9 @@ class ControllerResize extends Simpla
 
 	public function __construct()
 	{
+		dtimer::$enabled = false; //set true to enable debugger
+		
 		dtimer::log(__METHOD__ . ' construct');
-
 	}
 
 	public function action()
@@ -43,18 +44,32 @@ class ControllerResize extends Simpla
 
 
 		if(!empty($basename) && !empty($dirname) ){
-			$resized_filename = $this->image->resize($basename);
+			$res = $this->image->resize($basename);
 			dtimer::log( __METHOD__ . " basename: $basename");
-			dtimer::log( __METHOD__ . " resized: $resized_filename");
+			dtimer::log( __METHOD__ . " resized: $res");
 		}
 
-		if ( isset($resized_filename) && is_readable($resized_filename))
-			{
-			header('Content-type: image');
-			print file_get_contents($resized_filename);
+		if ( isset($res) && is_readable($res)){
+			if(isset($_SERVER['HTTP_RANGE']) ){
+				$bytes = explode('=', $_SERVER['HTTP_RANGE'], 2);
+				$range = explode('-', $bytes[1], 2);
+				$length = $range[1] - $range[0];
+				$offset = (int)$range[0];
+				$f = @fopen($res, 'r');
+				@fseek($f, $offset);
+				header("Content-length: $length");
+				header("Content-type: image");
+				print @fread($f,  $length);
+			} else {
+				$length = filesize($res);
+				header("Content-length: $length");
+				header("Content-type: image");
+				print @file_get_contents($res);
+			}
+
 		}
 		
-		//~ dtimer::show();
+		dtimer::show();
 
 		exit();
 	}
