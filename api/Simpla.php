@@ -176,7 +176,8 @@ class Simpla
 		'coMaster' => 'ControllerMaster',
 		'coSimpla' => 'ControllerSimpla', /* Контроллер Симплы, которые запускает view/indexView.php */
 		'coResize' => 'ControllerResize',
-		'coXhr' => 'ControllerXhr'
+		'coXhr' => 'ControllerXhr',
+		'curl' => 'Curl', //curl library helper
 	);
 	
 	//первое обращение к классу будет хранится тут
