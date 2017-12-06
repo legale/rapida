@@ -220,7 +220,7 @@ function ready(){
 					{category_select categories=$cat['subcategories'] selected_id=$selected_id  level=$level+1}
 			{/foreach}
 			{/function}
-			{if isset($cats)}
+			{if !empty($cats)}
 				{foreach $product['cats'] as $pc}
 				<li container="true">
 					<select name="save[cats][]">
@@ -511,7 +511,7 @@ function add_item_related(el) {
 			<!-- Свойства товара -->
 		<div class="block layer">
 			<h2>Свойства товара</h2>
-			{if isset($product['options'])}
+			{if !empty($product['options'])}
 			<ul class="prop_ul">
 				{foreach $product['options'] as $fid=>$o}
 				<li>
