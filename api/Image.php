@@ -64,10 +64,11 @@ class Image extends Simpla
 			$watermark = null;
 		}
 
-		if (class_exists('Imagick') && $this->config->use_imagick)
+		if (class_exists('Imagick') && $this->config->use_imagick){
 			$this->image_constrain_imagick($originals_dir . $original_file, $preview_dir . $resized_file, $width, $height, $watermark, $watermark_offet_x, $watermark_offet_y, $watermark_transparency, $sharpen);
-		else
+		}else{
 			$this->image_constrain_gd($originals_dir . $original_file, $preview_dir . $resized_file, $width, $height, $watermark, $watermark_offet_x, $watermark_offet_y, $watermark_transparency);
+		}
 		return $preview_dir . $resized_file;
 	}
 
@@ -190,24 +191,37 @@ class Image extends Simpla
 	 */
 	private function image_constrain_gd($src_file, $dst_file, $max_w, $max_h, $watermark = null, $watermark_offet_x = 0, $watermark_offet_y = 0, $watermark_opacity = 1)
 	{
+		dtimer::log(__METHOD__." start");
 		$quality = 100;
-	
-		// Параметры исходного изображения
-		@list($src_w, $src_h, $src_type) = array_values(getimagesize($src_file));
-		$src_type = image_type_to_mime_type($src_type);
-
-		if (empty($src_w) || empty($src_h) || empty($src_type))
+		if(!file_exists($src_file)){
+			dtimer::log(__METHOD__." file not found: $src_file", 1);
 			return false;
-	
+		}
+		
+		
+		// Параметры исходного изображения
+		$src_size = array_values(getimagesize($src_file));
+		dtimer::log(__METHOD__." src_size: ".var_export($src_size,true));
+
+		@list($src_w, $src_h, $src_type) = $src_size;
+		
+		
+		$src_type = image_type_to_mime_type($src_type);
+		dtimer::log(__METHOD__." src_type: $src_type");
+
+		
+		if (empty($src_w) || empty($src_h) || empty($src_type)){
+			return false;
+		}
+		
 		// Нужно ли обрезать?
-		if (!$watermark && ($src_w <= $max_w) && ($src_h <= $max_h))
-			{
+		if (!$watermark && ($src_w <= $max_w) && ($src_h <= $max_h)){
 			// Нет - просто скопируем файл
-			if (!copy($src_file, $dst_file))
+			if (!copy($src_file, $dst_file)){
 				return false;
+			}
 			return true;
 		}
-				
 		// Размеры превью при пропорциональном уменьшении
 		@list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
 	
@@ -417,6 +431,8 @@ class Image extends Simpla
 	 */
 	function calc_contrain_size($src_w, $src_h, $max_w = 0, $max_h = 0)
 	{
+		dtimer::log(__METHOD__." start");
+
 		if ($src_w == 0 || $src_h == 0)
 			return false;
 
