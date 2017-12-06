@@ -47,8 +47,17 @@
 	{* Автозаполнитель поиска *}
 	{bender src="js/autocomplete/jquery.autocomplete-min.js"}
 
+	{* Увеличитель картинок *}
+
+	{bender src="js/fancybox/jquery.fancybox.pack.js"}
+	{bender src="js/fancybox/jquery.fancybox.css"}
+
+
+
 	{*сжатые стили*}		
 	{bender output="compiled/{$settings->theme}/combined.css"}
+
+
 </head>
 <body>
 
@@ -271,8 +280,19 @@
 		});
 	});
 	</script>
-	{/literal}
 
+	<script>
+	$(function() {
+		// Раскраска строк характеристик
+		$(".features li:even").addClass('even');
+
+		// Зум картинок
+		$("a.zoom").fancybox({
+			prevEffect	: 'fade',
+			nextEffect	: 'fade'});
+		});
+	</script>
+	{/literal}
 
 
 </body>
