@@ -18,9 +18,9 @@
 ## v0.0.8.1.8 b1 05.12.2017
 ## =================
 ### bugs:
-- Ошибки в js/jquery.js
-- Восстановлена работоспособность плугина fancybox.js в шаблоне
-
+- Ошибки в js/jquery/jquery.js
+- Восстановлена работоспособность плугина fancybox.js в стандартном шаблоне
+- Ошибки js/admintooltip/admintooltip.js
 ### improvements:
 
 
