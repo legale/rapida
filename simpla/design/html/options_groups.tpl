@@ -1,47 +1,36 @@
 {* Вкладки *}
 {capture name=tabs}
-	{if isset($userperm['products'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
-	{if isset($userperm['categories'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if isset($userperm['brands'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
-	<li class="active"><a href="?module=FeaturesAdmin">Свойства</a></li>
+	{if isset($userperm['features'])}
+		<li {if $g['id'] == $ogroup['id']}class="active"{/if}><a href="{url module=Options_groupsAdmin gid=0}">Без группы</a></li>
+	{foreach $ogroups as $g}
+		<li {if $g['id'] == $ogroup['id']}class="active"{/if}><a href="{url module=Options_groupsAdmin gid=$g['id']}">{$g['name']}</a></li>
+	{/foreach}
+	{/if}
 {/capture}
 
 {* Title *}
-{$meta_title='Свойства' scope=parent}
-
-
-{if $message_error}
-<!-- Системное сообщение -->
-<div class="message message_error">
-	<span class="text">{$message_error}</span>
-	<a class="button" href="">Вернуться</a>
-</div>
-<!-- Системное сообщение (The End)-->
-{/if}
-
+{$meta_title = {$ogroup['name']} scope=parent}
 
 {* Заголовок *}
 <div id="header">
-	<h1>Свойства</h1> 
+	<h1>{$ogroup['name']}</h1>
 	<a class="add" href="{url module=FeatureAdmin return=$smarty.server.REQUEST_URI}">Добавить свойство</a>
-</div>	
+</div>
 
-{if $features}
-<div id="main_list" class="features">
-	
+{if !empty($opts)}
+<div id="main_list">
 	<form id="list_form" method="post">
-	<input type="hidden" name="session_id" value="{$smarty.session.id}">
-
+		<input type="hidden" name="session_id" value="{$smarty.session.id}">
 		<div id="list">
-			{foreach $features as $feature}
-			<div class="{if $feature['in_filter']}in_filter{/if} row">
-				<input type="hidden" name="positions[{$feature['id']}]" value="{$feature['position']}">
+			{foreach $opts as $o}
+			<div class="{if $o['in_filter']}in_filter{/if} row">
+				<input type="hidden" name="positions[]" value="{$o['id']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$feature['id']}" />				
+					<input type="checkbox" name="check[]" value="{$o['id']}" />
 				</div>
 				<div class="cell">
-					<a href="{url module=FeatureAdmin id=$feature['id'] return=$smarty.server.REQUEST_URI}">{$feature['name']|escape}</a>
+					<a href="{url module=FeatureAdmin id=$o['id'] return=$smarty.server.REQUEST_URI}">{$o['name']|escape}</a>
 				</div>
 				<div class="icons cell">
 					<a title="Использовать в фильтре" class="in_filter" href='#' ></a>
@@ -51,7 +40,7 @@
 			</div>
 			{/foreach}
 		</div>
-		
+	
 		<div id="action">
 			<label id="check_all" class="dash_link">Выбрать все</label>
 		
@@ -65,38 +54,13 @@
 		
 			<input id="apply_action" class="button_green" type="submit" value="Применить">
 		</div>
-
-	</form>
-
+	</form>	
 </div>
 {else}
-	Нет свойств
+	Нет страниц
 {/if}
- 
- <!-- Меню -->
-<div id="right_menu">
-	
-	<!-- Категории товаров -->
-	{function name=categories_tree}
-	{if $categories}
-	<ul>
-		{if $categories[0]['parent_id'] == 0}
-		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null}">Все категории</a></li>	
-		{/if}
-		{foreach $categories as $c}
-		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
-		{categories_tree categories=$c['subcategories']}
-		{/foreach}
-	</ul>
-	{/if}
-	{/function}
-	{categories_tree categories=$categories}
-	<!-- Категории товаров (The End)-->
-		
-</div>
-<!-- Левое меню  (The End) -->
 
-
+{* On document load *}
 {literal}
 <script>
 $(function() {
@@ -173,7 +137,7 @@ $(function() {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/update_object.php',
-			data: {'object': 'feature', 'id': id, 'values': {'in_filter': state}, 'session_id': '{/literal}{$smarty.session.id}{literal}'},
+			data: {'object': 'feature', 'id': id, 'values': { 'in_filter': state}, 'session_id': '{/literal}{$smarty.session.id}{literal}'},
 			success: function(data){
 				icon.removeClass('loading_icon');
 				if(!state)

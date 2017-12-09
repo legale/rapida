@@ -18,8 +18,7 @@ class Features extends Simpla
 	//тут будут хранится опции
 	public $features;
 
-	function get_features_ids($filter = array() )
-	{
+	function get_features_ids($filter = array() ){
 		dtimer::log(__METHOD__ . ' start');
 		//это вариант по умолчанию id=>val
 		$col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
@@ -45,27 +44,33 @@ class Features extends Simpla
 		return $this->features[$key . "_" . $col ];
 	}
 	
-	function get_features($filter = array())
-	{
+	function get_features($filter = array()){
 		dtimer::log(__METHOD__ . ' start');
+		$gid_filter = '';
 		$category_id_filter = '';
-		if (isset($filter['category_id']))
+		if (isset($filter['category_id'])){
 			$category_id_filter = $this->db->placehold('AND id in(SELECT feature_id FROM __categories_features AS cf WHERE cf.category_id in(?@))', (array)$filter['category_id']);
-
+		}
+		
 		$in_filter_filter = '';
 		if (isset($filter['in_filter'])){
 			$in_filter_filter = $this->db->placehold('AND f.in_filter=?', intval($filter['in_filter']));
 		}
 
+		if (isset($filter['gid'])){
+			$gid_filter = $this->db->placehold('AND gid in (?@)', (array)$filter['gid']);
+		}
+
 		$id_filter = '';
-		if (!empty($filter['id']))
+		if (!empty($filter['id'])){
 			$id_filter = $this->db->placehold('AND f.id in(?@)', (array)$filter['id']);
+		}
 		
 		// Выбираем свойства
-		$query = $this->db->placehold("SELECT id, name, trans, position, in_filter FROM __features AS f
+		$q = $this->db->placehold("SELECT * FROM __features AS f
 			WHERE 1
-			$category_id_filter $in_filter_filter $id_filter ORDER BY f.position");
-		$this->db->query($query);
+			$category_id_filter $in_filter_filter $id_filter $gid_filter ORDER BY f.pos");
+		$this->db->query($q);
 		$res = $this->db->results_array(null, 'id');
 		dtimer::log(__METHOD__ . ' return');
 		return $res;
@@ -74,7 +79,7 @@ class Features extends Simpla
 	function get_feature($id)
 	{
 		// Выбираем свойство
-		$query = $this->db->placehold("SELECT id, name, trans, position, in_filter FROM __features WHERE id=? LIMIT 1", (int)$id);
+		$query = $this->db->placehold("SELECT * FROM __features WHERE id=? LIMIT 1", (int)$id);
 		$this->db->query($query);
 		return $this->db->result_array();
 	}
@@ -82,17 +87,87 @@ class Features extends Simpla
 	function get_feature_categories($id)
 	{
 		dtimer::log(__METHOD__ . " start $id");
-		$query = $this->db->placehold("SELECT cf.category_id as category_id FROM __categories_features cf
-										WHERE cf.feature_id = ?", $id);
-		$this->db->query($query);
+		$q = $this->db->placehold("SELECT cf.category_id as category_id FROM __categories_features cf
+			WHERE cf.feature_id = ?", $id);
+		$this->db->query($q);
 		$res = $this->db->results_array('category_id');
 		return $res;
 	}
 	
+	public function get_options_tree()
+	{
+		dtimer::log(__METHOD__ . " start");
+		$groups = array();
+		$groups[0] = array('id' => 0, 'name' => '' , 'pos' => 0, 'options' => array() );
 
-
+		$groups = array_merge($groups, $this->get_options_groups() );
+		$opts = $this->get_features();
+		foreach($opts as $o){
+			$groups[$o['gid']]['options'][$o['id']] = $o;
+		}
+		
+		
+		return $groups;
+	}
+	
+	public function get_options_groups()
+	{
+		dtimer::log(__METHOD__ . " start");
+		$groups = array();
+		$q = "SELECT * FROM __options_groups ORDER BY pos";
+		$this->db->query($q);
+		$res = $this->db->results_array(null, 'id');
+		return $res;
+	}
 	 
+	public function add_option_group($name)
+	{
+		dtimer::log(__METHOD__ . " start");
+		$this->db->query("SELECT MAX(`pos`) as `pos` FROM __options_groups");
+		$pos = $this->db->result_array('pos');
+		if( !empty_($pos) ){
+			$pos = $pos + 1;
+		} else {
+			$pos = 0;
+		}
+		$name = trim($name);
+		 
+		$group['pos'] = (int)$group['pos'];
+		$group['name'] = trim($group['name']); 
+		$group['pos'] = (int)$group['pos'];		
+		$q = $this->db->placehold("INSERT INTO __options_groups SET `name` = ?, `pos` = ? ", $name, $pos);
+		$this->db->query($q);
+		$res = $this->db->results_array(null, 'id');
+		return $res;
+	}
 
+	public function update_option_group($group)
+	{
+		dtimer::log(__METHOD__ . " start");
+		if( isset($group['id']) ){
+			$id = (int)$group['id'];
+			unset($group['id']);
+		}else{
+			dtimer::log(__METHOD__ . " args error", 1);
+			return false;
+		}
+		if( isset($group['name']) ){
+			$group['name'] = trim($group['name']); 
+		}
+		if( isset($group['pos']) ){
+			$group['pos'] = (int)$group['pos'];
+		}
+		$q = $this->db->placehold("UPDATE __options_groups SET ?% WHERE id=?", $group, $id);
+		return $this->db->query($q);
+	}
+
+	public function get_option_group($gid)
+	{
+		dtimer::log(__METHOD__ . " start");
+		$q = $this->db->placehold("SELECT * FROM __options_groups WHERE id=? LIMIT 1", intval($gid));
+		$this->db->query($q);
+		return $this->db->result_array();
+	}
 	
 	/* Добавляет свойство товара по новой системе
 	 */
@@ -193,10 +268,14 @@ class Features extends Simpla
 
 
 
-	public function update_feature($id, $feature)
-	{
+	public function update_feature($id, $feature){
 		if (is_object($feature)) {
 			$feature = (array)$feature;
+		}
+		$id = (int)$id;
+		
+		if( isset($feature['id']) ){
+			unset($feature['id']);
 		}
 
 		if (!is_array($feature) || !is_int($id)) {
@@ -205,6 +284,7 @@ class Features extends Simpla
 			dtimer::log(__METHOD__ . " argument type error $t1 $t2", 1);
 			return false;
 		}
+		
 		foreach ($feature as $k => $e) {
 			if (empty_($e)) {
 				unset($feature[$k]);
@@ -856,7 +936,7 @@ class Features extends Simpla
 			$product_id = (int)$product_id;
 		}
 
-		!$this->db->query("SELECT * FROM __options WHERE 1 AND `product_id` = ?", $product_id);
+		$this->db->query("SELECT * FROM __options WHERE 1 AND `product_id` = ?", $product_id);
 		$options = $this->db->result_array();
 		
 		//Если ничего не нашлось - возвращаем false
