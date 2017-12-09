@@ -43,9 +43,15 @@ class ProductView extends View
 			}
 		}
 		// Свойства товара
-		$features = $this->features->get_features();
+		//~ $features = $this->features->get_features();
+		$ogroups = $this->features->get_options_tree();
+		//~ print_r($ogroups);
 		$product['options'] = $this->features->get_product_options($product['id']);
-		$this->design->assign('features', $features);
+
+
+		
+		$this->design->assign('ogroups', $ogroups);
+		//~ $this->design->assign('features', $features);
 
 
 	

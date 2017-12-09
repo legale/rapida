@@ -12,6 +12,7 @@ class IndexAdmin extends Simpla
 		'CategoryAdmin' => 'categories',
 		'BrandsAdmin' => 'brands',
 		'BrandAdmin' => 'brands',
+		'Options_groupsAdmin' => 'features',
 		'FeaturesAdmin' => 'features',
 		'FeatureAdmin' => 'features',
 		'OrdersAdmin' => 'orders',
