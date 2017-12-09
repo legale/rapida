@@ -1,10 +1,4 @@
-{* Вкладки *}
-{capture name=tabs}
-	{if isset($userperm['products'])}<li><a href="?module=ProductsAdmin">Товары</a></li>{/if}
-	{if isset($userperm['categories'])}<li><a href="?module=CategoriesAdmin">Категории</a></li>{/if}
-	{if isset($userperm['brands'])}<li><a href="?module=BrandsAdmin">Бренды</a></li>{/if}
-	<li class="active"><a href="?module=FeaturesAdmin">Свойства</a></li>
-{/capture}
+
 
 {if $feature['id']}
 {$meta_title = $feature['name']|escape scope=parent}
@@ -52,19 +46,35 @@ $(function() {
 
 	<!-- Левая колонка свойств товара -->
 	<div class="column_left">
-			
-		<!-- Категории -->	
+		
+		<!-- Группа свойств -->	
+		<div class="block">
+		<h2>Группа свойств</h2>
+		<ul>
+			<li container="true">
+				<select name="gid">
+						<option value="{$o['id']}" {if $feature['gid'] == 0}selected{/if}>Без группы</option>
+					{foreach $ogroups as $o}
+						<option value="{$o['id']}" {if $o['id'] == $feature['gid']}selected{/if}>{$o['name']|escape}</option>
+					{/foreach}
+				</select>
+			</li>
+		</ul>
+		</div>
+		<!-- Группа свойств (END) -->
+
+		<!-- Категории -->
 		<div class="block">
 			<h2>Использовать в категориях</h2>
-					<select class=multiple_categories multiple name="feature_categories[]">
-						{function name=category_select selected_id=$product_category level=0}
-						{foreach $categories as $category}
-								<option value='{$category['id']}' {if in_array($category['id'], $feature_categories)}selected{/if} category_name="{$category['single_name']}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']}</option>
-								{category_select categories=$category['subcategories'] selected_id=$selected_id  level=$level+1}
-						{/foreach}
-						{/function}
-						{category_select categories=$categories}
-					</select>
+				<select class=multiple_categories multiple name="feature_categories[]">
+					{function name=category_select selected_id=$product_category level=0}
+					{foreach $categories as $category}
+							<option value='{$category['id']}' {if in_array($category['id'], $feature_categories)}selected{/if} category_name="{$category['single_name']}">{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']}</option>
+							{category_select categories=$category['subcategories'] selected_id=$selected_id  level=$level+1}
+					{/foreach}
+					{/function}
+					{category_select categories=$categories}
+				</select>
 		</div>
  
 	</div>

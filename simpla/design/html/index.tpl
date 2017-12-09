@@ -36,8 +36,12 @@
 	<ul id="main_menu">
 		
 		
-	{if !empty(array_intersect_key( $userperm, array_flip(array('products','categories','brands','features')) ))}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('products','categories','brands')) ))}
 		<li><a href="?module=ProductsAdmin"><img src="design/images/menu/catalog.png"><b>Каталог</b></a></li>
+	{/if}
+
+	{if $userperm['features']}
+		<li><a href="?module=Options_groupsAdmin"><img src="design/images/menu/catalog.png"><b>Свойства</b></a></li>
 	{/if}
 		
 	{if !empty(array_intersect_key( $userperm, array_flip(array('orders','labels')) ))}

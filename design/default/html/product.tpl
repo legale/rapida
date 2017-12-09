@@ -83,14 +83,17 @@
 	{if $product['options']}
 	<!-- Характеристики товара -->
 	<h2>Характеристики</h2>
-	<ul class="features">
-	{foreach $product['options'] as $fid=>$o}
-	<li>
-		<label fid="{$fid}" vid="{$o['vid']}">{$features[$fid]['name']}</label>
-		<span>{$o['val']}</span>
-	</li>
+	{foreach $ogroups as $g}
+		<h3>{$g['name']|escape}</h3>
+			<ul class="features">
+		{foreach $g['options'] as $fid=>$o}
+			<li>
+				<label fid="{$fid}" vid="{$product['options'][$fid]['vid']}">{$o['name']|escape}</label>
+				<span>{$product['options'][$fid]['val']}</span>
+			</li>
+		{/foreach}
+			</ul>
 	{/foreach}
-	</ul>
 	<!-- Характеристики товара (The End)-->
 	{/if}
 
