@@ -12,7 +12,18 @@ class Image extends Simpla
 		parent::__construct();
 	}
 
-
+	/**
+	 * For resizing images 
+	 * string resize_ ( string $filepath )
+	 * @param filepath path to source image
+	 * @return path to resized file 
+	 */
+	function resize_($filepath)
+	{
+		dtimer::log(__METHOD__ . " start $filename");
+		
+	}
+	
 	/**
 	 * Создание превью изображения
 	 * @param $filename файл с изображением (без пути к файлу)
