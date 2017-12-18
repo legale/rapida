@@ -828,7 +828,7 @@ class Image extends Simpla
         }
 
         //get image
-        if ( false === ($image = $this->get($type, array('id' => $id)))) {
+        if (false === ($image = $this->get($type, array('id' => $id)))) {
             dtimer::log(__METHOD__ . " unable to get image with id: $id. aborting!", 1);
             return false;
         }
@@ -837,12 +837,22 @@ class Image extends Simpla
         $url = $image['basename'];
         $id = $image['id'];
         $item_id = $image['item_id'];
+        $root = $this->config->root_dir;
+        $dir = $this->gen_original_dirname($type);
+
 
         //url check
         dtimer::log(__METHOD__ . " url check");
-        if(!$this->is_url($url)){
-            dtimer::log(__METHOD__ . " is not an url basename: $url", 1);
-            return false;
+        if (!$this->is_url($url)) {
+            dtimer::log(__METHOD__ . " trying is not an url basename: $url returning array", 2);
+            $filepath = $dir . $url;
+            $filepath_absolute = $root . $filepath;
+            return array('id' => $id,
+                'item_id' => $item_id,
+                'filepath_absolute' => $filepath_absolute,
+                'filepath' => $filepath,
+                'basename' => $url,
+            );
         }
 
         // Имя оригинального файла
@@ -860,9 +870,9 @@ class Image extends Simpla
             return false;
         }
 
-        $dir = $this->gen_original_dirname($type);
+
         $new_basename = md5_file($tmp) . '.' . $ext;
-        $root = $this->config->root_dir;
+
         dtimer::log(__METHOD__ . " basename: $new_basename");
         $filepath = $dir . $new_basename;
         $filepath_absolute = $root . $filepath;
@@ -881,6 +891,19 @@ class Image extends Simpla
                 return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
             }
             @unlink($filepath_absolute);
+        }
+        return false;
+    }
+
+    public function is_url($url)
+    {
+        dtimer::log(__METHOD__ . " start url: $url");
+        $s = strtolower(substr($url, 0, 4));
+        if ($s === 'http') {
+            $s = strtolower(substr($url, 0, 8));
+            if ($s === 'https://' || substr($s, 0, 7) === 'http://') {
+                return true;
+            }
         }
         return false;
     }
@@ -933,19 +956,6 @@ class Image extends Simpla
                 return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
             }
             @unlink($filepath_absolute);
-        }
-        return false;
-    }
-
-    public function is_url($url)
-    {
-        dtimer::log(__METHOD__ . " start url: $url");
-        $s = strtolower(substr($url, 0, 4));
-        if ($s === 'http') {
-            $s = strtolower(substr($url, 0, 8));
-            if ($s === 'https://' || substr($s, 0, 7) === 'http://') {
-                return true;
-            }
         }
         return false;
     }
