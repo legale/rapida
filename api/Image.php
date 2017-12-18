@@ -8,6 +8,7 @@ require_once('Simpla.php');
 class Image extends Simpla
 {
 
+    private $tables = array();
     /**
      * @var array
      */
