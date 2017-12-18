@@ -48,10 +48,10 @@ class ControllerResize extends Simpla
     {
         dtimer::log(__METHOD__ . ' start');
         //trying to download remote image
-        $item_id = (int)$this->uri['path_arr']['dir'][1];
+        $image_id = (int)$this->uri['path_arr']['dir'][1];
         $url = unparse_url($this->q);
         dtimer::log(__METHOD__ . " unparsed url: $url");
-        if ($a = $this->image->download($this->type, $item_id, $url)) {
+        if ($a = $this->image->download($this->type, $image_id)) {
             $basename = $a['basename'];
             return $this->resize($basename);
         } else {
