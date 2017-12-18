@@ -1,0 +1,4 @@
+#AuthName "Administrator's interface login"
+#AuthType Basic
+#AuthUserFile D:\OpenServer\domains\rapida-dev/simpla/.passwd
+#require valid-user

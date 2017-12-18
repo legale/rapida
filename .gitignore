@@ -10,20 +10,9 @@ sandbox/**
 .idea/**
 
 /simpla/design/compiled/**
-
-# добавлены отдельные файлы .gitignore
-#/simpla/files/**
-
-files/originals/*
-files/products/*
-files/categories/*
-files/brands/*
-files/uploads/*
-files/downloads/*
+img/**
 
 config/db.ini
-simpla/.passwd
-simpla/.htaccess
 
 ###################
 #А это мы включаем
@@ -41,12 +30,12 @@ simpla/.htaccess
 !simpla/files/export_users
 
 
-#Это файлы /files
-!files/.htaccess
-!files/originals/.htaccess
-!files/products/.htaccess
-!files/categories/.htaccess
-!files/brands/.htaccess
-!files/uploads/.htaccess
-!files/downloads/.htaccess
+#Это отдельные файлы /img
+!img/.htaccess
+!img/originals/.htaccess
+!img/products/.htaccess
+!img/categories/.htaccess
+!img/brands/.htaccess
+!img/uploads/.htaccess
+!img/downloads/.htaccess
 !cache/.htaccess
