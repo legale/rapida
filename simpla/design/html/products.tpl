@@ -62,9 +62,11 @@
 	
 		<div id="list">
 		{foreach $products as $product}
+<!--
 		<pre>
 		{print_r($product)}
 		</pre>
+-->
 		<div class="{if !$product['visible']}invisible{/if} {if $product['featured']}featured{/if} row">
 			<input type="hidden" name="positions[{$product['id']}]" value="{$product['position']}">
 			<div class="move cell"><div class="move_zone"></div></div>
