@@ -27,14 +27,14 @@ class Payment extends Simpla
 					FROM __payment_methods WHERE 1 $delivery_filter $enabled_filter ORDER BY position";
 
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 
 	function get_payment_method($id)
 	{
 		$query = $this->db->placehold("SELECT * FROM __payment_methods WHERE id=? LIMIT 1", intval($id));
 		$this->db->query($query);
-		$payment_method = $this->db->result();
+		$payment_method = $this->db->result_array();
 		return $payment_method;
 	}
 
@@ -42,7 +42,7 @@ class Payment extends Simpla
 	{
 		$query = $this->db->placehold("SELECT settings FROM __payment_methods WHERE id=? LIMIT 1", intval($method_id));
 		$this->db->query($query);
-		$settings = $this->db->result('settings');
+		$settings = $this->db->result_array('settings');
 
 		$settings = unserialize($settings);
 		return $settings;

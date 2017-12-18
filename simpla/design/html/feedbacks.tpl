@@ -43,17 +43,17 @@
 				{foreach $feedbacks as $feedback}
 				<div class="row">
 			 		<div class="checkbox cell">
-						<input type="checkbox" name="check[]" value="{$feedback->id}" />				
+						<input type="checkbox" name="check[]" value="{$feedback['id']}" />				
 					</div>
 					<div class="name cell">
 						<div class='comment_name'>
-						<a href="mailto:{$feedback->name|escape}<{$feedback->email|escape}>?subject=Вопрос от пользователя {$feedback->name|escape}">{$feedback->name|escape}</a>
+						<a href="mailto:{$feedback['name']|escape}<{$feedback['email']|escape}>?subject=Вопрос от пользователя {$feedback['name']|escape}">{$feedback['name']|escape}</a>
 						</div>
 						<div class='comment_text'>
-						{$feedback->message|escape|nl2br}
+						{$feedback['message']|escape|nl2br}
 						</div>
 						<div class='comment_info'>
-						Сообщение отправлено {$feedback->date|date} в {$feedback->date|time}
+						Сообщение отправлено {$feedback['date']|date} в {$feedback['date']|time}
 						</div>
 					</div>
 					<div class="icons cell">

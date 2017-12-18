@@ -20,7 +20,7 @@ class Delivery extends Simpla
 		$query = $this->db->placehold("SELECT id, name, description, free_from, price, enabled, position, separate_payment FROM __delivery WHERE id=? LIMIT 1", intval($id));
 
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 
 	public function get_deliveries($filter = array())
@@ -36,7 +36,7 @@ class Delivery extends Simpla
 
 		$this->db->query($query);
 
-		return $this->db->results();
+		return $this->db->results_array(null, 'id');
 	}
 
 	public function update_delivery($id, $delivery)
@@ -62,11 +62,7 @@ class Delivery extends Simpla
 			}
 		}
 
-		$query = $this->db->placehold(
-			'INSERT INTO __delivery
-		SET ?%',
-			$delivery
-		);
+		$query = $this->db->placehold('INSERT INTO __delivery SET ?%', $delivery);
 
 		if (!$this->db->query($query))
 			return false;
@@ -94,7 +90,8 @@ class Delivery extends Simpla
 	{
 		$query = $this->db->placehold("SELECT payment_method_id FROM __delivery_payment WHERE delivery_id=?", intval($id));
 		$this->db->query($query);
-		return $this->db->results('payment_method_id');
+		$res = $this->db->results_array('payment_method_id');
+		return $res;
 	}
 
 	public function update_delivery_payments($id, $payment_methods_ids)

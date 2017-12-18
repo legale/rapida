@@ -33,7 +33,7 @@ class Blog extends Simpla
 		                               b.meta_keywords, b.meta_description, b.visible, b.date
 		                               FROM __blog b $where LIMIT 1");
         if ($this->db->query($query)) {
-            return $this->db->result();
+            return $this->db->result_array();
         } else {
             return false;
         }
@@ -87,7 +87,7 @@ class Blog extends Simpla
 		                                      ORDER BY date DESC, id DESC $sql_limit");
 
         $this->db->query($query);
-        return $this->db->results(null, 'id');
+        return $this->db->results_array(null, 'id');
     }
     
     
@@ -122,7 +122,7 @@ class Blog extends Simpla
 		          FROM __blog b WHERE 1 $post_id_filter $visible_filter $keyword_filter";
 
         if ($this->db->query($query)) {
-            return $this->db->result('count');
+            return $this->db->result_array('count');
         } else {
             return false;
         }
@@ -204,7 +204,7 @@ class Blog extends Simpla
     public function get_next_post($id)
     {
         $this->db->query("SELECT date FROM __blog WHERE id=? LIMIT 1", $id);
-        $date = $this->db->result('date');
+        $date = $this->db->result_array('date');
 
         $this->db->query(
             "(SELECT id FROM __blog WHERE date=? AND id>? AND visible  ORDER BY id limit 1)
@@ -231,7 +231,7 @@ class Blog extends Simpla
     public function get_prev_post($id)
     {
         $this->db->query("SELECT date FROM __blog WHERE id=? LIMIT 1", $id);
-        $date = $this->db->result('date');
+        $date = $this->db->result_array('date');
 
         $this->db->query(
             "(SELECT id FROM __blog WHERE date=? AND id<? AND visible ORDER BY id DESC limit 1)
@@ -241,11 +241,16 @@ class Blog extends Simpla
             $id,
             $date
         );
-        $prev_id = $this->db->result('id');
+        $prev_id = $this->db->result_array('id');
         if ($prev_id) {
             return $this->get_post(intval($prev_id));
         } else {
             return false;
         }
     }
+
+
+
+
+
 }

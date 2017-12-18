@@ -243,10 +243,7 @@ class Products extends Simpla
 			dtimer::log("get_cache get_products HIT! res count: " . count($res));
 			return $res;
 		}		
-		
-		
-		
-		
+	
 		// По умолчанию
 		$limit = 100;
 		$page = 1;
@@ -343,23 +340,8 @@ class Products extends Simpla
 			}
 			$features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
 		}
-		$query = $this->db->placehold("SELECT  
-					p.id,
-					p.url,
-					p.brand_id,
-					p.name,
-					p.annotation,
-					p.body,
-					p.position,
-					p.created as created,
-					p.image,
-					p.visible, 
-					p.featured, 
-					p.meta_title, 
-					p.meta_keywords, 
-					p.meta_description
-					
-				FROM __products p		
+		$query = $this->db->placehold("SELECT *
+				FROM __products p 
 				$category_id_filter 
 				WHERE 
 					1
@@ -540,23 +522,9 @@ class Products extends Simpla
 		else
 			$filter = $this->db->placehold('p.url = ?', $id);
 			
-		$query = "SELECT DISTINCT
-					p.id,
-					p.url,
-					p.brand_id,
-					p.name,
-					p.annotation,
-					p.body,
-					p.position,
-					p.created as created,
-					p.visible, 
-					p.featured, 
-					p.meta_title, 
-					p.meta_keywords, 
-					p.meta_description
+		$query = "SELECT *
 				FROM __products AS p
 				WHERE $filter
-				GROUP BY p.id
 				LIMIT 1";
 		$this->db->query($query);
 		$product = $this->db->result_array();
@@ -658,9 +626,9 @@ class Products extends Simpla
 			}
 			
 			// Удаляем изображения
-			if( $images = $this->get_images(array('product_id'=>$id)) ) {
+			if( $images = $this->image->get('products', array('item_id'=>$id)) ) {
 				foreach($images as $i) {
-					$this->delete_image($i['id']);
+					$this->image->delete('products',$i['id']);
 				}
 			}
 			
@@ -724,10 +692,10 @@ class Products extends Simpla
 			$this->categories->add_product_category($new_id, $c->category_id);
 		
 		// Дублируем изображения
-		$images = $this->get_images(array('product_id'=>$id));
-		foreach($images as $image)
-			$this->add_image($new_id, $image->filename);
-			
+		$images = $this->image->get('products', array('item_id'=>$id));
+		foreach($images as $i){
+			$this->image->add('products', $id, $i['basename']);
+		}
 		// Дублируем варианты
 		$variants = $this->variants->get_variants(array('product_id'=>$id));
 		foreach($variants as $variant){
@@ -790,158 +758,8 @@ class Products extends Simpla
 	}
 	
 	
-	function get_images($filter = array())
-	{		
-		$product_id_filter = '';
-		$group_by = '';
-
-		if(!empty($filter['product_id'])){
-			$product_id_filter = $this->db->placehold('AND i.product_id in(?@)', (array)$filter['product_id']);
-		}
-		// images
-		$query = $this->db->placehold("SELECT * FROM __images AS i WHERE 1 $product_id_filter ORDER BY i.product_id, i.position");
-		$this->db->query($query);
-		return $this->db->results_array(null, 'position');
-	}
-	
-	/**
-	 * Функция возвращает основное изображение товара
-	 * @param	$pid
-	 * @retval	array
-	 */
-	function get_product_image($pid, $pos = 0)
-	{
-		dtimer::log(__METHOD__ . " start $pid");
-		//проверка аргумента
-		if(!is_scalar($pid)){
-			dtimer::log(__METHOD__ . " pid is not a scalar value");
-		}
-		//$pid у нас только число
-		$pid = (int)$pid;
-		$pos = (int)$pos;
-		
-		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid AND position = $pos");
-		if($res = $this->db->result_array(null, 'id')){
-			return $res;
-		}else {
-			return false;
-		}
-	}
-
-	/**
-	 * Функция возвращает изображения 1 конкретного товара
-	 * @param	$pid
-	 * @retval	array
-	 */
-	function get_product_images($pid)
-	{		
-		dtimer::log(__METHOD__ . " start $pid");
-		//проверка аргумента
-		if(!is_scalar($pid)){
-			dtimer::log(__METHOD__ . " pid is not a scalar value");
-		}
-		//$pid у нас только число
-		$pid = (int)$pid;
-		
-		$this->db->query("SELECT * FROM __images WHERE `product_id` = $pid");
-		if($res = $this->db->results_array(null, 'id')){
-			return $res;
-		}else {
-			return false;
-		}
-	}
-	
-	/* Метод для добавления изображений
-	 * позиция изображения (поле position) устанавливается по порядку
-	 */
-	public function add_image($pid, $filename, $name = '')
-	{		
-
-		$this->db->query("SELECT MAX(position) as pos 
-		FROM __images WHERE product_id = ? ", $pid);
-		$pos = $this->db->result_array('pos');
-		if( !empty_($pos) ){
-			$pos = $pos + 1;
-		} else {
-			$pos = 0;
-		}
-		
-		$q = $this->db->placehold("INSERT INTO __images SET product_id = ?, filename = ?, position = ?", $pid, $filename, $pos);
-		if($this->db->query($q)){
-			$id = $this->db->insert_id();
-		} else {
-			return false;
-		}
-		
-		//если удалось добавить изображение с позицией 0, запишем его в s_products
-		if($pos === 0 && isset($id) ){
-			$this->db->query("UPDATE __products SET image = ? WHERE id = ?", $filename, $pid);
-		}
-		
-		return($id);
-	}
-	
 	/*
-	 * Обновляем изображение в таблице изображений
-	 * Изображение с минимальной позицией, заносим в таблицу _products, чтобы не делать join
-	 * для получения изображений
-	 */
-	public function update_image($id, $image)
-	{
-		$id = (int)$id;
-		$this->db->query("UPDATE __images SET ?% WHERE id=?", $image, $id);
-		$this->db->query("SELECT `product_id` as `pid` FROM __images WHERE id=?", $id);
-		$pid = (int)$this->db->result('pid');
-		$this->db->query("SELECT `filename` FROM __images WHERE `product_id`='$pid' ORDER BY `position` ASC LIMIT 1");
-		$filename = $this->db->result('filename');
-		$this->db->query("UPDATE __products SET `image` = '$filename' WHERE `id`='$pid'");
-		
-		//зачем тут id, надо посмотреть где используется.
-		return($id);
-	}
-	
-	public function delete_image($id)
-	{
-		$query = $this->db->placehold("SELECT * FROM __images WHERE id=?", $id);
-		$this->db->query($query);
-		if($res = $this->db->result_array()){
-			$pid = $res['product_id'];
-			$filename = $res['filename'];
-			$pos = $res['position'];
-		} else {
-			return false;
-		}
-		//удалим картинку из таблицы s_products 
-		if($pos == 0){
-			$this->db->query("UPDATE __products SET image = '' WHERE 1 AND id = $pid AND image = '$filename'");
-		}
-		
-		$query = $this->db->placehold("DELETE FROM __images WHERE id=? LIMIT 1", $id);
-		$this->db->query($query);
-		
-		
-		$query = $this->db->placehold("SELECT count(*) as count FROM __images WHERE filename=? LIMIT 1", $filename);
-		$this->db->query($query);
-		$count = $this->db->result_array('count');
-		if($count == 0)
-		{			
-			$file = pathinfo($filename, PATHINFO_FILENAME);
-			$ext = pathinfo($filename, PATHINFO_EXTENSION);
-			
-			// Удалить все ресайзы
-			$rezised_images = glob($this->config->root_dir.$this->config->resized_images_dir.$file.".*x*.".$ext);
-			if(is_array($rezised_images))
-			foreach (glob($this->config->root_dir.$this->config->resized_images_dir.$file.".*x*.".$ext) as $f)
-				@unlink($f);
-
-			@unlink($this->config->root_dir.$this->config->original_images_dir.$filename);		
-		}
-	}
-		
-	/*
-	*
 	* Следующий товар
-	*
 	*/	
 	public function get_next_product($id)
 	{

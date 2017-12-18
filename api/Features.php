@@ -101,10 +101,13 @@ class Features extends Simpla
 		$groups[0] = array('id' => 0, 'name' => '' , 'pos' => 0, 'options' => array() );
 
 		$groups = array_merge($groups, $this->get_options_groups() );
-		$opts = $this->get_features();
-		foreach($opts as $o){
-			$groups[$o['gid']]['options'][$o['id']] = $o;
-		}
+		if($opts = $this->get_features()) {
+            foreach ($opts as $o) {
+                $groups[$o['gid']]['options'][$o['id']] = $o;
+            }
+        } else {
+		    return array();
+        }
 		
 		
 		return $groups;
@@ -212,7 +215,7 @@ class Features extends Simpla
 		}
 
 		//вытаскиваем макс позицию из свойств
-		$query = "SELECT MAX(position) as pos FROM __features";
+		$query = "SELECT MAX(pos) as pos FROM __features";
 
 		if ($this->db->query($query) !== false) {
 			//макс. позиция в таблице
@@ -220,10 +223,10 @@ class Features extends Simpla
 		}
 		//если что-то есть на выходе, делаем $pos = 0, иначе $pos++
 		if ($pos !== null) {
-			$feature['position'] = $pos + 1;
+			$feature['pos'] = $pos + 1;
 		}
 		else {
-			$feature['position'] = 0;
+			$feature['pos'] = 0;
 		}
 
 		$query = $this->db->placehold("INSERT INTO __features SET ?%", $feature);

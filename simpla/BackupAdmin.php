@@ -25,7 +25,7 @@ class BackupAdmin extends Simpla
 					
 					### Архивируем
 						$zip = new PclZip($filename);
-						$v_list = $zip->create(array('files', $dir . 'rapida.sql'), PCLZIP_OPT_REMOVE_PATH, $dir, PCLZIP_CB_PRE_ADD, "myCallBack");
+						$v_list = $zip->create(array($dir . 'rapida.sql'), PCLZIP_OPT_REMOVE_PATH, $dir, PCLZIP_CB_PRE_ADD, "myCallBack");
 						if ($v_list == 0)
 							{
 							trigger_error('Не могу заархивировать ' . $zip->errorInfo(true));
@@ -45,7 +45,7 @@ class BackupAdmin extends Simpla
 
 						$this->clean_dir('files');
 
-						if (!$zip->extract(PCLZIP_OPT_PATH, '', PCLZIP_OPT_BY_PREG, "/^files\//", PCLZIP_CB_POST_EXTRACT, 'myPostExtractCallBack'))
+						if (!$zip->extract(PCLZIP_OPT_PATH, '', PCLZIP_CB_POST_EXTRACT, 'myPostExtractCallBack'))
 							{
 							trigger_error('Не могу разархивировать ' . $zip->errorInfo(true));
 						}

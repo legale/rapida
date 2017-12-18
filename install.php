@@ -214,42 +214,42 @@ function dbconfig()
 			$count = '';
 			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database name\ndb_name = \"$dbname\";\n";
+				$conf .= "\n;database name\ndb_name = \"$dbname\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_server.*;/i", 'db_server = "'.$dbhost.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database server\ndb_server = \"$dbhost\";\n";
+				$conf .= "\n;database server\ndb_server = \"$dbhost\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_user.*;/i", 'db_user = "'.$dbuser.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;ndatabase user\ndb_user = \"$dbuser\";\n";
+				$conf .= "\n;ndatabase user\ndb_user = \"$dbuser\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_password.*;/i", 'db_password = "'.$dbpassword.'";', $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database password\ndb_password = \"$dbpassword\";\n";
+				$conf .= "\n;database password\ndb_password = \"$dbpassword\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_prefix.*;/i", "db_prefix = \"s_\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database tables names prefix\ndb_prefix = \"s_\";\n";
+				$conf .= "\n;database tables names prefix\ndb_prefix = \"s_\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_charset.*;/i", "db_charset = \"UTF8\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database codepage\ndb_charset = \"UTF8\";\n";
+				$conf .= "\n;database codepage\ndb_charset = \"UTF8\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_timezone.*;/i", "db_timezone = \"+02:00\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database timezone\ndb_timezone  = \"+02:00\";\n";
+				$conf .= "\n;database timezone\ndb_timezone  = \"+02:00\";\r\n";
 			}
 			
 			$conf = preg_replace("/db_sql_mode.*;/i", "db_sql_mode = \"\";", $conf, -1, $count);
 			if ($count == 0){
-				$conf .= "\n;database SQL MODE parameter\ndb_sql_mode = \"\";\n";
+				$conf .= "\n;database SQL MODE parameter\ndb_sql_mode = \"\";\r\n";
 			}
 
 			

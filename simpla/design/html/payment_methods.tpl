@@ -22,14 +22,14 @@
 	
 		<div id="list">			
 			{foreach $payment_methods as $payment_method}
-			<div class="{if !$payment_method->enabled}invisible{/if} row">
-				<input type="hidden" name="positions[{$payment_method->id}]" value="{$payment_method->position}">
+			<div class="{if !$payment_method['enabled']}invisible{/if} row">
+				<input type="hidden" name="positions[{$payment_method['id']}]" value="{$payment_method['position']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$payment_method->id}" />				
+					<input type="checkbox" name="check[]" value="{$payment_method['id']}" />				
 				</div>
 				<div class="name cell">
-					<a href="{url module=PaymentMethodAdmin id=$payment_method->id return=$smarty.server.REQUEST_URI}">{$payment_method->name}</a>
+					<a href="{url module=PaymentMethodAdmin id=$payment_method['id'] return=$smarty.server.REQUEST_URI}">{$payment_method['name']}</a>
 				</div>
 				<div class="icons cell">
 					<a class="enable" title="Активен" href="#"></a>

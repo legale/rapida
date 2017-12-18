@@ -6,7 +6,7 @@
  * параметры
  */
 
-require_once ('api/Simpla.php');
+require_once ('Simpla.php');
 
 class ControllerMaster extends Simpla
 {
@@ -29,7 +29,7 @@ class ControllerMaster extends Simpla
 	'cart'=> 'coSimpla',
 	'order'=> 'coSimpla',
 	'blog'=> 'coSimpla',
-	'files'=> 'coResize',
+	'img'=> 'coResize',
 	'xhr'=> 'coXhr',
 	);
 
@@ -230,7 +230,7 @@ class ControllerMaster extends Simpla
 
 		$a = $path;
 		
-		//Если путь / or пусто
+		//Если путь / или пусто
 		if ($a === '/' || $a === '') {
 			return array('module' => '/');
 		}
@@ -247,9 +247,10 @@ class ControllerMaster extends Simpla
 		$res['module'] = array_shift($a);
 		
 		switch($res['module']){
-			case 'files':
-			$res['dir'] = array_shift($a);
-			$res['url'] = array_shift($a);
+			case 'img':
+			$res['dir'] = explode('_', array_shift($a), 2);
+			$res['size'] = explode('x', array_shift($a), 2);
+			$res['basename'] = array_shift($a);
 			break;
 			
 			case 'products':

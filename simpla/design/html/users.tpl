@@ -107,13 +107,13 @@
  <!-- Меню -->
 <div id="right_menu">
 	<ul>
-		<li {if !$group->id}class="selected"{/if}><a href='?module=UsersAdmin'>Все группы</a></li>
+		<li {if !$group['id']}class="selected"{/if}><a href='?module=UsersAdmin'>Все группы</a></li>
 	</ul>
 	<!-- Группы -->
 	{if $groups}
 	<ul>
 		{foreach $groups as $g}
-		<li {if $group->id == $g->id}class="selected"{/if}><a href="?module=UsersAdmin&group_id={$g->id}">{$g->name}</a></li>
+		<li {if $group['id'] == $g['id']}class="selected"{/if}><a href="?module=UsersAdmin&group_id={$g['id']}">{$g['name']}</a></li>
 		{/foreach}
 	</ul>
 	{/if}

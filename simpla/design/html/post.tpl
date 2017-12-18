@@ -2,8 +2,8 @@
 	<li class="active"><a href="?module=BlogAdmin">Блог</a></li>
 {/capture}
 
-{if $post->id}
-{$meta_title = $post->name scope=parent}
+{if $post['id']}
+{$meta_title = $post['name'] scope=parent}
 {else}
 {$meta_title = 'Новая запись в блоге' scope=parent}
 {/if}
@@ -117,17 +117,17 @@ function translit(str)
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success == 'added'}Запись добавлена{elseif $message_success == 'updated'}Запись обновлена{/if}</span>
-	<a class="link" target="_blank" href="../blog/{$post->url}">Открыть запись на сайте</a>
+	<a class="link" target="_blank" href="../blog/{$post['url']}">Открыть запись на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/blog/{$post->url|urlencode}&title={$post->name|urlencode}&description={$post->annotation|urlencode}&noparse=false","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/blog/{$post['url']|urlencode}&title={$post['name']|urlencode}&description={$post['annotation']|urlencode}&noparse=false","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/blog/{$post->url|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/blog/{$post['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$post->name|urlencode}&url={$config->root_url|urlencode}/blog/{$post->url|urlencode}&hashtags={$post->meta_keywords|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://twitter.com/share?text={$post['name']|urlencode}&url={$config->root_url|urlencode}/blog/{$post['url']|urlencode}&hashtags={$post['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
@@ -152,10 +152,10 @@ function translit(str)
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$post->name|escape}"/> 
-		<input name=id type="hidden" value="{$post->id|escape}"/> 
+		<input class="name" name=name type="text" value="{$post['name']|escape}"/> 
+		<input name=id type="hidden" value="{$post['id']|escape}"/> 
 		<div class="checkbox">
-			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $post->visible}checked{/if}/> <label for="active_checkbox">Активна</label>
+			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $post['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
 		</div>
 
 	</div> 
@@ -166,7 +166,7 @@ function translit(str)
 		<!-- Параметры страницы -->
 		<div class="block">
 			<ul>
-				<li><label class=property>Дата</label><input type=text name=date value='{$post->date|date}'></li>
+				<li><label class=property>Дата</label><input type=text name=date value='{$post['date']|date}'></li>
 			</ul>
 		</div>
 		<div class="block layer">
@@ -174,10 +174,10 @@ function translit(str)
 			<h2>Параметры страницы</h2>
 		<!-- Параметры страницы -->
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name="url" class="page_url" type="text" value="{$post->url|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" type="text" value="{$post->meta_title|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords"  type="text" value="{$post->meta_keywords|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" />{$post->meta_description|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name="url" class="page_url" type="text" value="{$post['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name="meta_title" type="text" value="{$post['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name="meta_keywords"  type="text" value="{$post['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name="meta_description" />{$post['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
@@ -196,12 +196,12 @@ function translit(str)
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Краткое описание</h2>
-		<textarea name="annotation" class='editor_small'>{$post->annotation|escape}</textarea>
+		<textarea name="annotation" class='editor_small'>{$post['annotation']|escape}</textarea>
 	</div>
 		
 	<div class="block">
 		<h2>Полное  описание</h2>
-		<textarea name="body"  class='editor_large'>{$post->text|escape}</textarea>
+		<textarea name="body"  class='editor_large'>{$post['text']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />
