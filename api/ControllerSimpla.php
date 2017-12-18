@@ -5,7 +5,7 @@
  * и запуск нужного view/ViewXhr.php
  */
 
-require_once ('api/Simpla.php');
+require_once ('Simpla.php');
 
 class ControllerSimpla extends Simpla
 {

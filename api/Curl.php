@@ -228,12 +228,12 @@ class Curl extends Simpla
 
 	public function open_tmp(){
 		dtimer::log(__METHOD__ . ' start');
-		if(empty($this->fopen)){
+		if(!is_resource($this->fopen)){
 			$this->tmp = tempnam(sys_get_temp_dir() , 'curl_tmp');
 			$this->fopen = fopen($this->tmp, 'w+');
 		return true;
 		}else{
-			dtimer::log(__METHOD__ . ' unable to create new fopen, close cureent first!');
+			dtimer::log(__METHOD__ . ' unable to create new fopen, close current first!');
 			return false;
 		}
 	}

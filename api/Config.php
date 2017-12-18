@@ -54,42 +54,7 @@ class Config
 		//~ print "<PRE>";
 		//~ var_dump($this->vars);
 		//~ print "</PRE>";
-		
-		
 
-
-		// Вычисляем DOCUMENT_ROOT вручную, так как иногда в нем находится что-то левое
-		$localpath = getenv("SCRIPT_NAME");
-		$absolutepath = getenv("SCRIPT_FILENAME");
-		$_SERVER['DOCUMENT_ROOT'] = substr($absolutepath, 0, strpos($absolutepath, $localpath));
-
-		// Адрес сайта - тоже одна из настроек, но вычисляем его автоматически, а не берем из файла
-		$script_dir1 = realpath(dirname(dirname(__FILE__)));
-		$script_dir2 = realpath($_SERVER['DOCUMENT_ROOT']);
-		$subdir = trim(substr($script_dir1, strlen($script_dir2)), "/\\");
-
-
-		//Если запуск был из командной строки, пропустим этот блок
-		if(isset($_SERVER)){
-			// Протокол
-			$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"], 0, 5)) == 'https' ? 'https' : 'http';
-			if ($_SERVER["SERVER_PORT"] == 443)
-				$protocol = 'https';
-			elseif (isset($_SERVER['HTTPS']) && ( ($_SERVER['HTTPS'] == 'on') || ($_SERVER['HTTPS'] == '1')))
-				$protocol = 'https';
-			elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' || !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on')
-				$protocol = 'https';
-
-			$this->vars['protocol']['value'] = $protocol;
-			$this->vars['root_url']['value'] = $protocol . '://' . rtrim($_SERVER['HTTP_HOST']);
-		}
-		
-		if (!empty($subdir)){
-			$this->vars['root_url']['value'] .= '/' . $subdir;
-		}
-		
-		// Подпапка в которую установлена симпла относительно корня веб-сервера
-		$this->vars['subfolder']['value'] = $subdir . '/';
 
 		// Определяем корневую директорию сайта
 		$this->vars['root_dir']['value'] = dirname(dirname(__FILE__)) . '/';

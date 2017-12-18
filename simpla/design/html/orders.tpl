@@ -63,7 +63,7 @@
 				</div>
 				<div class="order_name cell">
 					{foreach $order['labels'] as $l}
-					<span class="order_label" style="background-color:#{$l->color};" title="{$l->name}"></span>
+					<span class="order_label" style="background-color:#{$l['color']};" title="{$l['name']}"></span>
 					{/foreach}
 	 				<a href="{url module=OrderAdmin id=$order['id'] return=$smarty.server.REQUEST_URI}">Заказ №{$order['id']}</a> {$order['name']|escape}
 	 				{if $order['note']}
@@ -75,7 +75,7 @@
 					<a href='#' class=delete title="Удалить"></a>
 				</div>
 				<div class="name cell" style='white-space:nowrap;'>
-	 				{$order['total_price']|escape} {$currency->sign}
+	 				{$order['total_price']|escape} {$currency['sign']}
 				</div>
 				<div class="icons cell">
 					{if $order['paid']}
@@ -114,10 +114,10 @@
 			{if $status!==1}<option value="set_status_1">В принятые</option>{/if}
 			{if $status!==2}<option value="set_status_2">В выполненные</option>{/if}
 			{foreach $labels as $l}
-			<option value="set_label_{$l->id}">Отметить &laquo;{$l->name}&raquo;</option>
+			<option value="set_label_{$l['id']}">Отметить &laquo;{$l['name']}&raquo;</option>
 			{/foreach}
 			{foreach $labels as $l}
-			<option value="unset_label_{$l->id}">Снять &laquo;{$l->name}&raquo;</option>
+			<option value="unset_label_{$l['id']}">Снять &laquo;{$l['name']}&raquo;</option>
 			{/foreach}
 			<option value="delete">Удалить выбранные заказы</option>
 		</select>
@@ -143,9 +143,9 @@
 	<ul id="labels">
 		<li {if !$label}class="selected"{/if}><span class="label"></span> <a href="{url label=null}">Все заказы</a></li>
 		{foreach $labels as $l}
-		<li data-label-id="{$l->id}" {if $label->id==$l->id}class="selected"{/if}>
-		<span style="background-color:#{$l->color};" class="order_label"></span>
-		<a href="{url label=$l->id}">{$l->name}</a></li>
+		<li data-label-id="{$l['id']}" {if $label['id']==$l['id']}class="selected"{/if}>
+		<span style="background-color:#{$l['color']};" class="order_label"></span>
+		<a href="{url label=$l['id']}">{$l['name']}</a></li>
 		{/foreach}
 	</ul>
 	<!-- Метки -->

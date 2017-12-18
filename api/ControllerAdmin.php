@@ -4,7 +4,7 @@
  * Это класс контроллера для панели управления администратора.
  */
 
-require_once ('api/Simpla.php');
+require_once ('Simpla.php');
 
 class ControllerAdmin extends Simpla
 {

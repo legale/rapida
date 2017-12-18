@@ -144,7 +144,7 @@
 				<a href="{url module=OrderAdmin id=$order['id'] return=$smarty.server.REQUEST_URI}">Заказ №{$order['id']}</a>
 			</div>
 			<div class="name cell">
-				{$order['total_price']}&nbsp;{$currency->sign}
+				{$order['total_price']}&nbsp;{$currency['sign']}
 			</div>
 			<div class="icons cell">
 				{if $order['paid']}

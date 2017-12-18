@@ -46,24 +46,24 @@
 	
 		<div id="list" class="sortable">
 			{foreach $comments as $comment}
-			<div class="{if !$comment->approved}unapproved{/if} row">
+			<div class="{if !$comment['approved']}unapproved{/if} row">
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$comment->id}"/>				
+					<input type="checkbox" name="check[]" value="{$comment['id']}"/>				
 				</div>
 				<div class="name cell">
 					<div class="comment_name">
-					{$comment->name|escape}
+					{$comment['name']|escape}
 					<a class="approve" href="#">Одобрить</a>
 					</div>
 					<div class="comment_text">
-					{$comment->text|escape|nl2br}
+					{$comment['text']|escape|nl2br}
 					</div>
 					<div class="comment_info">
-					Комментарий оставлен {$comment->date|date} в {$comment->date|time}
-					{if $comment->type == 'product'}
-					к товару <a target="_blank" href="{$config->root_url}/products/{$comment->product->url}#comment_{$comment->id}">{$comment->product->name}</a>
-					{elseif $comment->type == 'blog'}
-					к статье <a target="_blank" href="{$config->root_url}/blog/{$comment->post->url}#comment_{$comment->id}">{$comment->post->name}</a>
+					Комментарий оставлен {$comment['date']|date} в {$comment['date']|time}
+					{if $comment['type'] == 'product'}
+					к товару <a target="_blank" href="{$config->root_url}/products/{$comment['product']['url']}#comment_{$comment['id']}">{$comment['product']['name']}</a>
+					{elseif $comment['type'] == 'blog'}
+					к статье <a target="_blank" href="{$config->root_url}/blog/{$comment['post']['url']}#comment_{$comment['id']}">{$comment['post']['name']}</a>
 					{/if}
 					</div>
 				</div>

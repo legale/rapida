@@ -4,11 +4,10 @@
 	{if isset($userperm['currency'])}<li><a href="?module=CurrencyAdmin">Валюты</a></li>{/if}
 	<li class="active"><a href="?module=DeliveriesAdmin">Доставка</a></li>
 	{if isset($userperm['payment'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
-	{if isset($userperm['managers'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
 {/capture}
 
-{if $delivery->id}
-{$meta_title = $delivery->name scope=parent}
+{if $delivery['id']}
+{$meta_title = $delivery['name'] scope=parent}
 {else}
 {$meta_title = 'Новый способ доставки' scope=parent}
 {/if}
@@ -42,10 +41,10 @@
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$delivery->name|escape}"/> 
-		<input name=id type="hidden" value="{$delivery->id}"/> 
+		<input class="name" name=name type="text" value="{$delivery['name']|escape}"/> 
+		<input name=id type="hidden" value="{$delivery['id']}"/> 
 		<div class="checkbox">
-			<input name=enabled value='1' type="checkbox" id="active_checkbox" {if $delivery->enabled}checked{/if}/> <label for="active_checkbox">Активен</label>
+			<input name=enabled value='1' type="checkbox" id="active_checkbox" {if $delivery['enabled']}checked{/if}/> <label for="active_checkbox">Активен</label>
 		</div>
 	</div> 
 
@@ -55,9 +54,15 @@
 		<div class="block layer">
 			<h2>Стоимость доставки</h2>
 			<ul>
-				<li><label class=property>Стоимость</label><input name="price" class="simpla_small_inp" type="text" value="{$delivery->price}" /> {$currency->sign}</li>
-				<li><label class=property>Бесплатна от</label><input name="free_from" class="simpla_small_inp" type="text" value="{$delivery->free_from}" /> {$currency->sign}</li>
-				<li><label class=property for="separate_payment">Оплачивается отдельно</label><input id="separate_payment" name="separate_payment" type="checkbox" value="1" {if $delivery->separate_payment}checked{/if} /></li>
+				<li style="width: 100%" ><label style="width: 100%" class=property>Стоимость, {$currency['sign']}:</label>
+					<input style="width: 100%" name="price" type="text" value="{$delivery['price']}" />
+				</li>
+				<li style="width: 100%" ><label style="width: 100%" class=property>Бесплатна от, {$currency['sign']}:</label>
+					<input style="width: 100%" name="free_from" type="text" value="{$delivery['free_from']}" />
+				</li>
+				<li style="width: 100%" ><label class=property for="separate_payment">Оплачивается отдельно</label>
+					<input id="separate_payment" name="separate_payment" type="checkbox" value="1" {if $delivery['separate_payment']}checked{/if} />
+				</li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
@@ -70,9 +75,11 @@
 		<div class="block layer">
 		<h2>Возможные способы оплаты</h2>
 		<ul>
-		{foreach $payment_methods as $payment_method}
+		{foreach $payment_methods as $pm}
 			<li>
-			<input type=checkbox name="delivery_payments[]" id="payment_{$payment_method->id}" value='{$payment_method->id}' {if in_array($payment_method->id, $delivery_payments)}checked{/if}> <label for="payment_{$payment_method->id}">{$payment_method->name}</label><br>
+			<input type=checkbox name="delivery_payments[]" id="payment_{$pm['id']}" value='{$pm['id']}' 
+			{if in_array($pm['id'], $delivery_payments)}checked{/if}> 
+			<label for="payment_{$pm['id']}">{$pm['name']}</label><br>
 			</li>
 		{/foreach}
 		</ul>		
@@ -83,7 +90,7 @@
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Описание</h2>
-		<textarea name="description" class="editor_small">{$delivery->description|escape}</textarea>
+		<textarea name="description" class="editor_small">{$delivery['description']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

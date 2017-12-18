@@ -6,71 +6,106 @@
  * и передача информации клиенту
  */
 
-require_once ('api/Simpla.php');
+require_once('Simpla.php');
 
 class ControllerResize extends Simpla
 {
+    private $uri;
+    private $q;
+    private $type;
 
-	public function __construct()
-	{
-		dtimer::$enabled = false; //set true to enable debugger
-		
-		dtimer::log(__METHOD__ . ' construct');
-	}
+    public function __construct()
+    {
+        dtimer::$enabled = false; //set true to enable debugger
+        dtimer::log(__METHOD__ . ' start');
+        //['dir'][0] - is the first part (ex: products) ['dir'][1] is the second (ex: resize)
+        $this->uri = $this->coMaster->uri_arr;
+        $this->type = $this->uri['path_arr']['dir'][0];
+    }
 
-	public function action()
-	{
-		
-		$dirname = $this->coMaster->uri_arr['path_arr']['dir'];
-		$basename = $this->coMaster->uri_arr['path_arr']['url'];
-		//Если ссылки нет в пути адресной строки - возьмем id товара из get query
-		if(empty($basename) && !empty($this->coMaster->uri_arr['query_arr']['url']) ) {
-			$pid = @$this->coMaster->uri_arr['query_arr']['url'];
-			$pos = @$this->coMaster->uri_arr['query_arr']['pos'];
-			//получим главное изображение товара из таблицы s_images
-			if(!$basename = $this->products->get_product_image($pid, $pos)){
-				return false;
-			} else {
-				$w = @$this->coMaster->uri_arr['query_arr']['w'];
-				$h = @$this->coMaster->uri_arr['query_arr']['h'];
-				$wm = @$this->coMaster->uri_arr['query_arr']['wm'];
-				$basename = $this->image->add_resize_params($basename['filename'], $w, $h, $wm);
-			}
-		} 
-		
-		dtimer::log(__METHOD__ . " basename: $basename");
+    public function action()
+    {
+        dtimer::log(__METHOD__ . ' start');
+        //There is 2 scenarios
+        //if image is on the remote server
+        if (isset($this->uri['query_arr'])) {
+            $this->q = $this->uri['query_arr'];
+            dtimer::log(__METHOD__ . " var_export query array: " . var_export($this->q, true));
+        }
 
-		
+        if (isset($this->q['scheme']) && isset($this->uri['path_arr']['dir'][1])) {
+            $filepath = $this->download();
+        } else {
+            $filepath = $this->resize();
+        }
+        $output = $this->read($filepath);
+        print $output;
+        return true;
+    }
 
+    private function download()
+    {
+        dtimer::log(__METHOD__ . ' start');
+        //trying to download remote image
+        $item_id = (int)$this->uri['path_arr']['dir'][1];
+        $url = unparse_url($this->q);
+        dtimer::log(__METHOD__ . " unparsed url: $url");
+        if ($a = $this->image->download($this->type, $item_id, $url)) {
+            $basename = $a['basename'];
+            return $this->resize($basename);
+        } else {
 
-		if(!empty($basename) && !empty($dirname) ){
-			$res = $this->image->resize($basename);
-			dtimer::log( __METHOD__ . " basename: $basename");
-			dtimer::log( __METHOD__ . " resized: $res");
-		}
+            return false;
+        }
+    }
 
-		if ( isset($res) && is_readable($res)){
-			if(isset($_SERVER['HTTP_RANGE']) ){
-				$bytes = explode('=', $_SERVER['HTTP_RANGE'], 2);
-				$range = explode('-', $bytes[1], 2);
-				$length = $range[1] - $range[0];
-				$offset = (int)$range[0];
-				$f = @fopen($res, 'r');
-				@fseek($f, $offset);
-				header("Content-length: $length");
-				header("Content-type: image");
-				print @fread($f,  $length);
-			} else {
-				$length = filesize($res);
-				header("Content-length: $length");
-				header("Content-type: image");
-				print @file_get_contents($res);
-			}
+    private function resize($basename = null, $w = null, $h = null)
+    {
 
-		}
-		
-		dtimer::show();
+        dtimer::log(__METHOD__ . " start basename: $basename w: $w h: $h");
+        if (!isset($w)) {
+            $w = $this->uri['path_arr']['size'][0];
+        }
+        if (!isset($h)) {
+            $h = $this->uri['path_arr']['size'][1];
+        }
+        if (!isset($basename)) {
+            $basename = $this->uri['path_arr']['basename'];
+        }
 
-		exit();
-	}
+        if (isset($w, $h, $basename)) {
+            $res = $this->image->resize('img/' . $this->type . '/' . $basename, $w, $h);
+            return $res;
+        } else {
+            dtimer::log(__METHOD__ . " resize failed unable to get width, height and/or basename", 1);
+            dtimer::log(__METHOD__ . " var_export uri_array " . var_export($this->uri['path_arr'], true), 1);
+
+            return false;
+        }
+    }
+
+    private function read($res)
+    {
+        dtimer::log(__METHOD__ . " start file: $res");
+        if (isset($res) && is_readable($res)) {
+            if (isset($_SERVER['HTTP_RANGE'])) {
+                $bytes = explode('=', $_SERVER['HTTP_RANGE'], 2);
+                $range = explode('-', $bytes[1], 2);
+                $length = $range[1] - $range[0];
+                $offset = (int)$range[0];
+                $f = @fopen($res, 'r');
+                @fseek($f, $offset);
+                header("Content-length: $length");
+                header("Content-type: image");
+                $output = @fread($f, $length);
+                fclose($f);
+                return $output;
+            } else {
+                $length = filesize($res);
+                header("Content-length: $length");
+                header("Content-type: image");
+                return @file_get_contents($res);
+            }
+        }
+    }
 }

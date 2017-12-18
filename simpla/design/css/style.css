@@ -452,7 +452,8 @@ progress:after { content: '%'; }
 	overflow: hidden;
 	color: #808080;
 }
- .block li input{ font-size:13px; height:18px;} 
+
+ .block li input{ font-size:13px;} 
  .block li textarea {
 	width: 100%;
 	min-width: 300px;
@@ -1002,8 +1003,6 @@ a.icons
 .in_filter .icons a.in_filter	{ background-image: url('/simpla/design/images/filter.png'); }
 .icons a.duplicate				{ background-image: url('/simpla/design/images/page_copy.png'); }
 .featured .icons a.featured		{ background-image: url('/simpla/design/images/star.png'); }
-.icons a.cents					{ background-image: url('/simpla/design/images/coin_stack_gold_off.png'); }
-.cents  .icons a.cents			{ background-image: url('/simpla/design/images/coin_stack_gold.png'); }
 .icons a.loading_icon			{ background-image: url('/simpla/design/images/loader.gif'); }
 .icons a.restore				{ background-image: url('/simpla/design/images/clock_history_frame.png'); }
 
@@ -1029,8 +1028,6 @@ a.icons
 			.in_filter .icons a.in_filter	{ background-image: url('/simpla/design/images/filter@2x.png'); }
 			.icons a.duplicate				{ background-image: url('/simpla/design/images/page_copy@2x.png'); }
 			.featured .icons a.featured		{ background-image: url('/simpla/design/images/star@2x.png'); }
-			.icons a.cents					{ background-image: url('/simpla/design/images/coin_stack_gold_off@2x.png'); }
-			.cents  .icons a.cents			{ background-image: url('/simpla/design/images/coin_stack_gold@2x.png'); }
 			.icons a.loading_icon			{ background-image: url('/simpla/design/images/loader@2x.gif'); }
 			.icons a.restore				{ background-image: url('/simpla/design/images/clock_history_frame@2x.png'); }
 			.icons a{
@@ -1190,18 +1187,19 @@ textarea.editor_small{
 	display: block;
 	padding-top: 6px;
 }
-#currencies_block li.icons { width: 80px; padding-top: 5px;}
+#currencies_block li.icons { width: 50px;}
 #currencies_block li.sign { width: 120px; }
 #currencies_block li.sign input { width: 95px; }
 #currencies_block li.iso { width: 120px; }
 #currencies_block li.iso input { width: 95px;}
+#currencies_block li.rate { width: 60px;} 
 #currencies_block li.rate input { width: 50px; 
 	font-size: 15px;
 	font-weight: bold;
 	color: #000;
 }
-#currencies_block li.rate .rate_from{ float:left; min-width: 100px;}
-#currencies_block li.rate .rate_to { float:left; margin-right: 10px;}
+#currencies_block li.precision  { width: 120px;} 
+#currencies_block li.precision input { width: 95px;} 
 
 #currencies_block span.add {
 	margin-left: 30px;

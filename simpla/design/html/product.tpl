@@ -46,6 +46,10 @@ function delete_link(e) {
 function ready(){
 	"use strict";
 	
+	//сортировка картинок
+	$("#imagelist").sortable();
+	
+	
 	//включаем обработчик на все элементы, у которых есть аттрибут add_link
 	live('click', document.querySelectorAll('[add_link=true]'), add_link);
 	live('click', document.querySelectorAll('[delete_link=true]'), delete_link);
@@ -357,12 +361,13 @@ function ready(){
 			</h2>
 			<ul id="imagelist">
 			{if $product['images']}
-			{foreach $product['images'] as $image}
+				{foreach $product['images'] as $image_id=>$image}
 				<li container="true">
 					<a delete_link="true" class="delete"></a>
-					<img id="{$image['id']}" src="{$image['filename']|resize:100:100:false:$product['id']:$image['position']}" alt="" />
-					<input type="hidden" name="save[images][]" value="{$image['id']}">
-				</li>{/foreach}
+					<img id="{$image_id}" src="{$image['basename']|resize:products:$image_id:100:100}" alt="" />
+					<input type="hidden" name="save[images][]" value="{$image_id}">
+				</li>
+				{/foreach}
 			{/if}
 			</ul>
 
@@ -397,9 +402,10 @@ function ready(){
 
 		<div class="block layer">
 			<h2>Связанные товары</h2>
-			<div id=list class="sortable related_products">
+			<div class="sortable related_products">
 				{if $product['related']}
 				{foreach $product['related'] as $p}
+				{$image_id = $p['image_id']}
 				<div class="row">
 					<input type="hidden" name="save[related][]" value="{$p['id']}">
 					<div class="move cell">
@@ -407,7 +413,7 @@ function ready(){
 					</div>
 					<div class="image cell">
 					<a href="{url id=$p['id']}">
-					<img class="product_icon" src="{$p['image']|resize:35:35}">
+					<img class="product_icon" src="{$p['image']|resize:products:$image_id:35:35}">
 					</a>
 					</div>
 					<div class="name cell">

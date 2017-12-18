@@ -35,7 +35,7 @@ var options = {
 	},
 	yAxis: {
 		title: {
-			text: '{/literal}{$currency->name}{literal}'
+			text: '{/literal}{$currency['name']}{literal}'
 		}
 	},
 
@@ -78,7 +78,7 @@ while (currentDate <= maxDate) {
 
 console.log(newDates);	
 	
-	series.name = 'Сумма заказов, {/literal}{$currency->sign}{literal}';
+	series.name = 'Сумма заказов, {/literal}{$currency['sign']}{literal}';
 
 	// Iterate over the lines and add categories or series
 	$.each(data, function(lineNo, line) {

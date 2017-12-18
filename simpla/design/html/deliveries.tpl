@@ -20,17 +20,17 @@
 	<form id="list_form" method="post">
 	<input type="hidden" name="session_id" value="{$smarty.session.id}">
 
+	{if !empty($deliveries)}
 	<div id="list">
-		
 		{foreach $deliveries as $delivery}
-		<div class="{if !$delivery->enabled}invisible{/if} row">
-			<input type="hidden" name="positions[{$delivery->id}]" value="{$delivery->position}">
+		<div class="{if !$delivery['enabled']}invisible{/if} row">
+			<input type="hidden" name="positions[{$delivery['id']}]" value="{$delivery['position']}">
 			<div class="move cell"><div class="move_zone"></div></div>
 	 		<div class="checkbox cell">
-				<input type="checkbox" name="check[]" value="{$delivery->id}" />				
+				<input type="checkbox" name="check[]" value="{$delivery['id']}" />				
 			</div>
 			<div class="name cell">
-				<a href="{url module=DeliveryAdmin id=$delivery->id return=$smarty.server.REQUEST_URI}">{$delivery->name|escape}</a>
+				<a href="{url module=DeliveryAdmin id=$delivery['id'] return=$smarty.server.REQUEST_URI}">{$delivery['name']|escape}</a>
 			</div>
 			<div class="icons cell">
 				<a class="enable" title="Активен" href="#"></a>
@@ -40,7 +40,8 @@
 		</div>
 		{/foreach}
 	</div>
-
+	{/if}
+	
 	<div id="action">
 	<label id="check_all" class='dash_link'>Выбрать все</label>
 

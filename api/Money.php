@@ -36,12 +36,12 @@ class Money extends Simpla
 	{
 		$this->currencies = array();
 		// Выбираем из базы валюты
-		$q = "SELECT * FROM __currencies ORDER BY position ASC";
+		$q = "SELECT * FROM __currencies ORDER BY `pos` ASC";
 		$this->db->query($q);
 
 		if($this->currencies = $this->db->results_array(null, 'id')){
 			$this->currency = reset($this->currencies);
-			return true;			
+			return true;
 		} else {
 			return false;
 		}
@@ -52,33 +52,35 @@ class Money extends Simpla
 	public function get_currencies($filter = array())
 	{
 		$currencies = array();
-		foreach ($this->currencies as $id => $currency)
+		if(is_array($this->currencies)){
+		foreach ($this->currencies as $id => $currency){
 			if ( (isset($filter['enabled']) && $filter['enabled'] == 1 && $currency['enabled']) || empty($filter['enabled']))
-			$currencies[$id] = $currency;
-
+				$currencies[$id] = $currency;
+			}
+		}
 		return $currencies;
 	}
 
 	public function get_currency($id = null)
 	{
-		if (!empty($id) && is_integer($id) && isset($this->currencies[$id]))
+		if (!empty($id) && is_integer($id) && isset($this->currencies[$id])){
 			return $this->currencies[$id];
-
-		if (!empty($id) && is_string($id))
-			{
-			foreach ($this->currencies as $currency)
-				{
-				if ($currency['code'] == $id)
-					return $currency;
-			}
 		}
-
-		return $this->currency;
+		if (!empty($id) && is_string($id) && is_array($this->currencies)){
+			foreach ($this->currencies as $currency){
+				if ($currency['code'] == $id){
+					return $currency;
+				}
+			}
+		} else {
+			return false;
+		}
 	}
 
 
 	public function add_currency($currency)
 	{
+		dtimer::log(__METHOD__. " start");
 		if (is_object($currency)) {
 			$currency = (array)$currency;
 		}
@@ -91,18 +93,23 @@ class Money extends Simpla
 				unset($currency[$k]);
 			}
 		}
+		
+		//get max position
+		$this->db->query("SELECT MAX(`pos`) as pos FROM __currencies");
+		$pos = $this->db->result_array('pos');
+		if( !empty_($pos) ){
+			$currency['pos'] = $pos + 1;
+		} else {
+			$currency['pos'] = 0;
+		}
+		
+		
+		$q = $this->db->placehold("INSERT INTO __currencies SET ?%", $currency);
 
-		$query = $this->db->placehold(
-			'INSERT INTO __currencies
-		SET ?%',
-			$currency
-		);
-
-		if (!$this->db->query($query))
+		if (!$this->db->query($q))
 			return false;
 
 		$id = $this->db->insert_id();
-		$this->db->query("UPDATE __currencies SET position=id WHERE id=?", $id);
 		$this->init_currencies();
 
 		return $id;
@@ -110,13 +117,8 @@ class Money extends Simpla
 
 	public function update_currency($id, $currency)
 	{
-		$query = $this->db->placehold(
-			'UPDATE __currencies
-						SET ?%
-						WHERE id in (?@)',
-			$currency,
-			(array)$id
-		);
+		dtimer::log(__METHOD__. " start");
+		$query = $this->db->placehold("UPDATE __currencies SET ?% WHERE id in (?@)", $currency, (array)$id);
 		if (!$this->db->query($query))
 			return false;
 
@@ -154,7 +156,7 @@ class Money extends Simpla
 		if (!empty($currency))
 			{		
 			// Умножим на курс валюты
-			$result = $result * $currency['rate_from'] / $currency['rate_to'];
+			$result = $result *  $currency['rate'];
 			
 			// Точность отображения, знаков после запятой
 			$precision = isset($currency['cents']) ? $currency['cents'] : 2;

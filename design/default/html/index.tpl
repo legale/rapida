@@ -6,6 +6,7 @@
 *}
 <html>
 <head>
+	{$unknownvariable}
 	<base href="{$config->root_url}/"/>
 	<title>{$meta_title|escape}</title>
 	
@@ -210,7 +211,8 @@
 					{$url = $browsed_product['url']}
 					{$name = $browsed_product['name']}
 					{$image = $browsed_product['image']}
-					<a href="products/{$url}"><img src="{$image|resize:50:50:false:$pid}" alt="{$name|escape}" title="{$name|escape}"></a>
+					{$image_id = $browsed_product['image_id']}
+					<a href="products/{$url}"><img src="{$image|resize:products:$image_id:50:50}" alt="{$name|escape}" title="{$name|escape}"></a>
 					</li>
 				{/foreach}
 				</ul>

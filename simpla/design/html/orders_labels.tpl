@@ -29,14 +29,14 @@
 		<div id="list">		
 			{foreach $labels as $label}
 			<div class="row">
-				<input type="hidden" name="positions[{$label->id}]" value="{$label->position}">
+				<input type="hidden" name="positions[{$label['id']}]" value="{$label['position']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$label->id}" />				
+					<input type="checkbox" name="check[]" value="{$label['id']}" />				
 				</div>
 				<div class="name cell">
-					<span style="background-color:#{$label->color};" class="order_label"></span>
-					<a href="{url module=OrdersLabelAdmin id=$label->id return=$smarty.server.REQUEST_URI}">{$label->name|escape}</a>
+					<span style="background-color:#{$label['color']};" class="order_label"></span>
+					<a href="{url module=OrdersLabelAdmin id=$label['id'] return=$smarty.server.REQUEST_URI}">{$label['name']|escape}</a>
 				</div>
 				<div class="icons cell">
 					<a class="delete" title="Удалить" href="#"></a>
