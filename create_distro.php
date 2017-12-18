@@ -31,14 +31,13 @@ function precheck($p_event, &$p_header){
 	
 	//это точно исключаем
 	$exclude = array(
+		'/\/[\.][^\/]*/i', //файлы начинающиеся с точки
+		'/^[\.].*/i', //каталоги с точки
 		'/^sandbox\.php$/i',
 		'/^create_distro\.php$/i',
 		'/^install\.php$/i',
 		'/rapida.*?\.zip$/i',
-		'/\.gitignore$/i',
-		'/^\.git\/.*/i',
-		'/^\.git$/i',
-		'/^files\/.*/i',
+		'/^img\/.*/i',
 		'/^compiled\/.*/i',
 		'/^simpla\/files\/.*/i',
 		'/^cache\/.*/i',
@@ -46,9 +45,7 @@ function precheck($p_event, &$p_header){
 		'/^design\/.*/i',
 		'/^simpla\/design\/compiled\/.*/i',
 		'/^simpla\/files\/.*/i',
-		'/^simpla\.passwd$/i',
-		'/^simpla\.htaccess$/i',
-		'/^config\db.ini$/i',
+		'/^config\/db.ini$/i',
 	);
 	
 	$fname = $p_header['stored_filename'];

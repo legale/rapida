@@ -43,7 +43,6 @@ class BackupAdmin extends Simpla
 						$archive = $dir . $name;
 						$zip = new PclZip($archive);
 
-						$this->clean_dir('files');
 
 						if (!$zip->extract(PCLZIP_OPT_PATH, '', PCLZIP_CB_POST_EXTRACT, 'myPostExtractCallBack'))
 							{
@@ -133,7 +132,7 @@ function myPostExtractCallBack($p_event, &$p_header)
 function myCallBack($p_event, &$p_header)
 {
 	$fname = $p_header['stored_filename'];
-	if (preg_match('/^files\/products\/[^\.]/i', $fname)) {
+	if (preg_match('/^img\/[^\.]/i', $fname)) {
 		return false;
 	}
 	return true;
