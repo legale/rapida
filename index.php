@@ -30,15 +30,16 @@ $simpla->coMaster->action();
 	//показываем отладочную информацию из dtimer
 	if($simpla->config->debug === true){
 		dtimer::show();
+        if( isset($_SESSION['admin']) ){
+            print "<PRE>";
+            $time_end = microtime(true);
+            $exec_time = $time_end-$time_start;
+
+            if(function_exists('memory_get_peak_usage'))
+                print "memory peak usage: ".convert(memory_get_peak_usage(true))."\r\n";
+            print "page generation time: ".convert_time($exec_time)."\r\n";
+            print "</PRE>";
+        }
 	}
 	
-	if( isset($_SESSION['admin']) ){
-		print "<PRE>";
-		$time_end = microtime(true);
-		$exec_time = $time_end-$time_start;
-	  
-		if(function_exists('memory_get_peak_usage'))
-			print "memory peak usage: ".convert(memory_get_peak_usage(true))."\r\n";  
-		print "page generation time: ".convert_time($exec_time)."\r\n";  
-		print "</PRE>";
-	}
+
