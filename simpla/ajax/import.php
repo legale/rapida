@@ -128,10 +128,10 @@ class ImportAjax extends Simpla{
         fclose($f);
         $size = filesize($this->import_files_dir.$this->import_file);
         
-        // Создаем объект результата
+        // Создаем массив результата
         $result['from'] = $from;          // На каком месте остановились
         $result['totalsize'] = $size;     // Размер всего файла
-        $result['items'] = $imported_items;   // Импортированные товары
+        //$result['items'] = $imported_items;   // Импортированные товары
         
         return $result;
     }
