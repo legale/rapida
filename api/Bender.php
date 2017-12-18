@@ -53,13 +53,7 @@ class Bender
 	// Minify CSS / Javascripts and write output
 	protected function minify( $output_array )
 	{
-		$root = $this->root_dir;
-		
-		$filename = $output_array['filename'];
 		$ext = $output_array['extension'];
-		$dirname = $output_array['dirname'];
-		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext"; 
-
 		$scripts = "{$ext}_array";
 		$scripts = $this->$scripts;
 		//Check src files modify time

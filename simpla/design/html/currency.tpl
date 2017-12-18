@@ -48,51 +48,18 @@ $(function() {
 		return false;	
 	});
 	
-	// Центы
-	$("a.cents").click(function() {
-		var icon        = $(this);
-		var line        = icon.closest("ul");
-		var id          = line.find('input[name*="currency[id]"]').val();
-		var state       = line.hasClass('cents')?0:2;
-		icon.addClass('loading_icon');
+	// Удалить
 
-		$.ajax({
-			type: 'POST',
-			url: 'ajax/update_object.php',
-			data: {'object': 'currency', 'id': id, 'values': {'cents': state}, 'session_id': '{/literal}{$smarty.session.id}{literal}'},
-			success: function(data){
-				icon.removeClass('loading_icon');
-				if(!state)
-					line.removeClass('cents');
-				else
-					line.addClass('cents');				
-			},
-			error: function (xhr, ajaxOptions, thrownError){
-                    alert(xhr.status);
-                    alert(thrownError);
-            },
-			dataType: 'json'
-		});	
-		return false;	
-	});
-	
-	// Показать центы
 	$("a.delete").click(function() {
-		$('input[type="hidden"][name="action"]').val('delete');
-		$('input[type="hidden"][name="action_id"]').val($(this).closest("ul").find('input[type="hidden"][name*="currency[id]"]').val());
-		$(this).closest("form").submit();
+		this.closest('ul').remove();
 	});
 	
-	// Запоминаем id первой валюты, чтобы определить изменение базовой валюты
-	var base_currency_id = $('input[name*="currency[id]"]').val();
 	
+	//Подтверждение действия
 	$("form").submit(function() {
-		if($('input[type="hidden"][name="action"]').val()=='delete' && !confirm('Подтвердите удаление'))
-			return false;	
-		if(base_currency_id != $('input[name*="currency[id]"]:first').val() && confirm('Пересчитать все цены в '+$('input[name*="name"]:first').val()+' по текущему курсу?', 'msgBox Title'))
-			$('input[name="recalculate"]').val(1);
+		if( !confirm('Подтвердите действие') )
+			return false;
 	});
-
 
 });
 
@@ -122,33 +89,33 @@ $(function() {
 			<li class="icons"></li>	
 			<li class="sign">Знак</li>	
 			<li class="iso">Код ISO</li>	
+			<li class="rate">Курс</li>	
+			<li class="precision">Округление</li>	
 		</ul>
 		<div id="currencies">
 		{foreach $currencies as $c}
-		<ul class="sortable {if !$c->enabled}invisible{/if} {if $c->cents == 2}cents{/if}">
+		<ul class="sortable {if !$c['enabled']}invisible{/if}">
 			<li class="move"><div class="move_zone"></div></li>
 			<li class="name">
-				<input name="currency[id][{$c->id}]" type="hidden" 	value="{$c->id|escape}" /><input name="currency[name][{$c->id}]" type="text" value="{$c->name|escape}" />
+				<input name="currency[id][{$c['id']}]" type="hidden" 	value="{$c['id']|escape}" /><input name="currency[name][{$c['id']}]" type="text" value="{$c['name']|escape}" />
 			</li>
 			<li class="icons">
-				<a class="cents" href="#" title="Выводить копейки"></a>
 				<a class="enable" href="#" title="Показывать на сайте"></a>
 			</li>
-			<li class="sign">		<input name="currency[sign][{$c->id}]" type="text" 	value="{$c->sign|escape}" /></li>
-			<li class="iso">		<input name="currency[code][{$c->id}]" type="text" 	value="{$c->code|escape}" /></li>
+			<li class="sign">		
+				<input name="currency[sign][{$c['id']}]" type="text" 	value="{$c['sign']|escape}" />
+				</li>
+			<li class="iso">		
+				<input name="currency[code][{$c['id']}]" type="text" 	value="{$c['code']|escape}" />
+				</li>
 			<li class="rate">
-				{if !$c@first}
-				<div class=rate_from><input name="currency[rate_from][{$c->id}]" type="text" value="{$c->rate_from|escape}" /> {$c->sign}</div>
-				<div class=rate_to>= <input name="currency[rate_to][{$c->id}]" type="text" value="{$c->rate_to|escape}" /> {$currency->sign}</div>
-				{else}
-				<input name="currency[rate_from][{$c->id}]" type="hidden" value="{$c->rate_from|escape}" />
-				<input name="currency[rate_to][{$c->id}]" type="hidden" value="{$c->rate_to|escape}" />
-				{/if}
+				<input name="currency[rate][{$c['id']}]" type="text" value="{$c['rate']|escape}" />
+			</li>
+			<li class="precision">
+				<input name="currency[cents][{$c['id']}]" type="text" value="{$c['cents']|escape}" />
 			</li>
 			<li class="icons">
-			{if !$c@first}
 				<a class="delete" href="#" title="Удалить"></a>				
-			{/if}
 			</li>
 		</ul>
 		{/foreach}		
@@ -160,8 +127,10 @@ $(function() {
 			<li class="sign"><input name="currency[sign][]" type="text" value="" /></li>
 			<li class="iso"><input  name="currency[code][]" type="text" value="" /></li>
 			<li class="rate">
-				<div class=rate_from><input name="currency[rate_from][]" type="text" value="1" /> </div>
-				<div class=rate_to>= <input name="currency[rate_to][]" type="text" value="1" /> {$currency->sign|escape}</div>			
+				<div class=rate><input name="currency[rate][]" type="text" value="1" /> </div>
+			</li>
+			<li class="precision">
+				<input name="currency[cents][]" type="text" value="" />
 			</li>
 			<li class="icons">
 			

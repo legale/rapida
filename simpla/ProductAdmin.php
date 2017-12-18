@@ -43,7 +43,7 @@ class ProductAdmin extends Simpla
         //Сначала мы все получим из моделей
         $product = $this->products->get_product((int)$pid);
         $product['variants'] = $this->variants->get_product_variants($pid);
-        $product['images'] = $this->products->get_product_images($pid);
+        $product['images'] = $this->image->get('products', array('item_id' => $pid) );
         $product['options'] = $this->features->get_product_options($pid);
         $product['cats'] = $this->categories->get_product_categories($pid);
         if ($rel_id = $this->products->get_related_products($pid)) {
@@ -245,28 +245,32 @@ class ProductAdmin extends Simpla
 
 	private function save_images($pid, $raw){
 		dtimer::log(__METHOD__ . " start");
-		if(!is_array($raw)){
-			return false;
-		}
+		//~ print_r($_POST);
+		
 		
 		
 		//тут будут id изображений, которые удалять не нужно
-		$keep = array_flip($raw);
+		if(is_array($raw)){
+			$keep = array_flip($raw);
+		} else {
+			$keep = array();
+		}
 		//тут существующие
-		$saved = $this->products->get_product_images($pid);
-		foreach($saved as $id=>$img){
-			if( !isset($keep[$id]) ){
-				$this->products->delete_image($id);
-				$this->status[] = array(
-					'status' => 3,
-					'message' => "Удалено изображение $id",
-				);
+		if($saved = $this->image->get('products', array('item_id'=>$pid) )){
+			foreach($saved as $id=>$img){
+				if( !isset($keep[$id]) ){
+					$this->image->delete('products', $id);
+					$this->status[] = array(
+						'status' => 3,
+						'message' => "Удалено изображение $id",
+					);
+				}
 			}
 		}
 		
 		//тут поменяем порядок изображений
 		for($i = 0, $c = count($raw); $i < $c; $i++){
-			$this->products->update_image($raw[$i], array('position'=> $i) );
+			$this->image->update('products', $raw[$i], array('item_id' => $pid, 'pos'=> $i) );
 		}
 	}
 
@@ -291,13 +295,10 @@ class ProductAdmin extends Simpla
 			}
 			
 			
-			if ($img = $this->image->upload_image($raw['tmp_name'][$k], $raw['name'][$k]))
+			if ($img = $this->image->upload('products', $pid, $raw['tmp_name'][$k], $raw['name'][$k]))
 			{
-				dtimer::log(__METHOD__ . " image uploaded $img");
-				//если изображение добавлено - переходим на сл. итерацию
-				if(false !== $this->products->add_image($pid, $img)){
-					continue;
-				}
+				dtimer::log(__METHOD__ . " image uploaded ".$img['basename']);
+				continue;
 			} 
 			//если пришли сюда, значит изображение добавить не удалось
 			$this->status[] = array(

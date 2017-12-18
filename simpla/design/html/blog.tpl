@@ -41,18 +41,18 @@
 	
 		<div id="list">
 			{foreach $posts as $post}
-			<div class="{if !$post->visible}invisible{/if} row">
-				<input type="hidden" name="positions[{$post->id}]" value="{$post->position}">
+			<div class="{if !$post['visible']}invisible{/if} row">
+				<input type="hidden" name="positions[{$post['id']}]" value="{$post['position']}">
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$post->id}" />				
+					<input type="checkbox" name="check[]" value="{$post['id']}" />				
 				</div>
 				<div class="name cell">		
-					<a href="{url module=PostAdmin id=$post->id return=$smarty.server.REQUEST_URI}">{$post->name|escape}</a>
+					<a href="{url module=PostAdmin id=$post['id'] return=$smarty.server.REQUEST_URI}">{$post['name']|escape}</a>
 					<br>
-					{$post->date|date}
+					{$post['date']|date}
 				</div>
 				<div class="icons cell">
-					<a class="preview" title="Предпросмотр в новом окне" href="../blog/{$post->url}" target="_blank"></a>
+					<a class="preview" title="Предпросмотр в новом окне" href="../blog/{$post['url']}" target="_blank"></a>
 					<a class="enable" title="Активна" href="#"></a>
 					<a class="delete" title="Удалить" href="#"></a>
 				</div>

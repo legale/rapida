@@ -12,8 +12,8 @@
 	<li class="active"><a href="{url module=OrdersLabelsAdmin keyword=null id=null page=null label=null}">Метки</a></li>
 {/capture}
 
-{if $label->id}
-{$meta_title = $label->name scope=parent}
+{if $label['id']}
+{$meta_title = $label['name'] scope=parent}
 {else}
 {$meta_title = 'Новая метка' scope=parent}
 {/if}
@@ -69,11 +69,11 @@ $(function() {
 <form method=post id=product enctype="multipart/form-data">
 	<input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name="name" type="text" value="{$label->name|escape}"/> 
-		<input name=id type="hidden" value="{$label->id|escape}"/> 
+		<input class="name" name="name" type="text" value="{$label['name']|escape}"/> 
+		<input name=id type="hidden" value="{$label['id']|escape}"/> 
 		<div class="checkbox">
-			<span id="color_icon" style="background-color:#{$label->color};" class="order_label_big"></span>
-			<input id="color_input" name="color" class="simpla_inp" type="hidden" value="{$label->color|escape}" />
+			<span id="color_icon" style="background-color:#{$label['color']};" class="order_label_big"></span>
+			<input id="color_input" name="color" class="simpla_inp" type="hidden" value="{$label['color']|escape}" />
 		</div>
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />
 		

@@ -18,7 +18,9 @@
 			{$pid = $product['id']}
 			{$url = $product['url']}
 			{$name = $product['name']}
-			{$image = $product['images'][0]['filename']}
+			{$image = reset($product['images'])}
+			{$image = $image['basename']}
+			{$image_id = $product['image_id']}
 
 <h1 data-product="{$pid}">{$name|escape}</h1>
 <div class="product">
@@ -26,8 +28,8 @@
 	<!-- Большое фото -->
 	{if $image}
 	<div class="image">
-		<a href="{$image|resize:800:600:w:$pid}" class="zoom" rel="group">
-			<img src="{$image|resize:300:300:false:$pid}" alt="{$name|escape}" /></a>
+		<a href="{$image|resize:products:$image_id:800:600}" class="zoom" rel="group">
+			<img src="{$image|resize:products:$image_id:300:300}" alt="{$name|escape}" /></a>
 	</div>
 	{/if}
 	<!-- Большое фото (The End)-->
@@ -72,16 +74,17 @@
 	{if $product['images']|count>1}
 	<div class="images">
 		{* cut удаляет первую фотографию, если нужно начать 2-й - пишем cut:2 и тд *}
-		{foreach $product['images']|cut as $i=>$image}
-			<a href="{$image['filename']|resize:800:600:w:$pid:$i}" class="zoom" rel="group"><img src="{$image['filename']|resize:95:95:false:$pid:$image['position']}" alt="{$name|escape}" /></a>
+		{foreach $product['images']|cut as $image_id=>$image}
+			<a href="{$image['basename']|resize:products:$image_id:800:600}" class="zoom" rel="group">
+				<img src="{$image['basename']|resize:products:$image_id:95:95}" alt="{$name|escape}" /></a>
 		{/foreach}
 	</div>
 	{/if}
 	<!-- Дополнительные фото продукта (The End)-->
 
 
-	{if $product['options']}
 	<!-- Характеристики товара -->
+	{if $product['options']}
 	<h2>Характеристики</h2>
 	{foreach $ogroups as $g}
 		<h3>{$g['name']|escape}</h3>
@@ -94,8 +97,9 @@
 		{/foreach}
 			</ul>
 	{/foreach}
-	<!-- Характеристики товара (The End)-->
 	{/if}
+	<!-- Характеристики товара (The End)-->
+
 
 	<!-- Соседние товары /-->
 	<div id="back_forward">
@@ -120,13 +124,14 @@
 			{$url = $related_product['url']}
 			{$name = $related_product['name']}
 			{$image = $related_product['image']}
+			{$image_id = $related_product['image_id']}
 	<!-- Товар-->
 	<li class="product">
 		
 		<!-- Фото товара -->
 		{if $image}
 		<div class="image">
-			<a href="products/{$related_product['url']}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
+			<a href="products/{$related_product['url']}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->

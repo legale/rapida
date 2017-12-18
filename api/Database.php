@@ -96,7 +96,7 @@ class Database extends Simpla
 		//считаем аргументы и проверяем тип 1 аргумента (должна быть строка)
 		$cnt = count($args);
 		if ($cnt < 1 || !is_string($args[0])) {
-			$this->error_msg = "Query error - empty query";
+			$this->error_msg = " Error - empty query";
 			return false;
 		}
 		elseif ($cnt > 1) {
@@ -124,10 +124,10 @@ class Database extends Simpla
 		$this->started = time();
 		$this->res = $this->mysqli->query($q);
 		if(!$this->res){
-			dtimer::log(__METHOD__ . " query error: $q ", 1);
+			dtimer::log(__METHOD__ . " Error: $q ", 1);
 			return false;
 		} else {
-			dtimer::log(__METHOD__ . " query completed: $q ");
+			dtimer::log(__METHOD__ . " Completed: $q ");
 			return true;
 		} 
 		
@@ -663,6 +663,7 @@ class Database extends Simpla
 
 	public function dump($filename, $skip_create = false)
 	{
+		dtimer::log(__METHOD__." start");
 		$h = fopen($filename, 'w');
 		$q = $this->placehold("SHOW FULL TABLES LIKE '__%';");
 		$result = $this->mysqli->query($q);
@@ -676,6 +677,7 @@ class Database extends Simpla
 
 	function restore($filename)
 	{
+		dtimer::log(__METHOD__." start");
 		$templine = '';
 		$h = fopen($filename, 'r');
 	

@@ -40,10 +40,10 @@
 
 	<div id=next_order>
 		{if $prev_order}
-		<a class=prev_order href="{url id=$prev_order->id}">←</a>
+		<a class=prev_order href="{url id=$prev_order['id']}">←</a>
 		{/if}
 		{if $next_order}
-		<a class=next_order href="{url id=$next_order->id}">→</a>
+		<a class=next_order href="{url id=$next_order['id']}">→</a>
 		{/if}
 	</div>
 		
@@ -140,10 +140,10 @@
 	<ul>
 		{foreach $labels as $l}
 		<li>
-		<label for="label_{$l->id}">
-		<input id="label_{$l->id}" type="checkbox" name="order_labels[]" value="{$l->id}" {if in_array($l->id, $order_labels)}checked{/if}>
-		<span style="background-color:#{$l->color};" class="order_label"></span>
-		{$l->name}
+		<label for="label_{$l['id']}">
+		<input id="label_{$l['id']}" type="checkbox" name="order_labels[]" value="{$l['id']}" {if in_array($l['id'], $order_labels)}checked{/if}>
+		<span style="background-color:#{$l['color']};" class="order_label"></span>
+		{$l['name']}
 		</label>
 		</li>
 		{/foreach}
@@ -159,11 +159,11 @@
 		{if !$user}
 			Не зарегистрирован
 		{else}
-			<a href='?module=UserAdmin&id={$user->id}' target=_blank>{$user->name|escape}</a> ({$user->email|escape})
+			<a href='?module=UserAdmin&id={$user['id']}' target=_blank>{$user['name']|escape}</a> ({$user['email']|escape})
 		{/if}
 		</div>
 		<div class='edit_user' style='display:none;'>
-		<input type=hidden name=user_id value='{$user->id}'>
+		<input type=hidden name=user_id value='{$user['id']}'>
 		<input type=text id='user' class="input_autocomplete" placeholder="Выберите пользователя">
 		</div>
 	</div>
@@ -233,7 +233,7 @@
 				<span class=edit_purchase style="display:none;">
 				<input type=text name=purchases[price][{$purchase['id']}] value="{$purchase['price']}" size=5>
 				</span>
-				{$currency->sign}
+				{$currency['sign']}
 			</div>
 			<div class="amount cell">			
 				<span class=view_purchase>
@@ -279,7 +279,7 @@
 				<a class="purchase_name" href=""></a>
 			</div>
 			<div class="price cell">
-				<input type=text name=purchases[price][] value='' size=5> {$currency->sign}
+				<input type=text name=purchases[price][] value='' size=5> {$currency['sign']}
 			</div>
 			<div class="amount cell">
 	        	<select name=purchases[amount][]></select>
@@ -301,7 +301,7 @@
 
 	{if $purchases}
 	<div class="subtotal">
-	Всего<b> {$subtotal} {$currency->sign}</b>
+	Всего<b> {$subtotal} {$currency['sign']}</b>
 	</div>
 	{/if}
 
@@ -311,16 +311,16 @@
 	</div>
 
 	<div class="subtotal layer">
-	С учетом скидки<b> {($subtotal-$subtotal*$order['discount']/100)|round:2} {$currency->sign}</b>
+	С учетом скидки<b> {($subtotal-$subtotal*$order['discount']/100)|round:2} {$currency['sign']}</b>
 	</div> 
 	
 	<div class="block discount layer">
 		<h2>Купон{if $order['coupon_code']} ({$order['coupon_code']}){/if}</h2>
-		<input type=text name=coupon_discount value='{$order['coupon_discount']}'> <span class=currency>{$currency->sign}</span>		
+		<input type=text name=coupon_discount value='{$order['coupon_discount']}'> <span class=currency>{$currency['sign']}</span>		
 	</div>
 
 	<div class="subtotal layer">
-	С учетом купона<b> {($subtotal-$subtotal*$order['discount']/100-$order['coupon_discount'])|round:2} {$currency->sign}</b>
+	С учетом купона<b> {($subtotal-$subtotal*$order['discount']/100-$order['coupon_discount'])|round:2} {$currency['sign']}</b>
 	</div> 
 	
 	<div class="block delivery">
@@ -328,17 +328,17 @@
 				<select name="delivery_id">
 				<option value="0">Не выбрана</option>
 				{foreach $deliveries as $d}
-				<option value="{$d->id}" {if $d->id==$delivery->id}selected{/if}>{$d->name}</option>
+				<option value="{$d['id']}" {if $d['id']==$delivery['id']}selected{/if}>{$d['name']}</option>
 				{/foreach}
 				</select>	
-				<input type=text name=delivery_price value='{$order['delivery_price']}'> <span class=currency>{$currency->sign}</span>
+				<input type=text name=delivery_price value='{$order['delivery_price']}'> <span class=currency>{$currency['sign']}</span>
 				<div class="separate_delivery">
 					<input type=checkbox id="separate_delivery" name=separate_delivery value='1' {if $order['separate_delivery']}checked{/if}> <label  for="separate_delivery">оплачивается отдельно</label>
 				</div>
 	</div>
 
 	<div class="total layer">
-	Итого<b> {$order['total_price']} {$currency->sign}</b>
+	Итого<b> {$order['total_price']} {$currency['sign']}</b>
 	</div>
 		
 		
@@ -347,7 +347,7 @@
 				<select name="payment_method_id">
 				<option value="0">Не выбрана</option>
 				{foreach $payment_methods as $pm}
-				<option value="{$pm->id}" {if $pm->id==$payment_method->id}selected{/if}>{$pm->name}</option>
+				<option value="{$pm['id']}" {if $pm['id']==$payment_method['id']}selected{/if}>{$pm['name']}</option>
 				{/foreach}
 				</select>
 		
@@ -357,7 +357,7 @@
  
 	{if $payment_method}
 	<div class="subtotal layer">
-	К оплате<b> {$order['total_price']|convert:$payment_currency->id} {$payment_currency->sign}</b>
+	К оплате<b> {$order['total_price']|convert:$payment_currency['id']} {$payment_currency['sign']}</b>
 	</div>
 	{/if}
 

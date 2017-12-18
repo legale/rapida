@@ -30,38 +30,38 @@
 	
 		<div id="list">
 			{foreach $coupons as $coupon}
-			<div class="{if $coupon->valid}green{/if} row">
+			<div class="{if $coupon['valid']}green{/if} row">
 		 		<div class="checkbox cell">
-					<input type="checkbox" name="check[]" value="{$coupon->id}"/>				
+					<input type="checkbox" name="check[]" value="{$coupon['id']}"/>				
 				</div>
 				<div class="coupon_name cell">			 	
-	 				<a href="{url module=CouponAdmin id=$coupon->id return=$smarty.server.REQUEST_URI}">{$coupon->code}</a>
+	 				<a href="{url module=CouponAdmin id=$coupon['id'] return=$smarty.server.REQUEST_URI}">{$coupon['code']}</a>
 				</div>
 				<div class="coupon_discount cell">			 	
-	 				Скидка {$coupon->value*1} {if $coupon->type=='absolute'}{$currency->sign}{else}%{/if}<br>
-	 				{if $coupon->min_order_price>0}
+	 				Скидка {$coupon['value']*1} {if $coupon['type']=='absolute'}{$currency['sign']}{else}%{/if}<br>
+	 				{if $coupon['min_order_price']>0}
 	 				<div class="detail">
-	 				Для заказов от {$coupon->min_order_price|escape} {$currency->sign}
+	 				Для заказов от {$coupon['min_order_price']|escape} {$currency['sign']}
 	 				</div>
 	 				{/if}
 				</div>
 				<div class="coupon_details cell">			 	
-					{if $coupon->single}
+					{if $coupon['single']}
 	 				<div class="detail">
 	 				Одноразовый
 	 				</div>
 	 				{/if}
-	 				{if $coupon->usages>0}
+	 				{if $coupon['usages']>0}
 	 				<div class="detail">
-	 				Использован {$coupon->usages|escape} {$coupon->usages|plural:'раз':'раз':'раза'}
+	 				Использован {$coupon['usages']|escape} {$coupon['usages']|plural:'раз':'раз':'раза'}
 	 				</div>
 	 				{/if}
-	 				{if $coupon->expire}
+	 				{if $coupon['expire']}
 	 				<div class="detail">
-	 				{if $smarty.now|date_format:'%Y%m%d' <= $coupon->expire|date_format:'%Y%m%d'}
-	 				Действует до {$coupon->expire|date}
+	 				{if $smarty.now|date_format:'%Y%m%d' <= $coupon['expire']|date_format:'%Y%m%d'}
+	 				Действует до {$coupon['expire']|date}
 	 				{else}
-	 				Истёк {$coupon->expire|date}
+	 				Истёк {$coupon['expire']|date}
 	 				{/if}
 	 				</div>
 	 				{/if}

@@ -69,7 +69,7 @@
 				<input type="checkbox" name="check[]" value="{$product['id']}"/>				
 			</div>
 			<div class="image cell">
-				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|escape|resize:35:35:false:$product['id']}" /></a>
+				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|resize:products:$product['image_id']:35:35}" /></a>
 			</div>
 			<div class="name product_name cell">
 			 	
@@ -78,7 +78,7 @@
 				{foreach $product['variants'] as $variant}
 				<li {if !$variant@first}class="variant" style="display:none;"{/if}>
 					<i title="{$variant['name']|escape}">{$variant['name']|escape|truncate:30:'…':true:true}</i>
-					<input class="price {if $variant['old_price']>0}old_price{/if}" type="text" name="price[{$variant['id']}]" value="{$variant['price']}" {if $variant['old_price']>0}title="Старая цена &mdash; {$variant['old_price']} {$currency->sign}"{/if} />{$currency->sign}  
+					<input class="price {if $variant['old_price']>0}old_price{/if}" type="text" name="price[{$variant['id']}]" value="{$variant['price']}" {if $variant['old_price']>0}title="Старая цена &mdash; {$variant['old_price']} {$currency['sign']}"{/if} />{$currency['sign']}  
 					<input class="stock" type="text" name="stock[{$variant['id']}]" value="{if $variant['infinity']}∞{else}{$variant['stock']}{/if}" />{$settings->units}
 				</li>
 				{/foreach}

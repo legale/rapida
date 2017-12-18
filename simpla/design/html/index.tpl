@@ -28,7 +28,7 @@
 </head>
 <body>
 
-<a href='{$config->root_url}' class='admin_bookmark'></a>
+<a href='/' class='admin_bookmark'></a>
 
 <!-- Вся страница --> 
 <div id="main">

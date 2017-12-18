@@ -25,7 +25,7 @@ class ProductView extends View
 		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin'])))
 			return false;
 		
-		$product['images'] = $this->products->get_images(array('product_id'=>$product['id']));
+		$product['images'] = $this->image->get('products', array('item_id'=>$product['id']));
 
 		if ( $variants = $this->variants->get_variants(array('product_id'=>$product['id'], 'in_stock'=>true)) ) {
 		//~ print "<PRE>";
@@ -124,12 +124,7 @@ class ProductView extends View
 		{
 			$rp = $this->products->get_products(array('id'=>$rp_ids, 'in_stock'=>1, 'visible'=>1));
 			
-			$rp_images = $this->products->get_images(array('product_id'=>array_keys($rp)));
-			foreach($rp_images as $rp_image){
-				if(isset($rp[$rp_image['product_id']])){
-					$rp[$rp_image['product_id']]['images'][] = $rp_image;
-				}
-			}
+
 			$rp_variants = $this->variants->get_variants(array('product_id'=>array_keys($rp), 'in_stock'=>1));
 			foreach($rp_variants as $rp_variant)
 			{

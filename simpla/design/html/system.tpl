@@ -8,7 +8,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title = {$menu->name} scope=parent}
+{$meta_title = {$menu['name']} scope=parent}
 
 {* Заголовок *}
 <div id="header">

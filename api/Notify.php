@@ -37,10 +37,7 @@ class Notify extends Simpla
 
 		$products = $this->products->get_products(array('id' => $products_ids));
 
-		$images = $this->products->get_images(array('product_id' => $products_ids));
-		foreach ($images as $image){
-			$products[$image['product_id']]['images'][] = $image;
-		}
+
 
 		$variants = array();
 		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)
@@ -95,10 +92,7 @@ class Notify extends Simpla
 
 		$products = $this->products->get_products(array('id' => $products_ids));
 
-		$images = $this->products->get_images(array('product_id' => $products_ids));
-		foreach ($images as $image){
-			$products[$image['product_id']]['images'][] = $image;
-		}
+
 
 		$variants = array();
 		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)

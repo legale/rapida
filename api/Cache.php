@@ -31,7 +31,7 @@ class Cache extends Simpla
 		self::$config = array_merge($config, $ini_config);
 		
 		//меняем систему счисления, чтобы chmod и mkdir правильно обрабатывали права, заданные в виде строки
-		self::$config['default_chmod'] = octdec(self::$config['default_chmod']);
+		self::$config['default_chmod'] = octdec((int)self::$config['default_chmod']);
 	}
 
 
