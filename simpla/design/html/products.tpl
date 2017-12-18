@@ -62,6 +62,9 @@
 	
 		<div id="list">
 		{foreach $products as $product}
+		<pre>
+		{print_r($product)}
+		</pre>
 		<div class="{if !$product['visible']}invisible{/if} {if $product['featured']}featured{/if} row">
 			<input type="hidden" name="positions[{$product['id']}]" value="{$product['position']}">
 			<div class="move cell"><div class="move_zone"></div></div>
@@ -69,7 +72,8 @@
 				<input type="checkbox" name="check[]" value="{$product['id']}"/>				
 			</div>
 			<div class="image cell">
-				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}"><img src="{$product['image']|resize:products:$product['image_id']:35:35}" /></a>
+				<a href="{url module=ProductAdmin id=$product['id'] return=$smarty.server.REQUEST_URI}">
+					<img src="{$product['image']|resize:products:$product['image_id']:35:35}" /></a>
 			</div>
 			<div class="name product_name cell">
 			 	
