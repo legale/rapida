@@ -40,6 +40,7 @@ class ControllerResize extends Simpla
         }
         $output = $this->read($filepath);
         print $output;
+        exit();
         return true;
     }
 
