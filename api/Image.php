@@ -288,6 +288,7 @@ class Image extends Simpla
     public function resize($src, $w, $h)
     {
         dtimer::log(__METHOD__ . " start src: $src w: $w h: $h");
+//        return false;
         //generate absolute path
         $src_absolute = $this->config->root_dir . $src;
         if (!file_exists($src_absolute)) {
@@ -297,7 +298,6 @@ class Image extends Simpla
         //create dst filepath
         $pi = pathinfo($src);
         $root = $this->config->root_dir;
-        $basename = $pi['basename'];
         $dirname = $pi['dirname'];
         $dirname_dst = $this->gen_resize_dirname($dirname, $w, $h);
         $filename = $pi['filename'];
@@ -305,20 +305,15 @@ class Image extends Simpla
         $dst = $dirname_dst . '/' . $filename . '.' . strtolower($ext);
         $dst_absolute = $root . $dst;
 
-
+//        return false;
         if (class_exists('Imagick') && $this->config->use_imagick) {
             $res = $this->image_constrain_imagick($src_absolute, $dst_absolute, $w, $h);
         } else {
             $res = $this->image_constrain_gd($src_absolute, $dst_absolute, $w, $h);
         }
-
-        if ($res === false) {
-            dtimer::log(__METHOD__ . " resize error! src: $src_absolute dst: $dst_absolute", 1);
-            return false;
-        } else {
-            dtimer::log(__METHOD__ . " resize relative dst: $dst");
-            return $dst;
-        }
+//        print $dst_absolute;
+//        return false;
+        return $res ? $dst : false ;
     }
 
     /**
@@ -736,29 +731,34 @@ class Image extends Simpla
      * @param $basename
      * @return bool
      */
-    public function add($type, $item_id, $basename)
+    public function add($type, $item_id, $basename, $skip_item_check = false, $skip_table_check = false)
     {
         dtimer::log(__METHOD__ . " start type: $type item_id: $item_id basename: $basename");
         //check if type is allowed
         if (!$this->type_check($type)) {
             return false;
         }
+
         //item_id existence check
         dtimer::log(__METHOD__ . " item_id existence check");
-        if (!$this->item_exists($type, $item_id)) {
+        if (!$skip_item_check && !$this->item_exists($type, $item_id)) {
             return false;
+        }else{
+            dtimer::log(__METHOD__ . " item_id check skipped");
         }
 
         $table = $this->config->db_prefix . 'img_' . $type;
 
         //table existence check
         dtimer::log(__METHOD__ . " table $table existence check");
-        if (!$this->db->query("SELECT `id` FROM `$table` LIMIT 1")) {
+        if (!$skip_table_check && !$this->db->query("SELECT `id` FROM `$table` LIMIT 1")) {
             dtimer::log(__METHOD__ . " table $table not exists! Trying to create.");
             if (false === $this->create_table($type)) {
                 dtimer::log(__METHOD__ . " unable to create table $table", 1);
                 return false;
             }
+        } else {
+            dtimer::log(__METHOD__ . " table check skipped!");
         }
 
         $item_id = (int)$item_id;
@@ -828,7 +828,7 @@ class Image extends Simpla
         }
 
         //get image
-        if (false === ($image = $this->get($type, array('id' => $id)))) {
+        if ( false === ($image = $this->get($type, array('id' => $id)))) {
             dtimer::log(__METHOD__ . " unable to get image with id: $id. aborting!", 1);
             return false;
         }
@@ -837,22 +837,12 @@ class Image extends Simpla
         $url = $image['basename'];
         $id = $image['id'];
         $item_id = $image['item_id'];
-        $root = $this->config->root_dir;
-        $dir = $this->gen_original_dirname($type);
-
 
         //url check
         dtimer::log(__METHOD__ . " url check");
-        if (!$this->is_url($url)) {
-            dtimer::log(__METHOD__ . " trying is not an url basename: $url returning array", 2);
-            $filepath = $dir . $url;
-            $filepath_absolute = $root . $filepath;
-            return array('id' => $id,
-                'item_id' => $item_id,
-                'filepath_absolute' => $filepath_absolute,
-                'filepath' => $filepath,
-                'basename' => $url,
-            );
+        if(!$this->is_url($url)){
+            dtimer::log(__METHOD__ . " is not an url basename: $url", 1);
+            return false;
         }
 
         // Имя оригинального файла
@@ -870,9 +860,9 @@ class Image extends Simpla
             return false;
         }
 
-
+        $dir = $this->gen_original_dirname($type);
         $new_basename = md5_file($tmp) . '.' . $ext;
-
+        $root = $this->config->root_dir;
         dtimer::log(__METHOD__ . " basename: $new_basename");
         $filepath = $dir . $new_basename;
         $filepath_absolute = $root . $filepath;
@@ -891,19 +881,6 @@ class Image extends Simpla
                 return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
             }
             @unlink($filepath_absolute);
-        }
-        return false;
-    }
-
-    public function is_url($url)
-    {
-        dtimer::log(__METHOD__ . " start url: $url");
-        $s = strtolower(substr($url, 0, 4));
-        if ($s === 'http') {
-            $s = strtolower(substr($url, 0, 8));
-            if ($s === 'https://' || substr($s, 0, 7) === 'http://') {
-                return true;
-            }
         }
         return false;
     }
@@ -956,6 +933,19 @@ class Image extends Simpla
                 return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
             }
             @unlink($filepath_absolute);
+        }
+        return false;
+    }
+
+    public function is_url($url)
+    {
+        dtimer::log(__METHOD__ . " start url: $url");
+        $s = strtolower(substr($url, 0, 4));
+        if ($s === 'http') {
+            $s = strtolower(substr($url, 0, 8));
+            if ($s === 'https://' || substr($s, 0, 7) === 'http://') {
+                return true;
+            }
         }
         return false;
     }
