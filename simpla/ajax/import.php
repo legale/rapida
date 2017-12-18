@@ -305,7 +305,7 @@ class ImportAjax extends Simpla{
                         // Добавляем изображение только если такого еще нет в этом товаре
                         $this->db->query('SELECT filename FROM __images WHERE product_id=? AND (filename=? OR filename=?) LIMIT 1', $pid, $image_filename, $image);
                         if (!$this->db->result_array('filename')) {
-                            $this->products->add_image($pid, $image);
+                            $this->image->add('products', $pid, $image);
                         }
                     }
                 }

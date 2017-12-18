@@ -111,11 +111,11 @@ class System extends Simpla
 
 	public function download_all_images()
 	{
-		$q = "SELECT DISTINCT `filename` as `f` 
-		FROM __images 
+		$q = "SELECT DISTINCT `basename` as `f` 
+		FROM __img_products 
 		WHERE 1
-		AND `filename` LIKE 'http:%' 
-		OR `filename` LIKE 'https:%'";
+		AND `basename` LIKE 'http:%' 
+		OR `basename` LIKE 'https:%'";
 		
 		//получаем список подходящих файлов 
 		if ($this->db->query($q)) {

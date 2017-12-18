@@ -7,8 +7,8 @@
 	{if isset($userperm['managers'])}<li><a href="?module=ManagersAdmin">Менеджеры</a></li>{/if}
 {/capture}
 
-{if $payment_method->id}
-{$meta_title = $payment_method->name scope=parent}
+{if $payment_method['id']}
+{$meta_title = $payment_method['name'] scope=parent}
 {else}
 {$meta_title = 'Новый способ оплаты' scope=parent}
 {/if}
@@ -61,10 +61,10 @@ $(function() {
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$payment_method->name|escape}"/> 
-		<input name=id type="hidden" value="{$payment_method->id}"/> 
+		<input class="name" name=name type="text" value="{$payment_method['name']|escape}"/> 
+		<input name=id type="hidden" value="{$payment_method['id']}"/> 
 		<div class="checkbox">
-			<input name=enabled value='1' type="checkbox" id="active_checkbox" {if $payment_method->enabled}checked{/if}/> <label for="active_checkbox">Активен</label>
+			<input name=enabled value='1' type="checkbox" id="active_checkbox" {if $payment_method['enabled']}checked{/if}/> <label for="active_checkbox">Активен</label>
 		</div>
 	</div> 
 
@@ -72,7 +72,7 @@ $(function() {
 		<select name="module">
             <option value='null'>Ручная обработка</option>
        		{foreach $payment_modules as $payment_module}
-            	<option value='{$payment_module@key|escape}' {if $payment_method->module == $payment_module@key}selected{/if} >{$payment_module->name|escape}</option>
+            	<option value='{$payment_module@key|escape}' {if $payment_method['module'] == $payment_module@key}selected{/if} >{$payment_module['name']|escape}</option>
         	{/foreach}
 		</select>
 	</div>
@@ -82,7 +82,7 @@ $(function() {
 		<div>
 		<select name="currency_id">
 			{foreach $currencies as $currency}
-            <option value='{$currency->id}' {if $currency->id==$payment_method->currency_id}selected{/if}>{$currency->name|escape}</option>
+            <option value='{$currency['id']}' {if $currency['id']==$payment_method['currency_id']}selected{/if}>{$currency['name']|escape}</option>
             {/foreach}
 		</select>
 		</div>
@@ -92,25 +92,25 @@ $(function() {
 	<div class="column_left">
 	
    		{foreach $payment_modules as $payment_module}
-        	<div class="block layer" {if $payment_module@key!=$payment_method->module}style='display:none;'{/if} id=module_settings module='{$payment_module@key}'>
-			<h2>{$payment_module->name}</h2>
+        	<div class="block layer" {if $payment_module@key!=$payment_method['module']}style='display:none;'{/if} id=module_settings module='{$payment_module@key}'>
+			<h2>{$payment_module['name']}</h2>
 			{* Параметры модуля оплаты *}
 			<ul>
-			{foreach $payment_module->settings as $setting}
-				{$variable_name = $setting->variable}
-				{if $setting->options|@count>1}
-				<li><label class=property>{$setting->name}</label>
-				<select name="payment_settings[{$setting->variable}]">
-					{foreach $setting->options as $option}
-					<option value='{$option->value}' {if $option->value==$payment_settings[$setting->variable]}selected{/if}>{$option->name|escape}</option>
+			{foreach $payment_module['settings'] as $setting}
+				{$variable_name = $setting['variable']}
+				{if $setting['options']|@count>1}
+				<li><label class=property>{$setting['name']}</label>
+				<select name="payment_settings[{$setting['variable']}]">
+					{foreach $setting['options'] as $option}
+					<option value='{$option['value']}' {if $option['value']==$payment_settings[$setting['variable']]}selected{/if}>{$option['name']|escape}</option>
 					{/foreach}
 				</select>
 				</li>
-				{elseif $setting->options|@count==1}
-				{$option = $setting->options|@first}
-				<li><label class="property" for="{$setting->variable}">{$setting->name|escape}</label><input name="payment_settings[{$setting->variable}]" class="simpla_inp" type="checkbox" value="{$option->value|escape}" {if $option->value==$payment_settings[$setting->variable]}checked{/if} id="{$setting->variable}" /> <label for="{$setting->variable}">{$option->name}</label></li>
+				{elseif $setting['options']|@count==1}
+				{$option = $setting['options']|@first}
+				<li><label class="property" for="{$setting['variable']}">{$setting['name']|escape}</label><input name="payment_settings[{$setting['variable']}]" class="simpla_inp" type="checkbox" value="{$option['value']|escape}" {if $option['value']==$payment_settings[$setting['variable']]}checked{/if} id="{$setting['variable']}" /> <label for="{$setting['variable']}">{$option['name']}</label></li>
 				{else}
-				<li><label class="property" for="{$setting->variable}">{$setting->name|escape}</label><input name="payment_settings[{$setting->variable}]" class="simpla_inp" type="text" value="{$payment_settings[$setting->variable]|escape}" id="{$setting->variable}"/></li>
+				<li><label class="property" for="{$setting['variable']}">{$setting['name']|escape}</label><input name="payment_settings[{$setting['variable']}]" class="simpla_inp" type="text" value="{$payment_settings[$setting['variable']]|escape}" id="{$setting['variable']}"/></li>
 				{/if}
 			{/foreach}
 			</ul>
@@ -118,7 +118,7 @@ $(function() {
         	
         	</div>
     	{/foreach}
-    	<div class="block layer" {if $payment_method->module != ''}style='display:none;'{/if} id=module_settings module='null'></div>
+    	<div class="block layer" {if $payment_method['module'] != ''}style='display:none;'{/if} id=module_settings module='null'></div>
 
 	</div>
 	<!-- Левая колонка свойств товара (The End)--> 
@@ -130,7 +130,7 @@ $(function() {
 		<ul>
 		{foreach $deliveries as $delivery}
 			<li>
-			<input type=checkbox name="payment_deliveries[]" id="delivery_{$delivery->id}" value='{$delivery->id}' {if in_array($delivery->id, $payment_deliveries)}checked{/if}> <label for="delivery_{$delivery->id}">{$delivery->name}</label><br>
+			<input type=checkbox name="payment_deliveries[]" id="delivery_{$delivery['id']}" value='{$delivery['id']}' {if in_array($delivery['id'], $payment_deliveries)}checked{/if}> <label for="delivery_{$delivery['id']}">{$delivery['name']}</label><br>
 			</li>
 		{/foreach}
 		</ul>		
@@ -141,7 +141,7 @@ $(function() {
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Описание</h2>
-		<textarea name="description" class="editor_small">{$payment_method->description|escape}</textarea>
+		<textarea name="description" class="editor_small">{$payment_method['description']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

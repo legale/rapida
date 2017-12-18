@@ -144,16 +144,20 @@ class ExportAjax extends Simpla
  		}
  		unset($p);
  		
+ 		$pids = array_keys($products);
  		// Изображения товаров
- 		$images = $this->products->get_images(array('product_id'=>array_keys($products)));
- 		foreach($images as $image)
- 		{
- 			// Добавляем изображения к товару через запятую
- 			if(empty($products[$image['product_id']]['images']))
- 				$products[$image['product_id']]['images'] = $image['filename'];
- 			else
- 				$products[$image['product_id']]['images'] .= ', '.$image['filename'];
- 		}
+ 		foreach($pids as $id){
+			$images = $this->image->get('products', array('item_id'=>$id));
+			foreach($images as $i)
+			{
+				// Добавляем изображения к товару через запятую
+				if(empty($products[$i['item_id']]['images'])){
+					$products[$i['item_id']]['images'] = $i['basename'];
+				}else{
+					$products[$i['item_id']]['images'] .= ', '.$i['basename'];
+				}
+			}
+		}
  
  		$variants = $this->variants->get_variants(array('product_id'=>array_keys($products)));
 

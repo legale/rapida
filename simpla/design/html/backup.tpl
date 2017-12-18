@@ -8,11 +8,11 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Бекап' scope=parent}
+{$meta_title='Бекап БД' scope=parent}
 
 {* Заголовок *}
 <div id="header">
-	<h1>Бекап</h1>
+	<h1>Бекап БД</h1>
 	{if $message_error != 'no_permission'}
 	<a class="add" href="">Создать бекап</a>
 	<form id="hidden" method="post">

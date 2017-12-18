@@ -1,7 +1,7 @@
 {capture name=tabs}
 	{if isset($userperm['pages'])}
 	{foreach $menus  as $m}
-		<li {if $m['id'] == $menu->id}class="active"{/if}><a href='?module=PagesAdmin&menu_id={$m['id']}'>{$m['name']}</a></li>
+		<li {if $m['id'] == $menu['id']}class="active"{/if}><a href='?module=PagesAdmin&menu_id={$m['id']}'>{$m['name']}</a></li>
 	{/foreach}
 	{/if}
 {/capture}
