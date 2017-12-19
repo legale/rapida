@@ -867,12 +867,15 @@ class Image extends Simpla
         $filepath = $dir . $new_basename;
         $filepath_absolute = $root . $filepath;
 
-        if (!file_exists($root . $dir . $new_basename)) {
-            if (!rename($tmp, $filepath_absolute)) {
-                dtimer::log(__METHOD__ . " rename $filepath_absolute failed. aborting!", 1);
-                return false;
-            }
-        }
+        if (file_exists($filepath_absolute)) {
+			dtimer::log(__METHOD__." $filepath_absolute found! deleting ");
+			unlink($filepath_absolute);
+		}
+		
+		if (!rename($tmp, $filepath_absolute)) {
+			dtimer::log(__METHOD__ . " rename $filepath_absolute failed. aborting!", 1);
+			return false;
+		}  
 
         if (file_exists($filepath_absolute)) {
             dtimer::log(__METHOD__ . " downloaded file moved to: $filepath_absolute Updating db.");
@@ -880,6 +883,7 @@ class Image extends Simpla
                 dtimer::log(__METHOD__ . " update image with id: $id completed! new basename: $new_basename");
                 return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
             }
+            dtimer::log(__METHOD__ . " deleting: $filepath_absolute", 2);
             @unlink($filepath_absolute);
         }
         return false;
