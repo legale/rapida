@@ -6,6 +6,11 @@
 <html>
 <head>
 	{$unknownvariable}
+	
+	{if $unknownvariable}
+	take me there hell
+	{/if}
+	
 	<base href="{$config->root_url}/"/>
 	<title>{$meta_title|escape}</title>
 	
