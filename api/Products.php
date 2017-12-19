@@ -88,10 +88,8 @@ class Products extends Simpla
 		if(!empty($filter['id']))
 			$product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
 
-		if(!empty($filter['category_id']))
-		{
-			$category_id_filter = $this->db->placehold('INNER JOIN __products_categories pc ON pc.product_id = p.id AND pc.category_id in(?@)', (array)$filter['category_id']);
-			$group_by = "GROUP BY p.id";
+		if(!empty($filter['category_id'])){
+			$category_id_filter = $this->db->placehold('AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in(?@))', (array)$filter['category_id']);
 		}
 
 		if(!empty($filter['brand_id']))
@@ -174,7 +172,6 @@ class Products extends Simpla
 					$discounted_filter
 					$in_stock_filter
 					$visible_filter
-				$group_by
 				ORDER BY $order
 					$sql_limit");
 
@@ -271,10 +268,8 @@ class Products extends Simpla
 		if(!empty($filter['id']))
 			$product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
 
-		if(!empty($filter['category_id']))
-		{
-			$category_id_filter = $this->db->placehold('INNER JOIN __products_categories pc ON pc.product_id = p.id AND pc.category_id in(?@)', (array)$filter['category_id']);
-			$group_by = "GROUP BY p.id";
+		if(!empty($filter['category_id'])){
+			$category_id_filter = $this->db->placehold('AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in(?@))', (array)$filter['category_id']);
 		}
 
 		if(!empty($filter['brand_id']))
@@ -354,7 +349,6 @@ class Products extends Simpla
 					$discounted_filter
 					$in_stock_filter
 					$visible_filter
-				$group_by
 				ORDER BY $order
 					$sql_limit");
 
