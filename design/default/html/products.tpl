@@ -1,40 +1,45 @@
 {* Список товаров *}
 
 {* Канонический адрес страницы *}
-{if $category && $brand}
+{if isset($category, $brand) && $category && $brand}
+{$condition = 1}
 {$canonical="/catalog/{$category['url']}/{$brand['url']}" scope=parent}
-{elseif $category}
+{elseif isset($category) && $category}
+{$condition = 2}
 {$canonical="/catalog/{$category['url']}" scope=parent}
-{elseif $brand}
+{elseif isset($brand) && $brand}
+{$condition = 3}
 {$canonical="/brands/{$brand['url']}" scope=parent}
-{elseif $keyword}
+{elseif isset($keyword) && $keyword}
+{$condition = 4}
 {$canonical="/products?keyword={$keyword|escape}" scope=parent}
 {else}
+{$condition = 5}
 {$canonical="/products" scope=parent}
 {/if}
 
 <!-- Хлебные крошки /-->
 <div id="path">
 	<a href="/">Главная</a>
-	{if $category}
+	{if isset($category) && $category}
 	{foreach $category['path'] as $cat}
 	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
 	{/foreach}  
-	{if $brand}
+	{if isset($brand) && $brand}
 	→ <a href="catalog/{$cat['url']}/{$brand['url']}">{$brand['name']|escape}</a>
 	{/if}
-	{elseif $brand}
+	{elseif isset($brand) && $brand}
 	→ <a href="brands/{$brand['url']}">{$brand['name']|escape}</a>
-	{elseif $keyword}
+	{elseif isset($keyword) && $keyword}
 	→ Поиск
 	{/if}
 </div>
 <!-- Хлебные крошки #End /-->
 
 {* Заголовок страницы *}
-{if $keyword}
+{if isset($keyword) && $keyword}
 <h1>Поиск {$keyword|escape}</h1>
-{elseif $page}
+{elseif isset($page) && $page}
 <h1>{$page['name']|escape}</h1>
 {else}
 <h1>{$category['name']|escape} {$brand['name']|escape}</h1>
@@ -49,7 +54,7 @@
 {$category['description']}
 {/if}
 {* Фильтр по брендам *}
-{if $category['brands']}
+{if isset($category['brands']) && $category['brands']}
 
 <div id="brands">
 	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>

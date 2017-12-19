@@ -1,12 +1,6 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2009 Denis Pikusov
- * @link 		http://simp.la
- * @author 		Denis Pikusov
- *
  * Корзина покупок
  * Этот класс использует шаблон cart.tpl
  *
@@ -151,7 +145,7 @@ class OrderView extends View
 		exit();
 	}
 	
-	public function checkout_form($params, &$smarty)
+	public function checkout_form($params, $smarty)
 	{
 		if(!isset($params['module'])){
 			$params['module'] = '';

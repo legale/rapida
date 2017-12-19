@@ -403,7 +403,7 @@ function ready(){
 		<div class="block layer">
 			<h2>Связанные товары</h2>
 			<div class="sortable related_products">
-				{if $product['related']}
+				{if isset($product['related'])}
 				{foreach $product['related'] as $p}
 				{$image_id = $p['image_id']}
 				<div class="row">
