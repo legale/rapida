@@ -24,16 +24,16 @@ class ControllerResize extends Simpla
         //['dir'][0] - is the first part (ex: products) ['dir'][1] is the second (ex: resize)
         $this->uri = $this->coMaster->uri_arr;
 
-        $this->type = $this->uri['path_arr']['dir'][0]
+        $this->type = isset($this->uri['path_arr']['dir'][0])
             ? $this->uri['path_arr']['dir'][0] : null;
 
-        $this->w = $this->uri['path_arr']['size'][0]
+        $this->w = isset($this->uri['path_arr']['size'][0])
             ? $this->uri['path_arr']['size'][0] : null;
 
-        $this->h = $this->uri['path_arr']['size'][1]
+        $this->h = isset($this->uri['path_arr']['size'][1])
             ? $this->uri['path_arr']['size'][1] : null;
 
-        $this->basename = $this->uri['path_arr']['basename']
+        $this->basename = isset($this->uri['path_arr']['basename'])
             ? $this->uri['path_arr']['basename'] : null;
     }
 
@@ -49,6 +49,8 @@ class ControllerResize extends Simpla
 
         if (isset($q['scheme'], $image_id)) {
             //trying to download remote image
+            $url = unparse_url($q);
+            dtimer::log(__METHOD__ . " unparse_url: $url");
             dtimer::log(__METHOD__ . " image_id: $image_id");
             $filepath = $this->download($image_id);
         } else {
