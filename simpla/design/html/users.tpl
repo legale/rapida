@@ -9,7 +9,7 @@
 {$meta_title='Покупатели' scope=parent}
 
 {* Поиск *}
-{if $users || $keyword}
+{if isset($users) || isset($keyword)}
 <form method="get">
 <div id="search">
 	<input type="hidden" name="module" value='UsersAdmin'>
@@ -21,7 +21,7 @@
 
 {* Заголовок *}
 <div id="header">
-	{if $keyword && $users_count>0}
+	{if isset($keyword) && $users_count>0}
 	<h1>{$users_count|plural:'Нашелся':'Нашлось':'Нашлись'} {$users_count} {$users_count|plural:'покупатель':'покупателей':'покупателя'}</h1>
 	{elseif $users_count>0}
 	<h1>{$users_count} {$users_count|plural:'покупатель':'покупателей':'покупателя'}</h1> 	
@@ -38,7 +38,7 @@
 	
 </div>
 
-{if $users}
+{if !empty($users)}
 <!-- Основная часть -->
 <div id="main_list">
 
@@ -107,10 +107,10 @@
  <!-- Меню -->
 <div id="right_menu">
 	<ul>
-		<li {if !$group['id']}class="selected"{/if}><a href='?module=UsersAdmin'>Все группы</a></li>
+		<li {if !isset($group['id'])}class="selected"{/if}><a href='?module=UsersAdmin'>Все группы</a></li>
 	</ul>
 	<!-- Группы -->
-	{if $groups}
+	{if !empty($groups)}
 	<ul>
 		{foreach $groups as $g}
 		<li {if $group['id'] == $g['id']}class="selected"{/if}><a href="?module=UsersAdmin&group_id={$g['id']}">{$g['name']}</a></li>

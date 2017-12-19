@@ -10,7 +10,7 @@
 {$meta_title='Свойства' scope=parent}
 
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{$message_error}</span>
@@ -85,7 +85,9 @@
 		{/if}
 		{foreach $categories as $c}
 		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
-		{categories_tree categories=$c['subcategories']}
+		{if isset($c['subcategories'])}
+			{categories_tree categories=$c['subcategories']}
+		{/if}
 		{/foreach}
 	</ul>
 	{/if}

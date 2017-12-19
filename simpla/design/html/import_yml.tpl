@@ -9,7 +9,7 @@
 
 <script src="{$config->root_url}/simpla/design/js/piecon/piecon.js"></script>
 <script>
-{if $filename_csv && !$convert_only}
+{if isset($filename_csv) && !isset($convert_only)}
 {literal}
 	
 	var in_process=false;
@@ -70,7 +70,7 @@
 	#result{ clear: both; width:100%;}
 </style>
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">
@@ -83,15 +83,15 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error != 'no_permission'}
-    {if $filename_yml}
+
+    {if isset($filename_yml)}
 	<div class="block layer">
-					{if $filename_yml}Имя файла YML: {$filename_yml|escape}{/if}
-					{if $filename_yml_size}Размер файла YML: {$filename_yml_size|escape}{/if}
-					{if $filename_csv}Имя файла CSV: {$filename_csv|escape}{/if}
-					{if $filename_csv_size}Размер файла CSV: {$filename_csv_size|escape}{/if}
+					{if isset($filename_yml)}Имя файла YML: {$filename_yml|escape}{/if}
+					{if isset($filename_yml_size)}Размер файла YML: {$filename_yml_size|escape}{/if}
+					{if isset($filename_csv)}Имя файла CSV: {$filename_csv|escape}{/if}
+					{if isset($filename_csv_size)}Размер файла CSV: {$filename_csv_size|escape}{/if}
 	</div>            
-            {if $filename_csv}
+            {if isset($filename_csv)}
 				<div class="block layer">
 					<h1>Импорт {$filename|escape}</h1>
 					<div id='progressbar'></div>
@@ -99,7 +99,7 @@
 				</div>        
             {/if}
             
-		{if $yml_params}
+		{if isset($yml_params)}
 		<form method=post enctype="multipart/form-data">
 			<input type=hidden name="session_id" value="{$smarty.session.id}">
 			<input type=hidden name="start_import_yml" value="1">
@@ -122,7 +122,7 @@
 									</optgroup>
 									<optgroup label="Основные параметры Simpla">
 										{foreach $columns as $k=>$f}
-										<option value="{$k}" {if $columns_compared[$pkey] == $k} selected{/if}>{$f}</option>
+										<option value="{$k}" {if isset($columns_compared[$pkey]) && $columns_compared[$pkey] == $k} selected{/if}>{$f}</option>
 										{/foreach}
 									</optgroup>
 									<optgroup label="Уже имеющиеся параметры товаров">
@@ -136,7 +136,7 @@
 						</div>
 					{/foreach}
 				</div>
-			{if $yml_currencies}
+			{if isset($yml_currencies)}
 				<div class="block layer">
 					<label>Валюты из YML файла (в скобках указан rate валюты)</label>
 					<select name="yml_import_currency">
@@ -158,7 +158,7 @@
 		{/if}
     {/if}
     
-	{if !$filename_yml_size}
+	{if !isset($filename_yml_size)}
 		<div class="block">
 		<h1>Импорт товаров из файла Яндекс Маркета формат YML</h1>
 		</div>
@@ -180,7 +180,7 @@
 			</div>
 		</form>
 
-	{elseif $filename_yml_size && !$filename_csv_size && !$yml_params}
+	{elseif isset($filename_yml_size) && !isset($filename_csv_size) && !isset($yml_params)}
 		<div class="block layer">
 			<div class="row">
                 <form method="post" enctype="multipart/form-data">
@@ -192,7 +192,6 @@
 		</div>
 	{/if}
 
-{/if}
 
 <script>
 {literal}

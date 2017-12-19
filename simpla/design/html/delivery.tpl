@@ -16,7 +16,7 @@
 {include file='tinymce_init.tpl'}
 
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success == 'added'}Способ доставки добавлен{elseif $message_success == 'updated'}Способ доставки изменен{/if}</span>
@@ -27,7 +27,7 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error == 'empty_name'}Не указано название доставки{/if}</span>

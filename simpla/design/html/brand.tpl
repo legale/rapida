@@ -109,7 +109,7 @@ $(function() {
  
 {/literal}
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Бренд добавлен{elseif $message_success=='updated'}Бренд обновлен{else}{$message_success}{/if}</span>
@@ -131,7 +131,7 @@ $(function() {
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error=='url_exists'}Бренд с таким адресом уже существует{else}{$message_error}{/if}</span>

@@ -113,7 +113,7 @@ function translit(str)
 </script>
 {/literal}
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success == 'added'}Запись добавлена{elseif $message_success == 'updated'}Запись обновлена{/if}</span>
@@ -130,13 +130,11 @@ function translit(str)
 		<a href="#" onClick='window.open("http://twitter.com/share?text={$post['name']|urlencode}&url={$config->root_url|urlencode}/blog/{$post['url']|urlencode}&hashtags={$post['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
-	
-	
 </div>
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error == 'url_exists'}Запись с таким адресом уже существует{/if}</span>

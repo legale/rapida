@@ -329,7 +329,6 @@ CREATE TABLE `s_options` (
   `52` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `53` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`),
-  KEY `2` (`product_id`),
   KEY `7` (`product_id`),
   KEY `1` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -128,7 +128,7 @@ function translit(str)
 {/literal}
 
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success == 'added'}Страница добавлена{elseif $message_success == 'updated'}Страница обновлена{/if}</span>
@@ -150,7 +150,7 @@ function translit(str)
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error == 'url_exists'}Страница с таким адресом уже существует{else}{$message_error}{/if}</span>
