@@ -17,7 +17,7 @@ class LoginView extends View
 		{
 			unset($_SESSION['user_id']);
 			unset($_SESSION['admin']);
-			header('Location: '.$this->config->root_url);
+			header('Location: /');
 			exit();
 		}
 		// Вспомнить пароль
