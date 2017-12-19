@@ -28,6 +28,24 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
+        //avoid 'undefined variable' notice error
+        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(\)]*)/i', $parameter['if condition'], $m);
+        dtimer::log(__METHOD__ . var_export($m,true));
+        $s = ''; //result string
+       
+        if(!empty($m[0])){
+            foreach($m[2] as $k=>$keep){
+                $s .= str_replace('$', '@$', $m[1][$k]);
+                $s .= $keep;
+                $s .= str_replace('$', '@$', $m[3][$k]);
+            }
+        } else {
+            $s = str_replace('$', '@$', $parameter['if condition']);
+        }
+		dtimer::log(__METHOD__ . var_export($s,true));
+        $parameter['if condition'] = $s;
+        //avoid 'undefined variable' notice error END
+
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $this->openTag($compiler, 'if', array(1, $compiler->nocache));
@@ -44,10 +62,13 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
             } else {
                 $var = $parameter[ 'if condition' ][ 'var' ];
             }
+            
+            
             if ($compiler->nocache) {
                 // create nocache var to make it know for further compiling
                 $compiler->setNocacheInVariable($var);
             }
+            
             $prefixVar = $compiler->getNewPrefixVariable();
             $_output = "<?php {$prefixVar} = {$parameter[ 'if condition' ][ 'value' ]};?>\n";
             $assignAttr = array();
@@ -114,7 +135,25 @@ class Smarty_Internal_Compile_Elseif extends Smarty_Internal_CompileBase
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
-        // check and get attributes
+        //avoid 'undefined variable' notice error
+        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(\)]*)/i', $parameter['if condition'], $m);
+        dtimer::log(__METHOD__ . var_export($m,true));
+        $s = ''; //result string
+       
+        if(!empty($m[0])){
+            foreach($m[2] as $k=>$keep){
+                $s .= str_replace('$', '@$', $m[1][$k]);
+                $s .= $keep;
+                $s .= str_replace('$', '@$', $m[3][$k]);
+            }
+        } else {
+            $s = str_replace('$', '@$', $parameter['if condition']);
+        }
+		dtimer::log(__METHOD__ . var_export($s,true));
+        $parameter['if condition'] = $s;
+        //avoid 'undefined variable' notice error END
+		
+		// check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
 
         list($nesting, $compiler->tag_nocache) = $this->closeTag($compiler, array('if', 'elseif'));
