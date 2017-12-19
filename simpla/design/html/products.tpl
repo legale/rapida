@@ -7,7 +7,7 @@
 {/capture}
 
 {* Title *}
-{if $category}
+{if isset($category)}
 	{$meta_title=$category['name'] scope=parent}
 {else}
 	{$meta_title='Товары' scope=parent}
@@ -27,10 +27,10 @@
 	
 {* Заголовок *}
 <div id="header">	
-	{if $products_count}
-		{if $category['name'] || $brand['name']}
+	{if isset($products_count)}
+		{if isset($category['name']) || isset($brand['name'])}
 			<h1>{$category['name']} {$brand['name']} ({$products_count} {$products_count|plural:'товар':'товаров':'товара'})</h1>
-		{elseif $keyword}
+		{elseif isset($keyword)}
 			<h1>{$products_count|plural:'Найден':'Найдено':'Найдено'} {$products_count} {$products_count|plural:'товар':'товаров':'товара'}</h1>
 		{else}
 			<h1>{$products_count} {$products_count|plural:'товар':'товаров':'товара'}</h1>
@@ -85,7 +85,8 @@
 				<li {if !$variant@first}class="variant" style="display:none;"{/if}>
 					<i title="{$variant['name']|escape}">{$variant['name']|escape|truncate:30:'…':true:true}</i>
 					<input class="price {if $variant['old_price']>0}old_price{/if}" type="text" name="price[{$variant['id']}]" value="{$variant['price']}" {if $variant['old_price']>0}title="Старая цена &mdash; {$variant['old_price']} {$currency['sign']}"{/if} />{$currency['sign']}  
-					<input class="stock" type="text" name="stock[{$variant['id']}]" value="{if $variant['infinity']}∞{else}{$variant['stock']}{/if}" />{$settings->units}
+					<input class="stock" type="text" name="stock[{$variant['id']}]" 
+						value="{$variant['stock']}" />{$settings->units}
 				</li>
 				{/foreach}
 				</ul>
@@ -181,29 +182,31 @@
 <!-- Меню -->
 <div id="right_menu">
 	
+	
 	<!-- Фильтры -->
 	<ul>
-		<li {if !$filter}class="selected"{/if}><a href="{url brand_id=null category_id=null keyword=null page=null filter=null}">Все товары</a></li>
-		<li {if $filter=='featured'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='featured'}">Рекомендуемые</a></li>
-		<li {if $filter=='discounted'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='discounted'}">Со скидкой</a></li>
-		<li {if $filter=='visible'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='visible'}">Активные</a></li>
-		<li {if $filter=='hidden'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='hidden'}">Неактивные</a></li>
-		<li {if $filter=='outofstock'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='outofstock'}">Отсутствующие</a></li>
-		<li {if $filter=='no_images'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='no_images'}">Без изображений</a></li>
+		<li {if !isset($filter)}class="selected"{/if}><a href="{url brand_id=null category_id=null keyword=null page=null filter=null}">Все товары</a></li>
+		<li {if isset($filter) && $filter=='featured'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='featured'}">Рекомендуемые</a></li>
+		<li {if isset($filter) && $filter=='discounted'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='discounted'}">Со скидкой</a></li>
+		<li {if isset($filter) && $filter=='visible'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='visible'}">Активные</a></li>
+		<li {if isset($filter) && $filter=='hidden'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='hidden'}">Неактивные</a></li>
+		<li {if isset($filter) && $filter=='outofstock'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='outofstock'}">Отсутствующие</a></li>
+		<li {if isset($filter) && $filter=='no_images'}class="selected"{/if}><a href="{url keyword=null brand_id=null category_id=null page=null filter='no_images'}">Без изображений</a></li>
 	</ul>
 	<!-- Фильтры -->
 
 
 	<!-- Категории товаров -->
 	{function name=categories_tree}
-	{if $categories}
+	{if isset($categories)}
 	<ul>
 		{if $categories[0]['parent_id'] == 0}
-		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null brand_id=null}">Все категории</a></li>	
+		<li {if !isset($category['id'])}class="selected"{/if}><a href="{url category_id=null brand_id=null}">Все категории</a></li>	
 		{/if}
+		
 		{foreach $categories as $c}
-		<li category_id="{$c['id']}" {if $category['id'] == $c['id']}class="selected"{else}class="droppable category"{/if}><a href='{url keyword=null brand_id=null page=null category_id={$c['id']}}'>{$c['name']}</a></li>
-		{categories_tree categories=$c['subcategories']}
+		<li category_id="{$c['id']}" {if isset($category['id']) && $category['id'] == $c['id']}class="selected"{else}class="droppable category"{/if}><a href='{url keyword=null brand_id=null page=null category_id={$c['id']}}'>{$c['name']}</a></li>
+		{if isset($c['subcategories'])}{categories_tree categories=$c['subcategories']}{/if}
 		{/foreach}
 	</ul>
 	{/if}
@@ -211,12 +214,12 @@
 	{categories_tree categories=$categories}
 	<!-- Категории товаров (The End)-->
 	
-	{if $brands}
+	{if isset($brands)}
 	<!-- Бренды -->
 	<ul>
-		<li {if !$brand['id']}class="selected"{/if}><a href="{url brand_id=null}">Все бренды</a></li>
+		<li {if !isset($brand['id'])}class="selected"{/if}><a href="{url brand_id=null}">Все бренды</a></li>
 		{foreach $brands as $b}
-		<li brand_id="{$b['id']}" {if $brand['id'] == $b['id']}class="selected"{else}class="droppable brand"{/if}><a href="{url keyword=null page=null brand_id=$b['id']}">{$b['name']}</a></li>
+		<li brand_id="{$b['id']}" {if isset($brand['id']) && $brand['id'] == $b['id']}class="selected"{else}class="droppable brand"{/if}><a href="{url keyword=null page=null brand_id=$b['id']}">{$b['name']}</a></li>
 		{/foreach}
 	</ul>
 	<!-- Бренды (The End) -->

@@ -18,8 +18,7 @@
 			{$pid = $product['id']}
 			{$url = $product['url']}
 			{$name = $product['name']}
-			{$image = reset($product['images'])}
-			{$image = $image['basename']}
+			{$image = $product['image']}
 			{$image_id = $product['image_id']}
 
 <h1 data-product="{$pid}">{$name|escape}</h1>
@@ -43,7 +42,7 @@
 	</div>
 	<!-- Описание товара (The End)-->
 
-	{if $product['variants']|count > 0}
+	{if isset($product['variants']) && $product['variants']|count > 0}
 	<!-- Выбор варианта товара -->
 	<form class="variants" action="/cart">
 		<table>

@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Simpla CMS
- *
- * @copyright    2011 Denis Pikusov
- * @link        http://simplacms.ru
- * @author        Denis Pikusov
- *
- */
 
 require_once(dirname(__FILE__) . '/' . 'Simpla.php');
 require_once(dirname(dirname(__FILE__)) . '/Smarty/libs/Smarty.class.php');
@@ -26,7 +18,7 @@ class Design extends Simpla
         $this->smarty->caching = $this->config->smarty_caching;
         $this->smarty->cache_lifetime = $this->config->smarty_cache_lifetime;
         $this->smarty->debugging = $this->config->smarty_debugging;
-        $this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+        //$this->smarty->error_reporting = E_ALL & ~E_NOTICE;
 
         // Берем тему из настроек
         $theme = $this->settings->theme;
@@ -190,7 +182,7 @@ class Design extends Simpla
         return date(empty($format) ? 'H:i' : $format, strtotime($date));
     }
 
-    public function api_plugin($params, &$smarty)
+    public function api_plugin($params, $smarty)
     {
         if (!isset($params['module']))
             return false;
@@ -212,7 +204,7 @@ class Design extends Simpla
      * Плагины для смарти
      *
      */
-    public function get_posts_plugin($params, &$smarty)
+    public function get_posts_plugin($params, $smarty)
     {
         if (!isset($params['visible']))
             $params['visible'] = 1;
@@ -220,13 +212,13 @@ class Design extends Simpla
             $smarty->assign($params['var'], $this->blog->get_posts($params));
     }
 
-    public function get_brands_plugin($params, &$smarty)
+    public function get_brands_plugin($params, $smarty)
     {
         if (!empty($params['var']))
-            $smarty->assign($params['var'], $this->brands->get_brands($params));
+            $smarty->assign($params['var'], $this->brands->get_brands($params) ? $this->brands->get_brands($params) : array() );
     }
 
-    public function get_browsed_products($params, &$smarty)
+    public function get_browsed_products($params, $smarty)
     {
         if (!empty($_COOKIE['browsed_products'])) {
             $ids = explode(',', $_COOKIE['browsed_products']);
@@ -241,7 +233,7 @@ class Design extends Simpla
         }
     }
 
-    public function get_featured_products_plugin($params, &$smarty)
+    public function get_featured_products_plugin($params, $smarty)
     {
         if (!isset($params['visible']))
             $params['visible'] = 1;
@@ -281,7 +273,7 @@ class Design extends Simpla
         }
     }
 
-    public function get_new_products_plugin($params, &$smarty)
+    public function get_new_products_plugin($params, $smarty)
     {
         if (!isset($params['visible']))
             $params['visible'] = 1;
@@ -323,7 +315,7 @@ class Design extends Simpla
         }
     }
 
-    public function get_discounted_products_plugin($params, &$smarty)
+    public function get_discounted_products_plugin($params, $smarty)
     {
         if (!isset($params['visible']))
             $params['visible'] = 1;
@@ -397,7 +389,7 @@ class Design extends Simpla
      * @return string|null
      */
 
-    function bender_plugin($params, $template)
+    function bender_plugin($params, $smarty)
     {
 
         $bender = $this->bender;

@@ -9,7 +9,7 @@
 {$meta_title='Комментарии' scope=parent}
 
 {* Поиск *}
-{if $comments || $keyword}
+{if isset($comments) || isset($keyword)}
 <form method="get">
 <div id="search">
 	<input type="hidden" name="module" value='CommentsAdmin'>
@@ -22,9 +22,9 @@
 
 {* Заголовок *}
 <div id="header">
-	{if $keyword && $comments_count}
+	{if isset($keyword) && $comments_count}
 	<h1>{$comments_count|plural:'Нашелся':'Нашлось':'Нашлись'} {$comments_count} {$comments_count|plural:'комментарий':'комментариев':'комментария'}</h1> 
-	{elseif !$type}
+	{elseif !isset($type)}
 	<h1>{$comments_count} {$comments_count|plural:'комментарий':'комментариев':'комментария'}</h1> 
 	{elseif $type=='product'}
 	<h1>{$comments_count} {$comments_count|plural:'комментарий':'комментариев':'комментария'} к товарам</h1> 
@@ -34,7 +34,7 @@
 </div>	
 
 
-{if $comments}
+{if isset($comments)}
 <div id="main_list">
 	
 	<!-- Листалка страниц -->
@@ -104,11 +104,11 @@
 	
 	<!-- Категории товаров -->
 	<ul>
-	<li {if !$type}class="selected"{/if}><a href="{url type=null}">Все комментарии</a></li>
+	<li {if !isset($type)}class="selected"{/if}><a href="{url type=null}">Все комментарии</a></li>
 	</ul>
 	<ul>
-		<li {if $type == 'product'}class="selected"{/if}><a href='{url keyword=null type=product}'>К товарам</a></li>
-		<li {if $type == 'blog'}class="selected"{/if}><a href='{url keyword=null type=blog}'>К блогу</a></li>
+		<li {if isset($type) && $type == 'product'}class="selected"{/if}><a href='{url keyword=null type=product}'>К товарам</a></li>
+		<li {if isset($type) && $type == 'blog'}class="selected"{/if}><a href='{url keyword=null type=blog}'>К блогу</a></li>
 	</ul>
 	<!-- Категории товаров (The End)-->
 	

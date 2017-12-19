@@ -1,7 +1,7 @@
 {* Вкладки *}
 {capture name=tabs}
 	{if isset($userperm['features'])}
-		<li {if $g['id'] == $ogroup['id']}class="active"{/if}><a href="{url module=Options_groupsAdmin gid=0}">Без группы</a></li>
+		<li {if $ogroup['id'] == 0}class="active"{/if}><a href="{url module=Options_groupsAdmin gid=0}">Без группы</a></li>
 	{foreach $ogroups as $g}
 		<li {if $g['id'] == $ogroup['id']}class="active"{/if}><a href="{url module=Options_groupsAdmin gid=$g['id']}">{$g['name']}</a></li>
 	{/foreach}

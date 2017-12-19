@@ -9,7 +9,7 @@
 {$meta_title = $user['name']|escape scope=parent}
 {/if}
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='updated'}Пользователь отредактирован{else}{$message_success|escape}{/if}</span>
@@ -20,7 +20,7 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error=='login_exists'}Пользователь с таким email уже зарегистрирован

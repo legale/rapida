@@ -11,7 +11,7 @@
 {$meta_title = 'Новая группа' scope=parent}
 {/if}
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Группа добавлена{elseif $message_success=='updated'}Группа изменена{else}{$message_success|escape}{/if}</span>
@@ -22,7 +22,7 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error == 'empty_name'}Название группы не может быть пустым{/if}</span>
