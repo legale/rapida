@@ -7,7 +7,7 @@
 {$meta_title='Блог' scope=parent}
 
 {* Поиск *}
-{if $posts || $keyword}
+{if isset($posts) || isset($keyword)}
 <form method="get">
 <div id="search">
 	<input type="hidden" name="module" value='BlogAdmin'>
@@ -19,7 +19,7 @@
 		
 {* Заголовок *}
 <div id="header">
-	{if $keyword && $posts_count}
+	{if isset($keyword) && $posts_count}
 	<h1>{$posts_count|plural:'Нашлась':'Нашлись':'Нашлись'} {$posts_count} {$posts_count|plural:'запись':'записей':'записи'}</h1>
 	{elseif $posts_count}
 	<h1>{$posts_count} {$posts_count|plural:'запись':'записей':'записи'} в блоге</h1>

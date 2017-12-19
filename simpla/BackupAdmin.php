@@ -38,6 +38,7 @@ class BackupAdmin extends Simpla
 					}
 				case 'restore' :
 					{
+						
 						$name = $this->request->post('name');
 
 						$archive = $dir . $name;

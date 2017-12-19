@@ -1,4 +1,3 @@
-{Strip}
 <!DOCTYPE html>
 {*
 	Общий вид страницы
@@ -152,8 +151,8 @@
 				{if $c['visible']}
 					<li>
 						{if $c['image']}<img src="{$config->categories_images_dir}{$c['image']}" alt="{$c['name']|escape}">{/if}
-						<a {if $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
-						{categories_tree categories=$c['subcategories']}
+						<a {if isset($category) && $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
+						{if isset($c['subcategories'])}{categories_tree categories=$c['subcategories']}{/if}
 					</li>
 				{/if}
 			{/foreach}
@@ -299,4 +298,3 @@
 
 </body>
 </html>
-{/strip}

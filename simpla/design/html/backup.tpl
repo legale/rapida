@@ -13,28 +13,27 @@
 {* Заголовок *}
 <div id="header">
 	<h1>Бекап БД</h1>
-	{if $message_error != 'no_permission'}
 	<a class="add" href="">Создать бекап</a>
 	<form id="hidden" method="post">
 		<input type="hidden" name="session_id" value="{$smarty.session.id}">
 		<input type="hidden" name="action" value="">
 		<input type="hidden" name="name" value="">
 	</form>
-	{/if}
 </div>	
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success == 'created'}Бекап создан{elseif $message_success == 'restored'}Бекап восстановлен{/if}</span>
-	{if $smarty.get.return}
+	{if isset($smarty.get.return)}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 </div>
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">
@@ -45,7 +44,7 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $backups}
+{if isset($backups)}
 <div id="main_list">
 
 	<form id="list_form" method="post">
@@ -54,19 +53,15 @@
 		<div id="list">			
 			{foreach $backups as $backup}
 			<div class="row">
-				{if $message_error != 'no_permission'}
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$backup->name}"/>				
 				</div>
-				{/if}
 				<div class="name cell">
 	 				<a href="files/backup/{$backup->name}">{$backup->name}</a>
 					({if $backup->size>1024*1024}{($backup->size/1024/1024)|round:2} МБ{else}{($backup->size/1024)|round:2} КБ{/if})
 				</div>
 				<div class="icons cell">
-					{if $message_error != 'no_permission'}
 					<a class="delete" title="Удалить" href="#"></a>
-					{/if}
 		 		</div>
 				<div class="icons cell">
 					<a class="restore" title="Восстановить этот бекап" href="#"></a>
@@ -76,7 +71,6 @@
 			{/foreach}
 		</div>
 		
-		{if $message_error != 'no_permission'}
 		<div id="action">
 		<label id="check_all" class="dash_link">Выбрать все</label>
 	
@@ -88,7 +82,6 @@
 	
 		<input id="apply_action" class="button_green" type="submit" value="Применить">
 		</div>
-		{/if}
 	
 	</form>
 </div>

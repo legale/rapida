@@ -125,7 +125,7 @@ function translit(str)
 {/literal}
 
 
-{if $message_success}
+{if isset($message_success)}
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Категория добавлена{elseif $message_success=='updated'}Категория обновлена{else}{$message_success}{/if}</span>
@@ -148,7 +148,7 @@ function translit(str)
 <!-- Системное сообщение (The End)-->
 {/if}
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">{if $message_error=='url_exists'}Категория с таким адресом уже существует{elseif $message_error=='name_empty'}У категории должно быть название{elseif $message_error=='url_empty'}URl адрес не может быть пустым{/if}</span>

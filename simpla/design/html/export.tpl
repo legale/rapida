@@ -73,11 +73,11 @@ $(function() {
 </style>
 
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">
-	{if $message_error == 'no_permission'}Установите права на запись в папку {$export_files_dir}
+	{if isset($message_error) && $message_error == 'no_permission'}Установите права на запись в папку {$export_files_dir}
 	{else}{$message_error}{/if}
 	</span>
 </div>
@@ -87,9 +87,7 @@ $(function() {
 
 <div>
 	<h1>Экспорт товаров</h1>
-	{if $message_error != 'no_permission'}
 	<div id='progressbar'></div>
 	<input class="button_green" id="start" type="button" name="" value="Экспортировать" />	
-	{/if}
 </div>
  

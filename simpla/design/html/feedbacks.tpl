@@ -9,7 +9,7 @@
 
 
 {* Поиск *}
-{if $feedbacks || $keyword}
+{if isset($feedbacks) || isset($keyword)}
 <form method="get">
 <div id="search">
 	<input type="hidden" name="module" value='FeedbacksAdmin'>

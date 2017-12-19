@@ -70,7 +70,7 @@
 	#result{ clear: both; width:100%;}
 </style>
 
-{if $message_error}
+{if isset($message_error)}
 <!-- Системное сообщение -->
 <div class="message message_error">
 	<span class="text">
@@ -83,9 +83,8 @@
 <!-- Системное сообщение (The End)-->
 {/if}
 
-	{if $message_error != 'no_permission'}
 	
-	{if $filename}
+	{if !empty($filename)}
 	<div>
 		<h1>Импорт {$filename|escape}</h1>
 	</div>
@@ -148,5 +147,3 @@
 	
 	{/if}
 
-
-{/if}

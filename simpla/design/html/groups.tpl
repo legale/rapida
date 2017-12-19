@@ -20,8 +20,8 @@
 
 	<form id="list_form" method="post">
 	<input type="hidden" name="session_id" value="{$smarty.session.id}">
+	{if !empty($groups)}
 	<div id="list" class="groups">
-		
 		{foreach $groups as $group}
 		<div class="row">
 		 	<div class="checkbox cell">
@@ -40,7 +40,8 @@
 		</div>
 		{/foreach}
 	</div>
-
+	{/if}
+	
 	<div id="action">
 	<label id="check_all" class="dash_link">Выбрать все</label>
 
