@@ -28,7 +28,7 @@
 	{bender src="js/jquery/jquery.js"}
 	
 	{* Всплывающие подсказки для администратора из в бендера не кладем, чтобы не смешивать*}
-	{if $smarty.session.admin}
+	{if isset($smarty.session.admin)}
 	{bender src="js/admintooltip/admintooltip.js"}
 	{bender src="js/admintooltip/css/admintooltip.css"} 
 	{/if}

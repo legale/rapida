@@ -7,7 +7,7 @@
    
 <h1>Вход</h1>
 
-{if $error}
+{if isset($error)}
 <div class="message_error">
 	{if $error == 'login_incorrect'}Неверный логин или пароль
 	{elseif $error == 'user_disabled'}Ваш аккаунт еще не активирован.
