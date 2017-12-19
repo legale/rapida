@@ -160,9 +160,9 @@ class Products extends Simpla
 					p.url,
 					p.name
 				FROM __products p
-				$category_id_filter 
 				WHERE 
 					1
+					$category_id_filter 
 					$no_images_filter
 					$product_id_filter
 					$brand_id_filter
@@ -254,7 +254,6 @@ class Products extends Simpla
 		$discounted_filter = '';
 		$in_stock_filter = '';
 		$no_images_filter = '';
-		$group_by = '';
 		$order = 'p.position DESC';
 
 		if(isset($filter['limit']))
@@ -337,9 +336,9 @@ class Products extends Simpla
 		}
 		$query = $this->db->placehold("SELECT *
 				FROM __products p 
-				$category_id_filter 
 				WHERE 
 					1
+					$category_id_filter 
 					$no_images_filter
 					$product_id_filter
 					$brand_id_filter
@@ -427,14 +426,17 @@ class Products extends Simpla
 		$features_filter = '';
 		$no_images_filter = '';
 		
-		if(!empty($filter['category_id']))
-			$category_id_filter = $this->db->placehold('INNER JOIN __products_categories pc ON pc.product_id = p.id AND pc.category_id in(?@)', (array)$filter['category_id']);
-
-		if(!empty($filter['brand_id']))
+		if(!empty($filter['category_id'])){
+			$category_id_filter = $this->db->placehold('AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in(?@))', (array)$filter['category_id']);
+		}
+		
+		if(!empty($filter['brand_id'])){
 			$brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
-
-		if(!empty($filter['id']))
+		}
+		
+		if(!empty($filter['id'])){
 			$product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
+		}
 		
 		if(!empty($filter['keyword']))
 		{
@@ -482,8 +484,8 @@ class Products extends Simpla
 		
 		$query =$this->db->placehold("SELECT count(distinct p.id) as count
 				FROM __products AS p
-				$category_id_filter
 				WHERE 1
+					$category_id_filter
 					$no_images_filter
 					$brand_id_filter
 					$product_id_filter
