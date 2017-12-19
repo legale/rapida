@@ -200,7 +200,7 @@
 			
 			<!-- Просмотренные товары -->
 			{get_browsed_products var=browsed_products limit=20}
-			{if $browsed_products}
+			{if !empty($browsed_products)}
 			
 				<h2>Вы просматривали:</h2>
 				<ul id="browsed_products">
