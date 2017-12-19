@@ -58,6 +58,45 @@ abstract class Smarty_Internal_CompileBase
      */
     public $mapCache = array();
 
+ 
+ 	/**
+	 * Method for precompilation parameter for the {if}, {elseif} compilers
+	 * Need to prevent 'undefined variable' notice error in the {if}, {elseif} tag
+	 */
+	protected function precompile_if($parameter){
+		dtimer::log(__METHOD__. " start ".var_export($parameter, true));
+		
+		if(isset($parameter['if condition'])){
+			$if = $parameter['if condition'];
+		}else{
+			return false;
+		}
+
+		
+        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(]*)/i', $if, $m);
+        dtimer::log(__METHOD__ . ' array ' . var_export($m,true));
+
+        $s = ''; //result string       
+        if(!empty($m[0])){
+            foreach($m[2] as $k=>$keep){
+                $s .= str_replace('$', '@$', $m[1][$k]);
+                $s .= $keep;
+                $s .= str_replace('$', '@$', $m[3][$k]);
+            }
+        } else {
+            $s = str_replace('$', '@$', $if);
+        }
+		dtimer::log(__METHOD__ . " return " . var_export($s,true));
+        return  array('if condition' => $s);
+	}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
     /**
      * This function checks if the attributes passed are valid
      * The attributes passed for the tag to compile are checked against the list of required and

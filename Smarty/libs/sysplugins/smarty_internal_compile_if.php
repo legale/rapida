@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Smarty Internal Plugin Compile If
  * Compiles the {if} {else} {elseif} {/if} tags
@@ -28,24 +29,10 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
-        //avoid 'undefined variable' notice error
-        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(\)]*)/i', $parameter['if condition'], $m);
-        dtimer::log(__METHOD__ . var_export($m,true));
-        $s = ''; //result string
-       
-        if(!empty($m[0])){
-            foreach($m[2] as $k=>$keep){
-                $s .= str_replace('$', '@$', $m[1][$k]);
-                $s .= $keep;
-                $s .= str_replace('$', '@$', $m[3][$k]);
-            }
-        } else {
-            $s = str_replace('$', '@$', $parameter['if condition']);
-        }
-		dtimer::log(__METHOD__ . var_export($s,true));
-        $parameter['if condition'] = $s;
-        //avoid 'undefined variable' notice error END
-
+		//precompile parameter to prevent 'undefined variable' notice error
+		dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
+		$parameter = $this->precompile_if($parameter);
+		
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         $this->openTag($compiler, 'if', array(1, $compiler->nocache));
@@ -135,23 +122,9 @@ class Smarty_Internal_Compile_Elseif extends Smarty_Internal_CompileBase
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
-        //avoid 'undefined variable' notice error
-        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(\)]*)/i', $parameter['if condition'], $m);
-        dtimer::log(__METHOD__ . var_export($m,true));
-        $s = ''; //result string
-       
-        if(!empty($m[0])){
-            foreach($m[2] as $k=>$keep){
-                $s .= str_replace('$', '@$', $m[1][$k]);
-                $s .= $keep;
-                $s .= str_replace('$', '@$', $m[3][$k]);
-            }
-        } else {
-            $s = str_replace('$', '@$', $parameter['if condition']);
-        }
-		dtimer::log(__METHOD__ . var_export($s,true));
-        $parameter['if condition'] = $s;
-        //avoid 'undefined variable' notice error END
+		//precompile parameter to prevent 'undefined variable' notice error
+		dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
+		$parameter = $this->precompile_if($parameter);
 		
 		// check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
