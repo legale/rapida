@@ -200,7 +200,9 @@ class Curl extends Simpla
 			}
 		}
 		
-		curl_setopt_array($this->ch, $opt);
+		foreach($opt as $name=>$val){
+			curl_setopt($this->ch, $name, $val);
+		}
 		
 		return $this->ch;
 	}
