@@ -1,12 +1,6 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simp.la
- * @author 		Denis Pikusov
- *
  * Этот класс использует шаблон index.tpl,
  * который содержит всю страницу кроме центрального блока
  * По get-параметру module мы определяем что будет содержаться в центральном блоке

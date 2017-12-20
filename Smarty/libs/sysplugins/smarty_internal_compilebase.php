@@ -64,7 +64,7 @@ abstract class Smarty_Internal_CompileBase
 	 * Need to prevent 'undefined variable' notice error in the {if}, {elseif} tag
 	 */
 	protected function precompile_if($parameter){
-		dtimer::log(__METHOD__. " start ".var_export($parameter, true));
+		//~ dtimer::log(__METHOD__. " start ".var_export($parameter, true));
 		
 		if(isset($parameter['if condition'])){
 			$if = $parameter['if condition'];
@@ -74,7 +74,7 @@ abstract class Smarty_Internal_CompileBase
 
 		
         preg_match_all('/([^\(\)]*)(\(.*?\))([^\(]*)/i', $if, $m);
-        dtimer::log(__METHOD__ . ' array ' . var_export($m,true));
+        //~ dtimer::log(__METHOD__ . ' array ' . var_export($m,true));
 
         $s = ''; //result string       
         if(!empty($m[0])){
@@ -86,7 +86,7 @@ abstract class Smarty_Internal_CompileBase
         } else {
             $s = str_replace('$', '@$', $if);
         }
-		dtimer::log(__METHOD__ . " return " . var_export($s,true));
+		//~ dtimer::log(__METHOD__ . " return " . var_export($s,true));
         return  array('if condition' => $s);
 	}
  
