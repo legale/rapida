@@ -99,7 +99,7 @@ class Design extends Simpla
     {
         dtimer::log(__METHOD__ . " start type: $type id: $id basename: $basename w: $w h: $h");
 		if(empty($basaname)){
-			return '#';
+			return '123';
 		}
 		
         if($this->image->is_url($basename)){
