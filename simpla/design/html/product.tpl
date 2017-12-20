@@ -57,6 +57,7 @@ function ready(){
 	/* DragnDrop */
 	var holder = document.getElementById('holder'),
 	product_id,
+	type,
 	tests = {
 	  filereader: typeof FileReader != 'undefined',
 	  dnd: 'draggable' in document.createElement('span'),
@@ -77,6 +78,7 @@ function ready(){
 	fileupload = document.getElementById('upload');
 	if(holder !== null){
 		product_id = holder.getAttribute('product_id');
+		type = holder.getAttribute('type');
 	} else {
 		return false;
 	}
@@ -120,6 +122,7 @@ function ready(){
 			   formData.append('file[]', files[i]);
 		   }
 			formData.append('product_id', product_id );
+			formData.append('type', type );
 		}
 		//console.log(formData);
 
@@ -375,7 +378,7 @@ function ready(){
 
 				<!-- dropzone для перетаскивания изображений -->	
 				{if isset($product['id'])}
-					<div id="holder" product_id="{$product['id']}">
+					<div id="holder" type="products" product_id="{$product['id']}">
 						<div class="holder__text">Тяни файл сюда</div>
 					</div> 
 					<p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
