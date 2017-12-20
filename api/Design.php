@@ -98,7 +98,10 @@ class Design extends Simpla
     public function resize_modifier($basename, $type, $id, $w, $h)
     {
         dtimer::log(__METHOD__ . " start type: $type id: $id basename: $basename w: $w h: $h");
-
+		if(empty($basaname)){
+			return '';
+		}
+		
         if($this->image->is_url($basename)){
             $url = parse_url($basename);
             return '/img/' . $type . '_' . $id . '/' . $w . 'x' . $h . '/?' . http_build_query($url);
