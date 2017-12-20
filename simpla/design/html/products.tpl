@@ -62,6 +62,7 @@
 	
 		<div id="list">
 		{foreach $products as $product}
+		{print_r($product)}
 
 		<div class="{if !$product['visible']}invisible{/if} {if $product['featured']}featured{/if} row">
 			<input type="hidden" name="positions[{$product['id']}]" value="{$product['position']}">
