@@ -30,7 +30,7 @@ class Smarty_Internal_Compile_If extends Smarty_Internal_CompileBase
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
 		//precompile parameter to prevent 'undefined variable' notice error
-		dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
+		//~ dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
 		$parameter = $this->precompile_if($parameter);
 		
         // check and get attributes
@@ -123,7 +123,7 @@ class Smarty_Internal_Compile_Elseif extends Smarty_Internal_CompileBase
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
 		//precompile parameter to prevent 'undefined variable' notice error
-		dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
+		//~ dtimer::log(__METHOD__ . " start " . var_export($parameter, true));
 		$parameter = $this->precompile_if($parameter);
 		
 		// check and get attributes

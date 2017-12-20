@@ -19,7 +19,7 @@ class ControllerMaster extends Simpla
 	'/' => 'coSimpla',
 	'page' => 'coSimpla',
 	'catalog' => 'coSimpla',
-	'products'=> 'coSimpla',
+	'tovar'=> 'coSimpla',
 	'search'=> 'coSimpla',
 	'brands'=> 'coSimpla',
 	'contact'=> 'coSimpla',

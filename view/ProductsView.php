@@ -1,12 +1,6 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  * Этот класс использует шаблон products.tpl
  *
  */
@@ -28,7 +22,22 @@ class ProductsView extends View
 		//~ print "</PRE>";
 		dtimer::log(__METHOD__ . " start");
 				
-		$category_url = $this->coMaster->uri_arr['path_arr']['url'];
+		$module = $this->coMaster->uri_arr['path_arr']['module'] ? $this->coMaster->uri_arr['path_arr']['module'] : null;
+		$url = $this->coMaster->uri_arr['path_arr']['url'];
+		 
+		switch($module){
+		case 'brands':
+			if(isset($this->coMaster->uri_arr['path_arr']['brand'])){
+				$this->coMaster->uri_arr['path_arr']['brand'][] = $url;
+			} else {
+				$this->coMaster->uri_arr['path_arr']['brand'] = array($url);
+			}
+			break;
+		case 'catalog':
+			$category_url = $url;
+			break;
+		}
+
 		
 		$filter = array();
 		
@@ -255,9 +264,9 @@ class ProductsView extends View
 		}
 		elseif(isset($brand))
 		{
-			$this->design->assign('meta_title', $brand->meta_title);
-			$this->design->assign('meta_keywords', $brand->meta_keywords);
-			$this->design->assign('meta_description', $brand->meta_description);
+			$this->design->assign('meta_title', $brand['meta_title']);
+			$this->design->assign('meta_keywords', $brand['meta_keywords']);
+			$this->design->assign('meta_description', $brand['meta_description']);
 		}
 		elseif(isset($keyword))
 		{
