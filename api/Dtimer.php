@@ -105,6 +105,8 @@ class dtimer
 
     public static function show_console()
     {
+        require_once(dirname(__FILE__) . '/Ascii_table.php');
+        $table = new Ascii_table();
         if (self::$enabled !== true) {
             return false;
         }
@@ -114,7 +116,7 @@ class dtimer
 
         $last = end(self::$points);
         //reset(self::$points);
-
+        $res = array();
         foreach (self::$points as $item) {
 
             $type = $item['type'];
@@ -140,10 +142,21 @@ class dtimer
             //время из записи
             $time = convert_time($item['time']);
             $diff = convert_time($diff);
-            echo "****    $type    ram:{$ram}    diff:{$diff}    perc:{$perc}   time:{$time}    ***********\n";
-            echo "$message\n";
-            //echo "******************************************************\n";
+//           echo "****    $type    ram:{$ram}    diff:{$diff}    perc:{$perc}   time:{$time}    ***********\n";
+//           echo "$message\n";
+//           echo "******************************************************\n";
+            $res[] = array(
+                'type' => $type,
+                'ram' => $ram,
+                'diff' => $diff,
+                'perc' => $perc,
+                'time' => $time,
+                'message' => $message,
+            );
+
         };
+        //print_r($res);
+        print $table->draw($res);
         self::$points = array();
     }
 

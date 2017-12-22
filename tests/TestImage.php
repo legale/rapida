@@ -1,9 +1,19 @@
 <?php
 use PHPUnit\Framework\TestCase;
+$winpath = 'C:/cygwin64/home/ru/composer/vendor/autoload.ph';
+$cygpath = '/cygdrive/c/cygwin64/home/ru/composer/vendor/autoload.php';
 
 require_once('../api/Image.php');
+if(file_exists($winpath) && is_readable($winpath)){
+    require_once($winpath);
+}else if (file_exists($cygpath) && is_readable($cygpath)){
+    require_once($cygpath);
+}
 
 
+/**
+ * Class TestImage
+ */
 class TestImage extends TestCase
 {
     use \Xpmock\TestCaseTrait;

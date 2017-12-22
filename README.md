@@ -3,45 +3,30 @@
  
  
 ##IMPORTANT INFO
+Для работы удаленной загрузки изображений требуется php-curl.
 Для работы системы на сервере Nginx необходимо прописать следующую инструкцию в конфиг.
-```
+````
     location / {
         try_files $uri /index.php$is_args$args;
     }
- ```
+````
  
 ## ****************
 ## Changelog
 ## ****************
  
 ## =================
+## v0.0.8.1.10 b7 18.12.2017
+## =================
+### bugs:
+- Исправлена загрузка изображений товара в админке через drag&drop.
+- Исправлены неработающие ссылки вида: site.com/brands/adidas
+
+## =================
 ## v0.0.8.1.10 b2 18.12.2017
 ## =================
 ### improvements:
 - Изменены компиляторы smarty для конструкций {if}{elseif}, чтобы ошибки 'undefined variable' подавлялись. Теперь в шаблоне можно использовать {if $unknownvar}, ошибки не будет, даже если переменная не назначена.
-Это код блока, заменяющий 'if condition' в методе compile() для классов Smarty_Internal_Compile_If и Smarty_Internal_Compile_Elseif.
-```
-        //avoid 'undefined variable' notice error
-       
-        preg_match_all('/([^\(\)]*)(\(.*?\))([^\(\)]*)/i', $parameter['if condition'], $m);
-        dtimer::log(__METHOD__ . var_export($m,true));
-        $s = ''; //result string
-       
-        if(!empty($m[0])){
-            foreach($m[2] as $k=>$keep){
-                $s .= str_replace('$', '@$', $m[1][$k]);
-                $s .= $keep;
-                $s .= str_replace('$', '@$', $m[3][$k]);
-            }
-        } else {
-            $s = str_replace('$', '@$', $parameter['if condition']);
-        }
-       
-        $parameter['if condition'] = $s;
-  
-        //avoid 'undefined variable' notice error END
-```
-
 
 ## =================
 ## v0.0.8.1.10 18.12.2017
