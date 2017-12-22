@@ -95,8 +95,12 @@ class Design extends Simpla
     }
 
 
-    public function resize_modifier($basename, $type, $id, $w, $h)
+    public function resize_modifier($basename, $type =null, $id = null, $w = null, $h = null)
     {
+		if( array_walk( func_get_args(), function($e){return isset($e) ? true : false; })){
+			return 'args error';
+		}
+		
         dtimer::log(__METHOD__ . " start type: $type id: $id basename: $basename w: $w h: $h");
 		if(empty($basename)){
 			return '#';
