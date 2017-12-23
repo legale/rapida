@@ -20,7 +20,7 @@ class Variants extends Simpla
 		'price3' => 'f',
 		'stock' => 'i',
 		'old_price' => 'f',
-		'position' => 'i',
+		'pos' => 'i',
 	);
 	
 	/**
@@ -76,13 +76,17 @@ class Variants extends Simpla
 					$product_id_filter          
 					$variant_id_filter  
 					$instock_filter 
-					ORDER BY v.position       
+					ORDER BY v.pos       
 					", $this->settings->max_order_amount);
 
 		if (!$this->db->query($q)){
 			return false;
 		}
-		$res = $this->db->results_array(null, 'id');
+		if(isset($filter['grouped'])){
+			$res = $this->db->results_array_grouped($filter['grouped']);
+		} else {
+			$res = $this->db->results_array(null, 'id');
+		}
 		return $res;
 	}
 
@@ -185,14 +189,14 @@ class Variants extends Simpla
 		unset($e);
 		
 		//узнаем позицию последнего варианта для этого товара
-		$this->db->query("SELECT MAX(position) as pos FROM __variants WHERE product_id = $pid");
+		$this->db->query("SELECT MAX(pos) as pos FROM __variants WHERE product_id = $pid");
 		$pos = $this->db->result_array('pos');
 		if( !empty_($pos) ){
 			$pos = $pos + 1;
 		} else {
 			$pos = 0;
 		}
-		$variant['position'] = $pos;
+		$variant['pos'] = $pos;
 
 
 		$query = $this->db->placehold("INSERT INTO __variants SET ?%", $variant);

@@ -3,8 +3,12 @@
 /**
  * This library can generate ASCII pseudographic table from an array
  * One public method draw()
+ * 
+ * @author Legale <legale.legale@gmail.com>
+ * @email legale.legale@gmail.com
+ * @license GPL v3
  */
-class Ascii_table
+class Table2ascii
 {
     const UPLEFT = '┌';
     const UPRIGHT = '┐';
@@ -15,10 +19,14 @@ class Ascii_table
     const CROSS = '┼';
     const UPCROSS = '┬';
     const DOWNCROSS = '┴';
-    //const HORIZ = '─';
+    //const HORIZ = '─'; //another horiz. line symbol, better but not universal like dash -
     const HORIZ = '-';
     const VERT = '│';
-    const MAX_WIDTH = 55;
+    private static $MAX_WIDTH;
+
+	public function __construct($MAX_WIDTH = 100){
+		self::$MAX_WIDTH = $MAX_WIDTH;
+	}
 
 
     /**
@@ -65,14 +73,19 @@ class Ascii_table
     private function columns_lengths($table, $headers)
     {
         $headers = array_map('mb_strlen', $headers);
-
-        $cnt = count($headers);
-        $max_width = self::MAX_WIDTH  - $cnt - 1;
+		$headers = array('len' => $headers,'size' => $headers);
+		
+        $cnt = count($headers['len']);
+        $max_width = self::$MAX_WIDTH  - $cnt - 1;
         $width = 0;
+        $total_size = 0;
         foreach ($table as $num => $row) {
             foreach ($row as $col => $cell) {
-                $headers[$col] = max($headers[$col], mb_strlen($cell));
-                $width += $headers[$col];
+				$cell_len = mb_strlen($cell);
+                $headers['len'][$col] = max($headers['len'][$col], $cell_len);
+                $headers['size'][$col] += $cell_len;
+                $total_size += $cell_len;
+                $width += $headers['len'][$col];
             }
         }
 
@@ -86,24 +99,35 @@ class Ascii_table
         $chars_left = $max_width;
         $headers_orig = $headers;
 
-        foreach ($headers as &$len) {
-            if ($len > $col_len) {
-                $len = $col_len;
-            }
-            $chars_left -= $len;
+        //setting initial lenght for each column
+        foreach ($headers['len'] as $k=>&$len) {
+			$size = $headers['size'][$k];
+			$perc = $size / $total_size; 
+			$increment = ($perc < 0.01) ? 2 : 6;
+			$len = $increment;
+            $chars_left -= $increment;
+        }    
+        foreach ($headers['len'] as $k=>&$len) {
+			$size = $headers['size'][$k];
+			$perc = $size / $total_size; 
+			$increment = ceil($chars_left * $perc);
+			$len += $increment;
+            $chars_left -= $increment;
         }
+        //print_r($headers);    
         unset($len);
 
-        //оставшиеся свободными символы, которые можно добавить к ячейкам
+        //free chars to spread
         $free_chars = $chars_left;
-        //счетчик циклов
+        //cycle counter
         $cycle = 1;
+        //~ print_r($headers);
 
-        //крутим пока есть свободные симвовы и пока счетчик циклов меньше начального количества свободных символов
+        //cycle while we have got free chars and cycle counter less than initial value of free chars
         while ($chars_left > 0 && $cycle < $free_chars) {
-            foreach ($headers_orig as $k => $len) {
-                if ($len > $headers[$k]) {
-                    $headers[$k]++;
+            foreach ($headers_orig['len'] as $k => $len) {
+                if ($len > $headers['len'][$k]) {
+                    $headers['len'][$k]++;
                     $chars_left--;
                 }
             }
@@ -111,7 +135,7 @@ class Ascii_table
         }
 
 
-        return $headers;
+        return $headers['len'];
     }
 
     /**
