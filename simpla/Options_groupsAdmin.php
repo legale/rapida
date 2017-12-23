@@ -21,8 +21,8 @@ class Options_groupsAdmin extends Simpla
 		if ($this->request->method('post'))
 		{
 		// Сортировка
-			$positions = $_POST['positions'];
-			foreach ($positions as $pos => $id){
+			$poss = $_POST['poss'];
+			foreach ($poss as $pos => $id){
 				$this->features->update_feature($id, array('pos' => $pos) ); 
 			}
 		

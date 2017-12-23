@@ -26,11 +26,12 @@ class PagesAdmin extends Simpla
 		if ($this->request->method('post'))
 			{
 		// Сортировка
-			$positions = $this->request->post('positions');
-			$ids = array_keys($positions);
-			sort($positions);
-			foreach ($positions as $i => $position)
-				$this->pages->update_page($ids[$i], array('position' => $position)); 
+			$poss = $this->request->post('poss');
+			$ids = array_keys($poss);
+			sort($poss);
+			foreach ($poss as $i => $pos){
+				$this->pages->update_page($ids[$i], array('pos' => $pos)); 
+			}
 
 		
 		// Действия с выбранными

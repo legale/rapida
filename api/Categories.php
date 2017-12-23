@@ -116,7 +116,7 @@ class Categories extends Simpla
 
 		$this->db->query("INSERT INTO __categories SET ?%", $category);
 		$id = $this->db->insert_id();
-		$this->db->query("UPDATE __categories SET position=id WHERE id=?", $id);
+		$this->db->query("UPDATE __categories SET pos=id WHERE id=?", $id);
 		unset($this->categories_tree);
 		unset($this->all_categories);
 		return $id;
@@ -210,12 +210,12 @@ class Categories extends Simpla
 		$pointers[0]['level'] = 0;
 		
 		// Выбираем все категории
-		$query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.position
-										FROM __categories c ORDER BY c.parent_id, c.position");
+		$query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.pos
+										FROM __categories c ORDER BY c.parent_id, c.pos");
 											
 		// Выбор категорий с подсчетом количества товаров для каждой. Может тормозить при большом количестве товаров.
-		// $query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.position, COUNT(p.id) as products_count
-		//                               FROM __categories c LEFT JOIN __products_categories pc ON pc.category_id=c.id LEFT JOIN __products p ON p.id=pc.product_id AND p.visible GROUP BY c.id ORDER BY c.parent_id, c.position");
+		// $query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.pos, COUNT(p.id) as products_count
+		//                               FROM __categories c LEFT JOIN __products_categories pc ON pc.category_id=c.id LEFT JOIN __products p ON p.id=pc.product_id AND p.visible GROUP BY c.id ORDER BY c.parent_id, c.pos");
 
 
 		$this->db->query($query);

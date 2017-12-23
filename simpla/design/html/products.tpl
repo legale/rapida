@@ -63,7 +63,7 @@
 		<div id="list">
 		{foreach $products as $product}
 		<div class="{if !$product['visible']}invisible{/if} {if $product['featured']}featured{/if} row">
-			<input type="hidden" name="positions[{$product['id']}]" value="{$product['position']}">
+			<input type="hidden" name="poss[{$product['id']}]" value="{$product['pos']}">
 			<div class="move cell"><div class="move_zone"></div></div>
 	 		<div class="checkbox cell">
 				<input type="checkbox" name="check[]" value="{$product['id']}"/>				

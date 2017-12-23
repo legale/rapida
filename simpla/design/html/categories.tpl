@@ -29,7 +29,7 @@
 			{foreach $categories as $c}
 			<div class="{if !$c['visible']}invisible{/if} row">		
 				<div class="tree_row">
-					<input type="hidden" name="positions[{$c['id']}]" value="{$c['position']}">
+					<input type="hidden" name="poss[{$c['id']}]" value="{$c['pos']}">
 					<div class="move cell" style="margin-left:{$level*20}px"><div class="move_zone"></div></div>
 			 		<div class="checkbox cell">
 						<input type="checkbox" name="check[]" value="{$c['id']}" />				

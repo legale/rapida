@@ -65,7 +65,9 @@
 </script>
 
 <style>
-	.ui-progressbar-value { background-color:#b4defc; background-image: url(design/images/progress.gif); background-position:left; border-color: #009ae2;}
+	.ui-progressbar-value { background-color:#b4defc;
+	background-image: url(design/images/progress.gif); 
+	background-position:left; border-color: #009ae2;}
 	#progressbar{ clear: both; height:29px;}
 	#result{ clear: both; width:100%;}
 </style>

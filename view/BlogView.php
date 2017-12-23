@@ -1,14 +1,7 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  * Этот класс использует шаблоны blog.tpl и post.tpl
- *
  */
 
 require_once('View.php');
@@ -40,7 +33,7 @@ class BlogView extends View
 		$post = $this->blog->get_post($url);
 		
 		// Если не найден - ошибка
-		if(!$post || (!$post->visible && empty($_SESSION['admin'])))
+		if(!$post || (!$post['visible'] && empty($_SESSION['admin'])))
 			return false;
 		
 		// Автозаполнение имени для формы комментария
@@ -51,7 +44,7 @@ class BlogView extends View
 		// Принимаем комментарий
 		if ($this->request->method('post') && $this->request->post('comment'))
 		{
-			$comment = new stdClass;
+			$comment = array();
 			$comment->name = $this->request->post('name');
 			$comment->text = $this->request->post('text');
 			$captcha_code =  $this->request->post('captcha_code', 'string');
@@ -76,12 +69,12 @@ class BlogView extends View
 			else
 			{
 				// Создаем комментарий
-				$comment->object_id = $post->id;
-				$comment->type      = 'blog';
-				$comment->ip        = $_SERVER['REMOTE_ADDR'];
+				$comment['object_id'] = $post['id'];
+				$comment['type']      = 'blog';
+				$comment['ip']        = $_SERVER['REMOTE_ADDR'];
 				
 				// Если были одобренные комментарии от текущего ip, одобряем сразу
-				$this->db->query("SELECT 1 FROM __comments WHERE approved=1 AND ip=? LIMIT 1", $comment->ip);
+				$this->db->query("SELECT 1 FROM __comments WHERE approved=1 AND ip=? LIMIT 1", $comment['ip']);
 				if($this->db->num_rows()>0)
 					$comment->approved = 1;
 				
@@ -98,18 +91,18 @@ class BlogView extends View
 		}
 		
 		// Комментарии к посту
-		$comments = $this->comments->get_comments(array('type'=>'blog', 'object_id'=>$post->id, 'approved'=>1, 'ip'=>$_SERVER['REMOTE_ADDR']));
+		$comments = $this->comments->get_comments(array('type'=>'blog', 'object_id'=>$post['id'], 'approved'=>1, 'ip'=>$_SERVER['REMOTE_ADDR']));
 		$this->design->assign('comments', $comments);
 		$this->design->assign('post',      $post);
 		
 		// Соседние записи
-		$this->design->assign('next_post', $this->blog->get_next_post($post->id));
-		$this->design->assign('prev_post', $this->blog->get_prev_post($post->id));
+		$this->design->assign('next_post', $this->blog->get_next_post($post['id']));
+		$this->design->assign('prev_post', $this->blog->get_prev_post($post['id']));
 		
 		// Мета-теги
-		$this->design->assign('meta_title', $post->meta_title);
-		$this->design->assign('meta_keywords', $post->meta_keywords);
-		$this->design->assign('meta_description', $post->meta_description);
+		$this->design->assign('meta_title', $post['meta_title']);
+		$this->design->assign('meta_keywords', $post['meta_keywords']);
+		$this->design->assign('meta_description', $post['meta_description']);
 		
 		return $this->design->fetch('post.tpl');
 	}	

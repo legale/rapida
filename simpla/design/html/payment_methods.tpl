@@ -23,7 +23,7 @@
 		<div id="list">			
 			{foreach $payment_methods as $payment_method}
 			<div class="{if !$payment_method['enabled']}invisible{/if} row">
-				<input type="hidden" name="positions[{$payment_method['id']}]" value="{$payment_method['position']}">
+				<input type="hidden" name="poss[{$payment_method['id']}]" value="{$payment_method['pos']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$payment_method['id']}" />				

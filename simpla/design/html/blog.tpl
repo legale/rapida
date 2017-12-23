@@ -42,7 +42,7 @@
 		<div id="list">
 			{foreach $posts as $post}
 			<div class="{if !$post['visible']}invisible{/if} row">
-				<input type="hidden" name="positions[{$post['id']}]" value="{$post['position']}">
+				<input type="hidden" name="poss[{$post['id']}]" value="{$post['pos']}">
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$post['id']}" />				
 				</div>
