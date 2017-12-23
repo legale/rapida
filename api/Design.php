@@ -97,8 +97,11 @@ class Design extends Simpla
 
     public function resize_modifier($basename, $type =null, $id = null, $w = null, $h = null)
     {
-		if( array_walk( func_get_args(), function($e){return isset($e) ? true : false; })){
-			return 'args error';
+		$args = func_get_args();
+		foreach($args as $arg){
+			if(!isset($arg)){
+				return 'args error '.implode(' ', func_get_args());
+			}
 		}
 		
         dtimer::log(__METHOD__ . " start type: $type id: $id basename: $basename w: $w h: $h");
@@ -230,10 +233,25 @@ class Design extends Simpla
         if (!empty($_COOKIE['browsed_products'])) {
             $ids = explode(',', $_COOKIE['browsed_products']);
             $ids = array_reverse($ids);
-            if (isset($params['limit']))
+            if (isset($params['limit'])){
                 $ids = array_slice($ids, 0, $params['limit']);
+			}
 
             $products = $this->products->get_products(array('id' => $ids, 'visible' => 1));
+			$variants = $this->variants->get_variants(array('grouped'=> 'product_id', 'product_id' => $ids, 'in_stock' => true));
+
+			// Выбираем варианты товаров
+			if(isset($products)){
+				foreach($products as $pid=>$p){
+					if(isset($variants[$pid])){
+						$products[$pid]['variants'] = $variants[$pid];
+					}else{
+						$products[$pid]['variants'] = array();
+					}
+				}
+			}
+
+
 
 
             $smarty->assign($params['var'], $products);

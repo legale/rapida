@@ -211,7 +211,7 @@ class TestImage extends TestCase
 
     protected function tearDown()
     {
-        dtimer::show_console();
+        dtimer::show_console(120);
     }
 
 

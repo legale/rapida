@@ -103,10 +103,10 @@ class dtimer
         self::$points = array();
     }
 
-    public static function show_console()
+    public static function show_console($width = 100)
     {
-        require_once(dirname(__FILE__) . '/Ascii_table.php');
-        $table = new Ascii_table();
+        require_once(dirname(__FILE__) . '/Table2ascii.php');
+        $table = new Table2ascii($width);
         if (self::$enabled !== true) {
             return false;
         }
