@@ -24,7 +24,7 @@ class Payment extends Simpla
 			$enabled_filter = $this->db->placehold('AND enabled=?', intval($filter['enabled']));
 
 		$query = "SELECT *
-					FROM __payment_methods WHERE 1 $delivery_filter $enabled_filter ORDER BY position";
+					FROM __payment_methods WHERE 1 $delivery_filter $enabled_filter ORDER BY pos";
 
 		$this->db->query($query);
 		return $this->db->results_array();
@@ -150,7 +150,7 @@ class Payment extends Simpla
 			return false;
 
 		$id = $this->db->insert_id();
-		$this->db->query("UPDATE __payment_methods SET position=id WHERE id=?", $id);
+		$this->db->query("UPDATE __payment_methods SET pos=id WHERE id=?", $id);
 		return $id;
 	}
 

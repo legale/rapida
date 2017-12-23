@@ -24,7 +24,7 @@
 	<div id="list">
 		{foreach $deliveries as $delivery}
 		<div class="{if !$delivery['enabled']}invisible{/if} row">
-			<input type="hidden" name="positions[{$delivery['id']}]" value="{$delivery['position']}">
+			<input type="hidden" name="poss[{$delivery['id']}]" value="{$delivery['pos']}">
 			<div class="move cell"><div class="move_zone"></div></div>
 	 		<div class="checkbox cell">
 				<input type="checkbox" name="check[]" value="{$delivery['id']}" />				

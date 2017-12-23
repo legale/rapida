@@ -97,6 +97,10 @@ class Database extends Simpla
 		$cnt = count($args);
 		if ($cnt < 1 || !is_string($args[0])) {
 			$this->error_msg = " Error - empty query";
+			$bt = debug_backtrace();
+			$bt = var_export(array_column(array_slice($bt, 1,2), 'function','class'), true);
+			dtimer::log(__METHOD__ . " backtrace: $bt", 1);
+			
 			return false;
 		}
 		elseif ($cnt > 1) {
@@ -125,6 +129,10 @@ class Database extends Simpla
 		$this->res = $this->mysqli->query($q);
 		if(!$this->res){
 			dtimer::log(__METHOD__ . " Error: $q ", 1);
+			$bt = debug_backtrace();
+			$bt = var_export(array_column(array_slice($bt, 1,2), 'function','class'), true);
+			dtimer::log(__METHOD__ . " backtrace: $bt", 1);
+			
 			return false;
 		} else {
 			dtimer::log(__METHOD__ . " Completed: $q ");
@@ -255,8 +263,12 @@ class Database extends Simpla
 	 * также может вывести массив с ключами из указанного поля БД, для этого указывается 2 аргумент (string)
 	 */
 	public function results_array_grouped($field = null){
-		if (!isset($field) || empty($this->res) || $this->res->num_rows == 0) {
-			dtimer::log(__METHOD__ . " argument error", 1);
+		if (!isset($field)) {
+			dtimer::log(__METHOD__ . " argument error", 1);			
+			$bt = debug_backtrace();
+			$bt = var_export(array_column(array_slice($bt, 1,2), 'function','class'), true);
+			dtimer::log(__METHOD__ . " backtrace: $bt", 1);
+
 			return false;
 		}
 		if (!is_object($this->res)) {
@@ -680,7 +692,7 @@ class Database extends Simpla
 			return $out;
 		}
 	}
-
+	
 	public function dump($filename, $skip_create = false)
 	{
 		dtimer::log(__METHOD__." start");
@@ -689,7 +701,9 @@ class Database extends Simpla
 		$result = $this->mysqli->query($q);
 		while ($row = $result->fetch_row()) {
 			if ($row[1] == 'BASE TABLE') {
-				$this->dump_table($row[0], $h, $skip_create);
+				$skipdata = in_array($row[0], array(
+					's_queue','s_queue_full','s_cache_integer')) ? true : false;
+				$this->dump_table($row[0], $h, $skip_create, $skipdata);
 			}
 		}
 		fclose($h);
@@ -727,7 +741,7 @@ class Database extends Simpla
 	}
 
 
-	private function dump_table($table, $h, $skip_create = true)
+	private function dump_table($table, $h, $skipcreate = true, $skipdata = false)
 	{
 		//массив для типов полей
 		$types = array();
@@ -797,7 +811,7 @@ class Database extends Simpla
 		unset($col);
 		
 		//Если параметр $skip_create = false - пропускаем создание таблицы
-		if ($skip_create === false) {
+		if ($skipcreate === false) {
 			//удаляем таблицу, если она есть
 			fwrite($h, "/* Drop for table $table */\n");
 			fwrite($h, "DROP TABLE IF EXISTS `$table`;\n");
@@ -809,10 +823,14 @@ class Database extends Simpla
 			fwrite($h, "$create;\n");
 		}
 		else {
-			fwrite($h, "/* \$skip_create set true Truncate table $table */\n");
+			fwrite($h, "/* \$skipcreate is true. Truncate table $table */\n");
 			fwrite($h, "TRUNCATE TABLE `$table`;\n");
 		}
-		
+		//пропускаем данные, если задан такой параметр
+		if($skipdata){
+			fwrite($h, "/* \$skipdata is true. Data skipped $table */\n");
+			return true;
+		}
 		//Здесь идут данные для таблицы
 		fwrite($h, "/* Data for table $table */\n");
 		

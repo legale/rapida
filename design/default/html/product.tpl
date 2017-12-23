@@ -49,7 +49,7 @@
 		{foreach $product['variants'] as $v}
 		<tr class="variant">
 			<td>
-				<input id="product_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $product['variant']['id']==$v['id']}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
+				<input id="product_{$v['id']}" name="variant" value="{$v['id']}" type="radio" class="variant_radiobutton" {if $product['variants'][0]['id']==$v['id']}checked{/if} {if $product['variants']|count<2}style="display:none;"{/if}/>
 			</td>
 			<td>
 				{if $v['name']}<label class="variant_name" for="product_{$v['id']}">{$v['name']}</label>{/if}

@@ -38,11 +38,11 @@ class DeliveriesAdmin extends Simpla
 			}	
 				
 			// Сортировка
-			$positions = $this->request->post('positions');
-			$ids = array_keys($positions);
-			sort($positions);
-			foreach ($positions as $i => $position)
-				$this->delivery->update_delivery($ids[$i], array('position' => $position));
+			$poss = $this->request->post('poss');
+			$ids = array_keys($poss);
+			sort($poss);
+			foreach ($poss as $i => $pos)
+				$this->delivery->update_delivery($ids[$i], array('pos' => $pos));
 
 		}
 

@@ -107,7 +107,7 @@
 {if $products|count>0}
 <div class="sort">
 	Сортировать по 
-	<a {if $sort=='position'} class="selected"{/if} href="{url sort=position page=null}">умолчанию</a>
+	<a {if $sort=='pos'} class="selected"{/if} href="{url sort=pos page=null}">умолчанию</a>
 	<a {if $sort=='price'}    class="selected"{/if} href="{url sort=price page=null}">цене</a>
 	<a {if $sort=='name'}     class="selected"{/if} href="{url sort=name page=null}">названию</a>
 </div>
@@ -145,7 +145,7 @@
 		<!-- Описание товара -->
 		<div class="annotation">{$product['annotation']}</div>
 		<!-- Описание товара (The End) -->
-		
+		{*print_r($product)*}
 		{if $product['variants']|count > 0}
 		<!-- Выбор варианта товара -->
 		<form class="variants" action="/cart">

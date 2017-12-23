@@ -94,7 +94,7 @@ class Money extends Simpla
 			}
 		}
 		
-		//get max position
+		//get max pos
 		$this->db->query("SELECT MAX(`pos`) as pos FROM __currencies");
 		$pos = $this->db->result_array('pos');
 		if( !empty_($pos) ){

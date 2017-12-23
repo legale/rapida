@@ -29,7 +29,7 @@
 		<div id="list">		
 			{foreach $labels as $label}
 			<div class="row">
-				<input type="hidden" name="positions[{$label['id']}]" value="{$label['position']}">
+				<input type="hidden" name="poss[{$label['id']}]" value="{$label['pos']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$label['id']}" />				
