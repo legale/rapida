@@ -20,7 +20,7 @@ CREATE TABLE `s_blog` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_blog */
 INSERT INTO `s_blog` (`id`,`name`,`url`,`image`,`image_id`,`meta_title`,`meta_keywords`,`meta_description`,`annotation`,`text`,`visible`,`date`) VALUES
-(1, 'test', 'test', '8f9327db2597fa57d2f42b4a6c5a9855.png', 19, 'test', 'test', 'test', '<p>test&nbsp;</p>', NULL, 1, '2017-12-16 00:00:00');
+(1, 'test', 'test', '8f9327db2597fa57d2f42b4a6c5a9855.png', 19, 'test', 'test', 'test', '<p>test&nbsp;</p>', NULL, 1, '2017-12-16 01:00:00');
 /* Drop for table s_brands */
 DROP TABLE IF EXISTS `s_brands`;
 /* Create table s_brands */
@@ -53,8 +53,7 @@ CREATE TABLE `s_cache_integer` (
   UNIQUE KEY `keyhash_value` (`keyhash`,`value`),
   KEY `updated` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/* Data for table s_cache_integer */
-;
+/* $skipdata is true. Data skipped s_cache_integer */
 /* Drop for table s_categories */
 DROP TABLE IF EXISTS `s_categories`;
 /* Create table s_categories */
@@ -69,16 +68,16 @@ CREATE TABLE `s_categories` (
   `url` varchar(255) DEFAULT '',
   `image` varchar(255) DEFAULT '',
   `image_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `position` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `pos` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `url` (`url`),
   KEY `parent_id` (`parent_id`),
-  KEY `position` (`position`),
+  KEY `pos` (`pos`),
   KEY `visible` (`visible`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_categories */
-INSERT INTO `s_categories` (`id`,`parent_id`,`name`,`meta_title`,`meta_keywords`,`meta_description`,`description`,`url`,`image`,`image_id`,`position`,`visible`) VALUES
+INSERT INTO `s_categories` (`id`,`parent_id`,`name`,`meta_title`,`meta_keywords`,`meta_description`,`description`,`url`,`image`,`image_id`,`pos`,`visible`) VALUES
 (1, 0, 'category', 'category', 'category', '', NULL, 'category', '', 0, 1, 1);
 /* Drop for table s_categories_features */
 DROP TABLE IF EXISTS `s_categories_features`;
@@ -139,7 +138,7 @@ CREATE TABLE `s_currencies` (
   `enabled` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) USING BTREE,
-  KEY `position` (`pos`)
+  KEY `pos` (`pos`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /* Data for table s_currencies */
 INSERT INTO `s_currencies` (`id`,`name`,`sign`,`code`,`rate`,`cents`,`pos`,`enabled`) VALUES
@@ -156,10 +155,10 @@ CREATE TABLE `s_delivery` (
   `free_from` decimal(10,2) NOT NULL DEFAULT '0.00',
   `price` decimal(10,2) NOT NULL DEFAULT '0.00',
   `enabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `position` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `pos` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `separate_payment` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `position` (`position`)
+  KEY `pos` (`pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_delivery */
 ;
@@ -185,7 +184,7 @@ CREATE TABLE `s_features` (
   `in_filter` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
-  KEY `position` (`pos`),
+  KEY `pos` (`pos`),
   KEY `in_filter` (`in_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_features */
@@ -224,7 +223,7 @@ CREATE TABLE `s_img_blog` (
   `basename` varchar(255) NOT NULL,
   `pos` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`item_id`),
-  KEY `position` (`pos`),
+  KEY `pos` (`pos`),
   KEY `item_id` (`item_id`) USING BTREE,
   KEY `basename` (`basename`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -239,12 +238,13 @@ CREATE TABLE `s_img_products` (
   `basename` varchar(255) NOT NULL,
   `pos` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`item_id`) USING BTREE,
-  KEY `position` (`pos`),
+  KEY `pos` (`pos`),
   KEY `item_id` (`item_id`) USING BTREE,
   KEY `basename` (`basename`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_img_products */
-;
+INSERT INTO `s_img_products` (`id`,`item_id`,`basename`,`pos`) VALUES
+(1, 1, '8f9327db2597fa57d2f42b4a6c5a9855.png', 0);
 /* Drop for table s_labels */
 DROP TABLE IF EXISTS `s_labels`;
 /* Create table s_labels */
@@ -252,7 +252,7 @@ CREATE TABLE `s_labels` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
   `color` varchar(6) DEFAULT '',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_labels */
@@ -263,11 +263,11 @@ DROP TABLE IF EXISTS `s_menu`;
 CREATE TABLE `s_menu` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /* Data for table s_menu */
-INSERT INTO `s_menu` (`id`,`name`,`position`) VALUES
+INSERT INTO `s_menu` (`id`,`name`,`pos`) VALUES
 (1, 'Основное меню', 0),
 (2, 'Другие страницы', 1);
 /* Drop for table s_options */
@@ -316,7 +316,7 @@ CREATE TABLE `s_orders` (
   `delivery_price` decimal(10,2) NOT NULL DEFAULT '0.00',
   `payment_method_id` int(11) DEFAULT '0',
   `paid` int(1) NOT NULL DEFAULT '0',
-  `payment_date` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
+  `payment_date` timestamp NOT NULL DEFAULT '1970-01-02 02:00:00',
   `closed` tinyint(1) DEFAULT '0',
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) DEFAULT '0',
@@ -335,7 +335,7 @@ CREATE TABLE `s_orders` (
   `coupon_discount` decimal(10,2) NOT NULL DEFAULT '0.00',
   `coupon_code` varchar(255) DEFAULT '',
   `separate_delivery` int(1) NOT NULL DEFAULT '0',
-  `modified` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
+  `modified` timestamp NOT NULL DEFAULT '1970-01-02 02:00:00',
   PRIMARY KEY (`id`),
   KEY `login` (`user_id`),
   KEY `written_off` (`closed`),
@@ -368,17 +368,17 @@ CREATE TABLE `s_pages` (
   `meta_keywords` varchar(500) DEFAULT '',
   `body` longtext,
   `menu_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `header` varchar(1024) DEFAULT '',
   `new_field` varchar(255) DEFAULT '',
   `new_field2` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `order_num` (`position`),
+  KEY `order_num` (`pos`),
   KEY `url` (`url`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /* Data for table s_pages */
-INSERT INTO `s_pages` (`id`,`url`,`name`,`meta_title`,`meta_description`,`meta_keywords`,`body`,`menu_id`,`position`,`visible`,`header`,`new_field`,`new_field2`) VALUES
+INSERT INTO `s_pages` (`id`,`url`,`name`,`meta_title`,`meta_description`,`meta_keywords`,`body`,`menu_id`,`pos`,`visible`,`header`,`new_field`,`new_field2`) VALUES
 (1, '', 'Главная', 'Хиты продаж', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Хиты продаж', '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas accumsan libero fermentum nisl auctor dapibus. Sed sed gravida enim. In non pharetra lacus. Donec sed erat a felis hendrerit maximus. Vivamus congue turpis nec risus bibendum, at euismod odio rutrum. Aliquam pulvinar sapien vitae justo volutpat tristique. Donec ut accumsan urna. Quisque accumsan scelerisque metus eget pretium. Cras tincidunt volutpat dui ac maximus. Morbi congue ligula rutrum, interdum lectus id, cursus velit. Nunc interdum sagittis erat, at mattis erat molestie ut. Praesent ut rhoncus mi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p><p>Nullam et scelerisque odio. Maecenas ut ante erat. Suspendisse in cursus lacus, ac blandit odio. Cras quis nulla eu mauris sagittis luctus vel ut est. Praesent placerat tincidunt justo. Fusce iaculis sem a tortor ullamcorper vehicula. Sed hendrerit rutrum fringilla.</p><p>Duis eleifend, metus ut varius aliquet, tortor nibh gravida nulla, nec maximus diam diam non ligula. Sed eu vestibulum nisl, nec elementum orci. Nam pellentesque arcu ligula, in luctus mauris sollicitudin in. Quisque fermentum pretium rhoncus. Donec mauris purus, sodales vitae dictum nec, volutpat a erat. Etiam a fringilla arcu. Sed fringilla eu libero viverra viverra. Nullam dui enim, varius sit amet risus ut, suscipit malesuada eros. Ut a arcu in leo tempus euismod. Nam tempor purus nisi, a finibus ante ultricies eget. Sed consectetur justo ut vulputate cursus. Mauris ullamcorper, urna euismod rhoncus rhoncus, tortor metus dapibus libero, sit amet suscipit purus magna in nisi. Vestibulum et bibendum magna, ac pellentesque orci. In blandit odio efficitur ligula vehicula euismod. Ut congue ligula eu diam rhoncus, sed varius ipsum euismod. Cras placerat nunc non velit blandit, vitae consequat enim fermentum.</p><p>Vivamus ultricies sollicitudin nisl, eu placerat sem sollicitudin at. Vestibulum luctus neque vel volutpat tempor. Cras laoreet lorem a neque interdum, ut placerat ligula eleifend. Nullam a varius dui. Donec vel ligula at magna tempus sagittis. In cursus laoreet ultrices. Mauris sodales sem non nibh imperdiet luctus. Nullam malesuada aliquam egestas. Sed suscipit, ipsum non tempus porttitor, nulla justo tincidunt nisl, in auctor ligula nunc eu lacus. Fusce lorem risus, venenatis vel sodales ut, auctor et lacus. Fusce sagittis efficitur neque eu viverra. Etiam tortor odio, ultrices vulputate nunc eget, iaculis rutrum justo. Vivamus rutrum, mauris vel tempor placerat, neque nulla volutpat urna, ac hendrerit mauris sapien ut nisi.</p>', 1, 1, 1, 'О магазине', '', ''),
 (2, 'oplata', 'Оплата', 'Оплата', 'Оплата', 'Оплата', '<h2><span>Наличными курьеру</span></h2><p>Вы можете оплатить заказ курьеру в гривнах непосредственно в момент доставки. Курьерская доставка осуществляется по Москве на следующий день после принятия заказа.</p><h2>Webmoney</h2><p>После оформления заказа вы сможете перейти на сайт webmoney для оплаты заказа, где сможете оплатить заказ в автоматическом режиме, а так же проверить наш сертификат продавца.</p><h2>Наличными в офисе Автолюкса</h2><p>При доставке заказа системой Автолюкс, вы сможете оплатить заказ в их офисе непосредственно в момент получения товаров.</p>', 1, 4, 1, 'Способы оплаты', '', ''),
 (3, 'dostavka', 'Доставка', 'Доставка', 'Доставка', 'Доставка', '<h2>Курьерская доставка по&nbsp;Москве</h2><p>Курьерская доставка осуществляется на следующий день после оформления заказа<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>если товар есть в&nbsp;наличии. Курьерская доставка осуществляется в&nbsp;пределах Томска и&nbsp;Северска ежедневно с&nbsp;10.00 до&nbsp;21.00. Заказ на&nbsp;сумму свыше 300 рублей доставляется бесплатно. <br /><br />Стоимость бесплатной доставки раcсчитывается от&nbsp;суммы заказа с&nbsp;учтенной скидкой. В&nbsp;случае если сумма заказа после применения скидки менее 300р<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>осуществляется платная доставка. <br /><br />При сумме заказа менее 300 рублей стоимость доставки составляет от 50 рублей.</p><h2>Самовывоз</h2><p>Удобный<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>бесплатный и быстрый способ получения заказа.<br />Адрес офиса: Москва<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>ул. Арбат<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>1/3<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>офис 419.</p><h2>Доставка с&nbsp;помощью предприятия<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo;</h2><p>Удобный и быстрый способ доставки в крупные города России. Посылка доставляется в офис<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo; в&nbsp;Вашем городе. Для получения необходимо предъявить паспорт и&nbsp;номер грузовой декларации<span style=\"margin-right: 0.3em;\"> </span><span style=\"margin-left: -0.3em;\">(</span>сообщит наш менеджер после отправки). Посылку желательно получить в&nbsp;течение 24 часов с&nbsp;момента прихода груза<span style=\"margin-right: -0.2em;\">,</span><span style=\"margin-left: 0.2em;\"> </span>иначе компания<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Автотрейдинг&raquo; может взыскать с Вас дополнительную оплату за хранение. Срок доставки и стоимость Вы можете рассчитать на сайте компании.</p><h2>Наложенным платежом</h2><p>При доставке заказа наложенным платежом с помощью<span style=\"margin-right: 0.44em;\"> </span><span style=\"margin-left: -0.44em;\">&laquo;</span>Почты России&raquo;, вы&nbsp;сможете оплатить заказ непосредственно в&nbsp;момент получения товаров.</p>', 1, 3, 1, 'Способы доставки', '', ''),
@@ -397,12 +397,12 @@ CREATE TABLE `s_payment_methods` (
   `currency_id` float DEFAULT '0',
   `settings` text,
   `enabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `position` (`position`)
+  KEY `pos` (`pos`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /* Data for table s_payment_methods */
-INSERT INTO `s_payment_methods` (`id`,`module`,`name`,`description`,`currency_id`,`settings`,`enabled`,`position`) VALUES
+INSERT INTO `s_payment_methods` (`id`,`module`,`name`,`description`,`currency_id`,`settings`,`enabled`,`pos`) VALUES
 (1, 'Receipt', 'Квитанция', '<p>Вы можете распечатать квитанцию и оплатить её в любом отделении банка.</p>', 2, 'a:10:{s:9:\"recipient\";s:65:\"ООО \"Великолепный интернет-магазин\"\";s:3:\"inn\";s:5:\"12345\";s:7:\"account\";s:6:\"223456\";s:4:\"bank\";s:18:\"Альфабанк\";s:3:\"bik\";s:6:\"556677\";s:21:\"correspondent_account\";s:11:\"77777755555\";s:8:\"banknote\";s:7:\"руб.\";s:5:\"pense\";s:7:\"коп.\";s:5:\"purse\";s:2:\"ru\";s:10:\"secret_key\";s:0:\"\";}', 1, 2),
 (2, 'Webmoney', 'Webmoney wmz', '<p><span></span></p><div><p>Оплата через платежную систему&nbsp;<a href=\"http://www.webmoney.ru\">WebMoney</a>. У вас должен быть счет в этой системе для того, чтобы произвести оплату. Сразу после оформления заказа вы будете перенаправлены на специальную страницу системы WebMoney, где сможете произвести платеж в титульных знаках WMZ.</p></div><p>&nbsp;</p>', 3, 'a:10:{s:9:\"recipient\";s:0:\"\";s:3:\"inn\";s:0:\"\";s:7:\"account\";s:0:\"\";s:4:\"bank\";s:0:\"\";s:3:\"bik\";s:0:\"\";s:21:\"correspondent_account\";s:0:\"\";s:8:\"banknote\";s:7:\"руб.\";s:5:\"pense\";s:0:\"\";s:5:\"purse\";s:13:\"Z111111111111\";s:10:\"secret_key\";s:13:\"testsecretkey\";}', 1, 1),
 (3, 'Robokassa', 'Робокасса', '<p><span>RBK Money &ndash; это электронная платежная система, с помощью которой Вы сможете совершать платежи с персонального компьютера, коммуникатора или мобильного телефона.</span></p>', 3, 'a:14:{s:9:\"recipient\";s:0:\"\";s:3:\"inn\";s:0:\"\";s:7:\"account\";s:0:\"\";s:4:\"bank\";s:0:\"\";s:3:\"bik\";s:0:\"\";s:21:\"correspondent_account\";s:0:\"\";s:8:\"banknote\";s:0:\"\";s:5:\"pense\";s:0:\"\";s:5:\"login\";s:0:\"\";s:9:\"password1\";s:0:\"\";s:9:\"password2\";s:0:\"\";s:8:\"language\";s:2:\"ru\";s:5:\"purse\";s:0:\"\";s:10:\"secret_key\";s:0:\"\";}', 1, 3),
@@ -424,7 +424,7 @@ CREATE TABLE `s_products` (
   `annotation` text NOT NULL,
   `body` longtext NOT NULL,
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   `meta_title` varchar(500) NOT NULL DEFAULT '',
   `meta_keywords` varchar(500) NOT NULL DEFAULT '',
   `meta_description` varchar(500) NOT NULL DEFAULT '',
@@ -433,14 +433,14 @@ CREATE TABLE `s_products` (
   PRIMARY KEY (`id`),
   KEY `url` (`url`),
   KEY `brand_id` (`brand_id`),
-  KEY `position` (`position`),
+  KEY `pos` (`pos`),
   KEY `hit` (`featured`),
   KEY `name` (`name`(255)),
   KEY `visible` (`visible`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_products */
-INSERT INTO `s_products` (`id`,`url`,`image`,`image_id`,`brand_id`,`name`,`annotation`,`body`,`visible`,`position`,`meta_title`,`meta_keywords`,`meta_description`,`created`,`featured`) VALUES
-(1, 'test', '815183d053fc018be591f0e28cff9c04.jpg', 27, 0, 'test', '', '', 1, 0, '', '', '', '2017-12-15 22:08:37', 0);
+INSERT INTO `s_products` (`id`,`url`,`image`,`image_id`,`brand_id`,`name`,`annotation`,`body`,`visible`,`pos`,`meta_title`,`meta_keywords`,`meta_description`,`created`,`featured`) VALUES
+(1, 'test', '8f9327db2597fa57d2f42b4a6c5a9855.png', 1, 0, 'test', '', '', 1, 0, '', '', '', '2017-12-15 23:08:37', 0);
 /* Drop for table s_products_categories */
 DROP TABLE IF EXISTS `s_products_categories`;
 /* Create table s_products_categories */
@@ -483,8 +483,7 @@ CREATE TABLE `s_queue` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/* Data for table s_queue */
-;
+/* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
 /* Create table s_queue_full */
@@ -496,17 +495,16 @@ CREATE TABLE `s_queue_full` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/* Data for table s_queue_full */
-;
+/* $skipdata is true. Data skipped s_queue_full */
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
 /* Create table s_related_products */
 CREATE TABLE `s_related_products` (
   `product_id` int(10) unsigned NOT NULL,
   `related_id` int(10) unsigned NOT NULL,
-  `position` int(10) unsigned NOT NULL,
+  `pos` int(10) unsigned NOT NULL,
   PRIMARY KEY (`product_id`,`related_id`),
-  KEY `position` (`position`)
+  KEY `pos` (`pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_related_products */
 ;
@@ -521,7 +519,7 @@ CREATE TABLE `s_settings` (
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /* Data for table s_settings */
 INSERT INTO `s_settings` (`setting_id`,`name`,`value`) VALUES
-(1, 'theme', 'default'),
+(1, 'theme', 'luxury'),
 (2, 'site_name', 'site'),
 (3, 'company_name', 'site'),
 (4, 'date_format', 'd.m.Y'),
@@ -548,7 +546,7 @@ CREATE TABLE `s_users` (
   `admin` tinyint(1) DEFAULT '0',
   `perm` varchar(200) CHARACTER SET ascii DEFAULT '',
   `last_ip` varchar(15) DEFAULT '',
-  `last_login` timestamp NOT NULL DEFAULT '1970-01-02 01:00:00',
+  `last_login` timestamp NOT NULL DEFAULT '1970-01-02 02:00:00',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`) USING BTREE,
@@ -559,7 +557,7 @@ CREATE TABLE `s_users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /* Data for table s_users */
 INSERT INTO `s_users` (`id`,`email`,`password`,`name`,`group_id`,`enabled`,`admin`,`perm`,`last_ip`,`last_login`,`created`) VALUES
-(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-12-18 04:08:42', '2017-11-12 05:08:40');
+(1, 'admin@admin.ad', '5f6b179e0034e20383dfe8942f59cda6', 'admin@admin.ad', 0, 1, 1, '0:1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20:21:22:23', '127.0.0.1', '2017-12-18 05:08:42', '2017-11-12 06:08:40');
 /* Drop for table s_variants */
 DROP TABLE IF EXISTS `s_variants`;
 /* Create table s_variants */
@@ -575,18 +573,19 @@ CREATE TABLE `s_variants` (
   `old_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
   `stock` mediumint(9) unsigned NOT NULL DEFAULT '0',
   `preorder` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `position` int(10) unsigned NOT NULL DEFAULT '0',
+  `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `sku` (`sku`) USING BTREE,
   KEY `product_id` (`product_id`),
   KEY `price` (`price`),
   KEY `stock` (`stock`),
-  KEY `position` (`position`),
+  KEY `pos` (`pos`),
   KEY `preorder` (`preorder`),
   KEY `price1` (`price1`),
   KEY `price2` (`price2`),
   KEY `price3` (`price3`),
   KEY `old_price` (`old_price`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_variants */
-;
+INSERT INTO `s_variants` (`id`,`product_id`,`sku`,`name`,`price`,`price1`,`price2`,`price3`,`old_price`,`stock`,`preorder`,`pos`) VALUES
+(1, 1, '1', '', 4354.00, 354.00, 5.00, 2.00, 200.00, 999, 0, 0);

@@ -148,8 +148,8 @@ class ImportYmlAdmin extends Simpla
 			//print_r($yml_params);
 			
 			//выбираем имеющиеся параметры из базы
-			$this->db->query("SELECT name FROM __features ORDER BY position");
-			$features = $this->db->results('name');
+			$features = $this->features->get_features();
+			$features = is_array($features) ? array_column($features, 'name') : array();
 			
 			//добавляем переменные для доступа к ним из шаблона tpl
 			$this->design->assign('features',  $features);

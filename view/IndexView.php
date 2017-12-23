@@ -91,7 +91,7 @@ class IndexView extends View
 			$this->main = new $module($this);
 			$content = $this->main->fetch('404');
 		}
-
+		
 		// Передаем основной блок в шаблон
 		$this->design->assign('content', $content);
 		
@@ -100,13 +100,15 @@ class IndexView extends View
 				
 		// Создаем текущую обертку сайта (обычно index.tpl)
 		$wrapper = $this->design->get_var('wrapper');
-		if(is_null($wrapper))
+		if(is_null($wrapper)){
 			$wrapper = 'index.tpl';
+		}
 			
-		if(!empty($wrapper))
+		if(!empty($wrapper)){
 			return $this->body = $this->design->fetch($wrapper);
-		else
+		}else{
 			return $this->body = $content;
+		}
 
 	}
 }

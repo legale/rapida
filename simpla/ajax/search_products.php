@@ -15,7 +15,7 @@
 	
 	
 	$simpla->db->query('SELECT p.id, p.name, i.filename as image FROM __products p
-	                    LEFT JOIN __images i ON i.product_id=p.id AND i.position=(SELECT MIN(position) FROM __images WHERE product_id=p.id LIMIT 1)
+	                    LEFT JOIN __images i ON i.product_id=p.id AND i.pos=(SELECT MIN(pos) FROM __images WHERE product_id=p.id LIMIT 1)
 	                    WHERE 1 '.$keyword_sql.' ORDER BY p.name LIMIT ?', $limit);
 	$products = $simpla->db->results();
 

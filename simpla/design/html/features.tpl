@@ -35,7 +35,7 @@
 		<div id="list">
 			{foreach $features as $feature}
 			<div class="{if $feature['in_filter']}in_filter{/if} row">
-				<input type="hidden" name="positions[{$feature['id']}]" value="{$feature['position']}">
+				<input type="hidden" name="poss[{$feature['id']}]" value="{$feature['pos']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$feature['id']}" />				

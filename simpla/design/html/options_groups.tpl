@@ -24,7 +24,7 @@
 		<div id="list">
 			{foreach $opts as $o}
 			<div class="{if $o['in_filter']}in_filter{/if} row">
-				<input type="hidden" name="positions[]" value="{$o['id']}">
+				<input type="hidden" name="poss[]" value="{$o['id']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$o['id']}" />

@@ -24,7 +24,7 @@
 		<div id="list">		
 			{foreach $pages as $page}
 			<div class="{if !$page['visible']}invisible{/if} row">
-				<input type="hidden" name="positions[{$page['id']}]" value="{$page['position']}">
+				<input type="hidden" name="poss[{$page['id']}]" value="{$page['pos']}">
 				<div class="move cell"><div class="move_zone"></div></div>
 		 		<div class="checkbox cell">
 					<input type="checkbox" name="check[]" value="{$page['id']}" />				

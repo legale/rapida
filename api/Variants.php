@@ -85,7 +85,7 @@ class Variants extends Simpla
 		if(isset($filter['grouped'])){
 			$res = $this->db->results_array_grouped($filter['grouped']);
 		} else {
-			$res = $this->db->results_array(null, 'id');
+			$res = $this->db->results_array();
 		}
 		return $res;
 	}

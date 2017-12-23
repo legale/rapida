@@ -27,7 +27,7 @@ class Pages extends Simpla
 		else
 			$where = $this->db->placehold(' WHERE id=? ', intval($id));
 
-		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, position, visible
+		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
 		          FROM __pages $where LIMIT 1";
 
 		$this->db->query($query);
@@ -52,8 +52,8 @@ class Pages extends Simpla
 		if (isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND visible = ?', intval($filter['visible']));
 
-		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, position, visible
-		          FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY position";
+		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
+		          FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
 
 		$this->db->query($query);
 
@@ -88,7 +88,7 @@ class Pages extends Simpla
 			return false;
 
 		$id = $this->db->insert_id();
-		$this->db->query("UPDATE __pages SET position=id WHERE id=?", $id);
+		$this->db->query("UPDATE __pages SET pos=id WHERE id=?", $id);
 		return $id;
 	}
 	
@@ -129,7 +129,7 @@ class Pages extends Simpla
 	public function get_menus()
 	{
 		$menus = array();
-		$query = "SELECT * FROM __menu ORDER BY position";
+		$query = "SELECT * FROM __menu ORDER BY pos";
 		$this->db->query($query);
 		$menus = $this->db->results_array(null, 'id');
 		return $menus;

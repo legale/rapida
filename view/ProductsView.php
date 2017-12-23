@@ -96,7 +96,7 @@ class ProductsView extends View
 		if (!empty($_SESSION['sort']))
 			$filter['sort'] = $_SESSION['sort'];			
 		else
-			$filter['sort'] = 'position';			
+			$filter['sort'] = 'pos';			
 		$this->design->assign('sort', $filter['sort']);
 				
 		
@@ -213,27 +213,22 @@ class ProductsView extends View
 		if( !empty($products) )
 		{
 			$products_ids = array_keys($products);
-			foreach($products as &$product)
-			{
-				$product['variants'] = array();
-				$product['images'] = array();
-				$product['properties'] = array();
-			}
-	
-			if($variants = $this->variants->get_variants(array('product_id'=>$products_ids, 'in_stock'=>true)) ) {
-				foreach($variants as &$variant){
-					$products[$variant['product_id']]['variants'][] = $variant;
-				}
-				unset($variant);
-			}
-		
-			foreach($products as &$product)
-			{
-				if(isset($product['variants'][0])){
-					$product['variant'] = $product['variants'][0];
+
+			$variants = $this->variants->get_variants(array('grouped' => 'product_id', 
+			'product_id'=>$products_ids, 'in_stock'=>true));
+			
+
+			if(is_array($products)){
+				foreach($products as $pid=>&$product){
+					$product['variants'] = is_array($variants[$pid]) ? $variants[$pid] : array();
 				}
 			}
-	
+
+			//~ print "<PRE>";
+			//~ print var_export($products, true);
+			//~ print "</PRE>";
+			
+			
 			$this->design->assign('products', $products);
  		}
 		
