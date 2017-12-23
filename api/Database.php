@@ -254,6 +254,26 @@ class Database extends Simpla
 	 * может вывести только 1 конкретное поле одномерным массивом, для этого указывается 1 аргумент (string),
 	 * также может вывести массив с ключами из указанного поля БД, для этого указывается 2 аргумент (string)
 	 */
+	public function results_array_grouped($field = null){
+		if (!isset($field) || empty($this->res) || $this->res->num_rows == 0) {
+			dtimer::log(__METHOD__ . " argument error", 1);
+			return false;
+		}
+		if (!is_object($this->res)) {
+			$this->error_msg = "exec query first!";
+		}
+
+		while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+			$results[$row[$field]][] = $row;
+		}
+		return $results;
+	}
+
+	/**
+	 * Возвращает результаты запроса ассоциативным массивом
+	 * может вывести только 1 конкретное поле одномерным массивом, для этого указывается 1 аргумент (string),
+	 * также может вывести массив с ключами из указанного поля БД, для этого указывается 2 аргумент (string)
+	 */
 	public function results_array($field = null, $group_field = null, $unsetkey = false)
 	{
 		if (empty($this->res) || $this->res->num_rows == 0) {
