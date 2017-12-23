@@ -513,11 +513,12 @@ class Products extends Simpla
 	*/
 	public function get_product($id)
 	{
-		if(is_int($id))
+		dtimer::log(__METHOD__ . " start $id");
+		if(is_int($id)){
 			$filter = $this->db->placehold('p.id = ?', $id);
-		else
+		}else{
 			$filter = $this->db->placehold('p.url = ?', $id);
-			
+		}
 		$query = "SELECT *
 				FROM __products AS p
 				WHERE $filter

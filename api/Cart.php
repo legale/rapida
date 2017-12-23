@@ -36,7 +36,6 @@ class Cart extends Simpla
 			$variants = $this->variants->get_variants(array('id' => array_keys($session_items)));
 			if (!empty($variants))
 				{
-
 				foreach ($variants as $variant)
 					{
 					$items[$variant['id']] = array();
