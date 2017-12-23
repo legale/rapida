@@ -81,12 +81,13 @@ class ProductsAdmin extends Simpla
 			}
 		
 			// Сортировка
-			$positions = $this->request->post('positions'); 		
-				$ids = array_keys($positions);
-			sort($positions);
-			$positions = array_reverse($positions);
-			foreach($positions as $i=>$position)
-				$this->products->update_product($ids[$i], array('position'=>$position)); 
+			$poss = $this->request->post('poss'); 		
+				$ids = array_keys($poss);
+			sort($poss);
+			$poss = array_reverse($poss);
+			foreach($poss as $i=>$pos){
+				$this->products->update_product($ids[$i], array('pos'=>$pos)); 
+			}
 		
 			
 			// Действия с выбранными
@@ -146,29 +147,29 @@ class ProductsAdmin extends Simpla
 					$temp_filter['page'] = $limit+1;
 					$temp_filter['limit'] = 1;
 					$target_product = array_pop($this->products->get_products($temp_filter));
-					$target_position = $target_product['position'];
+					$target_pos = $target_product['pos'];
 				   	
 				   	// Если вылезли за последний товар - берем позицию последнего товара в качестве цели перемещения
-					if($target_page > $this->request->get('page', 'integer') && !$target_position)
+					if($target_page > $this->request->get('page', 'integer') && !$target_pos)
 					{
-				    	$query = $this->db->placehold("SELECT distinct p.position AS target FROM __products p LEFT JOIN __products_categories AS pc ON pc.product_id = p.id WHERE 1 $category_id_filter $brand_id_filter ORDER BY p.position DESC LIMIT 1", count($ids));	
+				    	$query = $this->db->placehold("SELECT distinct p.pos AS target FROM __products p LEFT JOIN __products_categories AS pc ON pc.product_id = p.id WHERE 1 $category_id_filter $brand_id_filter ORDER BY p.pos DESC LIMIT 1", count($ids));	
 				   		$this->db->query($query);
-				   		$target_position = $this->db->result('target');
+				   		$target_pos = $this->db->result('target');
 					}
 				   	
 			    	foreach($ids as $id)
 			    	{		    	
-				    	$query = $this->db->placehold("SELECT position FROM __products WHERE id=? LIMIT 1", $id);	
+				    	$query = $this->db->placehold("SELECT pos FROM __products WHERE id=? LIMIT 1", $id);	
 				    	$this->db->query($query);	      
-				    	$initial_position = $this->db->result('position');
+				    	$initial_pos = $this->db->result('pos');
 		
-				    	if($target_position > $initial_position)
-				    		$query = $this->db->placehold("	UPDATE __products set position=position-1 WHERE position>? AND position<=?", $initial_position, $target_position);	
+				    	if($target_pos > $initial_pos)
+				    		$query = $this->db->placehold("	UPDATE __products set pos=pos-1 WHERE pos>? AND pos<=?", $initial_pos, $target_pos);	
 				    	else
-				    		$query = $this->db->placehold("	UPDATE __products set position=position+1 WHERE position<? AND position>=?", $initial_position, $target_position);	
+				    		$query = $this->db->placehold("	UPDATE __products set pos=pos+1 WHERE pos<? AND pos>=?", $initial_pos, $target_pos);	
 				    		
 			    		$this->db->query($query);	      			    	
-			    		$query = $this->db->placehold("UPDATE __products SET __products.position = ? WHERE __products.id = ?", $target_position, $id);	
+			    		$query = $this->db->placehold("UPDATE __products SET __products.pos = ? WHERE __products.id = ?", $target_pos, $id);	
 			    		$this->db->query($query);	
 				    }
 			        break;
@@ -184,7 +185,7 @@ class ProductsAdmin extends Simpla
 			    	{
 			    		$query = $this->db->placehold("DELETE FROM __products_categories WHERE category_id=? AND product_id=? LIMIT 1", $category_id, $id);	
 			    		$this->db->query($query);	      			    	
-			    		$query = $this->db->placehold("UPDATE IGNORE __products_categories set category_id=? WHERE product_id=? ORDER BY position DESC LIMIT 1", $category_id, $id);	
+			    		$query = $this->db->placehold("UPDATE IGNORE __products_categories set category_id=? WHERE product_id=? ORDER BY pos DESC LIMIT 1", $category_id, $id);	
 			    		$this->db->query($query);
 			    		if($this->db->affected_rows() == 0)
 							$query = $this->db->query("INSERT IGNORE INTO __products_categories set category_id=?, product_id=?", $category_id, $id);	

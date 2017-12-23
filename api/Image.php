@@ -805,7 +805,7 @@ class Image extends Simpla
 			 `basename` varchar(255) NOT NULL,
 			 `pos` smallint(5) unsigned NOT NULL DEFAULT '0',
 			 PRIMARY KEY (`id`, `item_id`),
-			 KEY `position` (`pos`),
+			 KEY `pos` (`pos`),
 			 KEY `item_id` (`item_id`) USING BTREE,
 			 KEY `basename` (`basename`) USING BTREE
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8
@@ -948,9 +948,11 @@ class Image extends Simpla
         if ($s === 'http') {
             $s = strtolower(substr($url, 0, 8));
             if ($s === 'https://' || substr($s, 0, 7) === 'http://') {
+                dtimer::log(__METHOD__ . " true");
                 return true;
             }
         }
+        dtimer::log(__METHOD__ . " false");
         return false;
     }
 

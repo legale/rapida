@@ -62,11 +62,11 @@ class FeaturesAdmin extends Simpla
 			}		
 		
 			// Сортировка
-			$positions = $this->request->post('positions');
-			$ids = array_keys($positions);
-			sort($positions);
-			foreach ($positions as $i => $position)
-				$this->features->update_feature($ids[$i], array('position' => $position));
+			$poss = $this->request->post('poss');
+			$ids = array_keys($poss);
+			sort($poss);
+			foreach ($poss as $i => $pos)
+				$this->features->update_feature($ids[$i], array('pos' => $pos));
 
 		}
 

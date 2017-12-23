@@ -188,7 +188,7 @@ class Orders extends Simpla
 
 	public function get_labels()
 	{
-		$query = $this->db->placehold("SELECT * FROM __labels ORDER BY position");
+		$query = $this->db->placehold("SELECT * FROM __labels ORDER BY pos");
 		$this->db->query($query);
 		return $this->db->results();
 	}
@@ -218,7 +218,7 @@ class Orders extends Simpla
 			return false;
 
 		$id = $this->db->insert_id();
-		$this->db->query("UPDATE __labels SET position=id WHERE id=?", $id);	
+		$this->db->query("UPDATE __labels SET pos=id WHERE id=?", $id);	
 		return $id;
 	}
 	
@@ -263,12 +263,12 @@ class Orders extends Simpla
 
 		$label_id_filter = $this->db->placehold('AND order_id in(?@)', (array)$order_id);
 				
-		$query = $this->db->placehold("SELECT ol.order_id, l.id, l.name, l.color, l.position
+		$query = $this->db->placehold("SELECT ol.order_id, l.id, l.name, l.color, l.pos
 					FROM __labels l LEFT JOIN __orders_labels ol ON ol.label_id = l.id
 					WHERE 
 					1
 					$label_id_filter   
-					ORDER BY position       
+					ORDER BY pos      
 					");
 		
 		$this->db->query($query);

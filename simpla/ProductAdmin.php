@@ -357,7 +357,7 @@ class ProductAdmin extends Simpla
 				continue;
 			}
 			//установим позиции в том же порядке, в котором варианты перчислены в массиве
-			$v['position'] = $pos;
+			$v['pos'] = $pos;
 			$pos++;
 			
 			if(!empty_(@$v['id'])){

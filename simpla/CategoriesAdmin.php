@@ -33,11 +33,11 @@ class CategoriesAdmin extends Simpla
 			}		
 	  	
 			// Сортировка
-			$positions = $this->request->post('positions');
-			$ids = array_keys($positions);
-			sort($positions);
-			foreach ($positions as $i => $position)
-				$this->categories->update_category($ids[$i], array('position' => $position));
+			$poss = $this->request->post('poss');
+			$ids = array_keys($poss);
+			sort($poss);
+			foreach ($poss as $i => $pos)
+				$this->categories->update_category($ids[$i], array('pos' => $pos));
 
 		}
 

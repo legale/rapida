@@ -75,7 +75,7 @@ class Products extends Simpla
 		$in_stock_filter = '';
 		$no_images_filter = '';
 		$group_by = '';
-		$order = 'p.position DESC';
+		$order = 'p.pos DESC';
 
 		if(isset($filter['limit']))
 			$limit = max(1, intval($filter['limit']));
@@ -118,8 +118,8 @@ class Products extends Simpla
 		if(!empty($filter['sort']))
 			switch ($filter['sort'])
 			{
-				case 'position':
-				$order = 'p.position DESC';
+				case 'pos':
+				$order = 'p.pos DESC';
 				break;
 				case 'name':
 				$order = 'p.name';
@@ -129,7 +129,10 @@ class Products extends Simpla
 				break;
 				case 'price':
 				//$order = 'pv.price IS NULL, pv.price=0, pv.price';
-				$order = '(SELECT -pv.price FROM __variants pv WHERE (pv.stock IS NULL OR pv.stock>0) AND p.id = pv.product_id AND pv.position=(SELECT MIN(position) FROM __variants WHERE (stock>0 OR stock IS NULL) AND product_id=p.id LIMIT 1) LIMIT 1) DESC';
+				$order = "(SELECT -pv.price FROM __variants pv 
+				WHERE (pv.stock IS NULL OR pv.stock>0) 
+				AND p.id = pv.product_id AND pv.pos=(SELECT MIN(pos) 
+				FROM __variants WHERE (stock>0 OR stock IS NULL) AND product_id=p.id LIMIT 1) LIMIT 1) DESC";
 				break;
 			}
 
@@ -196,7 +199,7 @@ class Products extends Simpla
 	* brand_id - id бренда или их массив
 	* page - текущая страница, integer
 	* limit - количество товаров на странице, integer
-	* sort - порядок товаров, возможные значения: position(по умолчанию), name, price
+	* sort - порядок товаров, возможные значения: pos (по умолчанию), name, price
 	* keyword - ключевое слово для поиска
 	* features - фильтр по свойствам товара, массив (id свойства => значение свойства)
 	*/
@@ -254,7 +257,7 @@ class Products extends Simpla
 		$discounted_filter = '';
 		$in_stock_filter = '';
 		$no_images_filter = '';
-		$order = 'p.position DESC';
+		$order = 'p.pos DESC';
 
 		if(isset($filter['limit']))
 			$limit = max(1, intval($filter['limit']));
@@ -297,8 +300,8 @@ class Products extends Simpla
 		if(!empty($filter['sort']))
 			switch ($filter['sort'])
 			{
-				case 'position':
-				$order = 'p.position DESC';
+				case 'pos':
+				$order = 'p.pos DESC';
 				break;
 				case 'name':
 				$order = 'p.name';
@@ -308,7 +311,9 @@ class Products extends Simpla
 				break;
 				case 'price':
 				//$order = 'pv.price IS NULL, pv.price=0, pv.price';
-				$order = '(SELECT -pv.price FROM __variants pv WHERE (pv.stock IS NULL OR pv.stock>0) AND p.id = pv.product_id AND pv.position=(SELECT MIN(position) FROM __variants WHERE (stock>0 OR stock IS NULL) AND product_id=p.id LIMIT 1) LIMIT 1) DESC';
+				$order = "(SELECT -pv.price FROM __variants pv WHERE 
+				(pv.stock IS NULL OR pv.stock>0) AND p.id = pv.product_id AND pv.pos=(SELECT MIN(pos) 
+				FROM __variants WHERE (stock>0 OR stock IS NULL) AND product_id=p.id LIMIT 1) LIMIT 1) DESC";
 				break;
 			}
 
@@ -586,7 +591,7 @@ class Products extends Simpla
 		}
 		
 		//узнаем позицию последнего товара
-		$this->db->query("SELECT MAX(position) as pos FROM __products");
+		$this->db->query("SELECT MAX(pos) as pos FROM __products");
 		$pos = $this->db->result_array('pos');
 		if( !empty_($pos) ){
 			$pos = $pos + 1;
@@ -676,9 +681,9 @@ class Products extends Simpla
 		$product->created = null;
 
 		// Сдвигаем товары вперед и вставляем копию на соседнюю позицию
-		$this->db->query('UPDATE __products SET position=position+1 WHERE position>?', $product->position);
+		$this->db->query('UPDATE __products SET pos=pos+1 WHERE pos>?', $product->pos);
 		$new_id = $this->products->add_product($product);
-		$this->db->query('UPDATE __products SET position=? WHERE id=?', $product->position+1, $new_id);
+		$this->db->query('UPDATE __products SET pos=? WHERE id=?', $product->pos+1, $new_id);
 		
 		// Очищаем url
 		$this->db->query('UPDATE __products SET url="" WHERE id=?', $new_id);
@@ -743,7 +748,7 @@ class Products extends Simpla
 	public function add_related_product($product_id, $related_id, $pos=0)
 	{
 		$query = $this->db->placehold("INSERT INTO __related_products 
-		SET product_id=?, related_id=?, position=? ON DUPLICATE KEY UPDATE position = ? ", $product_id, $related_id, $pos, $pos);
+		SET product_id=?, related_id=?, pos=? ON DUPLICATE KEY UPDATE pos = ? ", $product_id, $related_id, $pos, $pos);
 		return $this->db->query($query);
 	}
 	
@@ -760,17 +765,17 @@ class Products extends Simpla
 	*/	
 	public function get_next_product($id)
 	{
-		$this->db->query("SELECT position FROM __products WHERE id=? LIMIT 1", $id);
-		$position = $this->db->result('position');
+		$this->db->query("SELECT pos FROM __products WHERE id=? LIMIT 1", $id);
+		$pos = $this->db->result('pos');
 		
-		$this->db->query("SELECT pc.category_id FROM __products_categories pc WHERE product_id=? ORDER BY position LIMIT 1", $id);
+		$this->db->query("SELECT pc.category_id FROM __products_categories pc WHERE product_id=? LIMIT 1", $id);
 		$category_id = $this->db->result('category_id');
 
 		$query = $this->db->placehold("SELECT id FROM __products p, __products_categories pc
-			WHERE pc.product_id=p.id AND p.position>? 
-			AND pc.position=(SELECT MIN(pc2.position) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
+			WHERE pc.product_id=p.id AND p.pos>? 
+			AND pc.pos=(SELECT MIN(pc2.pos) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
 			AND pc.category_id=? 
-			AND p.visible ORDER BY p.position limit 1", $position, $category_id);
+			AND p.visible ORDER BY p.pos limit 1", $pos, $category_id);
 		$this->db->query($query);
  
 		return $this->get_product((integer)$this->db->result('id'));
@@ -786,14 +791,14 @@ class Products extends Simpla
 		$this->db->query("SELECT pos FROM __products WHERE id=? LIMIT 1", $id);
 		$pos = $this->db->result_array('pos');
 		
-		$this->db->query("SELECT pc.category_id FROM __products_categories pc WHERE product_id=? ORDER BY position LIMIT 1", $id);
+		$this->db->query("SELECT pc.category_id FROM __products_categories pc WHERE product_id=? LIMIT 1", $id);
 		$category_id = $this->db->result_array('category_id');
 
 		$query = $this->db->placehold("SELECT id FROM __products p, __products_categories pc
-			WHERE pc.product_id=p.id AND p.position<? 
-			AND pc.position=(SELECT MIN(pc2.position) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
+			WHERE pc.product_id=p.id AND p.pos<? 
+			AND pc.pos=(SELECT MIN(pc2.pos) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
 			AND pc.category_id=? 
-			AND p.visible ORDER BY p.position DESC limit 1", $pos, $category_id);
+			AND p.visible ORDER BY p.pos DESC limit 1", $pos, $category_id);
 		$this->db->query($query);
  
 		return $this->get_product((integer)$this->db->result_array('id'));	}

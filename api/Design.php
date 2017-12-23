@@ -99,8 +99,8 @@ class Design extends Simpla
     {
 		$args = func_get_args();
 		foreach($args as $arg){
-			if(!isset($arg)){
-				return 'args error '.implode(' ', func_get_args());
+			if(count($args) !== 5 || !isset($arg)){
+				return 'args error';
 			}
 		}
 		

@@ -25,24 +25,12 @@ class ProductView extends View
 		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin'])))
 			return false;
 		
+		//картинки
 		$product['images'] = $this->image->get('products', array('item_id'=>$product['id']));
-		//~ print_r($product);
+		
+		//варианты
+		$product['variants'] = $this->variants->get_variants(array('product_id'=>$product['id'], 'in_stock'=>true) );
 
-		if ( $variants = $this->variants->get_variants(array('product_id'=>$product['id'], 'in_stock'=>true)) ) {
-		//~ print "<PRE>";
-		//~ print_r($variants);
-
-
-			
-			$product['variants'] = $variants;
-			
-			// Вариант по умолчанию
-			if(($v_id = $this->request->get('variant', 'integer'))>0 && isset($variants[$v_id])) {
-				$product['variant'] = $variants[$v_id];
-			} else {
-				$product['variant'] = reset($variants);
-			}
-		}
 		// Свойства товара
 		//~ $features = $this->features->get_features();
 		$ogroups = $this->features->get_options_tree();
