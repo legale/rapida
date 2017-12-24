@@ -195,10 +195,11 @@
 		{foreach $purchases as $purchase}
 		<div class="row">
 			<div class="image cell">
-				<input type=hidden name=purchases[id][{$purchase['id']}] value='{$purchase['id']}'>
-				{$image = $purchase['product']['images']|first}
+				<input type=hidden name=purchases[id][{$purchase['id']}] value={$purchase['id']}>
+				{$image = $purchase['product']['image']}
+				{$image_id = $purchase['product']['image_id']}
 				{if $image}
-				<img class=product_icon src='{$image['filename']|resize:35:35}'>
+				<img class=product_icon src='{$image|resize:products:$image_id:35:35}'>
 				{/if}
 			</div>
 			<div class="purchase_name cell">

@@ -18,10 +18,10 @@
 	{* Изображение товара *}
 	<td class="image">
 		{$image = $purchase['product']['image']}
-		{$pid = $purchase['product']['id']}
+		{$image_id = $purchase['product']['image_id']}
 		{$name = $purchase['product']['name']}
 		{if $image}
-		<a href="products/{$purchase['product']['url']}"><img src="{$image['filename']|resize:50:50:false:$pid}" alt="{$name|escape}"></a>
+		<a href="products/{$purchase['product']['url']}"><img src="{$image|resize:products:image_id:50:50}" alt="{$name|escape}"></a>
 		{/if}
 	</td>
 	
@@ -133,9 +133,10 @@ $("input[name='coupon_code']").keypress(function(event){
 		
 		<!-- Фото товара -->
 		{if $product['image']}
+		{$image = $product['image']}
+		{$image_id = $product['image_id']}
 		<div class="image">
-			{$pid = $product['id']}
-			<a href="products/{$product['url']}"><img src="{$product['image']resize:200:200:false:$pid}" alt="{$product['name|escape']}"/></a>
+			<a href="products/{$product['url']}"><img src="{$product['image']resize:products:$image_id:200:200}" alt="{$product['name|escape']}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
