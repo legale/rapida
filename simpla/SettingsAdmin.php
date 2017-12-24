@@ -23,6 +23,7 @@ class SettingsAdmin extends Simpla
 
 			$this->settings->order_email = $this->request->post('order_email');
 			$this->settings->comment_email = $this->request->post('comment_email');
+			$this->settings->phone = $this->request->post('phone');
 			$this->settings->notify_from_email = $this->request->post('notify_from_email');
 
 			$this->settings->decimals_point = $this->request->post('decimals_point');

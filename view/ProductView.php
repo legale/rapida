@@ -22,8 +22,19 @@ class ProductView extends View
 			
 		// Выбираем товар из базы
 		$product = $this->products->get_product((string)$product_url);
-		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin'])))
+		
+		//301 moved permanently
+		if(isset($product['url2']) && $product['url2'] === $product_url){
+			$root = $this->config->root_url . '/';
+			$path = $this->coMaster->uri_arr['path_arr']['module'] . '/';
+			$url =  $root . $path . $product['url'];
+			header("Location: $url",TRUE,301);
+		}
+
+		
+		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin']))){
 			return false;
+		}
 		
 		//картинки
 		$product['images'] = $this->image->get('products', array('item_id'=>$product['id']));

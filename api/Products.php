@@ -520,9 +520,9 @@ class Products extends Simpla
 	{
 		dtimer::log(__METHOD__ . " start $id");
 		if(is_int($id)){
-			$filter = $this->db->placehold('p.id = ?', $id);
-		}else{
-			$filter = $this->db->placehold('p.url = ?', $id);
+			$filter = "p.id = $id";
+		}else if (is_scalar($id)){
+			$filter = "p.url = '$id' OR p.url2 = '$id'";
 		}
 		$query = "SELECT *
 				FROM __products AS p

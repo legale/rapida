@@ -34,7 +34,7 @@ class MonetaWebService extends MonetaWebServiceConnector
 			$options = array();
 
 		parent::__construct($wsdl, $options);
-		$this->inputHeaders[] = $this->createSecurityHeader($username, $password);
+		$this['inputHeaders'][] = $this['createSecurityHeader']($username, $password);
 	}
 	
 	/**
@@ -57,8 +57,8 @@ class MonetaWebService extends MonetaWebServiceConnector
 		// Для того чтобы выразить тег <UserNameToken> с вложенными внутри него тегами <Username> и <Password>, 
 		// мы должны определить промежуточный класс			
 		$tmp = new stdClass();
-		$tmp->Username = $username;
-		$tmp->Password = $password;	
+		$tmp['Username'] = $username;
+		$tmp['Password'] = $password;	
 
 		// содержимое сложного XML-тега <UsernameToken> в виде SoapVar, 
 		// тип которого не XSD_STRING, а SOAP_ENC_OBJECT		
@@ -66,7 +66,7 @@ class MonetaWebService extends MonetaWebServiceConnector
 		
 		// формируем содержимое тега Security , т.е. сам UsernameToken
 		$tmp = new stdClass();
-		$tmp->UsernameToken = $authData;
+		$tmp['UsernameToken'] = $authData;
 		
 		$usernameToken = new SoapVar($tmp, SOAP_ENC_OBJECT, null, $sns, 'wsse:UsernameToken', $sns);
 		

@@ -29,14 +29,14 @@ if ( !$participantOrderId )
 
 
 // Выбираем оплачиваемый заказ
-$order = $simpla->orders->get_order(intval($participantOrderId));
+$order = $simpla['orders']->get_order(intval($participantOrderId));
 if ( empty( $order ) )
 {
 	die( "Указанный заказ не обнаружен в системе" );
 }; //
 
 // Выбираем из базы соответствующий метод оплаты
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 {
 	die( "Ошибка получения информации о способе оплаты по заказу" );
@@ -44,7 +44,7 @@ if(empty($method))
 
 
 // Настройки способа оплаты	
-$payment_settings 	= @unserialize($method->settings);
+$payment_settings 	= @unserialize($method['settings']);
 $participant_id 	= $payment_settings['invoicebox_participant_id'];
 $participant_ident 	= $payment_settings['invoicebox_participant_ident'];
 $participant_apikey 	= $payment_settings['invoicebox_participant_apikey'];
@@ -72,18 +72,18 @@ if ( $crc != $sign )
 
 
 // Нельзя оплатить уже оплаченный заказ 
-if($order->paid)
+if($order['paid'])
 {
 	die( "OK" ); // Уж оплачен?
 }; //
 
 
 // Проверка наличия товара
-$purchases = $simpla->orders->get_purchases(array('order_id'=>intval($order->id)));
+$purchases = $simpla['orders']->get_purchases(array('order_id'=>intval($order_id)));
 foreach($purchases as $purchase)
 {
-	$variant = $simpla->variants->get_variant(intval($purchase->variant_id));
-	if(empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount))
+	$variant = $simpla['variants']->get_variant(intval($purchase['variant_id']));
+	if(empty($variant) || (!$variant['infinity'] && $variant['stock'] < $purchase['amount']))
 	{
 		die( "Один или несколько товаров в заказе отсутствует" ); // Зачем это знать платежной системе?
 	}; //if
@@ -91,12 +91,12 @@ foreach($purchases as $purchase)
 
 	
 // Установим статус оплачен
-$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 	
 // Спишем товары  
-$simpla->orders->close(intval($order->id));
-$simpla->notify->email_order_user(intval($order->id));
-$simpla->notify->email_order_admin(intval($order->id));
+$simpla['orders']->close(intval($order_id));
+$simpla['notify']->email_order_user(intval($order_id));
+$simpla['notify']->email_order_admin(intval($order_id));
 
 die( "OK" );
 

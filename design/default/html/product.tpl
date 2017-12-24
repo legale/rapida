@@ -85,6 +85,7 @@
 	{if $product['options']}
 	<h2>Характеристики</h2>
 	{foreach $ogroups as $g}
+		{if $g['options']}
 		<h3>{$g['name']|escape}</h3>
 			<ul class="features">
 		{foreach $g['options'] as $fid=>$o}
@@ -93,6 +94,7 @@
 				<span>{$product['options'][$fid]['val']}</span>
 			</li>
 		{/foreach}
+		{/if}
 			</ul>
 	{/foreach}
 	{/if}

@@ -116,7 +116,8 @@
 			<a href="/"><img src="design/{$settings->theme|escape}/images/logo.png" title="{$settings->site_name|escape}" alt="{$settings->site_name|escape}"/></a>
 		</div>	
 		<div id="contact">
-			(095) <span id="phone">545-54-54</span>
+			<span id="phone">{$settings->phone}</span>
+			<span id="email">{$settings->comment_email}</span>
 			<div id="address">Москва, шоссе Энтузиастов 45/31, офис 453</div>
 		</div>	
 	</div>

@@ -10,15 +10,15 @@ class Acquiropay extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$settings = $this->payment->get_payment_settings($payment_method->id);
-		$price = $order->total_price;
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$settings = $this->payment->get_payment_settings($payment_method['id']);
+		$price = $order['total_price'];
 		
 		// описание заказа
-		$desc = 'Оплата заказа №'.$order->id;
+		$desc = 'Оплата заказа №'.$order_id;
 		$cb_url = $this->config->root_url.'/payment/Acquiropay/callback.php';
-		$ok_url = $this->config->root_url.'/order/'.$order->url;
+		$ok_url = $this->config->root_url.'/order/'.$order['url'];
 
 		$token = md5($settings[acquiropay_mid].$settings[acquiropay_product].$price.$order_id.$settings[acquiropay_sw]);
 
@@ -30,10 +30,10 @@ class Acquiropay extends Simpla
 					    <input type='hidden' name='cf' value='$order_id' />
 					    <input type='hidden' name='cf2' value='' />
 					    <input type='hidden' name='cf3' value='' />
-					    <input type='hidden' name='first_name' value='$order->name' />
+					    <input type='hidden' name='first_name' value='$order['name']' />
 					    <input type='hidden' name='last_name' value='' />
-					    <input type='hidden' name='email' value='$order->email' />
-					    <input type='hidden' name='phone' value='$order->phone' />
+					    <input type='hidden' name='email' value='$order['email']' />
+					    <input type='hidden' name='phone' value='$order['phone']' />
 					    <input type='hidden' name='cb_url' value='$cb_url'/>
 					    <input type='hidden' name='ok_url' value='$ok_url'/>
 	  				    <input type='hidden' name='ko_url' value='$settings[acquiropay_uerror]'/>

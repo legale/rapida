@@ -10,21 +10,21 @@ class Payanyway extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
 		
-		$price = number_format($this->money->convert($order->total_price, $payment_method->currency_id, false), 2, '.', '');
+		$price = number_format($this->money->convert($order['total_price'], $payment_method['currency_id'], false), 2, '.', '');
 		
-		$success_url = $this->config->root_url.'/order/'.$order->url;
-		$fail_url = $this->config->root_url.'/order/'.$order->url;
+		$success_url = $this->config->root_url.'/order/'.$order['url'];
+		$fail_url = $this->config->root_url.'/order/'.$order['url'];
 				
 		// метод оплаты - текущий
 		$payment_system = explode('_', $payment_settings['payment_system']);
 
 		// формирование подписи
-		$currency_code = ($payment_currency->code == 'RUR')?'RUB':$payment_currency->code;
-		$signature  = md5($payment_settings['MNT_ID'].$order->id.$price.$currency_code.$payment_settings['MNT_TEST_MODE'].$payment_settings['MNT_DATAINTEGRITY_CODE']);
+		$currency_code = ($payment_currency['code'] == 'RUR')?'RUB':$payment_currency['code'];
+		$signature  = md5($payment_settings['MNT_ID'].$order_id.$price.$currency_code.$payment_settings['MNT_TEST_MODE'].$payment_settings['MNT_DATAINTEGRITY_CODE']);
 
 		if ($payment_system[1]){
 			$url = "https://".$payment_settings['payment_url']."/assistant.htm";
@@ -35,7 +35,7 @@ class Payanyway extends Simpla
 		$button =	"<form class='form' action='".$url."' method=POST>".
 					"<input type=hidden name=payment_system value='".$payment_system[0]."'>".
 					"<input type=hidden name=MNT_ID value='".$payment_settings['MNT_ID']."'>".
-					"<input type=hidden name=MNT_TRANSACTION_ID value='".$order->id."'>".
+					"<input type=hidden name=MNT_TRANSACTION_ID value='".$order_id."'>".
 					"<input type=hidden name=MNT_AMOUNT value='$price'>".
 					"<input type=hidden name=MNT_CURRENCY_CODE value='".$currency_code."'>".
 					"<input type=hidden name=MNT_SIGNATURE value='".$signature."'>".

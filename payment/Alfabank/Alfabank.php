@@ -21,7 +21,7 @@ class Alfabank extends Simpla
 	{
 		if($this->request->method('post') && $this->request->post('go'))
 		{
-			$this->redirect($order_id);
+			$this['redirect']($order_id);
 		}
 		else
 		{
@@ -36,22 +36,22 @@ class Alfabank extends Simpla
 	public function redirect($order_id)
 	{
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);	
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);	
 		if(!empty($payment_settings['alfabank_server']))
-			$this->getaway_url = $payment_settings['alfabank_server'];
-		$price = $this->money->convert($order->total_price, $payment_method->currency_id, false);
-		$return_url = $this->config->root_url.'/payment/Alfabank/callback.php?o='.$order->id;		
+			$this['getaway_url'] = $payment_settings['alfabank_server'];
+		$price = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
+		$return_url = $this->config->root_url.'/payment/Alfabank/callback.php?o='.$order_id;		
 
 		$data = array(
 			'userName' => $payment_settings['alfabank_login'],
 			'password' => $payment_settings['alfabank_password'],
-			'orderNumber' => $order->id, 
+			'orderNumber' => $order_id, 
 			'amount' => $price*100,
 			'returnUrl' => $return_url
 		);
 		
-		$response = $this->gateway('register.do', $data);	
+		$response = $this['gateway']('register.do', $data);	
 		if ($response['errorCode'] != 0)
 		{
 			print($response['errorMessage']);
@@ -71,7 +71,7 @@ class Alfabank extends Simpla
 	{
 		$curl = curl_init(); // Инициализируем запрос
 		curl_setopt_array($curl, array(
-			CURLOPT_URL => $this->getaway_url.$method,
+			CURLOPT_URL => $this['getaway_url'].$method,
 			CURLOPT_RETURNTRANSFER => true, // Возвращать ответ
 			CURLOPT_POST => true, // Метод POST
 			CURLOPT_POSTFIELDS => http_build_query($data) // Данные в запросе

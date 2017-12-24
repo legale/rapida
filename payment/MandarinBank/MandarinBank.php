@@ -9,20 +9,20 @@ class MandarinBank extends Simpla
 			$button_text = 'Перейти к оплате';
 
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 
-		$amount = $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$amount = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 
-		$success_url = $this->config->root_url.'/order/'.$order->url;
+		$success_url = $this->config->root_url.'/order/'.$order['url'];
 
-		$fail_url = $this->config->root_url.'/order/'.$order->url;
+		$fail_url = $this->config->root_url.'/order/'.$order['url'];
 		$fields = array();
 
-		$button = "<form action='https://secure.mandarinpay.com/Pay' method='POST'>".$this->generate_form($payment_settings['secret'], $values = array(
-				"email" => $order->email,
+		$button = "<form action='https://secure.mandarinpay.com/Pay' method='POST'>".$this['generate_form']($payment_settings['secret'], $values = array(
+				"email" => $order['email'],
 				"merchantId" => $payment_settings['merchantId'],
-				"orderId" => $order->id,
+				"orderId" => $order_id,
 				"price" => $amount,
 		))."<input type='submit' value='Оплатить' /></form>";
 		return $button;
@@ -45,7 +45,7 @@ class MandarinBank extends Simpla
 
 	public function generate_form($secret, $fields)
 	{
-		$sign = $this->calc_sign($secret, $fields);
+		$sign = $this['calc_sign']($secret, $fields);
 		$form = "";
 		foreach($fields as $key => $val)
 		{

@@ -10,14 +10,14 @@ class Robokassa extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$price = $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$price = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 		
-		$success_url = $this->config->root_url.'/order/'.$order->url;
+		$success_url = $this->config->root_url.'/order/'.$order['url'];
 		
-		$fail_url = $this->config->root_url.'/order/'.$order->url;
+		$fail_url = $this->config->root_url.'/order/'.$order['url'];
 				
 		// регистрационная информация (логин, пароль #1)
 		// registration info (login, password #1)
@@ -26,14 +26,14 @@ class Robokassa extends Simpla
 		
 		// номер заказа
 		// number of order
-		$inv_id = $order->id;
+		$inv_id = $order_id;
 		
 		// описание заказа
 		// order description
 		$inv_desc = 'Оплата заказа №'.$inv_id;
 				
 		// метод оплаты - текущий
-		$shp_item = $payment_method->id;
+		$shp_item = $payment_method['id'];
 		
 		// предлагаемая валюта платежа
 		// default payment e-currency

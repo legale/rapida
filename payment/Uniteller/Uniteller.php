@@ -21,9 +21,9 @@ class Uniteller extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$settings = $this->payment->get_payment_settings($payment_method['id']);
 		
 	
 			
@@ -35,12 +35,12 @@ class Uniteller extends Simpla
 		$EMoneyType			= '';
 		$MeanType			= '';
 		$Lifetime			= 300;
-		$Subtotal_P			= round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);
-		$return_url 		= $this->config->root_url.'/order/'.$order->url;
+		$Subtotal_P			= round($this->money->convert($order['total_price'], $payment_method['currency_id'], false), 2);
+		$return_url 		= $this->config->root_url.'/order/'.$order['url'];
 		$Signature = strtoupper(
 				md5(
 					md5($uniteller_shop_id) . "&" .
-					md5($order->id) . "&" . 
+					md5($order_id) . "&" . 
 					md5($Subtotal_P) . "&" . 
 					md5($MeanType) . "&" . 
 					md5($EMoneyType) . "&" . 
@@ -64,7 +64,7 @@ class Uniteller extends Simpla
 		
 	$button =	'<form action="'.$action.'" method="POST">'. 
 					'<input type="hidden" name="Shop_IDP" value="'.$uniteller_shop_id.'">'. 
-					'<input type="hidden" name="Order_IDP" value="'.$order->id.'">'. 
+					'<input type="hidden" name="Order_IDP" value="'.$order_id.'">'. 
 					'<input type="hidden" name="Subtotal_P" value="'.$Subtotal_P.'">'. 
 					'<input type="hidden" name="Lifetime" value="'.$Lifetime.'">'. 
 					'<input type="hidden" name="Signature" value="'.$Signature.'">'. 

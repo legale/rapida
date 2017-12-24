@@ -13,12 +13,12 @@ class Best2Pay extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$price = $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$price = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 		
-		$success_url = $this->config->root_url.'/order/'.$order->url;
+		$success_url = $this->config->root_url.'/order/'.$order['url'];
 		
 		// регистрационная информация (логин, пароль #1)
 		// registration info (login, password #1)
@@ -26,7 +26,7 @@ class Best2Pay extends Simpla
 		
 		// номер заказа
 		// number of order
-		$id = $order->id;
+		$id = $order_id;
 		$password = $payment_settings['password'];
 		
 		// адрес api
@@ -53,7 +53,7 @@ class Best2Pay extends Simpla
 			'reference' => $id,
 			'amount' => $price*100,
 			'description' => $desc,
-			'email' => htmlspecialchars($order->email,ENT_QUOTES),
+			'email' => htmlspecialchars($order['email'],ENT_QUOTES),
 			'currency' => $currency,
 			'mode' => 1,
 			'url' => $success_url,

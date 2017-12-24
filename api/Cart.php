@@ -47,11 +47,10 @@ class Cart extends Simpla
 
 
 				foreach ($items as $varid => $item){
-					$purchase = null;
 					if (!empty($products[$item['variant']['product_id']])){
 						$purchase = array();
 						$purchase['product'] = $products[$item['variant']['product_id']];
-						$purchase['variant'] = $item['variant'];
+						$purchase['variants'][0] = $item['variant'];
 						$purchase['amount'] = $item['amount'];
 
 						$cart['purchases'][] = $purchase;

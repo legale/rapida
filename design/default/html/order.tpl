@@ -26,8 +26,8 @@
 	<td class="name">
 		<a href="/products/{$url}">{$name|escape}</a>
 		{$purchase['variant_name']|escape}
-		{if $order['paid'] && $purchase['variant']['attachment']}
-			<a class="download_attachment" href="order/{$order['url']}/{$purchase['variant']['attachment']}">скачать файл</a>
+		{if $order['paid'] && $purchase['variants'][0]['attachment']}
+			<a class="download_attachment" href="order/{$order['url']}/{$purchase['variants'][0]['attachment']}">скачать файл</a>
 		{/if}
 	</td>
 
@@ -184,7 +184,10 @@
     		<div class="checkbox">
     			<input type=radio name=payment_method_id value='{$payment_method['id']}' {if $payment_method@first}checked{/if} id=payment_{$payment_method['id']}>
     		</div>			
-			<h3><label for=payment_{$payment_method['id']}>	{$payment_method['name']}, к оплате {$order['total_price']|convert:$payment_method['currency_id']}&nbsp;{$all_currencies[$payment_method['currency_id']]->sign}</label></h3>
+			<h3><label for=payment_{$payment_method['id']}>
+				{$payment_method['name']}, 
+				к оплате {$order['total_price']|convert:$payment_method['currency_id']}
+				&nbsp;{$all_currencies[$payment_method['currency_id']]['sign']}</label></h3>
 			<div class="description">
 			{$payment_method['description']}
 			</div>

@@ -66,6 +66,7 @@ CREATE TABLE `s_categories` (
   `meta_description` varchar(255) DEFAULT '',
   `description` text,
   `url` varchar(255) DEFAULT '',
+  `url2` varchar(255) NOT NULL DEFAULT '',
   `image` varchar(255) DEFAULT '',
   `image_id` int(10) unsigned NOT NULL DEFAULT '0',
   `pos` mediumint(8) unsigned NOT NULL DEFAULT '0',
@@ -74,11 +75,12 @@ CREATE TABLE `s_categories` (
   KEY `url` (`url`),
   KEY `parent_id` (`parent_id`),
   KEY `pos` (`pos`),
-  KEY `visible` (`visible`)
+  KEY `visible` (`visible`),
+  KEY `url2` (`url2`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_categories */
-INSERT INTO `s_categories` (`id`,`parent_id`,`name`,`meta_title`,`meta_keywords`,`meta_description`,`description`,`url`,`image`,`image_id`,`pos`,`visible`) VALUES
-(1, 0, 'category', 'category', 'category', '', NULL, 'category', '', 0, 1, 1);
+INSERT INTO `s_categories` (`id`,`parent_id`,`name`,`meta_title`,`meta_keywords`,`meta_description`,`description`,`url`,`url2`,`image`,`image_id`,`pos`,`visible`) VALUES
+(1, 0, 'category', 'category', 'category', '', NULL, 'category', 'category_alter', '', 0, 1, 1);
 /* Drop for table s_categories_features */
 DROP TABLE IF EXISTS `s_categories_features`;
 /* Create table s_categories_features */
@@ -89,7 +91,8 @@ CREATE TABLE `s_categories_features` (
   UNIQUE KEY `cid_fid` (`category_id`,`feature_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_categories_features */
-;
+INSERT INTO `s_categories_features` (`category_id`,`feature_id`) VALUES
+(1, 1);
 /* Drop for table s_comments */
 DROP TABLE IF EXISTS `s_comments`;
 /* Create table s_comments */
@@ -186,9 +189,10 @@ CREATE TABLE `s_features` (
   UNIQUE KEY `name` (`name`),
   KEY `pos` (`pos`),
   KEY `in_filter` (`in_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_features */
-;
+INSERT INTO `s_features` (`id`,`name`,`gid`,`trans`,`pos`,`in_filter`) VALUES
+(1, 'тестовое свойство', 1, 'testovoe_svojstvo', 0, 1);
 /* Drop for table s_feedbacks */
 DROP TABLE IF EXISTS `s_feedbacks`;
 /* Create table s_feedbacks */
@@ -254,7 +258,7 @@ CREATE TABLE `s_labels` (
   `color` varchar(6) DEFAULT '',
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_labels */
 INSERT INTO `s_labels` (`id`,`name`,`color`,`pos`) VALUES
 (1, 'новый', '3247ad', 1);
@@ -276,12 +280,14 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `1` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`),
   KEY `7` (`product_id`),
   KEY `1` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_options */
-;
+INSERT INTO `s_options` (`product_id`,`1`) VALUES
+(1, 1);
 /* Drop for table s_options_groups */
 DROP TABLE IF EXISTS `s_options_groups`;
 /* Create table s_options_groups */
@@ -305,9 +311,10 @@ CREATE TABLE `s_options_uniq` (
   `md4` binary(16) DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_options_uniq */
-;
+INSERT INTO `s_options_uniq` (`id`,`val`,`trans`,`md4`) VALUES
+(1, 'тестовое значение', 'testovoe_znachenie', 0x5ff4d07ae92d011597ecf6a2a2a25ce8);
 /* Drop for table s_orders */
 DROP TABLE IF EXISTS `s_orders`;
 /* Create table s_orders */
@@ -419,6 +426,7 @@ DROP TABLE IF EXISTS `s_products`;
 CREATE TABLE `s_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) NOT NULL,
+  `url2` varchar(255) NOT NULL DEFAULT '',
   `image` varchar(255) NOT NULL DEFAULT '',
   `image_id` int(10) unsigned NOT NULL DEFAULT '0',
   `brand_id` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -438,11 +446,12 @@ CREATE TABLE `s_products` (
   KEY `pos` (`pos`),
   KEY `hit` (`featured`),
   KEY `name` (`name`(255)),
-  KEY `visible` (`visible`) USING BTREE
+  KEY `visible` (`visible`) USING BTREE,
+  KEY `url2` (`url2`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_products */
-INSERT INTO `s_products` (`id`,`url`,`image`,`image_id`,`brand_id`,`name`,`annotation`,`body`,`visible`,`pos`,`meta_title`,`meta_keywords`,`meta_description`,`created`,`featured`) VALUES
-(1, 'test', '8f9327db2597fa57d2f42b4a6c5a9855.png', 1, 0, 'test', '', '', 1, 0, '', '', '', '2017-12-15 23:08:37', 0);
+INSERT INTO `s_products` (`id`,`url`,`url2`,`image`,`image_id`,`brand_id`,`name`,`annotation`,`body`,`visible`,`pos`,`meta_title`,`meta_keywords`,`meta_description`,`created`,`featured`) VALUES
+(1, 'test', 'test_alter', '8f9327db2597fa57d2f42b4a6c5a9855.png', 1, 0, 'test', '', '', 1, 0, '', '', '', '2017-12-15 23:08:37', 0);
 /* Drop for table s_products_categories */
 DROP TABLE IF EXISTS `s_products_categories`;
 /* Create table s_products_categories */
@@ -485,7 +494,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=344 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
@@ -519,10 +528,10 @@ CREATE TABLE `s_settings` (
   `name` varchar(255) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`setting_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /* Data for table s_settings */
 INSERT INTO `s_settings` (`setting_id`,`name`,`value`) VALUES
-(1, 'theme', 'luxury'),
+(1, 'theme', 'default'),
 (2, 'site_name', 'site'),
 (3, 'company_name', 'site'),
 (4, 'date_format', 'd.m.Y'),
@@ -535,7 +544,8 @@ INSERT INTO `s_settings` (`setting_id`,`name`,`value`) VALUES
 (11, 'products_num', '24'),
 (12, 'products_num_admin', '24'),
 (13, 'max_order_amount', '100'),
-(14, 'units', 'ед.');
+(14, 'units', 'ед.'),
+(15, 'phone', '');
 /* Drop for table s_users */
 DROP TABLE IF EXISTS `s_users`;
 /* Create table s_users */
