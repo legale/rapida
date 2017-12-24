@@ -278,6 +278,9 @@ class Database extends Simpla
 		while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
 			$results[$row[$field]][] = $row;
 		}
+		if(!isset($results)){
+			return false;
+		}
 		return $results;
 	}
 
