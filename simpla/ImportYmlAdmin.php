@@ -539,6 +539,8 @@ class ImportYmlAdmin extends Simpla
 			//print_r($row);
 			// пишем строку в csvfile
 			//print "";
+
+			
 			fputcsv ( $fcsv , $row , ";"); 
 				
 			//переходим к следующему узлу <offer>
@@ -625,7 +627,7 @@ class ImportYmlAdmin extends Simpla
 		// Указатели на узлы дерева
 		$pointers = array();
 		$pointers[0] = &$tree;
-		$pointers[0]['path'] = array();
+		$pointers[0]['path'] = '';
 		$pointers[0]['level'] = 0;
 		
 
