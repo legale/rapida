@@ -12,14 +12,14 @@
 <table id="purchases">
 
 {foreach $purchases as $purchase}
-			{$pid = $purchase['product']['id']}
 			{$url = $purchase['product']['url']}
 			{$name = $purchase['product']['name']}
 			{$image = $purchase['product']['image']}
+			{$image_id = $purchase['product']['image_id']}
 <tr>
 	{* Изображение товара *}
 	<td class="image">
-		<a href="products/{$url}"><img src="{$image|resize:50:50:false:$pid}" alt="{$name|escape}"></a>
+		<a href="products/{$url}"><img src="{$image|resize:products:$image_id:50:50}" alt="{$name|escape}"></a>
 	</td>
 	
 	{* Название товара *}
