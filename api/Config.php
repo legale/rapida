@@ -59,6 +59,17 @@ class Config
 		// Определяем корневую директорию сайта
 		$this->vars['root_dir']['value'] = dirname(dirname(__FILE__)) . '/';
 
+		// Определяем адрес (требуется для отправки почтовых уведомлений)
+		if(isset($_SERVER['HTTP_HOST'])){
+			$scheme = $_SERVER['HTTPS'] ? 'https' : 'http';
+			$this->vars['root_url']['value'] = $scheme . '://' . $_SERVER['HTTP_HOST'];
+			
+			if($_SERVER['HTTP_HOST'] !== $this->vars['host']['value']){
+				$this->__set('host', $_SERVER['HTTP_HOST']);
+			}
+		}
+
+
 		// Максимальный размер загружаемых файлов
 		$max_upload = (int) (ini_get('upload_max_filesize'));
 		$max_post = (int) (ini_get('post_max_size'));

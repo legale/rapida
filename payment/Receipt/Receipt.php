@@ -8,10 +8,10 @@ class Receipt extends Simpla
 	public function checkout_form($order_id)
 	{
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$amount = $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$amount = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 		//	подготовить данные
 		$recipient = $payment_settings['recipient'];
 		$inn = $payment_settings['inn'];
@@ -29,7 +29,7 @@ class Receipt extends Simpla
 					<INPUT TYPE='HIDDEN' NAME='correspondent_account' VALUE='".$payment_settings['correspondent_account']."'>
 					<INPUT TYPE='HIDDEN' NAME='banknote' VALUE='".$payment_settings['banknote']."'>
 					<INPUT TYPE='HIDDEN' NAME='pence' VALUE='".$payment_settings['pense']."'>
-					<INPUT TYPE='HIDDEN' NAME='order_id' VALUE='$order->id'>
+					<INPUT TYPE='HIDDEN' NAME='order_id' VALUE='$order_id'>
 					<INPUT TYPE='HIDDEN' NAME='amount' VALUE='".$amount."'>
 					<label>Имя плательщика: </label><INPUT TYPE='text' NAME='name' VALUE=''>
 					<label>Адрес плательщика: </label><INPUT TYPE='text' NAME='address' VALUE=''>

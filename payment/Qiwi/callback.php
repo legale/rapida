@@ -3,8 +3,8 @@
 // Подключаем SOAP
 require_once('nusoap/nusoap.php');
 $server = new nusoap_server;
-$server->register('updateBill');
-$server->service(file_get_contents("php://input"));
+$server['register']('updateBill');
+$server['service'](file_get_contents("php://input"));
 
 // Эта функция вызывается при уведомлениях от QIWI Кошелька
 function updateBill($login, $password, $txn, $status)
@@ -21,18 +21,18 @@ function updateBill($login, $password, $txn, $status)
 	$simpla = new Simpla();
 
 	// Выбираем оплачиваемый заказ
-	$order = $simpla->orders->get_order(intval($txn));
+	$order = $simpla['orders']->get_order(intval($txn));
 	
 	// 210 = Счет не найден
 	if(empty($order))
 		return new soapval('updateBillResult', 'xsd:integer', 210); 
 		
 	// Выбираем из базы соответствующий метод оплаты
-	$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+	$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 	if(empty($method))
 		return new soapval('updateBillResult', 'xsd:integer', 210);
 	// Настройки способа оплаты	
-	$settings = unserialize($method->settings);
+	$settings = unserialize($method['settings']);
 
 	// Проверяем логин
 	// 150 = Ошибка авторизации (неверный логин/пароль)
@@ -46,15 +46,15 @@ function updateBill($login, $password, $txn, $status)
 
 	// Нельзя оплатить уже оплаченный заказ 
 	// 215 = Счет с таким txn-id уже существует
-	if($order->paid)
+	if($order['paid'])
 		return new soapval('updateBillResult', 'xsd:integer', 215);
 		
 	// Проверка наличия товара
-	$purchases = $simpla->orders->get_purchases(array('order_id'=>intval($order->id)));
+	$purchases = $simpla['orders']->get_purchases(array('order_id'=>intval($order_id)));
 	foreach($purchases as $purchase)
 	{
-		$variant = $simpla->variants->get_variant(intval($purchase->variant_id));
-		if(empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount))
+		$variant = $simpla['variants']->get_variant(intval($purchase['variant_id']));
+		if(empty($variant) || (!$variant['infinity'] && $variant['stock'] < $purchase['amount']))
 		{
 			// 300 = Неизвестная ошибка
 			return new soapval('updateBillResult', 'xsd:integer', 300); 
@@ -62,12 +62,12 @@ function updateBill($login, $password, $txn, $status)
 	}
 	
 	// Установим статус оплачен
-	$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+	$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 	
 	// Спишем товары  
-	$simpla->orders->close(intval($order->id));
-	$simpla->notify->email_order_user(intval($order->id));
-	$simpla->notify->email_order_admin(intval($order->id));
+	$simpla['orders']->close(intval($order_id));
+	$simpla['notify']->email_order_user(intval($order_id));
+	$simpla['notify']->email_order_admin(intval($order_id));
 
 	// Успешное завершение
 	return new soapval('updateBillResult', 'xsd:integer', 0); 

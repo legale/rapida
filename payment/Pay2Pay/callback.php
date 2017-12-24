@@ -38,18 +38,18 @@ $err = '';
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($order_id));
+$order = $simpla['orders']->get_order(intval($order_id));
 if(!empty($order))
 { 
   ////////////////////////////////////////////////
   // Выбираем из базы соответствующий метод оплаты
   ////////////////////////////////////////////////
-  $method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+  $method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
   if(!empty($method))
   {
   	
-    $settings = unserialize($method->settings);
-    $payment_currency = $simpla->money->get_currency(intval($method->currency_id));
+    $settings = unserialize($method['settings']);
+    $payment_currency = $simpla['money']->get_currency(intval($method['currency_id']));
     
     // Проверяем контрольную подпись
     $mysignature = md5($settings['pay2pay_hidden'].$xml_post.$settings['pay2pay_hidden']);
@@ -57,11 +57,11 @@ if(!empty($order))
     {
     
       // Нельзя оплатить уже оплаченный заказ  
-      if (!$order->paid)
+      if (!$order['paid'])
       {
-        if($amount >= round($simpla->money->convert($order->total_price, $method->currency_id, false), 2))
+        if($amount >= round($simpla['money']->convert($order['total_price'], $method['currency_id'], false), 2))
         {
-          $currency = $payment_currency->code;
+          $currency = $payment_currency['code'];
           if ($currency == 'RUR')
             $currency = 'RUB';
           if($currency_code == $currency)
@@ -69,14 +69,14 @@ if(!empty($order))
             if($status == 'success')
             {
               // Установим статус оплачен
-              $simpla->orders->update_order(intval($order->id), array('paid'=>1));
+              $simpla['orders']->update_order(intval($order_id), array('paid'=>1));
               
               // Отправим уведомление на email
-              $simpla->notify->email_order_user(intval($order->id));
-              $simpla->notify->email_order_admin(intval($order->id));
+              $simpla['notify']->email_order_user(intval($order_id));
+              $simpla['notify']->email_order_admin(intval($order_id));
               
               // Спишем товары  
-              $simpla->orders->close(intval($order->id));
+              $simpla['orders']->close(intval($order_id));
             }
           }
           else

@@ -35,8 +35,8 @@ class PawInvoiceView extends View
 		if(empty($wrapper))
 			$wrapper = 'index.tpl';
 			
-		$this->body = $this->design->fetch($wrapper);
-		return $this->body;
+		$this['body'] = $this->design->fetch($wrapper);
+		return $this['body'];
 	}
 	
 }

@@ -14,32 +14,34 @@
 <table id="purchases">
 
 {foreach $cart['purchases'] as $purchase}
-<tr varid="{$purchase['variant']['id']}">
+<tr varid="{$purchase['variants'][0]['id']}">
 	{* Изображение товара *}
 	<td class="image">
+		{$url = $purchase['product']['url']}
 		{$image = $purchase['product']['image']}
 		{$image_id = $purchase['product']['image_id']}
-		{$name = $purchase['product']['name']}
+		{$pname = $purchase['product']['name']}
 		{if $image}
-		<a href="products/{$purchase['product']['url']}"><img src="{$image|resize:products:image_id:50:50}" alt="{$name|escape}"></a>
+		<a href="products/{$url}"><img src="{$image|resize:products:image_id:50:50}" alt="{$pname|escape}"></a>
 		{/if}
 	</td>
 	
 	{* Название товара *}
 	<td class="name">
-		<a href="products/{$purchase['product']['url']}">{$purchase['product']['name']|escape}</a>
-		{$purchase['variant']['name']|escape}
+		<a href="products/{$url}">{$pname|escape}</a>
+		{$purchase['variants'][0]['name']|escape}
 	</td>
 
 	{* Цена за единицу *}
 	<td class="price">
-		{($purchase['variant']['price'])|convert} {$currency['sign']}
+		{($purchase['variants'][0]['price'])|convert} {$currency['sign']}
 	</td>
 
 	{* Количество *}
 	<td class="amount">
-		<select name="amounts[{$purchase['variant']['id']}]" onchange="document.cart.submit();">
-			{section name=amounts start=1 loop=$purchase['variant']['stock']+1 step=1}
+		<select name="amounts[{$purchase['variants'][0]['id']}]" onchange="document.cart.submit();">
+			{$loop = min($purchase['variants'][0]['stock'], 100)}
+			{section name=amounts start=1 loop=$loop step=1}
 			<option value="{$smarty.section.amounts.index}" {if $purchase['amount']==$smarty.section.amounts.index}selected{/if}>{$smarty.section.amounts.index} {$settings->units}</option>
 			{/section}
 		</select>
@@ -47,7 +49,7 @@
 
 	{* Цена *}
 	<td class="price">
-		{($purchase['variant']['price']*$purchase['amount'])|convert}&nbsp;{$currency['sign']}
+		{($purchase['variants'][0]['price']*$purchase['amount'])|convert}&nbsp;{$currency['sign']}
 	</td>
 	
 	{* Удалить из корзины *}

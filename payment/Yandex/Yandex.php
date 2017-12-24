@@ -14,17 +14,17 @@ class Yandex extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$price = round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);
+		$price = round($this->money->convert($order['total_price'], $payment_method['currency_id'], false), 2);
 		
 		// Учесть комиссию Яндекса
-		$price = $price+max(0.01, $price*$this->fee/100);
+		$price = $price+max(0.01, $price*$this['fee']/100);
 
 		// описание заказа
-		$desc = 'Оплата заказа №'.$order->id.' на сайте '.$this->settings->site_name;
+		$desc = 'Оплата заказа №'.$order_id.' на сайте '.$this->settings->site_name;
 							
 		$button = '<form method="POST" action="https://money.yandex.ru/quickpay/confirm.xml">
 					<input name="receiver" type="hidden" value="'.$settings['yandex_id'].'">
@@ -32,7 +32,7 @@ class Yandex extends Simpla
 					<input type="hidden" name="comment" value="'.$desc.'"/>
 					<input name="quickpay-form" type="hidden" value="shop">
 					<input data-type="number" type="hidden" name="sum" value="'.$price.'">
-					<input name="label" type="hidden" value="'.$order->id.'">   
+					<input name="label" type="hidden" value="'.$order_id.'">   
 					<input type="submit" name="submit-button" value="'.$button_text.'"  class="checkout_button">
 					</form>';
 		return $button;

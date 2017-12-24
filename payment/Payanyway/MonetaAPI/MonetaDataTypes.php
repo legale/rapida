@@ -415,7 +415,7 @@ class MonetaTransactionBatchRequestType
 	 */
 	public function addTransaction(MonetaTransactionRequestType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -606,7 +606,7 @@ class MonetaAuthoriseTransactionBatchRequestType
 	 */
 	public function addTransaction(MonetaTransactionRequestType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -762,7 +762,7 @@ class MonetaConfirmTransactionBatchRequestType
 	 */
 	public function addTransaction(MonetaConfirmTransactionRequestType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -893,7 +893,7 @@ class MonetaCancelTransactionBatchRequestType
 	 */
 	public function addTransaction(MonetaCancelTransactionRequestType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -1450,7 +1450,7 @@ class MonetaOperationInfo
 	 */
 	public function addAttribute(MonetaKeyValueAttribute $item)
 	{
-		$this->attribute[] = $item;
+		$this['attribute'][] = $item;
 	}
 
 }
@@ -1535,7 +1535,7 @@ class MonetaOperationInfoList
 	 */
 	public function addOperation(MonetaOperationInfo $item)
 	{
-		$this->operation[] = $item;
+		$this['operation'][] = $item;
 	}
 
 }
@@ -1747,7 +1747,7 @@ class MonetaProfile
 	 */
 	public function addAttribute(MonetaKeyValueAttribute $item)
 	{
-		$this->attribute[] = $item;
+		$this['attribute'][] = $item;
 	}
 
 }
@@ -1890,7 +1890,7 @@ class MonetaDocument
 	 */
 	public function addAttribute(MonetaKeyValueAttribute $item)
 	{
-		$this->attribute[] = $item;
+		$this['attribute'][] = $item;
 	}
 	
 	/**
@@ -2186,7 +2186,7 @@ class MonetaTransferBatchResponse
 	 */
 	public function addTransaction(MonetaTransactionBatchResponseType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -2256,7 +2256,7 @@ class MonetaAuthoriseTransactionBatchResponse
 	 */
 	public function addTransaction(MonetaOperationInfoBatchResponseType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -2321,7 +2321,7 @@ class MonetaConfirmTransactionBatchResponse
 	 */
 	public function addTransaction(MonetaOperationInfoBatchResponseType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -2390,7 +2390,7 @@ class MonetaCancelTransactionBatchResponse
 	 */
 	public function addTransaction(MonetaCancelTransactionBatchResponseType $item)
 	{
-		$this->transaction[] = $item;
+		$this['transaction'][] = $item;
 	}
 
 }
@@ -2750,7 +2750,7 @@ class MonetaFindAccountsListResponse
 	 */
 	public function addAccount(MonetaAccountInfo $item)
 	{
-		$this->account[] = $item;
+		$this['account'][] = $item;
 	}
 
 }
@@ -3790,7 +3790,7 @@ class MonetaFindProfileInfoResponse
 	 */
 	public function addProfile(MonetaProfile $item)
 	{
-		$this->profile[] = $item;
+		$this['profile'][] = $item;
 	}
 
 }
@@ -3836,7 +3836,7 @@ class MonetaFindProfileDocumentFilesResponse
 	 */
 	public function addFile(MonetaFile $item)
 	{
-		$this->file[] = $item;
+		$this['file'][] = $item;
 	}
 
 }
@@ -3925,7 +3925,7 @@ class MonetaFindProfileDocumentsResponse
 	 */
 	public function addDocument(MonetaDocument $item)
 	{
-		$this->document[] = $item;
+		$this['document'][] = $item;
 	}
 
 }
@@ -4058,7 +4058,7 @@ class MonetaFindAccountRelationsResponse
 	 */
 	public function addAccountRelation(MonetaAccountRelation $item)
 	{
-		$this->accountRelation[] = $item;
+		$this['accountRelation'][] = $item;
 	}
 
 }

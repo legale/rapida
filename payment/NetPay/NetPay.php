@@ -26,12 +26,12 @@ class NetPay extends Simpla {
             $button_text = 'Перейти к оплате';
 
         $order = $this->orders->get_order(intval($order_id));
-        $payment_method = $this->payment->get_payment_method($order->payment_method_id);
-        $payment_settings = $this->payment->get_payment_settings($payment_method->id);
-        $price = to_float($this->money->convert($order->total_price, $payment_method->currency_id, false));
-        $currency = $this->money->get_currency($payment_method->currency_id);
-        $success_url = $this->config->root_url . '/order/' . $order->url;
-        $fail_url = $this->config->root_url . '/order/' . $order->url;
+        $payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+        $payment_settings = $this->payment->get_payment_settings($payment_method['id']);
+        $price = to_float($this->money->convert($order['total_price'], $payment_method['currency_id'], false));
+        $currency = $this->money->get_currency($payment_method['currency_id']);
+        $success_url = $this->config->root_url . '/order/' . $order['url'];
+        $fail_url = $this->config->root_url . '/order/' . $order['url'];
                 
         if ($payment_settings['api_key'] == ''){
 			$url_net2pay_pay = 'https://demo.net2pay.ru/billingService/paypage/';
@@ -48,15 +48,15 @@ class NetPay extends Simpla {
                 
         $md5_Api_key = base64_encode(md5($Api_key, true));
 	$dateClass = new DateTime();
-	$dateClass->modify('+999 day');
-	$order_date = $dateClass->format('Y-m-dVH:i:s');
+	$dateClass['modify']('+999 day');
+	$order_date = $dateClass['format']('Y-m-dVH:i:s');
 	$cryptoKey = substr(base64_encode(md5($md5_Api_key.$order_date, true)),0,16);
 	
 	$params = array();
-	$params['description'] = 'ORDER '.$order->id;
+	$params['description'] = 'ORDER '.$order_id;
 	$params['amount'] = $price;
 	$params['currency'] = 'RUB';
-	$params['orderID'] = $order->id;
+	$params['orderID'] = $order_id;
 	$params['cardHolderCity'] = "";
 	$params['cardHolderCountry'] = "";
 	$params['cardHolderPostal'] = "";
@@ -84,7 +84,7 @@ class NetPay extends Simpla {
                     $netpay_url = 'http://'.$_SERVER['HTTP_HOST'].'/netpay/index.html';
                     $link = $netpay_url."?data=".urlencode($params_crypted_str)."&auth=".$AuthSign."&expire=".urlencode($order_date);
                     $link = str_replace("%", "%25", $link);
-                    if (mail ($payment_settings['mailforsend'], 'Ссылка для оплаты заказа #'.$order->id, $link, "From: ".$payment_settings['mailforsend']."  \nContent-Type: text/html; charset=\"windows-1251\"\n")) $button=$payment_settings['textinsteadbutton'];
+                    if (mail ($payment_settings['mailforsend'], 'Ссылка для оплаты заказа #'.$order_id, $link, "From: ".$payment_settings['mailforsend']."  \nContent-Type: text/html; charset=\"windows-1251\"\n")) $button=$payment_settings['textinsteadbutton'];
                     else $button=$payment_settings['sendmailerror'];
             
         }        

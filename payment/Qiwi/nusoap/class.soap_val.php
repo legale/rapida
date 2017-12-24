@@ -71,12 +71,12 @@ class soapval extends nusoap_base {
 	*/
   	function soapval($name='soapval',$type=false,$value=-1,$element_ns=false,$type_ns=false,$attributes=false) {
 		parent::nusoap_base();
-		$this->name = $name;
-		$this->type = $type;
-		$this->value = $value;
-		$this->element_ns = $element_ns;
-		$this->type_ns = $type_ns;
-		$this->attributes = $attributes;
+		$this['name'] = $name;
+		$this['type'] = $type;
+		$this['value'] = $value;
+		$this['element_ns'] = $element_ns;
+		$this['type_ns'] = $type_ns;
+		$this['attributes'] = $attributes;
     }
 
 	/**
@@ -87,7 +87,7 @@ class soapval extends nusoap_base {
 	* @access   public
 	*/
 	function serialize($use='encoded') {
-		return $this->serialize_val($this->value, $this->name, $this->type, $this->element_ns, $this->type_ns, $this->attributes, $use, true);
+		return $this['serialize_val']($this['value'], $this['name'], $this['type'], $this['element_ns'], $this['type_ns'], $this['attributes'], $use, true);
     }
 
 	/**
@@ -97,7 +97,7 @@ class soapval extends nusoap_base {
 	* @access   public
 	*/
 	function decode(){
-		return $this->value;
+		return $this['value'];
 	}
 }
 

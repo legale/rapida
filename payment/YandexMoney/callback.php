@@ -17,28 +17,28 @@ require_once('api/Simpla.php');
 
 $simpla = new Simpla();
 
-$order_id = $simpla->request->post('customerNumber', 'integer');
-$invoice_id = $simpla->request->post('invoiceId', 'string');
+$order_id = $simpla['request']->post('customerNumber', 'integer');
+$invoice_id = $simpla['request']->post('invoiceId', 'string');
 
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($order_id));
+$order = $simpla['orders']->get_order(intval($order_id));
 if(empty($order))
 	print_error('Оплачиваемый заказ не найден');
  
 ////////////////////////////////////////////////
 // Выбираем из базы соответствующий метод оплаты
 ////////////////////////////////////////////////
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 	print_error("Неизвестный метод оплаты");
  
-$settings = unserialize($method->settings);
+$settings = unserialize($method['settings']);
 $shop_id = $settings['yandex_shopid'];
        
 // Нельзя оплатить уже оплаченный заказ  
-if($order->paid)
+if($order['paid'])
 	print_error('Этот заказ уже оплачен');
        
 ////////////////////////////////////
@@ -58,7 +58,7 @@ if($md5 !== $_POST['md5'])
 ////////////////////////////////////
        
 // Сумма заказа у нас в магазине
-$order_amount = $simpla->money->convert($order->total_price, $method->currency_id, false);
+$order_amount = $simpla['money']->convert($order['total_price'], $method['currency_id'], false);
        
 // Должна быть равна переданной сумме
 if(floatval($order_amount) !== floatval($_POST['orderSumAmount']))
@@ -67,13 +67,13 @@ if(floatval($order_amount) !== floatval($_POST['orderSumAmount']))
 ////////////////////////////////////
 // Проверка наличия товара
 ////////////////////////////////////
-$purchases = $simpla->orders->get_purchases(array('order_id'=>intval($order->id)));
+$purchases = $simpla['orders']->get_purchases(array('order_id'=>intval($order_id)));
 foreach($purchases as $purchase)
 {
-	$variant = $simpla->variants->get_variant(intval($purchase->variant_id));
-	if(empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount))
+	$variant = $simpla['variants']->get_variant(intval($purchase['variant_id']));
+	if(empty($variant) || (!$variant['infinity'] && $variant['stock'] < $purchase['amount']))
 	{
-		print_error("Нехватка товара $purchase->product_name $purchase->variant_name");
+		print_error("Нехватка товара $purchase['product_name'] $purchase['variant_name']");
 	}
 }
        
@@ -81,15 +81,15 @@ foreach($purchases as $purchase)
 if($_POST['action'] == 'paymentAviso')
 {
 	// Установим статус оплачен
-	$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+	$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
 	// Спишем товары  
-	$simpla->orders->close(intval($order->id));
-	$simpla->notify->email_order_user(intval($order->id));
-	$simpla->notify->email_order_admin(intval($order->id));
+	$simpla['orders']->close(intval($order_id));
+	$simpla['notify']->email_order_user(intval($order_id));
+	$simpla['notify']->email_order_admin(intval($order_id));
 	
 	$datetime = new DateTime();
-	$performedDatetime = $datetime->format('c');
+	$performedDatetime = $datetime['format']('c');
 	print '<?xml version="1.0" encoding="UTF-8"?> 
 	<paymentAvisoResponse performedDatetime="'.$performedDatetime.'" 
 	code="0" invoiceId="'.$invoice_id.'" 
@@ -99,7 +99,7 @@ if($_POST['action'] == 'paymentAviso')
 elseif($_POST['action'] == 'checkOrder')
 {
 	$datetime = new DateTime();
-	$performedDatetime = $datetime->format('c');
+	$performedDatetime = $datetime['format']('c');
 	print '<?xml version="1.0" encoding="UTF-8"?> 
 	<checkOrderResponse performedDatetime="'.$performedDatetime.'" 
 	code="0" invoiceId="'.$invoice_id.'" 
@@ -109,7 +109,7 @@ elseif($_POST['action'] == 'checkOrder')
 function print_error($text)
 {
 	$datetime = new DateTime();
-	$performedDatetime = $datetime->format('c');
+	$performedDatetime = $datetime['format']('c');
 	$shop_id = intval($_POST['shopId']);
 	$invoice_id = intval($_POST['invoiceId']);
 	
