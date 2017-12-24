@@ -183,14 +183,14 @@ class Orders extends Simpla
 	{
 		$query = $this->db->placehold("SELECT * FROM __labels WHERE id=? LIMIT 1", intval($id));
 		$this->db->query($query);
-		return $this->db->result();
+		return $this->db->result_array();
 	}
 
 	public function get_labels()
 	{
 		$query = $this->db->placehold("SELECT * FROM __labels ORDER BY pos");
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 
 	/*
@@ -258,21 +258,23 @@ class Orders extends Simpla
 	}	
 	
 	function get_order_labels($order_id = array()){
-		if(empty($order_id))
+		dtimer::log(__METHOD__ . " start ".var_export($order_id, true));
+		if(empty($order_id)){
 			return array();
-
+		}
+		
 		$label_id_filter = $this->db->placehold('AND order_id in(?@)', (array)$order_id);
 				
-		$query = $this->db->placehold("SELECT ol.order_id, l.id, l.name, l.color, l.pos
+		$q = $this->db->placehold("SELECT ol.order_id, l.id, l.name, l.color, l.pos
 					FROM __labels l LEFT JOIN __orders_labels ol ON ol.label_id = l.id
 					WHERE 
 					1
 					$label_id_filter   
 					ORDER BY pos      
 					");
-		
-		$this->db->query($query);
-		return $this->db->results();
+
+		$this->db->query($q);
+		return $this->db->results_array(null, 'id');
 	}
 	
 	public function update_order_labels($id, $labels_ids){
@@ -318,28 +320,28 @@ class Orders extends Simpla
 	}
 	
 	public function update_purchase($id, $purchase){	
-		$purchase = (object)$purchase;
+		$purchase = (array)$purchase;
 		$old_purchase = $this->get_purchase($id);
 		if(!$old_purchase)
 			return false;
 			
-		$order = $this->get_order(intval($old_purchase->order_id));
+		$order = $this->get_order(intval($old_purchase['order_id']));
 		if(!$order)
 			return false;
 		
 		// Не допустить нехватки на складе
 		$variant = $this->variants->get_variant($purchase['variant_id']);
-		if($order['closed'] && !empty($purchase['amount']) && !empty($variant) && !$variant['infinity'] && $variant['stock']<($purchase['amount']-$old_purchase->amount))
+		if($order['closed'] && !empty($purchase['amount']) && !empty($variant) && !$variant['infinity'] && $variant['stock']<($purchase['amount']-$old_purchase['amount']))
 			return false;
 		
 		// Если заказ закрыт, нужно обновить склад при изменении покупки
 		if($order['closed'] && !empty($purchase['amount']))
 		{
-			if($old_purchase->variant_id != $purchase['variant_id'])
+			if($old_purchase['variant_id'] != $purchase['variant_id'])
 			{
-				if(!empty($old_purchase->variant_id))
+				if(!empty($old_purchase['variant_id']))
 				{
-					$query = $this->db->placehold("UPDATE __variants SET stock=stock+? WHERE id=? AND stock IS NOT NULL LIMIT 1", $old_purchase->amount, $old_purchase->variant_id);
+					$query = $this->db->placehold("UPDATE __variants SET stock=stock+? WHERE id=? AND stock IS NOT NULL LIMIT 1", $old_purchase['amount'], $old_purchase['variant_id']);
 					$this->db->query($query);
 				}
 				if(!empty($purchase['variant_id']))
@@ -350,7 +352,7 @@ class Orders extends Simpla
 			}
 			elseif(!empty($purchase['variant_id']))
 			{
-				$query = $this->db->placehold("UPDATE __variants SET stock=stock+(?) WHERE id=? AND stock IS NOT NULL LIMIT 1", $old_purchase->amount - $purchase['amount'], $purchase['variant_id']);
+				$query = $this->db->placehold("UPDATE __variants SET stock=stock+(?) WHERE id=? AND stock IS NOT NULL LIMIT 1", $old_purchase['amount'] - $purchase['amount'], $purchase['variant_id']);
 				$this->db->query($query);
 			}
 		}

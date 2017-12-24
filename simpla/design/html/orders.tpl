@@ -62,9 +62,11 @@
 	 				{$order['date']|date} в {$order['date']|time}
 				</div>
 				<div class="order_name cell">
+					{if $order['labels']}
 					{foreach $order['labels'] as $l}
 					<span class="order_label" style="background-color:#{$l['color']};" title="{$l['name']}"></span>
 					{/foreach}
+	 				{/if}
 	 				<a href="{url module=OrderAdmin id=$order['id'] return=$smarty.server.REQUEST_URI}">Заказ №{$order['id']}</a> {$order['name']|escape}
 	 				{if $order['note']}
 	 				<div class="note">{$order['note']|escape}</div>

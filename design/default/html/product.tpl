@@ -15,7 +15,6 @@
 	→  {$product['name']|escape}                
 </div>
 <!-- Хлебные крошки #End /-->
-			{$pid = $product['id']}
 			{$url = $product['url']}
 			{$name = $product['name']}
 			{$image = $product['image']}

@@ -254,9 +254,10 @@ CREATE TABLE `s_labels` (
   `color` varchar(6) DEFAULT '',
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /* Data for table s_labels */
-;
+INSERT INTO `s_labels` (`id`,`name`,`color`,`pos`) VALUES
+(1, 'новый', '3247ad', 1);
 /* Drop for table s_menu */
 DROP TABLE IF EXISTS `s_menu`;
 /* Create table s_menu */
@@ -343,9 +344,10 @@ CREATE TABLE `s_orders` (
   KEY `status` (`status`),
   KEY `code` (`url`),
   KEY `payment_status` (`paid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_orders */
-;
+INSERT INTO `s_orders` (`id`,`delivery_id`,`delivery_price`,`payment_method_id`,`paid`,`payment_date`,`closed`,`date`,`user_id`,`name`,`address`,`phone`,`email`,`comment`,`status`,`url`,`payment_details`,`ip`,`total_price`,`note`,`discount`,`coupon_discount`,`coupon_code`,`separate_delivery`,`modified`) VALUES
+(1, 0, 0.00, 0, 0, '1970-01-02 02:00:00', 0, '2017-12-24 02:03:36', 1, 'huang', 'address', '8239083', 'joho@ya.ru', '', 0, 'a3e8eaa2b623f8829f71b229b78ee643', NULL, '127.0.0.1', 13062.00, '', 0.00, 0.00, '', 0, '2017-12-24 03:07:13');
 /* Drop for table s_orders_labels */
 DROP TABLE IF EXISTS `s_orders_labels`;
 /* Create table s_orders_labels */
@@ -469,9 +471,10 @@ CREATE TABLE `s_purchases` (
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
   KEY `variant_id` (`variant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_purchases */
-;
+INSERT INTO `s_purchases` (`id`,`order_id`,`product_id`,`variant_id`,`product_name`,`variant_name`,`price`,`amount`,`sku`) VALUES
+(1, 1, 1, 1, 'test', '', 4354.00, 3, '1');
 /* Drop for table s_queue */
 DROP TABLE IF EXISTS `s_queue`;
 /* Create table s_queue */
@@ -482,7 +485,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=344 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
@@ -494,7 +497,7 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue_full */
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;

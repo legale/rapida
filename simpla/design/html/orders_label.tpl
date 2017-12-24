@@ -1,7 +1,7 @@
 {* Вкладки *}
 {capture name=tabs}
 	{if isset($userperm['orders'])}
-	<li {if $status===0}class="active"{/if}><a href="{url module=OrdersAdmin status=0 keyword=null id=null page=null label=null}">Новые</a></li>
+	<li {if $status==0}class="active"{/if}><a href="{url module=OrdersAdmin status=0 keyword=null id=null page=null label=null}">Новые</a></li>
 	<li {if $status==1}class="active"{/if}><a href="{url module=OrdersAdmin status=1 keyword=null id=null page=null label=null}">Приняты</a></li>
 	<li {if $status==2}class="active"{/if}><a href="{url module=OrdersAdmin status=2 keyword=null id=null page=null label=null}">Выполнены</a></li>
 	<li {if $status==3}class="active"{/if}><a href="{url module=OrdersAdmin status=3 keyword=null id=null page=null label=null}">Удалены</a></li>

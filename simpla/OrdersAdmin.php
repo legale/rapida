@@ -120,17 +120,19 @@ class OrdersAdmin extends Simpla
 			$filter['limit'] = $orders_count;	
 
 		// Отображение
-		if ($orders = $this->orders->get_orders($filter)) {
-			foreach ($orders as $o) {
-				$orders[$o['id']] = $o;
-			}
-		}
+		$orders = $this->orders->get_orders($filter);
+
+		
 		// Метки заказов
 		if (is_array($orders) && $orders_labels = $this->orders->get_order_labels(array_keys($orders))) {
 			foreach ($orders_labels as $ol) {
-				$orders[$ol->order_id]->labels[] = $ol;
+				$orders[$ol['order_id']]['labels'][] = $ol;
 			}
 		}
+		//~ print "<PRE>";
+		//~ print_r($orders_labels);
+		//~ print "</PRE>";
+		
 		$this->design->assign('pages_count', ceil($orders_count / $filter['limit']));
 		$this->design->assign('current_page', $filter['page']);
 
