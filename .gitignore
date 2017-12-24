@@ -18,7 +18,7 @@ config/db.ini
 #А это мы включаем
 ###################
 #Это каталог шаблона
-!design/default
+!design/default/**
 
 #Это бекап пустой базы
 !simpla/files/backup/empty.zip
