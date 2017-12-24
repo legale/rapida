@@ -34,10 +34,8 @@ class Cart extends Simpla
 			$session_items = $_SESSION['shopping_cart'];
 
 			$variants = $this->variants->get_variants(array('id' => array_keys($session_items)));
-			if (!empty($variants))
-				{
-				foreach ($variants as $variant)
-					{
+			if (!empty($variants)){
+				foreach ($variants as $variant){
 					$items[$variant['id']] = array();
 					$items[$variant['id']]['variant'] = $variant;
 					$items[$variant['id']]['amount'] = $session_items[$variant['id']];
@@ -48,11 +46,9 @@ class Cart extends Simpla
 
 
 
-				foreach ($items as $varid => $item)
-					{
+				foreach ($items as $varid => $item){
 					$purchase = null;
-					if (!empty($products[$item['variant']['product_id']]))
-						{
+					if (!empty($products[$item['variant']['product_id']])){
 						$purchase = array();
 						$purchase['product'] = $products[$item['variant']['product_id']];
 						$purchase['variant'] = $item['variant'];
@@ -72,25 +68,18 @@ class Cart extends Simpla
 				$cart['total_price'] *= (100 - $cart['discount']) / 100;
 				
 				// Скидка по купону
-				if (isset($_SESSION['coupon_code']))
-					{
+				if (isset($_SESSION['coupon_code'])){
 					$cart['coupon'] = $this->coupons->get_coupon($_SESSION['coupon_code']);
-					if ($cart['coupon'] && $cart['coupon']['valid'] && $cart['total_price'] >= $cart['coupon']['min_order_price'])
-						{
-						if ($cart['coupon']['type'] == 'absolute')
-							{
+					if ($cart['coupon'] && $cart['coupon']['valid'] && $cart['total_price'] >= $cart['coupon']['min_order_price']){
+						if ($cart['coupon']['type'] == 'absolute'){
 							// Абсолютная скидка не более суммы заказа
 							$cart['coupon_discount'] = $cart['total_price'] > $cart['coupon']['value'] ? $cart['coupon']['value'] : $cart['total_price'];
 							$cart['total_price'] = max(0, $cart['total_price'] - $cart['coupon']['value']);
-						}
-						else
-							{
+						}else{
 							$cart['coupon_discount'] = $cart['total_price'] * ($cart['coupon']['value']) / 100;
 							$cart['total_price'] = $cart['total_price'] - $cart['coupon_discount'];
 						}
-					}
-					else
-						{
+					}else{
 						unset($_SESSION['coupon_code']);
 					}
 				}
@@ -98,6 +87,9 @@ class Cart extends Simpla
 			}
 		}
 
+		//~ print "<PRE>";
+		//~ var_export($cart);
+		//~ print "</PRE>";
 		return $cart;
 	}
 	

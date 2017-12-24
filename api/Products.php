@@ -773,7 +773,6 @@ class Products extends Simpla
 
 		$query = $this->db->placehold("SELECT id FROM __products p, __products_categories pc
 			WHERE pc.product_id=p.id AND p.pos>? 
-			AND pc.pos=(SELECT MIN(pc2.pos) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
 			AND pc.category_id=? 
 			AND p.visible ORDER BY p.pos limit 1", $pos, $category_id);
 		$this->db->query($query);
@@ -796,7 +795,6 @@ class Products extends Simpla
 
 		$query = $this->db->placehold("SELECT id FROM __products p, __products_categories pc
 			WHERE pc.product_id=p.id AND p.pos<? 
-			AND pc.pos=(SELECT MIN(pc2.pos) FROM __products_categories pc2 WHERE pc.product_id=pc2.product_id)
 			AND pc.category_id=? 
 			AND p.visible ORDER BY p.pos DESC limit 1", $pos, $category_id);
 		$this->db->query($query);

@@ -28,11 +28,11 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			{$pid = $product['id']}
 			{$url = $product['url']}
 			{$name = $product['name']}
 			{$image = $product['image']}
-			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
+			{$image_id = $product['image_id']}
+			<a href="products/{$url}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
@@ -93,8 +93,10 @@
 		
 		<!-- Фото товара -->
 		{if $product['image']}
+		{$image = $product['image']}
+		{$image_id = $product['image_id']}
 		<div class="image">
-			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
+			<a href="products/{$url}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
@@ -154,8 +156,10 @@
 		
 		<!-- Фото товара -->
 		{if $product['image']}
+		{$image = $product['image']}
+		{$image_id = $product['image_id']}
 		<div class="image">
-			<a href="products/{$url}"><img src="{$image|resize:200:200:false:$pid}" alt="{$name|escape}"/></a>
+			<a href="products/{$url}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->

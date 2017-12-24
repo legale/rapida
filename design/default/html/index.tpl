@@ -211,7 +211,6 @@
 				<ul id="browsed_products">
 				{foreach $browsed_products as $browsed_product}
 					<li>
-					{$pid = $browsed_product['id']}
 					{$url = $browsed_product['url']}
 					{$name = $browsed_product['name']}
 					{$image = $browsed_product['image']}
