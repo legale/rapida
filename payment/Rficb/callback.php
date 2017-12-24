@@ -25,19 +25,19 @@ $simpla = new Simpla();
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($_POST['order_id']));
+$order = $simpla['orders']->get_order(intval($_POST['order_id']));
 if(empty($order))
 	die('Оплачиваемый заказ не найден');
  
 ////////////////////////////////////////////////
 // Выбираем из базы соответствующий метод оплаты
 ////////////////////////////////////////////////
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 	die("Неизвестный метод оплаты");
 	
-$settings = unserialize($method->settings);
-$payment_currency = $simpla->money->get_currency(intval($method->currency_id));
+$settings = unserialize($method['settings']);
+$payment_currency = $simpla['money']->get_currency(intval($method['currency_id']));
 
 // Проверяем контрольную подпись
 $in_data = array(  'tid'    =>  $_POST['tid'],
@@ -57,20 +57,20 @@ if ($transaction_sign !== $_POST['check'] || empty($settings['rficb_secret_key']
 	die('bad sign');
 
 // Нельзя оплатить уже оплаченный заказ  
-if($order->paid)
+if($order['paid'])
 	die('Этот заказ уже оплачен');
 
-if($_POST['system_income'] != round($simpla->money->convert($order->total_price, $method->currency_id, false), 2) || $_POST['system_income']<=0)
+if($_POST['system_income'] != round($simpla['money']->convert($order['total_price'], $method['currency_id'], false), 2) || $_POST['system_income']<=0)
 	die("incorrect price");
 
 // Установим статус оплачен
-$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 echo 'OK';
 // Отправим уведомление на email
-$simpla->notify->email_order_user(intval($order->id));
-$simpla->notify->email_order_admin(intval($order->id));
+$simpla['notify']->email_order_user(intval($order_id));
+$simpla['notify']->email_order_admin(intval($order_id));
 
 // Спишем товары  
-$simpla->orders->close(intval($order->id));
+$simpla['orders']->close(intval($order_id));
 
 exit();

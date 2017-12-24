@@ -73,7 +73,15 @@ class ProductsView extends View
 							
 
 			$category = $this->categories->get_category((string)$category_url);
-				
+			
+			//301 moved permanently
+			if(isset($category['url2']) && $category['url2'] === $category_url){
+				$root = $this->config->root_url . '/';
+				$path = $this->coMaster->uri_arr['path_arr']['module'] . '/';
+				$url =  $root . $path . $category['url'];
+				header("Location: $url",TRUE,301);
+			}
+			
 
 			if (empty($category) || (!$category['visible'] && empty($_SESSION['admin']))){
 				dtimer::log(__METHOD__ . __LINE__ ." empty category ", 2 );

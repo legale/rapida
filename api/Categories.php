@@ -75,10 +75,10 @@ class Categories extends Simpla
 		if (is_int($id) && array_key_exists(intval($id), $this->all_categories))
 			return $category = $this->all_categories[intval($id)];
 		elseif (is_string($id))
-			foreach ($this->all_categories as $category)
-
-			if ($category['url'] == $id)
-			return $this->get_category((int)$category['id']);
+			foreach ($this->all_categories as $cat)
+			if ($cat['url'] == $id || $cat['url2'] == $id){
+				return $this->get_category((int)$cat['id']);
+			}
 
 		return false;
 	}
@@ -210,8 +210,7 @@ class Categories extends Simpla
 		$pointers[0]['level'] = 0;
 		
 		// Выбираем все категории
-		$query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.pos
-										FROM __categories c ORDER BY c.parent_id, c.pos");
+		$query = $this->db->placehold("SELECT * FROM __categories c ORDER BY c.parent_id, c.pos");
 											
 		// Выбор категорий с подсчетом количества товаров для каждой. Может тормозить при большом количестве товаров.
 		// $query = $this->db->placehold("SELECT c.id, c.parent_id, c.name, c.description, c.url, c.meta_title, c.meta_keywords, c.meta_description, c.image, c.visible, c.pos, COUNT(p.id) as products_count

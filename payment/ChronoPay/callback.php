@@ -10,10 +10,10 @@ require_once('api/Simpla.php');
 
 $simpla = new Simpla();
 
-$order = $simpla->orders->get_order(intval($_POST['order_id']));
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$order = $simpla['orders']->get_order(intval($_POST['order_id']));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 
-$settings = unserialize($method->settings);
+$settings = unserialize($method['settings']);
 
 $sign = md5(
 	trim($settings['chronopay_sharedSec']).
@@ -24,9 +24,9 @@ $sign = md5(
 );
 
 if($sign == $_POST['sign']) {
-	$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+	$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
-	$simpla->orders->close(intval($order->id));
-	$simpla->notify->email_order_user(intval($order->id));
-	$simpla->notify->email_order_admin(intval($order->id));
+	$simpla['orders']->close(intval($order_id));
+	$simpla['notify']->email_order_user(intval($order_id));
+	$simpla['notify']->email_order_admin(intval($order_id));
 }

@@ -95,10 +95,12 @@ class CartView extends View
 			}
 	    	
 	    	// Добавляем товары к заказу
-	    	foreach($this->request->post('amounts') as $variant_id=>$amount)
-	    	{
-	    		$this->orders->add_purchase(array('order_id'=>$order_id, 'variant_id'=>intval($variant_id), 'amount'=>intval($amount)));
-	    	}
+	    	if($amounts = $this->request->post('amounts')){
+				foreach($amounts as $variant_id=>$amount)
+				{
+					$this->orders->add_purchase(array('order_id'=>$order_id, 'variant_id'=>intval($variant_id), 'amount'=>intval($amount)));
+				}
+			}
 	    	
 	    	if ( $order = $this->orders->get_order($order_id) ) {
 				// Стоимость доставки

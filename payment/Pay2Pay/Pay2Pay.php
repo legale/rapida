@@ -10,16 +10,16 @@ class Pay2Pay extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$price = round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);
+		$price = round($this->money->convert($order['total_price'], $payment_method['currency_id'], false), 2);
 		
 		
 		// описание заказа
 		// order description
-		$desc = 'Оплата заказа №'.$order->id;
+		$desc = 'Оплата заказа №'.$order_id;
 		
 		// Способ оплаты
 		$paymode = $settings['pay2pay_paymode'];
@@ -27,7 +27,7 @@ class Pay2Pay extends Simpla
 		$success_url = $this->config->root_url.'/order/';
 		$result_url = $this->config->root_url.'/payment/Pay2Pay/callback.php';		
 		
-		$currency = $payment_currency->code;
+		$currency = $payment_currency['code'];
 		if ($currency == 'RUR')
 		  $currency = 'RUB';
 		  
@@ -36,7 +36,7 @@ class Pay2Pay extends Simpla
               <version>1.2</version>
               <merchant_id>".$settings['pay2pay_merchantid']."</merchant_id>
               <language>ru</language>
-              <order_id>$order->id</order_id>
+              <order_id>$order_id</order_id>
               <amount>$price</amount>
               <currency>$currency</currency>
               <description>$desc</description>

@@ -47,10 +47,10 @@ class nusoap_fault extends nusoap_base {
 	*/
 	function nusoap_fault($faultcode,$faultactor='',$faultstring='',$faultdetail=''){
 		parent::nusoap_base();
-		$this->faultcode = $faultcode;
-		$this->faultactor = $faultactor;
-		$this->faultstring = $faultstring;
-		$this->faultdetail = $faultdetail;
+		$this['faultcode'] = $faultcode;
+		$this['faultactor'] = $faultactor;
+		$this['faultstring'] = $faultstring;
+		$this['faultdetail'] = $faultdetail;
 	}
 
 	/**
@@ -61,18 +61,18 @@ class nusoap_fault extends nusoap_base {
 	*/
 	function serialize(){
 		$ns_string = '';
-		foreach($this->namespaces as $k => $v){
+		foreach($this['namespaces'] as $k => $v){
 			$ns_string .= "\n  xmlns:$k=\"$v\"";
 		}
 		$return_msg =
-			'<?xml version="1.0" encoding="'.$this->soap_defencoding.'"?>'.
+			'<?xml version="1.0" encoding="'.$this['soap_defencoding'].'"?>'.
 			'<SOAP-ENV:Envelope SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"'.$ns_string.">\n".
 				'<SOAP-ENV:Body>'.
 				'<SOAP-ENV:Fault>'.
-					$this->serialize_val($this->faultcode, 'faultcode').
-					$this->serialize_val($this->faultactor, 'faultactor').
-					$this->serialize_val($this->faultstring, 'faultstring').
-					$this->serialize_val($this->faultdetail, 'detail').
+					$this['serialize_val']($this['faultcode'], 'faultcode').
+					$this['serialize_val']($this['faultactor'], 'faultactor').
+					$this['serialize_val']($this['faultstring'], 'faultstring').
+					$this['serialize_val']($this['faultdetail'], 'detail').
 				'</SOAP-ENV:Fault>'.
 				'</SOAP-ENV:Body>'.
 			'</SOAP-ENV:Envelope>';

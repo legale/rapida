@@ -21,22 +21,22 @@ $order_id = intval($_POST['ORDER']) - 1000000;
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($order_id));
+$order = $simpla['orders']->get_order(intval($order_id));
 if(empty($order))
 	stop('Оплачиваемый заказ не найден');
 
 // Нельзя оплатить уже оплаченный заказ  
-if($order->paid)
+if($order['paid'])
 	stop('Этот заказ уже оплачен');
 
 ////////////////////////////////////////////////
 // Выбираем из базы соответствующий метод оплаты
 ////////////////////////////////////////////////
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 	stop("Неизвестный метод оплаты");
  
-$settings = unserialize($method->settings);
+$settings = unserialize($method['settings']);
 
 
 ////////////////////////////////////////////////
@@ -60,7 +60,7 @@ if(strtoupper($sign) != $_POST['P_SIGN'])
 ////////////////////////////////////
        
 // Сумма заказа у нас в магазине
-$order_amount = $simpla->money->convert($order->total_price, $method->currency_id, false);
+$order_amount = $simpla['money']->convert($order['total_price'], $method['currency_id'], false);
        
 // Должна быть равна переданной сумме
 if($order_amount != $_POST['AMOUNT'] || $_POST['AMOUNT']<=0)
@@ -71,14 +71,14 @@ if($_POST['RESULT'] != 0)
 	stop("RESULT != 0, ".$_POST['RCTEXT']);
 
 // Установим статус оплачен
-$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
 // Спишем товары  
-$simpla->orders->close(intval($order->id));
+$simpla['orders']->close(intval($order_id));
 
 
-$simpla->notify->email_order_user(intval($order->id));
-$simpla->notify->email_order_admin(intval($order->id));
+$simpla['notify']->email_order_user(intval($order_id));
+$simpla['notify']->email_order_admin(intval($order_id));
 
 
 stop("OK");

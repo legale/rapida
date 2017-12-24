@@ -21,39 +21,37 @@ class Notify extends Simpla
 
 	public function email_order_user($order_id)
 	{
-		if (! ($order = $this->orders->get_order(intval($order_id))) || empty($order['email']))
+		if (! ($order = $this->orders->get_order(intval($order_id))) || empty($order['email'])){
 			return false;
+		}
 
-		$purchases = $this->orders->get_purchases(array('order_id' => $order['id']));
-		$this->design->assign('purchases', $purchases);
+		if(!$purchases = $this->orders->get_purchases(array('order_id' => $order['id']))){
+			return false;
+		}
 
 		$products_ids = array();
 		$variants_ids = array();
-		foreach ($purchases as $purchase)
-			{
+		
+		foreach($purchases as $purchase)
+		{
 			$products_ids[] = $purchase['product_id'];
 			$variants_ids[] = $purchase['variant_id'];
 		}
-
-		$products = $this->products->get_products(array('id' => $products_ids));
-
-
-
-		$variants = array();
-		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)
-			{
-			$variants[$v['id']] = $v;
-			$products[$v['product_id']]['variants'][] = $v;
+	
+		if($products = $this->products->get_products(array('id'=>$products_ids))){
+			$variants = $this->variants->get_variants(array('grouped'=>'product_id', 'id'=>$variants_ids));
 		}
-
-		foreach ($purchases as &$purchase)
-			{
-			if (!empty($products->{$purchase['product_id']}))
-				$purchase['product'] = $products[$purchase['product_id']];
-			if (!empty($variants[$purchase['variant_id']]))
-				$purchase['variant'] = $variants[$purchase['variant_id']];
+		
+		foreach($purchases as $k=>$pr){
+			if(!empty($products[$pr['product_id']])){
+				$purchases[$k]['product'] = $products[$pr['product_id']];
+			}
+			if(!empty($variants[$pr['product_id']])){
+				$purchases[$k]['variants'] = $variants[$pr['product_id']];
+			}
 		}
-			
+		$this->design->assign('purchases', $purchases);
+	
 			// Способ доставки
 		$delivery = $this->delivery->get_delivery($order['delivery_id']);
 		$this->design->assign('delivery', $delivery);
@@ -76,39 +74,38 @@ class Notify extends Simpla
 
 	public function email_order_admin($order_id)
 	{
-		if (! ($order = $this->orders->get_order(intval($order_id))))
+		if (! ($order = $this->orders->get_order(intval($order_id)))){
 			return false;
+		}
 
-		$purchases = $this->orders->get_purchases(array('order_id' => $order['id']));
-		$this->design->assign('purchases', $purchases);
+		if(!$purchases = $this->orders->get_purchases(array('order_id' => $order['id']))){
+			return false;
+		}
+		
 
 		$products_ids = array();
 		$variants_ids = array();
-		foreach ($purchases as $purchase)
-			{
+	
+		foreach($purchases as $purchase)
+		{
 			$products_ids[] = $purchase['product_id'];
 			$variants_ids[] = $purchase['variant_id'];
 		}
-
-		$products = $this->products->get_products(array('id' => $products_ids));
-
-
-
-		$variants = array();
-		foreach ($this->variants->get_variants(array('id' => $variants_ids)) as $v)
-			{
-			$variants[$v['id']] = $v;
-			$products[$v['product_id']]['variants'][] = $v;
+	
+		if($products = $this->products->get_products(array('id'=>$products_ids))){
+			$variants = $this->variants->get_variants(array('grouped'=>'product_id', 'id'=>$variants_ids));
 		}
-
-		foreach ($purchases as &$purchase)
-			{
-			if (!empty($products[$purchase['product_id']]))
-				$purchase['product'] = $products[$purchase['product_id']];
-			if (!empty($variants[$purchase['variant_id']]))
-				$purchase['variant'] = $variants[$purchase['variant_id']];
+		
+		foreach($purchases as $k=>$pr){
+			if(!empty($products[$pr['product_id']])){
+				$purchases[$k]['product'] = $products[$pr['product_id']];
+			}
+			if(!empty($variants[$pr['product_id']])){
+				$purchases[$k]['variants'] = $variants[$pr['product_id']];
+			}
 		}
-			
+		$this->design->assign('purchases', $purchases);
+	
 			// Способ доставки
 		$delivery = $this->delivery->get_delivery($order['delivery_id']);
 		$this->design->assign('delivery', $delivery);
@@ -118,7 +115,7 @@ class Notify extends Simpla
 		$this->design->assign('user', $user);
 
 		$this->design->assign('order', $order);
-		$this->design->assign('purchases', $purchases);
+		
 
 			// В основной валюте
 		$this->design->assign('main_currency', $this->money->get_currency());

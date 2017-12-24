@@ -241,7 +241,7 @@ class Design extends Simpla
 			$variants = $this->variants->get_variants(array('grouped'=> 'product_id', 'product_id' => $ids, 'in_stock' => true));
 
 			// Выбираем варианты товаров
-			if(isset($products)){
+			if(!empty($products)){
 				foreach($products as $pid=>$p){
 					if(isset($variants[$pid])){
 						$products[$pid]['variants'] = $variants[$pid];

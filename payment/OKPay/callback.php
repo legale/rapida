@@ -63,53 +63,53 @@ $order_id = intval($_POST['ok_invoice']);
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($order_id));
+$order = $simpla['orders']->get_order(intval($order_id));
 if(empty($order))
 	my_exit('Оплачиваемый заказ не найден');
  
 ////////////////////////////////////////////////
 // Выбираем из базы соответствующий метод оплаты
 ////////////////////////////////////////////////
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 	my_exit("Неизвестный метод оплаты");
 	
-$settings = unserialize($method->settings);
-$payment_currency = $simpla->money->get_currency(intval($method->currency_id));
+$settings = unserialize($method['settings']);
+$payment_currency = $simpla['money']->get_currency(intval($method['currency_id']));
 
 // Проверяем получателя платежа
 if($_POST['ok_reciever'] != $settings['okpay_receiver'])
 	my_exit("bad reciever");
 
 // Проверяем валюту
-if($_POST['ok_txn_currency'] != $payment_currency->code)
+if($_POST['ok_txn_currency'] != $payment_currency['code'])
 	my_exit("bad currency");
 
 // Нельзя оплатить уже оплаченный заказ  
-if($order->paid)
+if($order['paid'])
 	my_exit('Этот заказ уже оплачен');
 
-if($_POST['ok_item_1_price'] != round($simpla->money->convert($order->total_price, $method->currency_id, false), 2) || $_POST['ok_item_1_price']<=0)
+if($_POST['ok_item_1_price'] != round($simpla['money']->convert($order['total_price'], $method['currency_id'], false), 2) || $_POST['ok_item_1_price']<=0)
 	my_exit("incorrect price");
 	
 	       
 // Установим статус оплачен
-$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
 // Отправим уведомление на email
-$simpla->notify->email_order_user(intval($order->id));
-$simpla->notify->email_order_admin(intval($order->id));
+$simpla['notify']->email_order_user(intval($order_id));
+$simpla['notify']->email_order_admin(intval($order_id));
 
 // Спишем товары  
-$simpla->orders->close(intval($order->id));
+$simpla['orders']->close(intval($order_id));
 
 // Перенаправим пользователя на страницу заказа
-header('Location: '.$simpla->config->root_url.'/order/'.$order->url);
+header('Location: '.$simpla['config']->root_url.'/order/'.$order['url']);
 
 exit();
 
 function my_exit($text)
 {
-	header('Location: '.$simpla->request->root_url.'/order/');
+	header('Location: '.$simpla['request']->root_url.'/order/');
 	exit();
 }

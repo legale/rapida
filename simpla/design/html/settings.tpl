@@ -72,6 +72,7 @@
 		<div class="block layer">
 			<h2>Оповещения</h2>
 			<ul>
+				<li><label class=property>Телефон</label><input name="phone" class="simpla_inp" type="text" value="{$settings->phone|escape}" /></li>
 				<li><label class=property>Оповещение о заказах</label><input name="order_email" class="simpla_inp" type="text" value="{$settings->order_email|escape}" /></li>
 				<li><label class=property>Оповещение о комментариях</label><input name="comment_email" class="simpla_inp" type="text" value="{$settings->comment_email|escape}" /></li>
 				<li><label class=property>Обратный адрес оповещений</label><input name="notify_from_email" class="simpla_inp" type="text" value="{$settings->notify_from_email|escape}" /></li>

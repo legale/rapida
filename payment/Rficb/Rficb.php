@@ -10,15 +10,15 @@ class Rficb extends Simpla
 			$button_text = 'Перейти к оплате';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$price = round($this->money->convert($order->total_price, $payment_method->currency_id, false), 2);
+		$price = round($this->money->convert($order['total_price'], $payment_method['currency_id'], false), 2);
 		
 		
 		// описание заказа
-		$desc = 'Оплата заказа №'.$order->id;
+		$desc = 'Оплата заказа №'.$order_id;
 		
 		$key = $settings['rficb_payment_key'];
 					
@@ -26,7 +26,7 @@ class Rficb extends Simpla
 					enctype='application/x-www-form-urlencoded' accept-charset='UTF-8'>
 					<input type='hidden' name='key' value='$key'>
 					<input type='hidden' name='cost' value='$price'>
-					<input type='hidden' name='order_id' value='$order->id'>
+					<input type='hidden' name='order_id' value='$order_id'>
 					<input type='hidden' name='name' value='$desc'>
 					<input type='submit' name='process' value='$button_text' class='checkout_button'>
 					</form>";

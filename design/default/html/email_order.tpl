@@ -97,26 +97,26 @@
 </table>
 
 <h1 style="font-weight:normal;font-family:arial;">Вы заказали:</h1>
-
+<!--
+<PRE>
+{*print_r($purchases)*}
+<PRE>
+-->
 <table cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
 
 	{foreach $purchases as $purchase}
 	<tr>
 		<td align="center" style="padding:6px; width:100; padding:6px; background-color:#ffffff; border:1px solid #e0e0e0;font-family:arial;">
+			{$url = $purchase['product']['url']}
+			{$pname = $purchase['product']['name']}
 			{$image = $purchase['product']['image']}
 			{$image_id = $purchase['product']['image_id']}
-			{$url = $purchase['product']['url']}
-			{$name = $purchase['product']['name']}
 			
 			<a href="{$config->root_url}/products/{$url}"><img border="0" src="{$image|resize:products:$image_id:50:50}"></a>
 		</td>
 		<td style="padding:6px; width:250; padding:6px; background-color:#f0f0f0; border:1px solid #e0e0e0;font-family:arial;">
 			<a href="{$config->root_url}/products/{$purchase['product']['url']}">{$purchase['product_name']}</a>
 			{$purchase['variant_name']}
-			{if $order['paid'] && $purchase['variant']['attachment']}
-			<br>
-			<a href="{$config->root_url}/order/{$order['url']}/{$purchase['variant']['attachment']}"><font color="green">Скачать {$purchase['variant']['attachment']}</font></a>
-			{/if}
 		</td>
 		<td align=right style="padding:6px; text-align:right; width:150; background-color:#ffffff; border:1px solid #e0e0e0;font-family:arial;">
 			{$purchase['amount']} {$settings->units} &times; {$purchase['price']|convert:$currency['id']}&nbsp;{$currency['sign']}
