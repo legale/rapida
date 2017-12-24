@@ -128,11 +128,14 @@ $(function() {
 		<div class="block layer">
 		<h2>Возможные способы доставки</h2>
 		<ul>
+		{if $deliveries}
 		{foreach $deliveries as $delivery}
 			<li>
-			<input type=checkbox name="payment_deliveries[]" id="delivery_{$delivery['id']}" value='{$delivery['id']}' {if in_array($delivery['id'], $payment_deliveries)}checked{/if}> <label for="delivery_{$delivery['id']}">{$delivery['name']}</label><br>
+			<input type=checkbox name="payment_deliveries[]" id="delivery_{$delivery['id']}" 
+			value="{$delivery['id']}" {if in_array($delivery['id'], $payment_deliveries)}checked{/if}> <label for="delivery_{$delivery['id']}">{$delivery['name']}</label><br>
 			</li>
 		{/foreach}
+		{/if}
 		</ul>		
 		</div>
 	</div>

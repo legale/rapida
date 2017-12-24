@@ -108,22 +108,22 @@ $payment_method_id = $_POST['PAYMENT_METHOD_ID'];
 ////////////////////////////////////////////////
 // Выберем заказ из базы
 ////////////////////////////////////////////////
-$order = $simpla->orders->get_order(intval($order_id));
+$order = $simpla['orders']->get_order(intval($order_id));
 if(empty($order))
 	die('Оплачиваемый заказ не найден');
  
 // Нельзя оплатить уже оплаченный заказ  
-if($order->paid)
+if($order['paid'])
 	die('Этот заказ уже оплачен');
 
 ////////////////////////////////////////////////
 // Выбираем из базы соответствующий метод оплаты
 ////////////////////////////////////////////////
-$method = $simpla->payment->get_payment_method(intval($order->payment_method_id));
+$method = $simpla['payment']->get_payment_method(intval($order['payment_method_id']));
 if(empty($method))
 	die("Неизвестный метод оплаты");
  
-$settings = unserialize($method->settings);
+$settings = unserialize($method['settings']);
        
        
 ////////////////////////////////////
@@ -156,7 +156,7 @@ if(($first_purse_letter = $merchant_purse_first_letter) != $payer_purse_first_le
 	die("Типы кошельков продавца и покупателя не совпадают");
 
 // Сумма заказа у нас в магазине
-$order_amount = $simpla->money->convert($order->total_price, $method->currency_id, false);
+$order_amount = $simpla['money']->convert($order['total_price'], $method['currency_id'], false);
        
 // Должна быть равна переданной сумме
 if($order_amount != $amount || $amount<=0)
@@ -171,13 +171,13 @@ if($merchant_purse != $settings['purse'])
 ////////////////////////////////////
 // Проверка наличия товара
 ////////////////////////////////////
-$purchases = $simpla->orders->get_purchases(array('order_id'=>intval($order->id)));
+$purchases = $simpla['orders']->get_purchases(array('order_id'=>intval($order_id)));
 foreach($purchases as $purchase)
 {
-	$variant = $simpla->variants->get_variant(intval($purchase->variant_id));
-	if(empty($variant) || (!$variant->infinity && $variant->stock < $purchase->amount))
+	$variant = $simpla['variants']->get_variant(intval($purchase['variant_id']));
+	if(empty($variant) || (!$variant['infinity'] && $variant['stock'] < $purchase['amount']))
 	{
-		die("Нехватка товара $purchase->product_name $purchase->variant_name");
+		die("Нехватка товара $purchase['product_name'] $purchase['variant_name']");
 	}
 }
        
@@ -185,16 +185,16 @@ foreach($purchases as $purchase)
 if(!$pre_request)
 {
 	// Установим статус оплачен
-	$simpla->orders->update_order(intval($order->id), array('paid'=>1));
+	$simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
 	// Спишем товары  
-	$simpla->orders->close(intval($order->id));
+	$simpla['orders']->close(intval($order_id));
 }
 
 if(!$pre_request)
 {
-	$simpla->notify->email_order_user(intval($order->id));
-	$simpla->notify->email_order_admin(intval($order->id));
+	$simpla['notify']->email_order_user(intval($order_id));
+	$simpla['notify']->email_order_admin(intval($order_id));
 }
 
 die("Yes");

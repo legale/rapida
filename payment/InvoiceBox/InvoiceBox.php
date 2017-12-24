@@ -10,9 +10,9 @@ class InvoiceBox extends Simpla
 			$button_text = 'Оплатить';
 		
 		$order 			= $this->orders->get_order((int)$order_id);
-		$payment_method 	= $this->payment->get_payment_method($order->payment_method_id);
-		$payment_currency 	= $this->money->get_currency(intval($payment_method->currency_id));
-		$payment_settings 	= $this->payment->get_payment_settings($payment_method->id);
+		$payment_method 	= $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_currency 	= $this->money->get_currency(intval($payment_method['currency_id']));
+		$payment_settings 	= $this->payment->get_payment_settings($payment_method['id']);
 
 		// регистрационная информация (идентификаторы)
 		// invoicebox_participant_id
@@ -32,20 +32,20 @@ class InvoiceBox extends Simpla
 		}; //
 		$timelimit		= date( "Y-m-d", $timelimit ) . "T" . date( "H:i:s", $timelimit );
 
-		$itransfer_order_amount	= $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$itransfer_order_amount	= $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 		$itransfer_order_amount	= number_format( $itransfer_order_amount, 2, '.', '');
 
-		$itransfer_url_success	= $this->config->root_url.'/order/'.$order->url;
-		$itransfer_url_fail	= $this->config->root_url.'/order/'.$order->url;
+		$itransfer_url_success	= $this->config->root_url.'/order/'.$order['url'];
+		$itransfer_url_fail	= $this->config->root_url.'/order/'.$order['url'];
 				
 		$itransfer_order_quantity	= 1;
-		$participant_order_id	= $order->id;
+		$participant_order_id	= $order_id;
 		$participant_description= 'Оплата заказа №' . $participant_order_id;
 		$itransfer_language	= $payment_settings['language'];
 
-		$personName		= $order->name;
-		$personEmail		= $order->email;
-		$personPhone		= $order->phone;
+		$personName		= $order['name'];
+		$personEmail		= $order['email'];
+		$personPhone		= $order['phone'];
 
 		$participant_sign 	= md5(
 				$participant_id .
@@ -58,7 +58,7 @@ class InvoiceBox extends Simpla
 				$personPhone .
 				$participant_apikey
 		); //
-		$shp_item 		= $payment_method->id;
+		$shp_item 		= $payment_method['id'];
 	
 		$button =	"<form action='https://go.invoicebox.ru/module_inbox_auto.u' method='post'>".
 					"<input type='hidden' name='itransfer_participant_id' 		value='" . $participant_id . "'/>".

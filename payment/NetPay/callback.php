@@ -7,10 +7,10 @@ $simpla = new Simpla();
 $status = 0;
 $error = '';
 
-$query = $simpla->db->placehold("SELECT * FROM __payment_methods WHERE module=? LIMIT 1", 'NetPay');
-$simpla->db->query($query);
-$payment_method = $simpla->db->result();
-$pyment_settins = unserialize($payment_method->settings);
+$query = $simpla['db']->placehold("SELECT * FROM __payment_methods WHERE module=? LIMIT 1", 'NetPay');
+$simpla['db']->query($query);
+$payment_method = $simpla['db']->result();
+$pyment_settins = unserialize($payment_method['settings']);
 $api_key = $pyment_settins['api_key'];    
 
 
@@ -69,26 +69,26 @@ if (($newarr[2][1] == 'APPROVED') &
     (($newarr[3][1] == 'Sale') || ($newarr[3][1] == 'Sale_Qiwi') || ($newarr[3][1] == 'Sale_YaMoney') || ($newarr[3][1] == 'Sale_WebMoney'))){
 
     // Выберем заказ из базы
-    $order = $simpla->orders->get_order(intval($newarr[0][1]));
+    $order = $simpla['orders']->get_order(intval($newarr[0][1]));
     if(empty($order))
             $error = 'Оплачиваемый заказ не найден';
 
     // Установим статус оплачен
-    $simpla->orders->update_order(intval($order->id), array('paid'=>1));
+    $simpla['orders']->update_order(intval($order_id), array('paid'=>1));
 
     // Отправим уведомление на email
-    $simpla->notify->email_order_user(intval($order->id));
-    $simpla->notify->email_order_admin(intval($order->id));
+    $simpla['notify']->email_order_user(intval($order_id));
+    $simpla['notify']->email_order_admin(intval($order_id));
 
     // Спишем товары  
-    $simpla->orders->close(intval($order->id));
+    $simpla['orders']->close(intval($order_id));
 
     $status = '1';
     
 }
 
 echo '<notification>
-<orderId>' . $order->id . '</orderId>
+<orderId>' . $order_id . '</orderId>
 <transactionType>' . $newarr[3][1] . '</transactionType>
 <status>' . $status . '</status>
 <error>' . $error . '</error>

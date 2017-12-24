@@ -22,25 +22,25 @@ class Paysera extends Simpla
 			$button_text = 'Checkout';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 		
-		$amount = $this->money->convert($order->total_price, $payment_method->currency_id, false);
+		$amount = $this->money->convert($order['total_price'], $payment_method['currency_id'], false);
 		
-		$success_url = $this->config->root_url.'/order/'.$order->url;		
-		$fail_url = $this->config->root_url.'/order/'.$order->url;
-		$callback_url = $this->config->root_url.'/payment/Paysera/callback.php?order_id='.$order->id;		
+		$success_url = $this->config->root_url.'/order/'.$order['url'];		
+		$fail_url = $this->config->root_url.'/order/'.$order['url'];
+		$callback_url = $this->config->root_url.'/payment/Paysera/callback.php?order_id='.$order_id;		
 
-		$currency = $this->money->get_currency(intval($payment_method->currency_id));
+		$currency = $this->money->get_currency(intval($payment_method['currency_id']));
 
 		$request = WebToPay::buildRequest(array(
 			'projectid'     => $payment_settings['paysera_project_id'],
 			'sign_password' => $payment_settings['paysera_password'],
 			'test'       => $payment_settings['paysera_test_mode'],
-			'orderid'       => $order->id,
-			'p_email'       => $order->email,
+			'orderid'       => $order_id,
+			'p_email'       => $order['email'],
 			'amount'        => round($amount*100),
-			'currency'      => $currency->code,
+			'currency'      => $currency['code'],
 			'paytext'       => 'Payment for order #[order_nr] on [site_name]',
 			'accepturl'     => $success_url,
 			'cancelurl'     => $fail_url,

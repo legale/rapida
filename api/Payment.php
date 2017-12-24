@@ -54,30 +54,28 @@ class Payment extends Simpla
 
 		$modules = array();
 		$handler = opendir($modules_dir);
-		while ($dir = readdir($handler))
-			{
+		while ($dir = readdir($handler)){
 			$dir = preg_replace("/[^A-Za-z0-9]+/", "", $dir);
 			if (!empty($dir) && $dir != "." && $dir != ".." && is_dir($modules_dir . $dir))
 				{
 
-				if (is_readable($modules_dir . $dir . '/settings.xml') && $xml = simplexml_load_file($modules_dir . $dir . '/settings.xml'))
+				if (is_readable($modules_dir . $dir . '/settings.xml') 
+				&& $xml = simplexml_load_file($modules_dir . $dir . '/settings.xml'))
 					{
-					$module = new stdClass;
+					$module = array();
 
-					$module->name = (string)$xml->name;
-					$module->settings = array();
+					$module['name'] = (string)$xml->name;
+					$module['settings'] = array();
 
-					foreach ($xml->settings as $setting)
-						{
-						$module->settings[(string)$setting->variable] = new stdClass;
-						$module->settings[(string)$setting->variable]->name = (string)$setting->name;
-						$module->settings[(string)$setting->variable]->variable = (string)$setting->variable;
-						$module->settings[(string)$setting->variable]->variable_options = array();
-						foreach ($setting->options as $option)
-							{
-							$module->settings[(string)$setting->variable]->options[(string)$option->value] = new stdClass;
-							$module->settings[(string)$setting->variable]->options[(string)$option->value]->name = (string)$option->name;
-							$module->settings[(string)$setting->variable]->options[(string)$option->value]->value = (string)$option->value;
+					foreach ($xml->settings as $s){
+						$module['settings'][(string)$s->variable] = array();
+						$module['settings'][(string)$s->variable]['name'] = (string)$s->name;
+						$module['settings'][(string)$s->variable]['variable'] = (string)$s->variable;
+						$module['settings'][(string)$s->variable]['options'] = array();
+						foreach ($s->options as $o){
+							$module['settings'][(string)$s->variable]['options'][(string)$o->value] = array();
+							$module['settings'][(string)$s->variable]['options'][(string)$o->value]['name'] = (string)$o->name;
+							$module['settings'][(string)$s->variable]['options'][(string)$o->value]['value'] = (string)$o->value;
 						}
 					}
 					$modules[$dir] = $module;
@@ -94,7 +92,7 @@ class Payment extends Simpla
 	{
 		$query = $this->db->placehold("SELECT delivery_id FROM __delivery_payment WHERE payment_method_id=?", intval($id));
 		$this->db->query($query);
-		return $this->db->results('delivery_id');
+		return $this->db->results_array('delivery_id');
 	}
 
 	public function update_payment_method($id, $payment_method)

@@ -184,7 +184,7 @@ class MonetaWebServiceConnector
 		if($options === null)
 			$options = array();			
 		
-		$this->client = new SoapClient($wsdl, $options);
+		$this['client'] = new SoapClient($wsdl, $options);
 	}
 	
 	// Block of generated methods
@@ -199,7 +199,7 @@ class MonetaWebServiceConnector
 	public function FindProfileDocuments(MonetaFindProfileDocumentsRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -212,7 +212,7 @@ class MonetaWebServiceConnector
 	public function FindAccountById( $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -225,7 +225,7 @@ class MonetaWebServiceConnector
 	public function ConfirmTransaction(MonetaConfirmTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -238,7 +238,7 @@ class MonetaWebServiceConnector
 	public function FindProfileInfo(MonetaFindProfileInfoRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -251,7 +251,7 @@ class MonetaWebServiceConnector
 	public function DeleteAccountRelation(MonetaDeleteAccountRelationRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -264,7 +264,7 @@ class MonetaWebServiceConnector
 	public function CancelTransactionBatch(MonetaCancelTransactionBatchRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class MonetaWebServiceConnector
 	public function CreateProfile(MonetaCreateProfileRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -290,7 +290,7 @@ class MonetaWebServiceConnector
 	public function TransferBatch(MonetaTransactionBatchRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -303,7 +303,7 @@ class MonetaWebServiceConnector
 	public function VerifyTransaction(MonetaVerifyTransactionRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -316,7 +316,7 @@ class MonetaWebServiceConnector
 	public function GetAccountRelation(MonetaGetAccountRelationRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -329,7 +329,7 @@ class MonetaWebServiceConnector
 	public function FindAccountByAlias( $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -342,7 +342,7 @@ class MonetaWebServiceConnector
 	public function ConfirmTransactionBatch(MonetaConfirmTransactionBatchRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -355,7 +355,7 @@ class MonetaWebServiceConnector
 	public function GetAccountPaymentPasswordChallenge(MonetaGetAccountPaymentPasswordChallengeRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -368,7 +368,7 @@ class MonetaWebServiceConnector
 	public function FindAccountsList(MonetaFindAccountsListRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -381,7 +381,7 @@ class MonetaWebServiceConnector
 	public function GetOperationDetailsById( $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -394,7 +394,7 @@ class MonetaWebServiceConnector
 	public function Invoice(MonetaInvoiceRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -407,7 +407,7 @@ class MonetaWebServiceConnector
 	public function SaveAccountRelation(MonetaAccountRelation $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -420,7 +420,7 @@ class MonetaWebServiceConnector
 	public function CancelTransaction(MonetaCancelTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -433,7 +433,7 @@ class MonetaWebServiceConnector
 	public function CreateProfileDocument(MonetaDocument $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -446,7 +446,7 @@ class MonetaWebServiceConnector
 	public function UploadProfileDocumentFile(MonetaUploadProfileDocumentFileRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -459,7 +459,7 @@ class MonetaWebServiceConnector
 	public function AuthoriseTransactionBatch(MonetaAuthoriseTransactionBatchRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -472,7 +472,7 @@ class MonetaWebServiceConnector
 	public function FindLastOperationsList(MonetaFindLastOperationsListRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -485,7 +485,7 @@ class MonetaWebServiceConnector
 	public function FindAccountRelations(MonetaFindAccountRelationsRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -498,7 +498,7 @@ class MonetaWebServiceConnector
 	public function AuthoriseTransaction(MonetaTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -511,7 +511,7 @@ class MonetaWebServiceConnector
 	public function EditAccount(MonetaEditAccountRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -524,7 +524,7 @@ class MonetaWebServiceConnector
 	public function ForecastTransaction(MonetaTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -537,7 +537,7 @@ class MonetaWebServiceConnector
 	public function Transfer(MonetaTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -550,7 +550,7 @@ class MonetaWebServiceConnector
 	public function FindProfileDocumentFiles(MonetaFindProfileDocumentFilesRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -563,7 +563,7 @@ class MonetaWebServiceConnector
 	public function FindOperationsListByCTID(MonetaFindOperationsListByCTIDRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -576,7 +576,7 @@ class MonetaWebServiceConnector
 	public function CreateAccount(MonetaCreateAccountRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -589,7 +589,7 @@ class MonetaWebServiceConnector
 	public function GetProfileInfo(MonetaGetProfileInfoRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -602,7 +602,7 @@ class MonetaWebServiceConnector
 	public function FindProfileInfoByAccountId( $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -615,7 +615,7 @@ class MonetaWebServiceConnector
 	public function EditProfileDocument(MonetaDocument $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -628,7 +628,7 @@ class MonetaWebServiceConnector
 	public function Refund(MonetaRefundRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -641,7 +641,7 @@ class MonetaWebServiceConnector
 	public function FindOperationsList(MonetaFindOperationsListRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -654,7 +654,7 @@ class MonetaWebServiceConnector
 	public function VerifyTransfer(MonetaTransactionRequestType $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	/**
@@ -667,7 +667,7 @@ class MonetaWebServiceConnector
 	public function EditProfile(MonetaEditProfileRequest $request)
 	{
 		$request = array($request);
-		return $this->call(__FUNCTION__, $request);
+		return $this['call'](__FUNCTION__, $request);
 	}
 
 	// end of block
@@ -682,7 +682,7 @@ class MonetaWebServiceConnector
 	 */
 	public function addInputHeader($header)
 	{
-		$this->inputHeaders[] = $header;
+		$this['inputHeaders'][] = $header;
 	}
 	
 	/**
@@ -692,7 +692,7 @@ class MonetaWebServiceConnector
 	 */
 	public function getOutputHeaders()
 	{
-		return $this->outputHeaders;
+		return $this['outputHeaders'];
 	}
 	
 
@@ -707,7 +707,7 @@ class MonetaWebServiceConnector
 	 */
 	protected function call($method, $data, $options = null)
 	{
-		return $this->client->__soapCall($method, $data, $options, $this->inputHeaders, $this->outputHeaders);
+		return $this['client']->__soapCall($method, $data, $options, $this['inputHeaders'], $this['outputHeaders']);
 	}
 }
 ?>

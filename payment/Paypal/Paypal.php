@@ -22,23 +22,23 @@ class Paypal extends Simpla
 			$button_text = 'Checkout with Paypal';
 		
 		$order = $this->orders->get_order((int)$order_id);
-		$purchases = $this->orders->get_purchases(array('order_id'=>intval($order->id)));
+		$purchases = $this->orders->get_purchases(array('order_id'=>intval($order_id)));
 
-		$payment_method = $this->payment->get_payment_method($order->payment_method_id);
-		$currency = $this->money->get_currency(intval($payment_method->currency_id));
-		$payment_settings = $this->payment->get_payment_settings($payment_method->id);
+		$payment_method = $this->payment->get_payment_method($order['payment_method_id']);
+		$currency = $this->money->get_currency(intval($payment_method['currency_id']));
+		$payment_settings = $this->payment->get_payment_settings($payment_method['id']);
 			
 		if($payment_settings['mode'] == 'sandbox') $paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
 		else $paypal_url = "https://www.paypal.com/cgi-bin/webscr";
 			
 		$ipn_url = $this->config->root_url.'/payment/Paypal/callback.php';
-		$success_url = $this->config->root_url.'/order/'.$order->url;
-		$fail_url = $this->config->root_url.'/order/'.$order->url;
+		$success_url = $this->config->root_url.'/order/'.$order['url'];
+		$fail_url = $this->config->root_url.'/order/'.$order['url'];
 
 		$button =	"<form method='post' action= '".$paypal_url."'>
 					<input type='hidden' name='charset' value='utf-8'>
-					<input type='hidden' name='currency_code' value='".$currency->code."'>
-					<input type='hidden' name='invoice' value='".$order->id."'>
+					<input type='hidden' name='currency_code' value='".$currency['code']."'>
+					<input type='hidden' name='invoice' value='".$order_id."'>
 					<input type='hidden' name='business' value='".$payment_settings['business']."'>
 					<input type='hidden' name='cmd' value='_cart'>
 					<input type='hidden' name='upload' value='1'>
@@ -48,30 +48,30 @@ class Paypal extends Simpla
 					<input type='hidden' name='cancel_return' value='$fail_url'>
 					";
 					
-		if($order->discount>0)
-			$button .= "<input type='hidden' name='discount_rate_cart' value='".$order->discount."'>";
+		if($order['discount']>0)
+			$button .= "<input type='hidden' name='discount_rate_cart' value='".$order['discount']."'>";
 					
-		if($order->coupon_discount>0)
+		if($order['coupon_discount']>0)
 		{
-			$coupon_discount = $this->money->convert($order->coupon_discount, $payment_method->currency_id, false);
+			$coupon_discount = $this->money->convert($order['coupon_discount'], $payment_method['currency_id'], false);
 			$button .= "<input type='hidden' name='discount_amount_cart' value='".$coupon_discount."'>";
 		}
 					
 		$i = 1;
 		foreach($purchases as $purchase)
 		{			
-			$price = $this->money->convert($purchase->price, $payment_method->currency_id, false);
+			$price = $this->money->convert($purchase['price'], $payment_method['currency_id'], false);
 			$price = number_format($price, 2, '.', '');
-			$button .=	"<input type='hidden' name='item_name_".$i."' value='".$purchase->product_name.' '.$purchase->variant_name."'>
+			$button .=	"<input type='hidden' name='item_name_".$i."' value='".$purchase['product_name'].' '.$purchase['variant_name']."'>
 						<input type='hidden' name='amount_".$i."' value='".$price."'>
-						<input type='hidden' name='quantity_".$i."' value='".$purchase->amount."'>";
+						<input type='hidden' name='quantity_".$i."' value='".$purchase['amount']."'>";
 			$i++;
 		}
 			
 		$delivery_price = 0;
-		if($order->delivery_id && !$order->separate_delivery && $order->delivery_price>0)
+		if($order['delivery_id'] && !$order['separate_delivery'] && $order['delivery_price']>0)
 		{
-			$delivery_price = $this->money->convert($order->delivery_price, $payment_method->currency_id, false);
+			$delivery_price = $this->money->convert($order['delivery_price'], $payment_method['currency_id'], false);
 			$delivery_price = number_format($delivery_price, 2, '.', '');
 			$button .=	"<input type='hidden' name='shipping_1' value='".$delivery_price."'>";
 		}

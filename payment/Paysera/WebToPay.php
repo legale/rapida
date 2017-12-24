@@ -82,8 +82,8 @@ class WebToPay {
         unset($data['projectid']);
 
         $factory = new WebToPay_Factory(array('projectId' => $projectId, 'password' => $password));
-        $requestBuilder = $factory->getRequestBuilder();
-        return $requestBuilder->buildRequest($data);
+        $requestBuilder = $factory['getRequestBuilder']();
+        return $requestBuilder['buildRequest']($data);
     }
 
 
@@ -108,7 +108,7 @@ class WebToPay {
         unset($data['projectid']);
 
         $factory = new WebToPay_Factory(array('projectId' => $projectId, 'password' => $password));
-        $url = $factory->getRequestBuilder()
+        $url = $factory['getRequestBuilder']()
             ->buildRequestUrlFromData($data);
 
         if (headers_sent()) {
@@ -151,8 +151,8 @@ class WebToPay {
         $orderId = $data['orderid'];
 
         $factory = new WebToPay_Factory(array('projectId' => $projectId, 'password' => $password));
-        $requestBuilder = $factory->getRequestBuilder();
-        return $requestBuilder->buildRepeatRequest($orderId);
+        $requestBuilder = $factory['getRequestBuilder']();
+        return $requestBuilder['buildRepeatRequest']($orderId);
     }
 
     /**
@@ -205,7 +205,7 @@ class WebToPay {
             return $data;
 
         } catch (WebToPayException $exception) {
-        	if ($logFile && $exception->getCode() != WebToPayException::E_DEPRECATED_USAGE) {
+        	if ($logFile && $exception['getCode']() != WebToPayException::E_DEPRECATED_USAGE) {
                 self::log('ERR', $exception . "\nQuery: " . http_build_query($query, null, '&'), $logFile);
             }
             throw $exception;
@@ -225,8 +225,8 @@ class WebToPay {
      */
     public static function validateAndParseData(array $query, $projectId, $password) {
         $factory = new WebToPay_Factory(array('projectId' => $projectId, 'password' => $password));
-        $validator = $factory->getCallbackValidator();
-        $data = $validator->validateAndParseData($query);
+        $validator = $factory['getCallbackValidator']();
+        $data = $validator['validateAndParseData']($query);
         return $data;
     }
 
@@ -251,7 +251,7 @@ class WebToPay {
         try {
 
             $factory = new WebToPay_Factory(array('password' => $password));
-            $factory->getSmsAnswerSender()->sendAnswer($smsId, $text);
+            $factory['getSmsAnswerSender']()->sendAnswer($smsId, $text);
 
             if ($logFile) {
                 self::log('OK', 'SMS ANSWER ' . $smsId . ' ' . $text, $logFile);
@@ -279,7 +279,7 @@ class WebToPay {
      */
     public static function getPaymentMethodList($projectId, $currency = 'EUR') {
         $factory = new WebToPay_Factory(array('projectId' => $projectId));
-        return $factory->getPaymentMethodListProvider()->getPaymentMethodList($currency);
+        return $factory['getPaymentMethodListProvider']()->getPaymentMethodList($currency);
     }
 
     /**
@@ -389,7 +389,7 @@ class WebToPayException extends Exception {
      * @param string $fieldName
      */
     public function setField($fieldName) {
-        $this->fieldName = $fieldName;
+        $this['fieldName'] = $fieldName;
     }
 
     /**
@@ -398,7 +398,7 @@ class WebToPayException extends Exception {
      * @return string|boolean false
      */
     public function getField() {
-        return $this->fieldName;
+        return $this['fieldName'];
     }
 }
 
@@ -430,9 +430,9 @@ class WebToPay_CallbackValidator {
      * @param WebToPay_Util                      $util
      */
     public function __construct($projectId, WebToPay_Sign_SignCheckerInterface $signer, WebToPay_Util $util) {
-        $this->signer = $signer;
-        $this->util = $util;
-        $this->projectId = $projectId;
+        $this['signer'] = $signer;
+        $this['util'] = $util;
+        $this['projectId'] = $projectId;
     }
 
     /**
@@ -447,7 +447,7 @@ class WebToPay_CallbackValidator {
      * @throws WebToPay_Exception_Callback
      */
     public function validateAndParseData(array $requestData) {
-        if (!$this->signer->checkSign($requestData)) {
+        if (!$this['signer']->checkSign($requestData)) {
             throw new WebToPay_Exception_Callback('Invalid sign parameters, check $_GET length limit');
         }
 
@@ -456,8 +456,8 @@ class WebToPay_CallbackValidator {
         }
         $data = $requestData['data'];
 
-        $queryString = $this->util->decodeSafeUrlBase64($data);
-        $request = $this->util->parseHttpQuery($queryString);
+        $queryString = $this['util']->decodeSafeUrlBase64($data);
+        $request = $this['util']->parseHttpQuery($queryString);
 
         if (!isset($request['projectid'])) {
             throw new WebToPay_Exception_Callback(
@@ -466,9 +466,9 @@ class WebToPay_CallbackValidator {
             );
         }
 
-        if ((string) $request['projectid'] !== (string) $this->projectId) {
+        if ((string) $request['projectid'] !== (string) $this['projectId']) {
             throw new WebToPay_Exception_Callback(
-                sprintf('Bad projectid: %s, should be: %s', $request['projectid'], $this->projectId),
+                sprintf('Bad projectid: %s, should be: %s', $request['projectid'], $this['projectId']),
                 WebToPayException::E_INVALID
             );
         }
@@ -546,9 +546,9 @@ class WebToPay_PaymentMethodGroup {
      * @param string $defaultLanguage
      */
     public function __construct($groupKey, array $translations = array(), $defaultLanguage = 'lt') {
-        $this->groupKey = $groupKey;
-        $this->translations = $translations;
-        $this->defaultLanguage = $defaultLanguage;
+        $this['groupKey'] = $groupKey;
+        $this['translations'] = $translations;
+        $this['defaultLanguage'] = $defaultLanguage;
         $this->paymentMethods = array();
     }
 
@@ -561,9 +561,9 @@ class WebToPay_PaymentMethodGroup {
      * @return WebToPay_PaymentMethodGroup
      */
     public function setDefaultLanguage($language) {
-        $this->defaultLanguage = $language;
+        $this['defaultLanguage'] = $language;
         foreach ($this->paymentMethods as $paymentMethod) {
-            $paymentMethod->setDefaultLanguage($language);
+            $paymentMethod['setDefaultLanguage']($language);
         }
         return $this;
     }
@@ -574,7 +574,7 @@ class WebToPay_PaymentMethodGroup {
      * @return string
      */
     public function getDefaultLanguage() {
-        return $this->defaultLanguage;
+        return $this['defaultLanguage'];
     }
 
     /**
@@ -586,12 +586,12 @@ class WebToPay_PaymentMethodGroup {
      * @return string
      */
     public function getTitle($languageCode = null) {
-        if ($languageCode !== null && isset($this->translations[$languageCode])) {
-            return $this->translations[$languageCode];
-        } elseif (isset($this->translations[$this->defaultLanguage])) {
-            return $this->translations[$this->defaultLanguage];
+        if ($languageCode !== null && isset($this['translations'][$languageCode])) {
+            return $this['translations'][$languageCode];
+        } elseif (isset($this['translations'][$this['defaultLanguage']])) {
+            return $this['translations'][$this['defaultLanguage']];
         } else {
-            return $this->groupKey;
+            return $this['groupKey'];
         }
     }
 
@@ -601,7 +601,7 @@ class WebToPay_PaymentMethodGroup {
      * @return string
      */
     public function getKey() {
-        return $this->groupKey;
+        return $this['groupKey'];
     }
 
     /**
@@ -624,7 +624,7 @@ class WebToPay_PaymentMethodGroup {
      * @return WebToPay_PaymentMethod
      */
     public function addPaymentMethod(WebToPay_PaymentMethod $paymentMethod) {
-        return $this->paymentMethods[$paymentMethod->getKey()] = $paymentMethod;
+        return $this->paymentMethods[$paymentMethod['getKey']()] = $paymentMethod;
     }
 
     /**
@@ -647,10 +647,10 @@ class WebToPay_PaymentMethodGroup {
      * @return WebToPay_PaymentMethodGroup
      */
     public function filterForAmount($amount, $currency) {
-        $group = new WebToPay_PaymentMethodGroup($this->groupKey, $this->translations, $this->defaultLanguage);
-        foreach ($this->getPaymentMethods() as $paymentMethod) {
-            if ($paymentMethod->isAvailableForAmount($amount, $currency)) {
-                $group->addPaymentMethod($paymentMethod);
+        $group = new WebToPay_PaymentMethodGroup($this['groupKey'], $this['translations'], $this['defaultLanguage']);
+        foreach ($this['getPaymentMethods']() as $paymentMethod) {
+            if ($paymentMethod['isAvailableForAmount']($amount, $currency)) {
+                $group['addPaymentMethod']($paymentMethod);
             }
         }
         return $group;
@@ -664,10 +664,10 @@ class WebToPay_PaymentMethodGroup {
      * @return WebToPay_PaymentMethodGroup
      */
     public function filterForIban($isIban = true) {
-        $group = new WebToPay_PaymentMethodGroup($this->groupKey, $this->translations, $this->defaultLanguage);
-        foreach ($this->getPaymentMethods() as $paymentMethod) {
-            if ($paymentMethod->isIban() == $isIban) {
-                $group->addPaymentMethod($paymentMethod);
+        $group = new WebToPay_PaymentMethodGroup($this['groupKey'], $this['translations'], $this['defaultLanguage']);
+        foreach ($this['getPaymentMethods']() as $paymentMethod) {
+            if ($paymentMethod['isIban']() == $isIban) {
+                $group['addPaymentMethod']($paymentMethod);
             }
         }
         return $group;
@@ -688,16 +688,16 @@ class WebToPay_PaymentMethodGroup {
      * @param SimpleXMLElement $groupNode
      */
     public function fromXmlNode($groupNode) {
-        foreach ($groupNode->payment_type as $paymentTypeNode) {
-            $key = (string) $paymentTypeNode->attributes()->key;
+        foreach ($groupNode['payment_type'] as $paymentTypeNode) {
+            $key = (string) $paymentTypeNode['attributes']()->key;
             $titleTranslations = array();
-            foreach ($paymentTypeNode->title as $titleNode) {
-                $titleTranslations[(string) $titleNode->attributes()->language] = (string) $titleNode;
+            foreach ($paymentTypeNode['title'] as $titleNode) {
+                $titleTranslations[(string) $titleNode['attributes']()->language] = (string) $titleNode;
             }
             $logoTranslations = array();
-            foreach ($paymentTypeNode->logo_url as $logoNode) {
+            foreach ($paymentTypeNode['logo_url'] as $logoNode) {
                 if ((string) $logoNode !== '') {
-                    $logoTranslations[(string) $logoNode->attributes()->language] = (string) $logoNode;
+                    $logoTranslations[(string) $logoNode['attributes']()->language] = (string) $logoNode;
                 }
             }
             $minAmount = null;
@@ -705,22 +705,22 @@ class WebToPay_PaymentMethodGroup {
             $currency = null;
             $isIban = false;
             $baseCurrency = null;
-            if (isset($paymentTypeNode->min)) {
-                $minAmount = (int) $paymentTypeNode->min->attributes()->amount;
-                $currency = (string) $paymentTypeNode->min->attributes()->currency;
+            if (isset($paymentTypeNode['min'])) {
+                $minAmount = (int) $paymentTypeNode['min']->attributes()->amount;
+                $currency = (string) $paymentTypeNode['min']->attributes()->currency;
             }
-            if (isset($paymentTypeNode->max)) {
-                $maxAmount = (int) $paymentTypeNode->max->attributes()->amount;
-                $currency = (string) $paymentTypeNode->max->attributes()->currency;
+            if (isset($paymentTypeNode['max'])) {
+                $maxAmount = (int) $paymentTypeNode['max']->attributes()->amount;
+                $currency = (string) $paymentTypeNode['max']->attributes()->currency;
             }
 
-            if (isset($paymentTypeNode->is_iban)) {
-                $isIban = (int) $paymentTypeNode->is_iban;
+            if (isset($paymentTypeNode['is_iban'])) {
+                $isIban = (int) $paymentTypeNode['is_iban'];
             }
-            if (isset($paymentTypeNode->base_currency)) {
-                $baseCurrency = (string) $paymentTypeNode->base_currency;
+            if (isset($paymentTypeNode['base_currency'])) {
+                $baseCurrency = (string) $paymentTypeNode['base_currency'];
             }
-            $this->addPaymentMethod($this->createPaymentMethod(
+            $this['addPaymentMethod']($this['createPaymentMethod'](
                 $key, $minAmount, $maxAmount, $currency, $logoTranslations, $titleTranslations, $isIban, $baseCurrency
             ));
         }
@@ -745,7 +745,7 @@ class WebToPay_PaymentMethodGroup {
         $isIban = false, $baseCurrency = null
     ) {
         return new WebToPay_PaymentMethod(
-            $key, $minAmount, $maxAmount, $currency, $logoList, $titleTranslations, $this->defaultLanguage,
+            $key, $minAmount, $maxAmount, $currency, $logoList, $titleTranslations, $this['defaultLanguage'],
             $isIban, $baseCurrency
         );
     }
@@ -796,9 +796,9 @@ class WebToPay_PaymentMethodListProvider {
         WebToPay_UrlBuilder $urlBuilder
     )
     {
-        $this->projectId = $projectId;
-        $this->webClient = $webClient;
-        $this->urlBuilder = $urlBuilder;
+        $this['projectId'] = $projectId;
+        $this['webClient'] = $webClient;
+        $this['urlBuilder'] = $urlBuilder;
 
         if (!function_exists('simplexml_load_string')) {
             throw new WebToPayException('You have to install libxml to use payment methods API');
@@ -815,8 +815,8 @@ class WebToPay_PaymentMethodListProvider {
      * @throws WebToPayException
      */
     public function getPaymentMethodList($currency) {
-        if (!isset($this->methodListCache[$currency])) {
-            $xmlAsString = $this->webClient->get($this->urlBuilder->buildForPaymentsMethodList($this->projectId, $currency));
+        if (!isset($this['methodListCache'][$currency])) {
+            $xmlAsString = $this['webClient']->get($this['urlBuilder']->buildForPaymentsMethodList($this['projectId'], $currency));
             $useInternalErrors = libxml_use_internal_errors(false);
             $rootNode = simplexml_load_string($xmlAsString);
             libxml_clear_errors();
@@ -824,11 +824,11 @@ class WebToPay_PaymentMethodListProvider {
             if (!$rootNode) {
                 throw new WebToPayException('Unable to load XML from remote server');
             }
-            $methodList = new WebToPay_PaymentMethodList($this->projectId, $currency);
-            $methodList->fromXmlNode($rootNode);
-            $this->methodListCache[$currency] = $methodList;
+            $methodList = new WebToPay_PaymentMethodList($this['projectId'], $currency);
+            $methodList['fromXmlNode']($rootNode);
+            $this['methodListCache'][$currency] = $methodList;
         }
-        return $this->methodListCache[$currency];
+        return $this['methodListCache'][$currency];
     }
 }
 
@@ -855,7 +855,7 @@ class WebToPay_Exception_Validation extends WebToPayException {
     public function __construct($message, $code = 0, $field = null, Exception $previousException = null) {
         parent::__construct($message, $code, $previousException);
         if ($field) {
-            $this->setField($field);
+            $this['setField']($field);
         }
     }
 }
@@ -919,15 +919,15 @@ class WebToPay_PaymentMethod {
         $key, $minAmount, $maxAmount, $currency, array $logoList = array(), array $titleTranslations = array(),
         $defaultLanguage = 'lt', $isIban = false, $baseCurrency = null
     ) {
-        $this->key = $key;
-        $this->minAmount = $minAmount;
-        $this->maxAmount = $maxAmount;
-        $this->currency = $currency;
-        $this->logoList = $logoList;
-        $this->titleTranslations = $titleTranslations;
-        $this->defaultLanguage = $defaultLanguage;
-        $this->isIban = $isIban;
-        $this->baseCurrency = $baseCurrency;
+        $this['key'] = $key;
+        $this['minAmount'] = $minAmount;
+        $this['maxAmount'] = $maxAmount;
+        $this['currency'] = $currency;
+        $this['logoList'] = $logoList;
+        $this['titleTranslations'] = $titleTranslations;
+        $this['defaultLanguage'] = $defaultLanguage;
+        $this['isIban'] = $isIban;
+        $this['baseCurrency'] = $baseCurrency;
     }
 
     /**
@@ -939,7 +939,7 @@ class WebToPay_PaymentMethod {
      * @return WebToPay_PaymentMethod
      */
     public function setDefaultLanguage($language) {
-        $this->defaultLanguage = $language;
+        $this['defaultLanguage'] = $language;
         return $this;
     }
 
@@ -949,7 +949,7 @@ class WebToPay_PaymentMethod {
      * @return string
      */
     public function getDefaultLanguage() {
-        return $this->defaultLanguage;
+        return $this['defaultLanguage'];
     }
 
     /**
@@ -958,7 +958,7 @@ class WebToPay_PaymentMethod {
      * @return string
      */
     public function getKey() {
-        return $this->key;
+        return $this['key'];
     }
 
     /**
@@ -970,10 +970,10 @@ class WebToPay_PaymentMethod {
      * @return string|null
      */
     public function getLogoUrl($languageCode = null) {
-        if ($languageCode !== null && isset($this->logoList[$languageCode])) {
-            return $this->logoList[$languageCode];
-        } elseif (isset($this->logoList[$this->defaultLanguage])) {
-            return $this->logoList[$this->defaultLanguage];
+        if ($languageCode !== null && isset($this['logoList'][$languageCode])) {
+            return $this['logoList'][$languageCode];
+        } elseif (isset($this['logoList'][$this['defaultLanguage']])) {
+            return $this['logoList'][$this['defaultLanguage']];
         } else {
             return null;
         }
@@ -987,12 +987,12 @@ class WebToPay_PaymentMethod {
      * @return string
      */
     public function getTitle($languageCode = null) {
-        if ($languageCode !== null && isset($this->titleTranslations[$languageCode])) {
-            return $this->titleTranslations[$languageCode];
-        } elseif (isset($this->titleTranslations[$this->defaultLanguage])) {
-            return $this->titleTranslations[$this->defaultLanguage];
+        if ($languageCode !== null && isset($this['titleTranslations'][$languageCode])) {
+            return $this['titleTranslations'][$languageCode];
+        } elseif (isset($this['titleTranslations'][$this['defaultLanguage']])) {
+            return $this['titleTranslations'][$this['defaultLanguage']];
         } else {
-            return $this->key;
+            return $this['key'];
         }
     }
 
@@ -1008,15 +1008,15 @@ class WebToPay_PaymentMethod {
      * @throws WebToPayException
      */
     public function isAvailableForAmount($amount, $currency) {
-        if ($this->currency !== $currency) {
+        if ($this['currency'] !== $currency) {
             throw new WebToPayException(
                 'Currencies does not match. You have to get payment types for the currency you are checking. Given currency: '
-                    . $currency . ', available currency: ' . $this->currency
+                    . $currency . ', available currency: ' . $this['currency']
             );
         }
         return (
-            ($this->minAmount === null || $amount >= $this->minAmount)
-            && ($this->maxAmount === null || $amount <= $this->maxAmount)
+            ($this['minAmount'] === null || $amount >= $this['minAmount'])
+            && ($this['maxAmount'] === null || $amount <= $this['maxAmount'])
         );
     }
 
@@ -1026,7 +1026,7 @@ class WebToPay_PaymentMethod {
      * @return string
      */
     public function getMinAmountAsString() {
-        return $this->minAmount === null ? '' : ($this->minAmount . ' ' . $this->currency);
+        return $this['minAmount'] === null ? '' : ($this['minAmount'] . ' ' . $this['currency']);
     }
 
     /**
@@ -1035,7 +1035,7 @@ class WebToPay_PaymentMethod {
      * @return string
      */
     public function getMaxAmountAsString() {
-        return $this->maxAmount === null ? '' : ($this->maxAmount . ' ' . $this->currency);
+        return $this['maxAmount'] === null ? '' : ($this['maxAmount'] . ' ' . $this['currency']);
     }
 
     /**
@@ -1044,7 +1044,7 @@ class WebToPay_PaymentMethod {
      * @param boolean $isIban
      */
     public function setIsIban($isIban) {
-        $this->isIban = $isIban == 1;
+        $this['isIban'] = $isIban == 1;
     }
 
     /**
@@ -1053,7 +1053,7 @@ class WebToPay_PaymentMethod {
      * @return bool
      */
     public function isIban() {
-        return $this->isIban;
+        return $this['isIban'];
     }
 
     /**
@@ -1063,7 +1063,7 @@ class WebToPay_PaymentMethod {
      */
     public function setBaseCurrency($baseCurrency)
     {
-        $this->baseCurrency = $baseCurrency;
+        $this['baseCurrency'] = $baseCurrency;
     }
 
     /**
@@ -1073,7 +1073,7 @@ class WebToPay_PaymentMethod {
      */
     public function getBaseCurrency()
     {
-        return $this->baseCurrency;
+        return $this['baseCurrency'];
     }
 }
 
@@ -1118,7 +1118,7 @@ class WebToPay_Util {
         $params = array();
         parse_str($query, $params);
         if (get_magic_quotes_gpc()) {
-            $params = $this->stripSlashesRecursively($params);
+            $params = $this['stripSlashesRecursively']($params);
         }
         return $params;
     }
@@ -1134,7 +1134,7 @@ class WebToPay_Util {
         if (is_array($data)) {
             $result = array();
             foreach ($data as $key => $value) {
-                $result[stripslashes($key)] = $this->stripSlashesRecursively($value);
+                $result[stripslashes($key)] = $this['stripSlashesRecursively']($value);
             }
             return $result;
         } else {
@@ -1191,11 +1191,11 @@ class WebToPay_PaymentMethodList {
      * @param integer $amount                null if this list is not filtered by amount
      */
     public function __construct($projectId, $currency, $defaultLanguage = 'lt', $amount = null) {
-        $this->projectId = $projectId;
-        $this->countries = array();
-        $this->defaultLanguage = $defaultLanguage;
-        $this->currency = $currency;
-        $this->amount = $amount;
+        $this['projectId'] = $projectId;
+        $this['countries'] = array();
+        $this['defaultLanguage'] = $defaultLanguage;
+        $this['currency'] = $currency;
+        $this['amount'] = $amount;
     }
 
     /**
@@ -1207,9 +1207,9 @@ class WebToPay_PaymentMethodList {
      * @return WebToPay_PaymentMethodList
      */
     public function setDefaultLanguage($language) {
-        $this->defaultLanguage = $language;
-        foreach ($this->countries as $country) {
-            $country->setDefaultLanguage($language);
+        $this['defaultLanguage'] = $language;
+        foreach ($this['countries'] as $country) {
+            $country['setDefaultLanguage']($language);
         }
         return $this;
     }
@@ -1220,7 +1220,7 @@ class WebToPay_PaymentMethodList {
      * @return string
      */
     public function getDefaultLanguage() {
-        return $this->defaultLanguage;
+        return $this['defaultLanguage'];
     }
 
     /**
@@ -1229,7 +1229,7 @@ class WebToPay_PaymentMethodList {
      * @return integer
      */
     public function getProjectId() {
-        return $this->projectId;
+        return $this['projectId'];
     }
 
     /**
@@ -1238,7 +1238,7 @@ class WebToPay_PaymentMethodList {
      * @return string
      */
     public function getCurrency() {
-        return $this->currency;
+        return $this['currency'];
     }
 
     /**
@@ -1247,7 +1247,7 @@ class WebToPay_PaymentMethodList {
      * @return boolean
      */
     public function isFiltered() {
-        return $this->amount !== null;
+        return $this['amount'] !== null;
     }
 
     /**
@@ -1256,7 +1256,7 @@ class WebToPay_PaymentMethodList {
      * @return WebToPay_PaymentMethodCountry[]
      */
     public function getCountries() {
-        return $this->countries;
+        return $this['countries'];
     }
 
     /**
@@ -1268,7 +1268,7 @@ class WebToPay_PaymentMethodList {
      * @return WebToPay_PaymentMethodCountry
      */
     public function addCountry(WebToPay_PaymentMethodCountry $country) {
-        return $this->countries[$country->getCode()] = $country;
+        return $this['countries'][$country['getCode']()] = $country;
     }
 
     /**
@@ -1279,7 +1279,7 @@ class WebToPay_PaymentMethodList {
      * @return null|WebToPay_PaymentMethodCountry
      */
     public function getCountry($countryCode) {
-        return isset($this->countries[$countryCode]) ? $this->countries[$countryCode] : null;
+        return isset($this['countries'][$countryCode]) ? $this['countries'][$countryCode] : null;
     }
 
     /**
@@ -1295,23 +1295,23 @@ class WebToPay_PaymentMethodList {
      * @throws WebToPayException    if this list is already filtered and not for provided amount
      */
     public function filterForAmount($amount, $currency) {
-        if ($currency !== $this->currency) {
+        if ($currency !== $this['currency']) {
             throw new WebToPayException(
-                'Currencies do not match. Given currency: ' . $currency . ', currency in list: ' . $this->currency
+                'Currencies do not match. Given currency: ' . $currency . ', currency in list: ' . $this['currency']
             );
         }
-        if ($this->isFiltered()) {
-            if ($this->amount === $amount) {
+        if ($this['isFiltered']()) {
+            if ($this['amount'] === $amount) {
                 return $this;
             } else {
                 throw new WebToPayException('This list is already filtered, use unfiltered list instead');
             }
         } else {
-            $list = new WebToPay_PaymentMethodList($this->projectId, $currency, $this->defaultLanguage, $amount);
-            foreach ($this->getCountries() as $country) {
-                $country = $country->filterForAmount($amount, $currency);
-                if (!$country->isEmpty()) {
-                    $list->addCountry($country);
+            $list = new WebToPay_PaymentMethodList($this['projectId'], $currency, $this['defaultLanguage'], $amount);
+            foreach ($this['getCountries']() as $country) {
+                $country = $country['filterForAmount']($amount, $currency);
+                if (!$country['isEmpty']()) {
+                    $list['addCountry']($country);
                 }
             }
             return $list;
@@ -1324,12 +1324,12 @@ class WebToPay_PaymentMethodList {
      * @param SimpleXMLElement $xmlNode
      */
     public function fromXmlNode($xmlNode) {
-        foreach ($xmlNode->country as $countryNode) {
+        foreach ($xmlNode['country'] as $countryNode) {
             $titleTranslations = array();
-            foreach ($countryNode->title as $titleNode) {
-                $titleTranslations[(string) $titleNode->attributes()->language] = (string) $titleNode;
+            foreach ($countryNode['title'] as $titleNode) {
+                $titleTranslations[(string) $titleNode['attributes']()->language] = (string) $titleNode;
             }
-            $this->addCountry($this->createCountry((string) $countryNode->attributes()->code, $titleTranslations))
+            $this['addCountry']($this['createCountry']((string) $countryNode['attributes']()->code, $titleTranslations))
                 ->fromXmlNode($countryNode);
         }
     }
@@ -1343,7 +1343,7 @@ class WebToPay_PaymentMethodList {
      * @return WebToPay_PaymentMethodCountry
      */
     protected function createCountry($countryCode, array $titleTranslations = array()) {
-        return new WebToPay_PaymentMethodCountry($countryCode, $titleTranslations, $this->defaultLanguage);
+        return new WebToPay_PaymentMethodCountry($countryCode, $titleTranslations, $this['defaultLanguage']);
     }
 }
 
@@ -1379,9 +1379,9 @@ class WebToPay_SmsAnswerSender {
         WebToPay_WebClient $webClient,
         WebToPay_UrlBuilder $urlBuilder
     ) {
-        $this->password = $password;
-        $this->webClient = $webClient;
-        $this->urlBuilder = $urlBuilder;
+        $this['password'] = $password;
+        $this['webClient'] = $webClient;
+        $this['urlBuilder'] = $urlBuilder;
     }
 
     /**
@@ -1394,10 +1394,10 @@ class WebToPay_SmsAnswerSender {
      * @throws WebToPayException
      */
     public function sendAnswer($smsId, $text) {
-        $content = $this->webClient->get($this->urlBuilder->buildForSmsAnswer(), array(
+        $content = $this['webClient']->get($this['urlBuilder']->buildForSmsAnswer(), array(
             'id' => $smsId,
             'msg' => $text,
-            'transaction' => md5($this->password . '|' . $smsId),
+            'transaction' => md5($this['password'] . '|' . $smsId),
         ));
         if (strpos($content, 'OK') !== 0) {
             throw new WebToPayException(
@@ -1499,7 +1499,7 @@ class WebToPay_Factory {
     public function __construct(array $configuration = array()) {
 
         $this->configuration = array_merge(self::$defaultConfiguration, $configuration);
-        $this->environment = self::ENV_PRODUCTION;
+        $this['environment'] = self::ENV_PRODUCTION;
     }
 
     /**
@@ -1511,9 +1511,9 @@ class WebToPay_Factory {
     public function useSandbox($enableSandbox)
     {
         if ($enableSandbox) {
-            $this->environment = self::ENV_SANDBOX;
+            $this['environment'] = self::ENV_SANDBOX;
         } else {
-            $this->environment = self::ENV_PRODUCTION;
+            $this['environment'] = self::ENV_PRODUCTION;
         }
         return $this;
     }
@@ -1526,17 +1526,17 @@ class WebToPay_Factory {
      * @throws WebToPay_Exception_Configuration
      */
     public function getCallbackValidator() {
-        if ($this->callbackValidator === null) {
+        if ($this['callbackValidator'] === null) {
             if (!isset($this->configuration['projectId'])) {
                 throw new WebToPay_Exception_Configuration('You have to provide project ID');
             }
-            $this->callbackValidator = new WebToPay_CallbackValidator(
+            $this['callbackValidator'] = new WebToPay_CallbackValidator(
                 $this->configuration['projectId'],
-                $this->getSigner(),
-                $this->getUtil()
+                $this['getSigner'](),
+                $this['getUtil']()
             );
         }
-        return $this->callbackValidator;
+        return $this['callbackValidator'];
     }
 
     /**
@@ -1557,8 +1557,8 @@ class WebToPay_Factory {
             $this->requestBuilder = new WebToPay_RequestBuilder(
                 $this->configuration['projectId'],
                 $this->configuration['password'],
-                $this->getUtil(),
-                $this->getUrlBuilder()
+                $this['getUtil'](),
+                $this['getUrlBuilder']()
             );
         }
         return $this->requestBuilder;
@@ -1568,13 +1568,13 @@ class WebToPay_Factory {
      * @return WebToPay_UrlBuilder
      */
     public function getUrlBuilder() {
-        if ($this->urlBuilder === null) {
-            $this->urlBuilder = new WebToPay_UrlBuilder(
+        if ($this['urlBuilder'] === null) {
+            $this['urlBuilder'] = new WebToPay_UrlBuilder(
                 $this->configuration,
-                $this->environment
+                $this['environment']
             );
         }
-        return $this->urlBuilder;
+        return $this['urlBuilder'];
     }
 
     /**
@@ -1585,17 +1585,17 @@ class WebToPay_Factory {
      * @return WebToPay_SmsAnswerSender
      */
     public function getSmsAnswerSender() {
-        if ($this->smsAnswerSender === null) {
+        if ($this['smsAnswerSender'] === null) {
             if (!isset($this->configuration['password'])) {
                 throw new WebToPay_Exception_Configuration('You have to provide project password');
             }
-            $this->smsAnswerSender = new WebToPay_SmsAnswerSender(
+            $this['smsAnswerSender'] = new WebToPay_SmsAnswerSender(
                 $this->configuration['password'],
-                $this->getWebClient(),
-                $this->getUrlBuilder()
+                $this['getWebClient'](),
+                $this['getUrlBuilder']()
             );
         }
-        return $this->smsAnswerSender;
+        return $this['smsAnswerSender'];
     }
 
     /**
@@ -1612,8 +1612,8 @@ class WebToPay_Factory {
             }
             $this->paymentMethodListProvider = new WebToPay_PaymentMethodListProvider(
                 $this->configuration['projectId'],
-                $this->getWebClient(),
-                $this->getUrlBuilder()
+                $this['getWebClient'](),
+                $this['getUrlBuilder']()
 
             );
         }
@@ -1630,24 +1630,24 @@ class WebToPay_Factory {
      * @throws WebToPayException
      */
     protected function getSigner() {
-        if ($this->signer === null) {
+        if ($this['signer'] === null) {
             if (function_exists('openssl_pkey_get_public')) {
-                $webClient = $this->getWebClient();
-                $publicKey = $webClient->get($this->getUrlBuilder()->buildForPublicKey());
+                $webClient = $this['getWebClient']();
+                $publicKey = $webClient['get']($this['getUrlBuilder']()->buildForPublicKey());
                 if (!$publicKey) {
                     throw new WebToPayException('Cannot download public key from WebToPay website');
                 }
-                $this->signer = new WebToPay_Sign_SS2SignChecker($publicKey, $this->getUtil());
+                $this['signer'] = new WebToPay_Sign_SS2SignChecker($publicKey, $this['getUtil']());
             } else {
                 if (!isset($this->configuration['password'])) {
                     throw new WebToPay_Exception_Configuration(
                         'You have to provide project password if OpenSSL is unavailable'
                     );
                 }
-                $this->signer = new WebToPay_Sign_SS1SignChecker($this->configuration['password']);
+                $this['signer'] = new WebToPay_Sign_SS1SignChecker($this->configuration['password']);
             }
         }
-        return $this->signer;
+        return $this['signer'];
     }
 
     /**
@@ -1658,10 +1658,10 @@ class WebToPay_Factory {
      * @return WebToPay_WebClient
      */
     protected function getWebClient() {
-        if ($this->webClient === null) {
-            $this->webClient = new WebToPay_WebClient();
+        if ($this['webClient'] === null) {
+            $this['webClient'] = new WebToPay_WebClient();
         }
-        return $this->webClient;
+        return $this['webClient'];
     }
 
     /**
@@ -1672,10 +1672,10 @@ class WebToPay_Factory {
      * @return WebToPay_Util
      */
     protected function getUtil() {
-        if ($this->util === null) {
-            $this->util = new WebToPay_Util();
+        if ($this['util'] === null) {
+            $this['util'] = new WebToPay_Util();
         }
-        return $this->util;
+        return $this['util'];
     }
 }
 
@@ -1696,7 +1696,7 @@ class WebToPay_Sign_SS1SignChecker implements WebToPay_Sign_SignCheckerInterface
      * @param string $projectPassword
      */
     public function __construct($projectPassword) {
-        $this->projectPassword = $projectPassword;
+        $this['projectPassword'] = $projectPassword;
     }
 
     /**
@@ -1713,7 +1713,7 @@ class WebToPay_Sign_SS1SignChecker implements WebToPay_Sign_SignCheckerInterface
             throw new WebToPay_Exception_Callback('Not enough parameters in callback. Possible version mismatch');
         }
 
-        return md5($request['data'] . $this->projectPassword) === $request['ss1'];
+        return md5($request['data'] . $this['projectPassword']) === $request['ss1'];
     }
 }
 
@@ -1739,8 +1739,8 @@ class WebToPay_Sign_SS2SignChecker implements WebToPay_Sign_SignCheckerInterface
      * @param WebToPay_Util $util
      */
     public function __construct($publicKey, WebToPay_Util $util) {
-        $this->publicKey = $publicKey;
-        $this->util = $util;
+        $this['publicKey'] = $publicKey;
+        $this['util'] = $util;
     }
 
     /**
@@ -1757,8 +1757,8 @@ class WebToPay_Sign_SS2SignChecker implements WebToPay_Sign_SignCheckerInterface
             throw new WebToPay_Exception_Callback('Not enough parameters in callback. Possible version mismatch');
         }
 
-        $ss2 = $this->util->decodeSafeUrlBase64($request['ss2']);
-        $ok = openssl_verify($request['data'], $ss2, $this->publicKey);
+        $ss2 = $this['util']->decodeSafeUrlBase64($request['ss2']);
+        $ok = openssl_verify($request['data'], $ss2, $this['publicKey']);
         return $ok === 1;
     }
 }
@@ -1873,10 +1873,10 @@ class WebToPay_PaymentMethodCountry {
      * @param string $defaultLanguage
      */
     public function __construct($countryCode, $titleTranslations, $defaultLanguage = 'lt') {
-        $this->countryCode = $countryCode;
-        $this->defaultLanguage = $defaultLanguage;
-        $this->titleTranslations = $titleTranslations;
-        $this->groups = array();
+        $this['countryCode'] = $countryCode;
+        $this['defaultLanguage'] = $defaultLanguage;
+        $this['titleTranslations'] = $titleTranslations;
+        $this['groups'] = array();
     }
 
     /**
@@ -1888,9 +1888,9 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodCountry
      */
     public function setDefaultLanguage($language) {
-        $this->defaultLanguage = $language;
-        foreach ($this->groups as $group) {
-            $group->setDefaultLanguage($language);
+        $this['defaultLanguage'] = $language;
+        foreach ($this['groups'] as $group) {
+            $group['setDefaultLanguage']($language);
         }
         return $this;
     }
@@ -1904,12 +1904,12 @@ class WebToPay_PaymentMethodCountry {
      * @return string
      */
     public function getTitle($languageCode = null) {
-        if ($languageCode !== null && isset($this->titleTranslations[$languageCode])) {
-            return $this->titleTranslations[$languageCode];
-        } elseif (isset($this->titleTranslations[$this->defaultLanguage])) {
-            return $this->titleTranslations[$this->defaultLanguage];
+        if ($languageCode !== null && isset($this['titleTranslations'][$languageCode])) {
+            return $this['titleTranslations'][$languageCode];
+        } elseif (isset($this['titleTranslations'][$this['defaultLanguage']])) {
+            return $this['titleTranslations'][$this['defaultLanguage']];
         } else {
-            return $this->countryCode;
+            return $this['countryCode'];
         }
     }
 
@@ -1919,7 +1919,7 @@ class WebToPay_PaymentMethodCountry {
      * @return string
      */
     public function getDefaultLanguage() {
-        return $this->defaultLanguage;
+        return $this['defaultLanguage'];
     }
 
     /**
@@ -1928,7 +1928,7 @@ class WebToPay_PaymentMethodCountry {
      * @return string
      */
     public function getCode() {
-        return $this->countryCode;
+        return $this['countryCode'];
     }
 
     /**
@@ -1941,7 +1941,7 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodGroup
      */
     public function addGroup(WebToPay_PaymentMethodGroup $group) {
-        return $this->groups[$group->getKey()] = $group;
+        return $this['groups'][$group['getKey']()] = $group;
     }
 
     /**
@@ -1952,7 +1952,7 @@ class WebToPay_PaymentMethodCountry {
      * @return null|WebToPay_PaymentMethodGroup
      */
     public function getGroup($groupKey) {
-        return isset($this->groups[$groupKey]) ? $this->groups[$groupKey] : null;
+        return isset($this['groups'][$groupKey]) ? $this['groups'][$groupKey] : null;
     }
 
     /**
@@ -1961,7 +1961,7 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodGroup[]
      */
     public function getGroups() {
-        return $this->groups;
+        return $this['groups'];
     }
 
     /**
@@ -1971,8 +1971,8 @@ class WebToPay_PaymentMethodCountry {
      */
     public function getPaymentMethods() {
         $paymentMethods = array();
-        foreach ($this->groups as $group) {
-            $paymentMethods = array_merge($paymentMethods, $group->getPaymentMethods());
+        foreach ($this['groups'] as $group) {
+            $paymentMethods = array_merge($paymentMethods, $group['getPaymentMethods']());
         }
         return $paymentMethods;
     }
@@ -1986,11 +1986,11 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodCountry
      */
     public function filterForAmount($amount, $currency) {
-        $country = new WebToPay_PaymentMethodCountry($this->countryCode, $this->titleTranslations, $this->defaultLanguage);
-        foreach ($this->getGroups() as $group) {
-            $group = $group->filterForAmount($amount, $currency);
-            if (!$group->isEmpty()) {
-                $country->addGroup($group);
+        $country = new WebToPay_PaymentMethodCountry($this['countryCode'], $this['titleTranslations'], $this['defaultLanguage']);
+        foreach ($this['getGroups']() as $group) {
+            $group = $group['filterForAmount']($amount, $currency);
+            if (!$group['isEmpty']()) {
+                $country['addGroup']($group);
             }
         }
         return $country;
@@ -2004,11 +2004,11 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodCountry
      */
     public function filterForIban($isIban = true) {
-        $country = new WebToPay_PaymentMethodCountry($this->countryCode, $this->titleTranslations, $this->defaultLanguage);
-        foreach ($this->getGroups() as $group) {
-            $group = $group->filterForIban($isIban);
-            if (!$group->isEmpty()) {
-                $country->addGroup($group);
+        $country = new WebToPay_PaymentMethodCountry($this['countryCode'], $this['titleTranslations'], $this['defaultLanguage']);
+        foreach ($this['getGroups']() as $group) {
+            $group = $group['filterForIban']($isIban);
+            if (!$group['isEmpty']()) {
+                $country['addGroup']($group);
             }
         }
         return $country;
@@ -2020,7 +2020,7 @@ class WebToPay_PaymentMethodCountry {
      * @return boolean
      */
     public function isEmpty() {
-        return count($this->groups) === 0;
+        return count($this['groups']) === 0;
     }
 
     /**
@@ -2029,13 +2029,13 @@ class WebToPay_PaymentMethodCountry {
      * @param SimpleXMLElement $countryNode
      */
     public function fromXmlNode($countryNode) {
-        foreach ($countryNode->payment_group as $groupNode) {
-            $key = (string) $groupNode->attributes()->key;
+        foreach ($countryNode['payment_group'] as $groupNode) {
+            $key = (string) $groupNode['attributes']()->key;
             $titleTranslations = array();
-            foreach ($groupNode->title as $titleNode) {
-                $titleTranslations[(string) $titleNode->attributes()->language] = (string) $titleNode;
+            foreach ($groupNode['title'] as $titleNode) {
+                $titleTranslations[(string) $titleNode['attributes']()->language] = (string) $titleNode;
             }
-            $this->addGroup($this->createGroup($key, $titleTranslations))->fromXmlNode($groupNode);
+            $this['addGroup']($this['createGroup']($key, $titleTranslations))->fromXmlNode($groupNode);
         }
     }
 
@@ -2048,7 +2048,7 @@ class WebToPay_PaymentMethodCountry {
      * @return WebToPay_PaymentMethodGroup
      */
     protected function createGroup($groupKey, array $translations = array()) {
-        return new WebToPay_PaymentMethodGroup($groupKey, $translations, $this->defaultLanguage);
+        return new WebToPay_PaymentMethodGroup($groupKey, $translations, $this['defaultLanguage']);
     }
 }
 
@@ -2084,8 +2084,8 @@ class WebToPay_UrlBuilder {
     function __construct($configuration, $environment)
     {
         $this->configuration = $configuration;
-        $this->environment = $environment;
-        $this->environmentSettings = $this->configuration['routes'][$this->environment];
+        $this['environment'] = $environment;
+        $this['environmentSettings'] = $this->configuration['routes'][$this['environment']];
     }
 
     /**
@@ -2096,7 +2096,7 @@ class WebToPay_UrlBuilder {
      * @return string
      */
     public function buildForRequest($request, $language = null) {
-        return $this->createUrlFromRequestAndLanguage($request);
+        return $this['createUrlFromRequestAndLanguage']($request);
     }
 
     /**
@@ -2107,7 +2107,7 @@ class WebToPay_UrlBuilder {
      * @return string
      */
     public function buildForPaymentsMethodList($projectId, $currency) {
-        $route = $this->environmentSettings['paymentMethodList'];
+        $route = $this['environmentSettings']['paymentMethodList'];
         return $route . $projectId . '/currency:' . $currency;
     }
 
@@ -2117,7 +2117,7 @@ class WebToPay_UrlBuilder {
      * @return string
      */
     public function buildForSmsAnswer() {
-        $route = $this->environmentSettings['smsAnswer'];
+        $route = $this['environmentSettings']['smsAnswer'];
         return $route;
     }
 
@@ -2127,7 +2127,7 @@ class WebToPay_UrlBuilder {
      * @return string
      */
     public function buildForPublicKey() {
-        $route = $this->environmentSettings['publicKey'];
+        $route = $this['environmentSettings']['publicKey'];
         return $route;
     }
 
@@ -2138,7 +2138,7 @@ class WebToPay_UrlBuilder {
      * @return string
      */
     protected function createUrlFromRequestAndLanguage($request) {
-        $url = $this->getPaymentUrl() . '?' . http_build_query($request, null, '&');
+        $url = $this['getPaymentUrl']() . '?' . http_build_query($request, null, '&');
         return preg_replace('/[\r\n]+/is', '', $url);
     }
 
@@ -2148,7 +2148,7 @@ class WebToPay_UrlBuilder {
      * @return string $url
      */
     protected function getPaymentUrl() {
-        $route = $this->environmentSettings['payment'];
+        $route = $this['environmentSettings']['payment'];
         return $route;
     }
 }
@@ -2195,10 +2195,10 @@ class WebToPay_RequestBuilder {
         WebToPay_UrlBuilder $urlBuilder
     )
     {
-        $this->projectId = $projectId;
-        $this->projectPassword = $projectPassword;
-        $this->util = $util;
-        $this->urlBuilder = $urlBuilder;
+        $this['projectId'] = $projectId;
+        $this['projectPassword'] = $projectPassword;
+        $this['util'] = $util;
+        $this['urlBuilder'] = $urlBuilder;
     }
 
     /**
@@ -2214,11 +2214,11 @@ class WebToPay_RequestBuilder {
      * @throws WebToPayException
      */
     public function buildRequest($data) {
-        $this->validateRequest($data, self::getRequestSpec());
+        $this['validateRequest']($data, self::getRequestSpec());
         $data['version'] = WebToPay::VERSION;
-        $data['projectid'] = $this->projectId;
+        $data['projectid'] = $this['projectId'];
         unset($data['repeat_request']);
-        return $this->createRequest($data);
+        return $this['createRequest']($data);
     }
 
     /**
@@ -2229,8 +2229,8 @@ class WebToPay_RequestBuilder {
      */
     public function buildRequestUrlFromData($data) {
         $language = isset($data['lang']) ? $data['lang'] : null;
-        $request = $this->buildRequest($data);
-        return $this->urlBuilder->buildForRequest($request, $language);
+        $request = $this['buildRequest']($data);
+        return $this['urlBuilder']->buildForRequest($request, $language);
     }
 
     /**
@@ -2248,9 +2248,9 @@ class WebToPay_RequestBuilder {
     public function buildRepeatRequest($orderId) {
         $data['orderid'] = $orderId;
         $data['version'] = WebToPay::VERSION;
-        $data['projectid'] = $this->projectId;
+        $data['projectid'] = $this['projectId'];
         $data['repeat_request'] = '1';
-        return $this->createRequest($data);
+        return $this['createRequest']($data);
     }
 
     /**
@@ -2260,8 +2260,8 @@ class WebToPay_RequestBuilder {
      * @return string
      */
     public function buildRepeatRequestUrlFromOrderId($orderId) {
-        $request = $this->buildRepeatRequest($orderId);
-        return $this->urlBuilder->buildForRequest($request);
+        $request = $this['buildRepeatRequest']($orderId);
+        return $this['urlBuilder']->buildForRequest($request);
     }
 
     /**
@@ -2312,10 +2312,10 @@ class WebToPay_RequestBuilder {
      * @return array
      */
     protected function createRequest(array $request) {
-        $data = $this->util->encodeSafeUrlBase64(http_build_query($request, null, '&'));
+        $data = $this['util']->encodeSafeUrlBase64(http_build_query($request, null, '&'));
         return array(
             'data' => $data,
-            'sign' => md5($data . $this->projectPassword),
+            'sign' => md5($data . $this['projectPassword']),
         );
     }
 
