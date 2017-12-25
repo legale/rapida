@@ -281,13 +281,67 @@ DROP TABLE IF EXISTS `s_options`;
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `1` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `2` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `3` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `4` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `5` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `6` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `7` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `8` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `9` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `10` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `11` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `12` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `13` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `14` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `15` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `16` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `17` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `18` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `19` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `20` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `21` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `22` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `23` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `24` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `25` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `26` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `27` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `28` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `29` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `30` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `31` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `32` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `33` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `34` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `35` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `36` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `37` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `38` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `39` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `40` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `41` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `42` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `43` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `44` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `45` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `46` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `47` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `48` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `49` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `50` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `51` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `52` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `53` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `54` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `55` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`),
   KEY `7` (`product_id`),
   KEY `1` (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_options */
-INSERT INTO `s_options` (`product_id`,`1`) VALUES
-(1, 1);
+INSERT INTO `s_options` (`product_id`,`1`,`2`,`3`,`4`,`5`,`6`,`7`,`8`,`9`,`10`,`11`,`12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,`24`,`25`,`26`,`27`,`28`,`29`,`30`,`31`,`32`,`33`,`34`,`35`,`36`,`37`,`38`,`39`,`40`,`41`,`42`,`43`,`44`,`45`,`46`,`47`,`48`,`49`,`50`,`51`,`52`,`53`,`54`,`55`) VALUES
+(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /* Drop for table s_options_groups */
 DROP TABLE IF EXISTS `s_options_groups`;
 /* Create table s_options_groups */
@@ -494,7 +548,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
@@ -506,7 +560,7 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue_full */
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
