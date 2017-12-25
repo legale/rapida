@@ -385,7 +385,7 @@ class ImportYmlAdmin extends Simpla
 		
 		
 		//удалим пустые элементы из массива
-		$fields = array_filter($fields);		
+		$fields = array_filter($fields);
 		
 		//кодировка файла
 		$codepages = array('UTF-8', 'CP1251');
@@ -498,9 +498,9 @@ class ImportYmlAdmin extends Simpla
 					}
 				}
 				
-				//соединяем картинки через запятую
+				//соединяем картинки через |
 				if($pics_concat == true && is_array($row['picture'])){
-					$row['picture'] = implode(',' , $row['picture']);
+					$row['picture'] = implode('|' , $row['picture']);
 				}
 				
 				

@@ -31,12 +31,18 @@ class ImportAjax extends Simpla{
 
     private $import_files_dir      = '../files/import/'; // Временная папка
     private $import_file           = 'import.csv';           // Временный файл
-    private $category_delimiter = ',';                       // Разделитель каегорий в файле
-    private $subcategory_delimiter = '/';                    // Разделитель подкаегорий в файле
-    private $column_delimiter      = ';';
+    const DELIM = '|';                       // Разделитель значений одной колонки
+    const SUBDELIM = '/';                    // Разделитель подкаегорий в файле
+    const COL_DELIM  = ';';                   //Разделитель колонок
     private $products_count        = 150;
     private $columns               = array();
+    private $cats            = array();
 
+    public function __construct(){
+		$this->db->query("SELECT id, name FROM __categories");
+		$this->cats = $this->db->results_array(null, 'name'); 
+	}
+    
     public function import()
     {
         if (!$this->users->check_access('import')) {
@@ -73,7 +79,7 @@ class ImportAjax extends Simpla{
 
         // Определяем колонки из первой строки файла
         $f = fopen($this->import_files_dir.$this->import_file, 'r');
-        $this->columns = fgetcsv($f, null, $this->column_delimiter);
+        $this->columns = fgetcsv($f, null, self::COL_DELIM);
 
         // Заменяем имена колонок из файла на внутренние имена колонок
         foreach ($this->columns as &$column) {
@@ -100,7 +106,7 @@ class ImportAjax extends Simpla{
         // или пока не импортировано достаточно строк для одного запроса
         for ($k=0; !feof($f) && $k<$this->products_count; $k++) {
             // Читаем строку
-            $line = fgetcsv($f, 0, $this->column_delimiter);
+            $line = fgetcsv($f, 0, self::COL_DELIM);
 
             $product = null;
 
@@ -206,11 +212,11 @@ class ImportAjax extends Simpla{
         }
 
         
-        // Если задана категория
+        // Если задана категория и если такая категория еще не создана
         $category_id = null;
         $categories_ids = array();
         if (!empty_(@$item['category'])) {
-            foreach (explode($this->category_delimiter, $item['category']) as $c) {
+            foreach (explode(self::DELIM, $item['category']) as $c) {
                 $categories_ids[] = $this->import_category($c);
             }
             $category_id = reset($categories_ids);
@@ -294,8 +300,8 @@ class ImportAjax extends Simpla{
     
             // Изображения товаров
             if (isset($item['images'])) {
-                // Изображений может быть несколько, через запятую
-                $images = explode(',', $item['images']);
+                // Изображений может быть несколько
+                $images = explode(self::DELIM, $item['images']);
                 foreach ($images as $image) {
                     $image = $image;
                     if (!empty_(@$image)) {
@@ -356,20 +362,15 @@ class ImportAjax extends Simpla{
     // Отдельная функция для импорта категории
     private function import_category($category)
     {
-        // Поле "категория" может состоять из нескольких имен, разделенных subcategory_delimiter-ом
-        // Только неэкранированный subcategory_delimiter может разделять категории
-        $delimiter = $this->subcategory_delimiter;
-        $regex = "/\\DELIMITER((?:[^\\\\\DELIMITER]|\\\\.)*)/";
-        $regex = str_replace('DELIMITER', $delimiter, $regex);
-        $names = preg_split($regex, $category, 0, PREG_SPLIT_DELIM_CAPTURE);
+        // Поле "категория" может состоять из нескольких имен
+        //~ print_r($category);
+        //~ die;
+        $names = explode(self::SUBDELIM, $category);
         $id = null;
         $parent = 0;
         
         // Для каждой категории
         foreach ($names as $name) {
-            // Заменяем \/ на /
-            $name = str_replace("\\$delimiter", $delimiter, $name);
-            if (!empty_(@$name)) {
                 // Найдем категорию по имени
                 $this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
                 $id = $this->db->result_array('id');
@@ -380,8 +381,8 @@ class ImportAjax extends Simpla{
                 }
 
                 $parent = $id;
-            }
         }
+        
         return $id;
     }
 
@@ -390,7 +391,6 @@ class ImportAjax extends Simpla{
     // Фозвращает внутреннее название колонки по названию колонки в файле
     private function internal_column_name($name)
     {
-        $name = $name;
         $name = str_replace('/', '', $name);
         $name = str_replace('\/', '', $name);
         foreach ($this->columns_names as $i => $names) {
