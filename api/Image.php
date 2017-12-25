@@ -822,10 +822,13 @@ class Image extends Simpla
     {
         dtimer::log(__METHOD__ . " start type: $type id: $id");
         //check args types
-        if (!is_int($id) || $id < 0 || !in_array($type, $this->allowed_types)) {
+        $id_ = (int)$id;
+
+        if ($id_ != $id || $id < 0 || !in_array($type, $this->allowed_types)) {
             dtimer::log(__METHOD__ . " args error");
             return false;
         }
+        $id = $id_;
 
         //get image
         if ( false === ($image = $this->get($type, array('id' => $id)))) {
