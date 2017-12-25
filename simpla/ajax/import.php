@@ -217,7 +217,7 @@ class ImportAjax extends Simpla{
         $categories_ids = array();
         if (!empty_(@$item['category'])) {
             foreach (explode(self::DELIM, $item['category']) as $c) {
-                $categories_ids[] = $this->import_category($c);
+					$categories_ids[] = $this->import_category($c);
             }
             $category_id = reset($categories_ids);
         }
@@ -371,6 +371,9 @@ class ImportAjax extends Simpla{
         
         // Для каждой категории
         foreach ($names as $name) {
+			if(isset($this->cats[$name])){
+				return $this->cats[$name];
+			}
                 // Найдем категорию по имени
                 $this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
                 $id = $this->db->result_array('id');
