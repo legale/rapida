@@ -34,7 +34,7 @@ class ImportAjax extends Simpla{
     const DELIM = '|';                       // Разделитель значений одной колонки
     const SUBDELIM = '/';                    // Разделитель подкаегорий в файле
     const COL_DELIM  = ';';                   //Разделитель колонок
-    private $products_count        = 150;
+    private $products_count        = 250;
     private $columns               = array();
     private $cats            = array();
 
