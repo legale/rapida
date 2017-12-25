@@ -111,7 +111,7 @@ class System extends Simpla
 
 	public function download_all_images()
 	{
-		$q = "SELECT DISTINCT `basename` as `f` 
+		$q = "SELECT id 
 		FROM __img_products 
 		WHERE 1
 		AND `basename` LIKE 'http:%' 
@@ -119,11 +119,11 @@ class System extends Simpla
 		
 		//получаем список подходящих файлов 
 		if ($this->db->query($q)) {
-			$fnames = $this->db->results_array('f');
+			$ids = $this->db->results_array('id');
 			//перебираем список и скачиваем эти файлы
-			if ($fnames) {
-				foreach ($fnames as $f) {
-					$this->image->download_image($f);
+			if ($ids) {
+				foreach ($ids as $id) {
+					$this->image->download_image('products', $id);
 				}
 			}
 			return true;
