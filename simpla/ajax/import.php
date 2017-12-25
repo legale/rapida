@@ -272,13 +272,13 @@ class ImportAjax extends Simpla{
             
 
             // Обновлен
-            $imported_item['status'] = 'updated';
+            $imported_item['status'] = 2;
         } else {
         //Если ничего не удалось найти, значит такого товара у нас нет
             if (false !== ($pid = $this->products->add_product($product))) { //сначала добавим товар
                 $variant['product_id'] = $pid;
                 if (false !== ($varid = $this->variants->add_variant($variant))) {
-                    $imported_item['status'] = 'added';
+                    $imported_item['status'] = 1;
                 } else {
                     //вернем false
                     return false;
@@ -288,8 +288,8 @@ class ImportAjax extends Simpla{
         
         if (!empty_(@$varid) && !empty_(@$pid)) {
             // Нужно вернуть обновленный товар
-            $imported_item['variant'] = $this->variants->get_variant(intval($varid));
-            $imported_item['product'] = $this->products->get_product(intval($pid));
+            $imported_item['v'] = $this->variants->get_variant(intval($varid));
+            $imported_item['p'] = $this->products->get_product(intval($pid));
     
             // Добавляем категории к товару
             if (!empty_(@$categories_ids)) {
