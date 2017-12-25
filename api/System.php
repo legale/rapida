@@ -123,7 +123,7 @@ class System extends Simpla
 			//перебираем список и скачиваем эти файлы
 			if ($ids) {
 				foreach ($ids as $id) {
-					$this->image->download_image('products', $id);
+					$this->image->download('products', $id);
 				}
 			}
 			return true;
