@@ -61,7 +61,8 @@ class Config
 
 		// Определяем адрес (требуется для отправки почтовых уведомлений)
 		if(isset($_SERVER['HTTP_HOST'])){
-			$scheme = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+			$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http';
+			//~ print_r($_SERVER);
 			$this->vars['root_url']['value'] = $scheme . '://' . $_SERVER['HTTP_HOST'];
 			
 			if($_SERVER['HTTP_HOST'] !== $this->vars['host']['value']){
