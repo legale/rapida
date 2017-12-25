@@ -372,7 +372,7 @@ class ImportAjax extends Simpla{
         // Для каждой категории
         foreach ($names as $name) {
 			if(isset($this->cats[$name])){
-				return $this->cats[$name];
+				return $this->cats[$name]['id'];
 			}
                 // Найдем категорию по имени
                 $this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
