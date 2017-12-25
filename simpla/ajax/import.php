@@ -372,19 +372,20 @@ class ImportAjax extends Simpla{
         // Для каждой категории
         foreach ($names as $name) {
 			if(isset($this->cats[$name])){
-				$parent = $this->cats[$name]['id'];
+				$id = $parent = $this->cats[$name]['id'];
 				continue;
-			}
-                // Найдем категорию по имени
-                $this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
-                $id = $this->db->result_array('id');
-                
-                // Если не найдена - добавим ее
-                if (empty_(@$id)) {
-                    $id = $this->categories->add_category(array('name'=>$name, 'parent_id'=>$parent, 'meta_title'=>$name,  'meta_keywords'=>$name,  'meta_description'=>$name, 'url'=>translit_url($name)));
-                }
+			} 
 
-                $parent = $id;
+			// Найдем категорию по имени
+			$this->db->query('SELECT id FROM __categories WHERE name=? AND parent_id=?', $name, $parent);
+			$id = $this->db->result_array('id');
+		
+			// Если не найдена - добавим ее
+			if (empty_(@$id)) {
+				$id = $this->categories->add_category(array('name'=>$name, 'parent_id'=>$parent, 'meta_title'=>$name,  'meta_keywords'=>$name,  'meta_description'=>$name, 'url'=>translit_url($name)));
+			}
+
+			$parent = $id;
         }
         
         return $id;
