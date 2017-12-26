@@ -199,6 +199,12 @@ class Categories extends Simpla
 	// Инициализация категорий, после которой категории будем выбирать из локальной переменной
 	private function init_categories()
 	{
+		if(function_exists('apcu_fetch'){
+			$this->categories_tree = apcu_fetch('categories_tree');
+			$this->all_categories = apcu_fetch('all_categories');
+			return;
+		}
+		
 		// Дерево категорий
 		$tree = array();
 		$tree['subcategories'] = array();
@@ -271,7 +277,13 @@ class Categories extends Simpla
 		unset($pointers[0]);
 		unset($ids);
 
+		 
 		$this->categories_tree = $tree['subcategories'];
 		$this->all_categories = $pointers;
+		
+		if(function_exists('apcu_add'){
+			apcu_add('categories_tree', $tree['subcategories'], 7200);
+			apcu_add('all_categories', $pointers, 7200);
+		}
 	}
 }
