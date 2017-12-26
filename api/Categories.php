@@ -199,7 +199,7 @@ class Categories extends Simpla
 	// Инициализация категорий, после которой категории будем выбирать из локальной переменной
 	private function init_categories()
 	{
-		if(function_exists('apcu_fetch'){
+		if(function_exists('apcu_fetch')){
 			$this->categories_tree = apcu_fetch('categories_tree');
 			$this->all_categories = apcu_fetch('all_categories');
 			return;
