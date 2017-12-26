@@ -20,7 +20,7 @@ $task = 0;
 dtimer::log("start queue");
 
 $i = 0;
-while($i < 60000 && $pause != 1) {
+while($i < 300000 && $pause != 1) {
 $i++;
 
 $task = $simpla->queue->execlasttask();
