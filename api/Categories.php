@@ -200,9 +200,11 @@ class Categories extends Simpla
 	private function init_categories()
 	{
 		if(function_exists('apcu_fetch')){
-			$this->categories_tree = apcu_fetch('categories_tree');
-			$this->all_categories = apcu_fetch('all_categories');
-			return;
+			$this->categories_tree = apcu_exists('categories_tree') ? apcu_fetch('categories_tree') : null;
+			$this->all_categories = apcu_exists('categories_tree') ? apcu_fetch('all_categories') : null;
+			if($this->categories_tree && $this->all_categories){
+				return;
+			}
 		}
 		
 		// Дерево категорий
