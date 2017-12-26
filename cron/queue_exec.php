@@ -9,13 +9,12 @@ if($pause == 1){
 //подключаем основной класс Simpla
 if(file_exists(dirname(__FILE__) . '/../api/Simpla.php')) {
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
-dtimer::$enabled = false;
 }
 
 
 echo "<pre>\n";
 $simpla = new Simpla();
-
+dtimer::$enabled = false;
 $task = 0;
 dtimer::log("start queue");
 
