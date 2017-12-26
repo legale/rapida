@@ -281,7 +281,7 @@ class Categories extends Simpla
 		$this->categories_tree = $tree['subcategories'];
 		$this->all_categories = $pointers;
 		
-		if(function_exists('apcu_add'){
+		if(function_exists('apcu_add')){
 			apcu_add('categories_tree', $tree['subcategories'], 7200);
 			apcu_add('all_categories', $pointers, 7200);
 		}
