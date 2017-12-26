@@ -124,6 +124,7 @@ class System extends Simpla
 			if ($ids) {
 				foreach ($ids as $id) {
 					$task = '$this->image->download("products",'.$id.');';
+					$keyhash = hash('md4', $task);
 					$this->queue->addtask($keyhash, __METHOD__ , $task);
 				}
 			}
