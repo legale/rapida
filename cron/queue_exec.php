@@ -9,7 +9,7 @@ if($pause == 1){
 //подключаем основной класс Simpla
 if(file_exists(dirname(__FILE__) . '/../api/Simpla.php')) {
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
-dtimer::enabled = false;
+dtimer::$enabled = false;
 }
 
 
