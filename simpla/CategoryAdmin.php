@@ -75,7 +75,7 @@ class CategoryAdmin extends Simpla
 		}
 		
 
-		$categories = $this->categories->get_categories_tree();
+		$categories = $this->categories->get_categories_tree(true); //do reinitialize categories
 
 		$this->design->assign('category', $category);
 		$this->design->assign('categories', $categories);
