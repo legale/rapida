@@ -21,8 +21,11 @@ class Categories extends Simpla
 	// Функция возвращает массив категорий
 	public function get_categories($filter = array())
 	{
-		if (!isset($this->categories_tree))
-			$this->init_categories();
+		$reinit = isset($filter['reinit']) ? true : false;
+		
+		if (!isset($this->categories_tree)){
+			$this->init_categories($reinit);
+		}
 
 		if (!empty($filter['product_id']))
 			{
@@ -59,10 +62,11 @@ class Categories extends Simpla
 	}	
 
 	// Функция возвращает дерево категорий
-	public function get_categories_tree()
+	public function get_categories_tree($reinit = false)
 	{
+		
 		if (!isset($this->categories_tree))
-			$this->init_categories();
+			$this->init_categories($reinit);
 
 		return $this->categories_tree;
 	}
@@ -197,9 +201,9 @@ class Categories extends Simpla
 
 
 	// Инициализация категорий, после которой категории будем выбирать из локальной переменной
-	private function init_categories()
+	private function init_categories($reinit = false)
 	{
-		if(function_exists('apcu_fetch')){
+		if($reinit === false && function_exists('apcu_fetch')){
 			$this->categories_tree = apcu_exists('categories_tree') ? apcu_fetch('categories_tree') : null;
 			$this->all_categories = apcu_exists('categories_tree') ? apcu_fetch('all_categories') : null;
 			if($this->categories_tree && $this->all_categories){
@@ -283,7 +287,7 @@ class Categories extends Simpla
 		$this->categories_tree = $tree['subcategories'];
 		$this->all_categories = $pointers;
 		
-		if(function_exists('apcu_add')){
+		if($reinit === false && function_exists('apcu_add')){
 			apcu_add('categories_tree', $tree['subcategories'], 7200);
 			apcu_add('all_categories', $pointers, 7200);
 		}
