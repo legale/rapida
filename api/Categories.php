@@ -289,8 +289,8 @@ class Categories extends Simpla
 		
 		if(function_exists('apcu_add')){
 			dtimer::log(__METHOD__ . " update categories APCU");
-			apcu_add('categories_tree', $tree['subcategories'], 7200);
-			apcu_add('all_categories', $pointers, 7200);
+			apcu_store('categories_tree', $tree['subcategories'], 7200);
+			apcu_store('all_categories', $pointers, 7200);
 		}
 	}
 }
