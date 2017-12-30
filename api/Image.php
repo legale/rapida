@@ -504,7 +504,7 @@ class Image extends Simpla
     private function image_constrain_gd($src_file, $dst_file, $max_w, $max_h, $watermark = null, $watermark_offet_x = 0, $watermark_offet_y = 0, $watermark_opacity = 1)
     {
         dtimer::log(__METHOD__ . " start $src_file");
-        $quality = 100;
+        $quality = 90;
         if (!file_exists($src_file)) {
             dtimer::log(__METHOD__ . " file not found: $src_file", 1);
             return false;
