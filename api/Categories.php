@@ -64,7 +64,7 @@ class Categories extends Simpla
 	// Функция возвращает дерево категорий
 	public function get_categories_tree($reinit = false)
 	{
-		
+		dtimer::log(__METHOD__ ." start reinit: ".var_export($reinit, true));
 		if (!isset($this->categories_tree))
 			$this->init_categories($reinit);
 
