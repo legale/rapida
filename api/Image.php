@@ -446,7 +446,7 @@ class Image extends Simpla
         // Убираем комменты и т.п. из картинки
         $thumb->stripImage();
 
-        //		$thumb->setImageCompressionQuality(100);
+        $thumb->setImageCompressionQuality(100);
 
         // Записываем картинку
         if (!$thumb->writeImages($dst_file, true))

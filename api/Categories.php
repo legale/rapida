@@ -129,6 +129,8 @@ class Categories extends Simpla
 	// Изменение категории
 	public function update_category($id, $category)
 	{
+		$category = array_filter($category);
+		
 		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $category, intval($id));
 		$this->db->query($query);
 		unset($this->categories_tree);
