@@ -113,10 +113,10 @@ class Design extends Simpla
             $url = parse_url($basename);
             return '/img/' . $type . '_' . $id . '/' . $w . 'x' . $h . '/?' . http_build_query($url);
         }
-
-        $dir = $this->image->gen_original_dirname($type);
-        $filepath = $dir . $w . 'x' . $h . '/' . $basename;
-        return '/' . $filepath;
+		
+		$root = $this->config->root_dir;
+        $filepath =  '/img/' . $type . '_resized/'  . $w . 'x' . $h . '/' . $basename;
+        return $filepath;
     }
 
     public function token_modifier($text)
