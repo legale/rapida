@@ -324,7 +324,7 @@ class Image extends Simpla
      * @param $h
      * @return bool|string
      */
-    private function gen_resize_dirname($dirname, $w, $h)
+    public function gen_resize_dirname($dirname, $w, $h)
     {
         dtimer::log(__METHOD__ . " start $dirname");
         $root = $this->config->root_dir;
@@ -708,7 +708,7 @@ class Image extends Simpla
      * @param $type
      * @return bool|string
      */
-    public function gen_original_dirname($type)
+    private function gen_original_dirname($type)
     {
         dtimer::log(__METHOD__ . " start $type");
         $root = $this->config->root_dir;
