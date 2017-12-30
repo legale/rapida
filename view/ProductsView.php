@@ -75,7 +75,7 @@ class ProductsView extends View
 			$category = $this->categories->get_category((string)$category_url);
 			
 			//301 moved permanently
-			if(isset($category['url2']) && $category['url2'] === $category_url){
+			if(isset($category['url2']) && $category['url2'] === $category['url']){
 				$root = $this->config->root_url . '/';
 				$path = $this->coMaster->uri_arr['path_arr']['module'] . '/';
 				$url =  $root . $path . $category['url'];
