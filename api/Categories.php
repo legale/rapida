@@ -204,7 +204,7 @@ class Categories extends Simpla
 	// Инициализация категорий, после которой категории будем выбирать из локальной переменной
 	private function init_categories($reinit = false)
 	{
-		dtimer::log(__METHOD__ . " start ".var_export($reinit, true));
+		dtimer::log(__METHOD__ . " start reinit flag: ".var_export($reinit, true));
 		if($reinit === false && function_exists('apcu_fetch')){
 			$this->categories_tree = apcu_exists('categories_tree') ? apcu_fetch('categories_tree') : null;
 			$this->all_categories = apcu_exists('categories_tree') ? apcu_fetch('all_categories') : null;
