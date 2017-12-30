@@ -60,7 +60,12 @@ class ControllerResize extends Simpla
         dtimer::log(__METHOD__ . " filepath to read: $filepath");
 
         if (!$this->debug) {
-            $this->read($this->config->root_dir . $filepath);
+            //так вывод будет средсвами php
+            //$this->read($this->config->root_dir . $filepath);
+            
+            //так через nginx
+			header("HTTP/1.1 301 Moved Permanently"); 
+			header("Location: /$filepath");            
             exit();
         }
         return true;
