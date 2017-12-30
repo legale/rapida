@@ -133,8 +133,7 @@ class Categories extends Simpla
 		
 		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $category, intval($id));
 		$this->db->query($query);
-		unset($this->categories_tree);
-		unset($this->all_categories);
+		$this->init_categories(true);
 		return intval($id);
 	}
 	
