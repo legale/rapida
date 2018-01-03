@@ -113,7 +113,7 @@ class Bender
 	}
 
 	// Print output for CSS or Javascript
-	public function output( $output )
+	public function output( $output , $async = true)
 	{
 		
 
@@ -137,7 +137,8 @@ class Bender
 				return '<link href="' . $output_new . '" rel="stylesheet" type="text/css"/>';
 				break;
 			case "js":
-				return '<script type="text/javascript" src="' . $output_new . '"></script>';
+				$async = $async ? 'async ' : '';
+				return '<script '. $async . 'type="text/javascript" src="' . $output_new . '"></script>';
 				break;
 		}
 	}

@@ -182,6 +182,7 @@ class Simpla
 		'comments' => 'Comments',
 		'feedbacks' => 'Feedbacks',
 		'notify' => 'Notify',
+		'slider' => 'Slider',
 		'managers' => 'Managers',
 		'queue' => 'Queue',
 		'sys' => 'System',

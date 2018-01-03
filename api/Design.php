@@ -426,12 +426,13 @@ class Design extends Simpla
         $bender->root_dir = $this->config->root_dir;
         $src = isset($params['src']) ? $params['src'] : "";
         $output = isset($params['output']) ? $params['output'] : "";
+        $async = isset($params['async']) ? $params['async'] : false;
 
         // enqueue javascript or css
         if ($src) {
             $bender->enqueue($src);
         } elseif ($output) {
-            return $bender->output($output);
+            return $bender->output($output, $async);
         }
     }
 
