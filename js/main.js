@@ -1,9 +1,13 @@
 /*
+ * В этом классе собраны все функции js, которые используются для работы
+ */
+window.rapida = {
+/*
  * Очень простая функция для отправки ajax GET запроса.
  * url - строка с адресом и запросом
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
- */
-function getAjax(url, success) {
+ */ 
+getAjax: function (url, success) {
 	"use strict";
 	let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
 	xhr.open('GET', url);
@@ -13,7 +17,7 @@ function getAjax(url, success) {
 	xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	xhr.send();
 	return xhr;
-}
+},
 
 /*
  * Функция для отправки ajax POST запроса.
@@ -21,7 +25,7 @@ function getAjax(url, success) {
  * data - строка с уже оформленным запросом или объект, который будет разложен на пары ключ=значение&ключ=значение
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
  */
-function postAjax(url, data, success) {
+postAjax: function (url, data, success) {
 	"use strict";
 	let params = typeof data == 'string' ? data : Object.keys(data).map(
 			function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) }
@@ -36,7 +40,7 @@ function postAjax(url, data, success) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.send(params);
 	return xhr;
-}
+},
 
 
 /*
@@ -57,7 +61,7 @@ apiAjax(
   console.log(JSON.parse(e))
   });
 */
-function apiAjax( data, success) {
+apiAjax: function ( data, success) {
 	"use strict";
 	let l = window.location;
 	let params = 'json=' + JSON.stringify(data);
@@ -71,15 +75,15 @@ function apiAjax( data, success) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.send(params);
 	return xhr;
-}
+},
 
-function setCookie( key, val ) {
+setCookie: function ( key, val ) {
 	"use strict";
 	window.document.cookie = key + '=' + val;
 	return true;
-}
+},
 
-function getCookie( key ) {
+getCookie: function ( key ) {
 	"use strict";
 	let a = window.document.cookie.split('; ');
 	let o = {};
@@ -93,13 +97,13 @@ function getCookie( key ) {
 	} else {
 		return o[key] !== undefined ? o[key] : false;
 	}
-}
+},
 
-function addwishlist( pid ) {
+addwishlist: function ( pid ) {
 	"use strict";
 	window.document.cookie
 	return xhr;
-}
+},
 
 
 /*
@@ -109,7 +113,7 @@ function addwishlist( pid ) {
  * elements - HTML элемент или HTML коллекция, или NodeList на которых должно срабатывать событие
  * event - функция, которая будет выполнена при срабатывании события
  */
-function live(eventType, elements, event) {
+live: function (eventType, elements, event) {
 	"use strict";
 	//если у нас объект, то проверим какой именно
 	if(typeof(elements) !== 'object'){
@@ -133,9 +137,9 @@ function live(eventType, elements, event) {
 			break;
 	}
 
-}
+},
 
-function search_tree(type, name, e){
+search_tree: function (type, name, e){
 	"use strict";
 	if(e === undefined || e === null || e.classList === undefined){
 		console.log('element is empty');
@@ -182,4 +186,7 @@ function search_tree(type, name, e){
 
 
 }
+
+}
+
 
