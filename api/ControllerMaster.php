@@ -29,6 +29,7 @@ class ControllerMaster extends Simpla
 	'cart'=> 'coSimpla',
 	'order'=> 'coSimpla',
 	'blog'=> 'coSimpla',
+	'wishlist'=> 'coSimpla',
 	'img'=> 'coResize',
 	'xhr'=> 'coXhr',
 	);
@@ -197,7 +198,7 @@ class ControllerMaster extends Simpla
 			$res['path_arr'] = $this->parse_uri_path($res['path']);
 			
 			//если у нас нет соответствующего модулю контроллера  - ставим ''
-			dtimer::log(__METHOD__ . " before module choise: " . $res['path_arr']['module']);
+			dtimer::log(__METHOD__ . " before module choice: " . $res['path_arr']['module']);
 			if(isset($this->modules[$res['path_arr']['module']]) ){
 				$res['ctrl'] = $this->modules[$res['path_arr']['module']];
 			} else {
@@ -240,7 +241,7 @@ class ControllerMaster extends Simpla
 		}
 		
 		//Если только 1 элемент после дроби, значит это модуль page
-		if(count($a) === 1 && !in_array(reset($a), array('blog','cart','order','register','search','simpla','user') ) ){
+		if(count($a) === 1 && !in_array(reset($a), array('wishlist','blog','cart','order','register','search','simpla','user') ) ){
 			return array('module' => 'page', 'url'=> array_shift($a) );
 		}
 		
@@ -258,6 +259,7 @@ class ControllerMaster extends Simpla
 			case 'cart':
 			case 'page':
 			case 'blog':
+			case 'wishlist':
 			$res['url'] = array_shift($a);
 			break;
 

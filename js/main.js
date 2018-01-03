@@ -1,9 +1,8 @@
-"use strict";
 /*
  * Очень простая функция для отправки ajax GET запроса.
  * url - строка с адресом и запросом
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
- */ 
+ */
 function getAjax(url, success) {
 	"use strict";
 	let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -45,19 +44,19 @@ function postAjax(url, data, success) {
  * 2 аргумента:
  * data - объект с параметрами
  * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
- * пример: 
- * 
-apiAjax( 
-{'class': 'products', 'method': 'get_products_ids', 'args': 
+ * пример:
+ *
+apiAjax(
+{'class': 'products', 'method': 'get_products_ids', 'args':
 	{filter:
 			{
-	'id': [1,2,3,4] 
+	'id': [1,2,3,4]
 			}
 	}
 } , function(e){
   console.log(JSON.parse(e))
   });
-*/ 
+*/
 function apiAjax( data, success) {
 	"use strict";
 	let l = window.location;
@@ -71,6 +70,34 @@ function apiAjax( data, success) {
 	xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.send(params);
+	return xhr;
+}
+
+function setCookie( key, val ) {
+	"use strict";
+	window.document.cookie = key + '=' + val;
+	return true;
+}
+
+function getCookie( key ) {
+	"use strict";
+	let a = window.document.cookie.split('; ');
+	let o = {};
+	for(let i in a){
+		let k, v;
+		[k,v] = a[i].split('=');
+		o[k] = v;
+	}
+	if(key === undefined){
+		return o;
+	} else {
+		return o[key] !== undefined ? o[key] : false;
+	}
+}
+
+function addwishlist( pid ) {
+	"use strict";
+	window.document.cookie
 	return xhr;
 }
 
@@ -92,10 +119,10 @@ function live(eventType, elements, event) {
 
 	let type = elements.__proto__.constructor.name;
 	switch(type) {
-		//это HTML коллекция или список узлов - сделаем рекурсию, 
+		//это HTML коллекция или список узлов - сделаем рекурсию,
 		//потому что нам нужны элементы, а не коллекции
 		case 'HTMLCollection':
-		case 'NodeList':  
+		case 'NodeList':
 			for(let k = 0 ; k < elements.length; k++ ){
 				live(eventType, elements[k], event);
 			}
@@ -117,7 +144,7 @@ function search_tree(type, name, e){
 		console.log(e);
 	}
 
-	
+
 	let t = false;
 	switch(type){
 		case 'class':
@@ -125,34 +152,34 @@ function search_tree(type, name, e){
 				t = true;
 			}
 			break;
-		
+
 		case 'attribute':
 			if(e.getAttribute(name) !== null){
 				t = true;
 			}
 			break;
-		
+
 		case 'tag':
 			if(e.tagName === name.toUpperCase() ){
 				t = true;
 			}
 			break;
-		
+
 		default:
 			console.log(type + " is unknown");
 			return false;
 	}
-	
+
 	if(t === true){
 		return e;
 	}
-		
+
 	return new Promise(function(resolve, reject) {
 			resolve(search_tree(type, name, e.parentNode));
 			reject();
 	});
-	
-	
+
+
 
 }
-	
+
