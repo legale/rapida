@@ -30,8 +30,13 @@
 
 <script>
 $(function() {
+	//включаем обработчик на все элементы, у которых есть аттрибут add_link
+	live('click', document.querySelectorAll('[add_link=true]'), add_link);
+	live('click', document.querySelectorAll('[delete_link=true]'), delete_link);
 
-
+	//сортировка картинок
+	$("#imagelist").sortable();
+	
 	// Удаление изображений
 	$(".images a.delete").click( function() {
 		$("input[name='delete_image']").val('1');
@@ -45,13 +50,13 @@ $(function() {
 	meta_description_touched = true;
 	url_touched = true;
 	
-	if($('input[name="meta_title"]').val() == generate_meta_title() || $('input[name="meta_title"]').val() == '')
+	if($('input[name="save[category][meta_title]"]').val() == generate_meta_title() || $('input[name="save[category][meta_title]"]').val() == '')
 		meta_title_touched = false;
-	if($('input[name="meta_keywords"]').val() == generate_meta_keywords() || $('input[name="meta_keywords"]').val() == '')
+	if($('input[name="save[category][meta_keywords]"]').val() == generate_meta_keywords() || $('input[name="save[category][meta_keywords]"]').val() == '')
 		meta_keywords_touched = false;
-	if($('textarea[name="meta_description"]').val() == generate_meta_description() || $('textarea[name="meta_description"]').val() == '')
+	if($('textarea[name="save[category][meta_description]"]').val() == generate_meta_description() || $('textarea[name="save[category][meta_description]"]').val() == '')
 		meta_description_touched = false;
-	if($('input[name="url"]').val() == generate_url() || $('input[name="url"]').val() == '')
+	if($('input[name="save[category][url]"]').val() == generate_url() || $('input[name="save[category][url]"]').val() == '')
 		url_touched = false;
 		
 	$('input[name="meta_title"]').change(function() { meta_title_touched = true; });
@@ -120,52 +125,53 @@ function translit(str)
     } 
     return res;  
 }
+
+// ссылка на добавление
+function add_link(e) {
+	"use strict";
+	console.log(e.target);
+	let link_id = e.target.getAttribute('link_id');
+	console.log(link_id);
+	let t = document.querySelector('[container=true][container_id=' + link_id + ']')
+	let n = t.cloneNode(true);
+	t.parentNode.insertBefore(n,t);
+	n.setAttribute('style','');
+	live('click', n.querySelector('[delete_link=true]'), delete_link);
+}
+
+//функция для удаления
+function delete_link(e) {
+	"use strict";
+	console.log(e.target);
+	search_tree('attribute', 'container', e.target).then(function(v){console.log(v); v.remove()});
+}
 </script>
  
 {/literal}
 
 
-{if isset($message_success)}
-<!-- Системное сообщение -->
-<div class="message message_success">
-	<span class="text">{if $message_success=='added'}Категория добавлена{elseif $message_success=='updated'}Категория обновлена{else}{$message_success}{/if}</span>
-	<a class="link" target="_blank" href="../catalog/{$category['url']}">Открыть категорию на сайте</a>
-	{if $smarty.get.return}
-	<a class="button" href="{$smarty.get.return}">Вернуться</a>
-	{/if}
-	
-	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}&title={$category['name']|urlencode}&description={$category['description']|urlencode}&image={$config->root_url|urlencode}/files/categories/{$category['image']|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$category['name']|urlencode}&url={$config->root_url|urlencode}/catalog/{$category['url']|urlencode}&hashtags={$category['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
-	</span>
-	
-	
-</div>
-<!-- Системное сообщение (The End)-->
+{foreach $status as $s}
+{if $s['status'] === 3}
+{$s_class = "message message_success"}
+{elseif $s['status'] === 2}
+{$s_class = "message message_warning"}
+{elseif $s['status'] === 1}
+{$s_class = "message message_error"}
 {/if}
-
-{if isset($message_error)}
-<!-- Системное сообщение -->
-<div class="message message_error">
-	<span class="text">{if $message_error=='url_exists'}Категория с таким адресом уже существует{elseif $message_error=='name_empty'}У категории должно быть название{elseif $message_error=='url_empty'}URl адрес не может быть пустым{/if}</span>
-	<a class="button" href="">Вернуться</a>
+<div class="{$s_class}">
+	<span class="text">{$s['message']}</span>
 </div>
-<!-- Системное сообщение (The End)-->
-{/if}
+{/foreach}
 
 
 <!-- Основная форма -->
-<form method=post id=product enctype="multipart/form-data">
+<form method=post id=category enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$category['name']|escape}"/> 
-		<input name=id type="hidden" value="{$category['id']|escape}"/> 
+		<input class="name" name='save[category][name]' type="text" value="{$category['name']|escape}"/> 
+		<input name='save[category][id]' type="hidden" value="{$category['id']|escape}"/> 
 		<div class="checkbox">
-			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
+			<input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
 		</div>
 	</div> 
 
@@ -175,7 +181,7 @@ function translit(str)
 				{function name=category_select level=0}
 				{foreach $cats as $cat}
 					{if $category['id'] != $cat['id']}
-						<option value='{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
+						<option value='save[category]{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
 						{category_select cats=$cat['subcategories'] level=$level+1}
 					{/if}
 				{/foreach}
@@ -184,60 +190,84 @@ function translit(str)
 			</select>
 	</div>
 		
-	<!-- Левая колонка свойств товара -->
+	<!-- Левая колонка -->
 	<div class="column_left">
 			
 		<!-- Параметры страницы -->
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url">/catalog/</div><input name="url" class="page_url" type="text" value="{$category['url']|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$category['meta_title']|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp">{$category['meta_description']|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url">/catalog/</div><input name="save[category][url]" class="page_url" type="text" value="{$category['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name="save[category][meta_title]" class="simpla_inp" type="text" value="{$category['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name="save[category][meta_keywords]" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name="save[category][meta_description]" class="simpla_inp">{$category['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
 		
- 		{*
-		<!-- Экспорт-->
-		<div class="block">
-			<h2>Экспорт товара</h2>
-			<ul>
-				<li><input id="exp_yad" type="checkbox" /> <label for="exp_yad">Яндекс Маркет</label> Бид <input class="simpla_inp" type="" name="" value="12" /> руб.</li>
-				<li><input id="exp_goog" type="checkbox" /> <label for="exp_goog">Google Base</label> </li>
-			</ul>
-		</div>
-		<!-- Свойства товара (The End)-->
-		*}
-			
 	</div>
-	<!-- Левая колонка свойств товара (The End)--> 
+	<!-- Левая колонка  (The End)--> 
 	
-	<!-- Правая колонка свойств товара -->	
+	<!-- Правая колонка -->	
 	<div class="column_right">
 		
-		<!-- Изображение категории -->	
+		<!-- Изображения -->	
 		<div class="block layer images">
-			<h2>Изображение категории</h2>
-			<input class='upload_image' name=image type=file>			
-			<input type=hidden name="delete_image" value="">
-			{if $category['image']}
-			<ul>
-				<li>
-					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
-					<img src="../{$config->categories_images_dir}{$category['image']}" alt="" />
+			<h2>Изображения 
+			</h2>
+			<ul id="imagelist">
+			{if $category['images']}
+				{foreach $category['images'] as $image_id=>$image}
+				<li container="true">
+					<a delete_link="true" class="delete"></a>
+					<img id="{$image_id}" src="{$image['basename']|resize:categories:$image_id:100:100}" alt="" />
+					<input type="hidden" name="save[images][]" value="{$image_id}">
 				</li>
-			</ul>
+				{/foreach}
 			{/if}
+			</ul>
+
+			<div class="block">
+
+				<!-- dropzone для перетаскивания изображений -->	
+<!--
+				{if isset($category['id'])}
+					<div id="holder" type="categories" product_id="{$product['id']}">
+						<div class="holder__text">Тяни файл сюда</div>
+					</div> 
+					<p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+					<p id="filereader">File API & FileReader API not supported</p>
+					<p id="formdata">XHR2's FormData is not supported</p>
+					<p id="progress">XHR2's upload progress isn't supported</p>
+					<p>Upload progress: <progress id="uploadprogress" max="100" value="0">0</progress></p>
+
+				{/if}
+-->
+				<!-- dropzone для перетаскивания изображений (The End) -->
+
+				<span class=upload_image><i  add_link="true" link_id="upload_image" class="dash_link" id="upload_image">Добавить изображение</i></span>
+				 или 
+				<span class=add_image_url><i class="dash_link"  add_link="true" link_id="image_url_upload">загрузить из интернета</i></span>
+				
+				<!-- Шаблон для кнопки загрузки нового изображения -->
+				<div container="true" container_id="upload_image" style="display: none;">
+					<input name=new_images[] type=file multiple  accept='image/jpeg,image/png,image/gif'>
+					<a delete_link="true" class="delete"></a>
+				</div>
+				<!-- Шаблон для кнопки загрузки нового изображения (The end) -->
+			</div>
 		</div>
+		<!-- Изображения  END -->
+
+		
+		
 	</div>
-	<!-- Правая колонка свойств товара (The End)--> 
+	<!-- Правая колонка (The End)--> 
 
 	<!-- Описагние категории -->
 	<div class="block layer">
 		<h2>Описание</h2>
-		<textarea name="description" class="editor_large">{$category['description']|escape}</textarea>
+		<textarea name="save[category][description]" class="editor_large">{$category['description']|escape}</textarea>
 	</div>
 	<!-- Описание категории (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />

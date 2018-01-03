@@ -402,7 +402,8 @@ function ready(){
 				<!-- Шаблон для кнопки загрузки нового изображения (The end) -->
 			</div>
 		</div>
-
+		<!-- Изображения товара END -->
+			
 		<div class="block layer">
 			<h2>Связанные товары</h2>
 			<div class="sortable related_products">
