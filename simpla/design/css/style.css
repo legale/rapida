@@ -523,7 +523,7 @@ progress:after { content: '%'; }
 	width: 35px;
 }
 
-div.images  span.upload_image, #product div.images  span.add_image_url{
+div.images  span.upload_image, div.images  span.add_image_url{
 	margin-top: 5px;
 	background-repeat: no-repeat;
 	padding-left: 20px;	

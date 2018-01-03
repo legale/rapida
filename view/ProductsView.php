@@ -220,10 +220,10 @@ class ProductsView extends View
 		
 		if( !empty($products) )
 		{
-			$products_ids = array_keys($products);
+			$pids = array_keys($products);
 
 			$variants = $this->variants->get_variants(array('grouped' => 'product_id', 
-			'product_id'=>$products_ids, 'in_stock'=>true));
+			'product_id'=>$pids, 'in_stock'=>true));
 			
 
 			if(is_array($products)){

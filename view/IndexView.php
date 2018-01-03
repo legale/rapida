@@ -27,6 +27,7 @@ class IndexView extends View
 			'order'=> 'OrderView',
 			'page'=> 'PageView',
 			'blog'=> 'BlogView',
+			'wishlist'=> 'WishlistView',
 			);
 
 	public $modules_dir = 'view/';
