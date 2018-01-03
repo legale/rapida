@@ -24,43 +24,50 @@
 	{if isset($canonical)}<link rel="canonical" href="{$config->root_url}{$canonical}"/>{/if}
 	
 	{* Стили *}
-	{bender src="design/{$settings->theme|escape}/css/reset.css"}
-	{bender src="design/{$settings->theme|escape}/css/style.css"}
-	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="icon"          type="image/x-icon"/>
-	<link href="design/{$settings->theme|escape}/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+	{bender src="/design/{$settings->theme|escape}/css/reset.css"}
+	{bender src="/design/{$settings->theme|escape}/css/style.css"}
+	<link href="/design/{$settings->theme|escape}/images/favicon.ico" rel="icon"          type="image/x-icon"/>
+	<link href="/design/{$settings->theme|escape}/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
 	
 	{* JQuery *}
-	{bender src="js/jquery/jquery.js"}
+<!--
+	{bender src="/js/jquery/jquery.js"}
+-->
 	
-	{* Всплывающие подсказки для администратора из в бендера не кладем, чтобы не смешивать*}
-	{if isset($smarty.session.admin)}
-	{bender src="js/admintooltip/admintooltip.js"}
-	{bender src="js/admintooltip/css/admintooltip.css"} 
-	{/if}
-         
+<!--
+	{bender src="/js/admintooltip/admintooltip.js"}
+-->
+<!--
+	{bender src="/js/admintooltip/css/admintooltip.css"} 
+-->
+			
 
 	{* функции для работы с api системы *}
-	{bender src="js/main.js"}           
+	{bender src="/js/main.js"}           
+<!--
 	
 	{* Аяксовая корзина *}
-	{bender src="design/{$settings->theme}/js/jquery-ui.min.js"}
-	{bender src="design/{$settings->theme}/js/ajax_cart.js"}
+	{bender src="/design/{$settings->theme}/js/jquery-ui.min.js"}
+	{bender src="/design/{$settings->theme}/js/ajax_cart.js"}
 	{* js-проверка форм *}
-	{bender src="js/baloon/js/baloon.js"}
-	{bender src="js/baloon/css/baloon.css"} 
+	{bender src="/js/baloon/js/baloon.js"}
+	{bender src="/js/baloon/css/baloon.css"} 
+-->
 	
+<!--
 	{* Автозаполнитель поиска *}
-	{bender src="js/autocomplete/jquery.autocomplete-min.js"}
+	{bender src="/js/autocomplete/jquery.autocomplete-min.js"}
 
 	{* Увеличитель картинок *}
 
-	{bender src="js/fancybox/jquery.fancybox.pack.js"}
-	{bender src="js/fancybox/jquery.fancybox.css"}
+	{bender src="/js/fancybox/jquery.fancybox.pack.js"}
+	{bender src="/js/fancybox/jquery.fancybox.css"}
 
 
+-->
 
 	{*сжатые стили*}		
-	{bender output="compiled/{$settings->theme}/combined.css"}
+	{bender output="/compiled/{$settings->theme}/combined.css"}
 
 
 </head>
