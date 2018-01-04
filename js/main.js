@@ -1,7 +1,7 @@
 /*
  * В этом классе собраны все функции js, которые используются для работы
  */
-window.rapida = {
+window.ra = {
 /*
  * Очень простая функция для отправки ajax GET запроса.
  * url - строка с адресом и запросом
@@ -128,7 +128,7 @@ live: function (eventType, elements, event) {
 		case 'HTMLCollection':
 		case 'NodeList':
 			for(let k = 0 ; k < elements.length; k++ ){
-				live(eventType, elements[k], event);
+				ra.live(eventType, elements[k], event);
 			}
 			break;
 		//если это не коллекция или лист, значит элемент, на него и будем вешать обработчик
@@ -179,7 +179,7 @@ search_tree: function (type, name, e){
 	}
 
 	return new Promise(function(resolve, reject) {
-			resolve(search_tree(type, name, e.parentNode));
+			resolve(ra.search_tree(type, name, e.parentNode));
 			reject();
 	});
 
