@@ -207,7 +207,7 @@ getType: function(o){
 },
 
 
-menuButton: function(el){
+hideShow: function(el){
 	switch(ra.getType(el)){
 	case 'element': 
 		break;
@@ -219,7 +219,7 @@ menuButton: function(el){
 		break;
 	}
 	
-	el.style.display = window.getComputedStyle(el).display !== 'none' ? 'none' : '';
+	el.style.display = window.getComputedStyle(el).display !== 'none' ? 'none' : 'block';
 	return false;
 }
 
