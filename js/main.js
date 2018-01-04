@@ -188,8 +188,9 @@ search_tree: function (type, name, e){
 },
 
 stopDefAction: function(ev){
+	console.log(ev);
 	ev.preventDefault();
-	ev.target.removeEventListener('click', stopDefAction, false);
+	ev.target.removeEventListener('click', ra.stopDefAction, false);
 },
 
 getType: function(o){
@@ -208,6 +209,7 @@ getType: function(o){
 
 
 hideShow: function(el){
+	
 	switch(ra.getType(el)){
 	case 'element': 
 		break;
@@ -218,9 +220,7 @@ hideShow: function(el){
 		}
 		break;
 	}
-	
 	el.style.display = window.getComputedStyle(el).display !== 'none' ? 'none' : 'block';
-	return false;
 }
 
 }
