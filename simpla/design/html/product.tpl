@@ -34,13 +34,13 @@ function add_link(e) {
 	let n = t.cloneNode(true);
 	t.parentNode.insertBefore(n,t);
 	n.setAttribute('style','');
-	live('click', n.querySelector('[delete_link=true]'), delete_link);
+	ra.live('click', n.querySelector('[delete_link=true]'), delete_link);
 }
 //функция для удаления
 function delete_link(e) {
 	"use strict";
 	console.log(e.target);
-	search_tree('attribute', 'container', e.target).then(function(v){console.log(v); v.remove()});
+	ra.search_tree('attribute', 'container', e.target).then(function(v){console.log(v); v.remove()});
 }
 
 function ready(){
@@ -51,8 +51,8 @@ function ready(){
 	
 	
 	//включаем обработчик на все элементы, у которых есть аттрибут add_link
-	live('click', document.querySelectorAll('[add_link=true]'), add_link);
-	live('click', document.querySelectorAll('[delete_link=true]'), delete_link);
+	ra.live('click', document.querySelectorAll('[add_link=true]'), add_link);
+	ra.live('click', document.querySelectorAll('[delete_link=true]'), delete_link);
 
 	/* DragnDrop */
 	var holder = document.getElementById('holder'),
@@ -462,7 +462,7 @@ var related = new autoComplete({
 	delay: 200,
 	source: function(term, suggest){
 		term = term.toLowerCase();
-apiAjax( 
+ra.apiAjax( 
 {'class': 'products', 'method': 'get_products_ids', 'args': 
 	{filter:
 			{
@@ -505,7 +505,7 @@ function add_item_related(el) {
 	n.setAttribute('style','');
 	n.querySelector('input[type=hidden]').setAttribute('value', el.id);
 	n.querySelector('a[class=related_product_name]').innerHTML = el.name;
-	live('click', n.querySelector('[delete_link=true]'), delete_link);
+	ra.live('click', n.querySelector('[delete_link=true]'), delete_link);
 }
 
 
