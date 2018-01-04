@@ -185,6 +185,42 @@ search_tree: function (type, name, e){
 
 
 
+},
+
+stopDefAction: function(ev){
+	ev.preventDefault();
+	ev.target.removeEventListener('click', stopDefAction, false);
+},
+
+getType: function(o){
+	if(typeof o !== 'object'){
+		return typeof o;
+	}
+	
+	let type = Object.prototype.toString.call(o);
+	
+	if(type.match(/\[object HTML.+?Element\]/)){
+		return 'element';
+	}else{
+		return type;
+	}
+},
+
+
+menuButton: function(el){
+	switch(ra.getType(el)){
+	case 'element': 
+		break;
+	case 'string':
+		el = document.querySelector(el);
+		if(el === null){
+			return false;
+		}
+		break;
+	}
+	
+	el.style.display = el.style.display === 'none' ? '' : 'none';	
+	return false;
 }
 
 }
