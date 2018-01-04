@@ -219,7 +219,7 @@ menuButton: function(el){
 		break;
 	}
 	
-	el.style.display = el.style.display === 'none' ? '' : 'none';	
+	el.style.display = window.getComputedStyle(el).display !== 'none' ? 'none' : '';
 	return false;
 }
 
