@@ -103,12 +103,17 @@ class Config
 		# Запишем конфиги
 		if (isset($this->vars[$name])) {
 			$conf = file_get_contents($this->vars[$name]['file']);
+			print "<pre>old";
+			print_r($conf);
+			print "</pre>";
 			$conf = preg_replace("/" . $name . "\s*=.*\n/i", $name . ' = ' . $value . ";\r\n", $conf);
 			$cf = fopen($this->vars[$name]['file'], 'w');
 			fwrite($cf, $conf);
 			fclose($cf);
 			$this->vars[$name]['value'] = $value;
-
+			print "<pre>new";
+			print_r($conf);
+			print "</pre>";
 		}
 	}
 
