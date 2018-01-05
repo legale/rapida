@@ -236,17 +236,28 @@ createHtml: function(html){
 
 append: function(par, html){
 	if(ra.getType(html) === 'element'){
-		par.appendChild(html);
+		let el = par.appendChild(html);
+		if(el.nodeName.toLowerCase() === 'script'){
+			eval(el.innerText);
+		}
 		return par;
 	}
 	let obj = ra.createHtml(html);
 	if(ra.getType(obj) === 'element'){
 		console.log('element created. Trying to append');
-		console.log(par.appendChild(obj));
+		let el = par.appendChild(obj);
+		if(el.nodeName.toLowerCase() === 'script'){
+			eval(el.innerText);
+		}
+		console.log(el);
 	}else if (ra.getType(obj) === 'collection'){
 		console.log('HTMLCollection created. Trying to append');
 		while(obj.length > 0){
-			console.log(par.appendChild(obj[0]));
+			let el = par.appendChild(obj[0]);
+			if(el.nodeName.toLowerCase() === 'script'){
+				eval(el.innerText);
+			}
+			console.log(el);
 		}
 	}
 	return par;
