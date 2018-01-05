@@ -202,6 +202,8 @@ getType: function(o){
 	
 	if(type.match(/\[object HTML.+?Element\]/)){
 		return 'element';
+	}else if (type === '[object HTMLCollection]'){
+		return 'collection';
 	}else{
 		return type;
 	}
@@ -221,8 +223,33 @@ hideShow: function(el){
 		break;
 	}
 	el.style.display = window.getComputedStyle(el).display !== 'none' ? 'none' : 'block';
+},
+
+createHtml: function(html){
+	let t = document.createElement('div');
+	t.innerHTML = html;
+	if(t.children[0] === undefined){
+		return false;
+	}
+	return t.children.length > 1 ? t.children : t.children[0];
+},
+
+append: function(par, html){
+	if(ra.getType(html) === 'element'){
+		par.appendChild(html);
+		return par;
+	}
+	let obj = ra.createHtml(html);
+	if(ra.getType(obj) === 'element'){
+		console.log('element created. Trying to append');
+		console.log(par.appendChild(obj));
+	}else if (ra.getType(obj) === 'collection'){
+		console.log('HTMLCollection created. Trying to append');
+		while(obj.length > 0){
+			console.log(par.appendChild(obj[0]));
+		}
+	}
+	return par;
 }
 
 }
-
-
