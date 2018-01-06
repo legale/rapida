@@ -65,7 +65,7 @@ class Config
 			//~ print_r($_SERVER);
 			$this->vars['root_url']['value'] = $scheme . '://' . $_SERVER['HTTP_HOST'];
 			
-			if($_SERVER['HTTP_HOST'] !== $this->vars['host']['value']){
+			if(!isset($this->vars['host']) || $_SERVER['HTTP_HOST'] !== $this->vars['host']['value']){
 				$this->__set('host', $_SERVER['HTTP_HOST']);
 			}
 		}
