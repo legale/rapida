@@ -365,7 +365,8 @@ class ImportAjax extends Simpla{
         // Поле "категория" может состоять из нескольких имен
         //~ print_r($category);
         //~ die;
-        $names = explode(self::SUBDELIM, $category);
+        $names = array_filter(explode(self::SUBDELIM, $category));
+
         $id = null;
         $parent = 0;
         
