@@ -24,7 +24,6 @@ $simpla->coMaster->action();
 		header("Location: ");
 		die;
 	}
-
 // Отладочная информация
 
 	//показываем отладочную информацию из dtimer
@@ -33,12 +32,13 @@ $simpla->coMaster->action();
 	}
 	
 	if( isset($_SESSION['admin']) ){
-		print "<PRE>";
 		$time_end = microtime(true);
 		$exec_time = $time_end-$time_start;
-
-		if(function_exists('memory_get_peak_usage'))
-			print "memory peak usage: ".convert(memory_get_peak_usage(true))."\r\n";
-		print "page generation time: ".convert_time($exec_time)."\r\n";
-		print "</PRE>";
+		$out = "<!--\r\n";
+		if(function_exists('memory_get_peak_usage')){
+			$out .= "memory peak usage: ".convert(memory_get_peak_usage(true))."\r\n";
+		}
+			$out .= "page generation time: ".convert_time($exec_time)."\r\n";
+			$out .= "-->";
+			print $out;
 	}
