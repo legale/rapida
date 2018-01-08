@@ -56,10 +56,7 @@ class Products extends Simpla
 		if(isset($res) && !empty_($res) ){
 			dtimer::log("get_cache get_products_ids cache HIT!");
 			return $res;
-		}		
-		
-		
-		
+		}
 		
 		// По умолчанию
 		$limit = 100;
