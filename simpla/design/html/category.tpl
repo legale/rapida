@@ -95,20 +95,19 @@ function delete_link(e) {
 			<input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
 		</div>
 	</div> 
-
 	<div id="product_categories">
-			<select name="parent_id">
-				<option value='0'>Корневая категория</option>
-				{function name=category_select level=0}
-				{foreach $cats as $cat}
-					{if $category['id'] != $cat['id']}
-						<option value='save[category]{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
-						{category_select cats=$cat['subcategories'] level=$level+1}
-					{/if}
-				{/foreach}
-				{/function}
-				{category_select cats=$categories}
-			</select>
+	<select name="parent_id">
+		<option value='0'>Корневая категория</option>
+		{function name=category_select level=0}
+		{foreach $cats as $cat}
+			{if $category['id'] != $cat['id']}
+				<option value='save[category]{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
+				{category_select cats=$cat['subcategories'] level=$level+1}
+			{/if}
+		{/foreach}
+		{/function}
+		{category_select cats=$cats}
+	</select>
 	</div>
 		
 	<!-- Левая колонка -->
