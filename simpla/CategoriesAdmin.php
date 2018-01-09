@@ -36,8 +36,9 @@ class CategoriesAdmin extends Simpla
 			$poss = $this->request->post('poss');
 			$ids = array_keys($poss);
 			sort($poss);
-			foreach ($poss as $i => $pos)
+			foreach ($poss as $i => $pos){
 				$this->categories->update_category($ids[$i], array('pos' => $pos));
+			}
 
 		}
 
