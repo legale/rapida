@@ -26,18 +26,20 @@ class Queue extends Simpla
 		$query2 = "INSERT IGNORE __queue_full SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'";
 		dtimer::log(__METHOD__ . ' addtask query: ' . $query);
 		$this->db->query($query);
+		dtimer::log('queue inserted id: ' . $this->db->insert_id());
+
 		if ($this->db->affected_rows() < 0) {
 			dtimer::log('addtask error insert entry code: ' . var_export($this->db->affected_rows(), true));
 			return false;
 		}
 		elseif ($this->db->affected_rows() === 0) {
-			dtimer::log('addtask insert duplicate entry code: ' . var_export($this->db->affected_rows(), true));
+			dtimer::log('addtask insert duplicate entry');
 			return false;
 		}
 		else {
 			$this->db->query($query2);
 			if ($this->db->affected_rows() < 0) {
-				dtimer::log('addtask error insert query2');
+				dtimer::log('addtask error insert entry code: ' . var_export($this->db->affected_rows(), true));
 				return false;
 			}
 			elseif ($this->db->affected_rows() === 0) {
@@ -45,7 +47,7 @@ class Queue extends Simpla
 				return false;
 			}
 		}
-
+		
 		return true;
 	}
 
