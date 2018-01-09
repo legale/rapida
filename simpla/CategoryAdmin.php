@@ -64,6 +64,12 @@ class CategoryAdmin extends Simpla
     {
         //тут нужны только категории
         $cats = $this->categories->get_categories();
+		$this->status[] = array(
+		'status'=> 3,
+		'message'=> 'Создание новой категории',
+		);
+		//теперь передаем в шаблон
+        $this->design->assign('status', $this->status);
 
         $this->design->assign('cats', $cats);
     }
