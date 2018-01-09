@@ -50,7 +50,7 @@
 	 * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
 	 * пример:
 	 *
-	apiAjax(
+	ra.apiAjax(
 	{'class': 'products', 'method': 'get_products_ids', 'args':
 		{filter:
 				{
