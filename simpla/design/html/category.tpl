@@ -96,12 +96,12 @@ function delete_link(e) {
 		</div>
 	</div> 
 	<div id="product_categories">
-	<select name="parent_id">
+	<select name="save[category][parent_id]">
 		<option value='0'>Корневая категория</option>
 		{function name=category_select level=0}
 		{foreach $cats as $cat}
 			{if $category['id'] != $cat['id']}
-				<option value='save[category]{$cat['id']}' {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
+				<option value="{$cat['id']}" {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$cat['name']}</option>
 				{category_select cats=$cat['subcategories'] level=$level+1}
 			{/if}
 		{/foreach}
