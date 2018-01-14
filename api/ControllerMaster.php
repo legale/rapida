@@ -75,6 +75,8 @@ class ControllerMaster extends Simpla
 				return false;
 			}
 		}
+		//~ dtimer::log(__METHOD__ . ' uri_arr ' . var_export($arr, true));
+
 		$res = '';
 		
 		//Если у нас нет модуля - останавливаемся
@@ -129,10 +131,7 @@ class ControllerMaster extends Simpla
 			$res .= '/brand-' . implode( '.',  $arr['brand'] );
 		}
 		
-		//теперь сортировка, если они есть
-		if ( isset($arr['sort']) && $arr['sort'] !== '' ){
-			$res .= '/sort-' . $arr['sort'] ;
-		}
+
 
 		//теперь опции, если они есть
 		if ( isset($arr['filter']) && is_array($arr['filter']) && count($arr['filter']) > 0 ){
@@ -142,7 +141,16 @@ class ControllerMaster extends Simpla
 				}
 			}
 		}
+		//теперь сортировка, если они есть
+		if ( isset($arr['sort']) && $arr['sort'] !== '' ){
+			$res .= '/sort-' . $arr['sort'] ;
+		}
 		
+		//теперь страница, если есть
+		if ( isset($arr['page']) && $arr['page'] !== '' ){
+			$res .= '/page-' . $arr['page'] ;
+		}
+				
 		return $res;
 
 	}
