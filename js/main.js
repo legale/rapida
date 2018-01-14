@@ -396,7 +396,7 @@ window.ra.api = {
 		div.classList.add('modef');
 
 		div.innerHTML = '<span>Найдено: ' + amount + ' </span><a onclick="ra.api.show_products(event);" href="#" class="apply">Показать</a>';
-		div.style = 'top: ' + coord.height / -3 + 'px; left: ' + coord.width + 'px;';
+		div.style = 'top: ' + coord.height / -3 + 'px; left: ' + coord.width + 'px; width: 0;';
 		return div;
 	},
 	
@@ -458,6 +458,7 @@ window.ra.api = {
 		});
 		ra.api.req(data2, function(amount){
 			ra.append(el, ra.api.draw_tooltip(el, amount));
+			setTimeout(function(){modef.style.width = '';}, 5);
 		});
 	},
 	
@@ -468,6 +469,7 @@ window.ra.api = {
 		ra.getAjax(uri, function(obj){
 			window.items.innerHTML = JSON.parse(obj);
 		});
+		setTimeout(function(){modef.style.width = '0px'; modef.style.opacity = '0';}, 30);
 	},
 	
 	uri_to_obj: function(uri){
