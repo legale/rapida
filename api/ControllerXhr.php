@@ -14,7 +14,7 @@ class ControllerXhr extends Simpla
 	//разрешенные классы и методы
 	private $allowed_classes = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
 	private $allowed_methods = array(
-		'get_products', 'get_products_ids', 'get_product', 'get_variants', 'get_variant', 'get_features',
+		'count_products', 'get_products', 'get_products_ids', 'get_product', 'get_variants', 'get_variant', 'get_features',
 		'get_options', 'get_options_mix', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get','delete_item',
 	);
 	
@@ -38,6 +38,7 @@ class ControllerXhr extends Simpla
 		//~ print_r( $_POST);
 		if (isset($_POST['json'])) {
 			$json = json_decode($_POST['json'], true);
+
 
 			if (empty($json['class'])
 				|| empty($json['method']) 
@@ -76,6 +77,7 @@ class ControllerXhr extends Simpla
 		} else {
 			$res = call_user_func_array(array( $this->{$r['class']}, $r['method']), $r['args']);
 		}
+		
 		//передаем результат клиенту и останавливаем скрипт
 		print json_encode($res, JSON_UNESCAPED_UNICODE);
 		exit();

@@ -100,9 +100,9 @@ class ProductsView extends View
 
 		// Сортировка товаров, сохраняем в сесси, чтобы текущая сортировка оставалась для всего сайта
 		if($sort = $this->request->get('sort', 'string'))
-			$_SESSION['sort'] = $sort;		
+			$_SESSION['sort'] = $sort;
 		if (!empty($_SESSION['sort']))
-			$filter['sort'] = $_SESSION['sort'];			
+			$filter['sort'] = $_SESSION['sort'];
 		else
 			$filter['sort'] = 'pos';			
 		$this->design->assign('sort', $filter['sort']);
@@ -115,9 +115,6 @@ class ProductsView extends View
 			$features_trans = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => 'trans', 'col' => 'id')) );
 			$features = $this->features->get_features(array('category_id'=>$category['id'], 'in_filter'=>1));
 
-			//~ print_r($features_trans);
-			//~ print_r($features);
-			//~ print_r($this->coMaster->uri_arr['path_arr']);
 			//тут фильтр в ЧПУ виде
 			if( isset($this->coMaster->uri_arr['path_arr']['filter']) ){
 				//перебираем массив
@@ -144,41 +141,28 @@ class ProductsView extends View
 							return false;
 						}
 						
-						//~ print_r($ids);
 						//добавим в фильтр по свойствам массив с id значений опций
 						$filter['features'][$features_trans[$name]] = $ids;
 					}
 				}
 			}
-			//~ print_r($features_trans);
-			//~ print_r($filter);
 			
-
-			$options_filter['visible'] = 1;
 			
 			if (  ( !empty($features) )  ) {
 				$features_ids = array_keys((array)$features);
 			}
 			
 			if(!empty($features_ids)){
-				$options_filter['feature_id'] = $features_ids;
+				$filter['feature_id'] = $features_ids;
 			}
-			$options_filter['category_id'] = $category['children'];
-			if( isset($filter['features']) ){
-				$options_filter['features'] = $filter['features'];
-			}
-			if(!empty($brands_urls)) {
-				$options_filter['brand_id'] = $filter['brand_id'];
-			}
-			$options = $this->features->get_options_mix($options_filter);
+			$options = $this->features->get_options_mix($filter);
 
-			$this->design->assign('filter', $filter);
 			$this->design->assign('features', $features);
 			$this->design->assign('options', $options);
  		}
 
 		// Постраничная навигация
-		$items_per_page = $this->settings->products_num;		
+		$items_per_page = $this->settings->products_num;
 		// Текущая страница в постраничном выводе
 		$current_page = $this->request->get('page', 'integer');
 		// Если не задана, то равна 1
@@ -186,16 +170,19 @@ class ProductsView extends View
 		$this->design->assign('current_page_num', $current_page);
 		// Вычисляем количество страниц
 		$products_count = $this->products->count_products($filter);
-					
+		
 	
 		// Показать все страницы сразу
-		if($this->request->get('page') == 'all')
-			$items_per_page = $products_count;	
+		if($this->request->get('page') == 'all'){
+			$items_per_page = $products_count;
+		}
 		
 		$pages_num = ceil($products_count/$items_per_page);
 		$this->design->assign('total_pages_num', $pages_num);
 		$this->design->assign('total_products_num', $products_count);
 
+		$filter['pages'] = $pages_num;
+		$filter['products_count'] = $products_count;
 		$filter['page'] = $current_page;
 		$filter['limit'] = $items_per_page;
 		
@@ -231,13 +218,18 @@ class ProductsView extends View
 					$product['variants'] = is_array($variants[$pid]) ? $variants[$pid] : array();
 				}
 			}
-
-			//~ print "<PRE>";
-			//~ print var_export($products, true);
-			//~ print "</PRE>";
-			
 			
 			$this->design->assign('products', $products);
+			
+			//ajax
+			if(!empty($_GET['ajax'])){
+				$this->design->assign('filter', json_encode($filter));
+				$html = $this->design->fetch('products_content.tpl');
+				
+				//~ return false;
+				print json_encode($html);
+				die;
+			}
  		}
 		
 		// Выбираем бренды, они нужны нам в шаблоне	
@@ -246,9 +238,6 @@ class ProductsView extends View
 			$brands = $this->brands->get_brands(array('category_id'=>$category['children'], 'visible'=>1));
 			$category['brands'] = $brands;
 		}
-		//~ print "<pre>";
-		//~ print_r($category['children']);
-		//~ print_r($category['brands']);
 		
 		// Устанавливаем мета-теги в зависимости от запроса
 		if($this->page)
@@ -276,7 +265,8 @@ class ProductsView extends View
 			$this->design->assign('meta_title', $keyword);
 		}
 		
-			
+		//передадим фильтр для использования в аякс запросах
+		$this->design->assign('filter', json_encode($filter));
 		$this->body = $this->design->fetch('products.tpl');
 		dtimer::log(__METHOD__ . " return ");
 		return $this->body;

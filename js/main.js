@@ -1,7 +1,40 @@
-	/*
-	 * В этом классе собраны все функции js, которые используются для работы
-	 */
-	window.ra = {
+/*
+ * В этом классе собраны все функции js, которые используются для работы
+ */
+window.ra = {
+
+	parse_uri: function(uri){
+		"use strict";
+		var a = document.createElement('a');
+		a.href = uri;
+		return {scheme: a.protocol, user: a.username, pass: a.password, host: a.hostname, port: a.port, 
+			path: a.pathname, query: a.search, fragment: a.hash}
+	},
+	
+	parse_uri_path: function(path){
+		"use strict";
+		return ra.trim(path, '/').split('/');
+	},
+	
+	trim: function(s, char) {
+		"use strict";
+		char = char !== undefined ? char : ' '; 
+		while(s.charAt(0) == char) {
+			s = s.substring(1);
+		}
+
+		while(s.charAt(s.length-1) == char) {
+			s = s.substring(0, s.length-1);
+		}
+		return s;
+	},
+
+	implode: function( glue, arr ) {
+		"use strict";
+		return arr.__proto__.constructor.name === 'Array' ? arr.join ( glue ) : false;
+	},
+
+
 	/*
 	 * Очень простая функция для отправки ajax GET запроса.
 	 * url - строка с адресом и запросом
@@ -43,39 +76,7 @@
 	},
 
 
-	/*
-	 * Эта функция для отправки особого POST запроса ajax к api системы
-	 * 2 аргумента:
-	 * data - объект с параметрами
-	 * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
-	 * пример:
-	 *
-	ra.apiAjax(
-	{'class': 'products', 'method': 'get_products_ids', 'args':
-		{filter:
-				{
-		'id': [1,2,3,4]
-				}
-		}
-	} , function(e){
-	  console.log(JSON.parse(e))
-	  });
-	*/
-	apiAjax: function ( data, success) {
-		"use strict";
-		let l = window.location;
-		let params = 'json=' + JSON.stringify(data);
 
-		let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-		xhr.open('POST', l.protocol + '//' + l.host + '?xhr=1');
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState>3 && xhr.status==200) { success(xhr.responseText); }
-		};
-		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.send(params);
-		return xhr;
-	},
 
 	setCookie: function ( key, val ) {
 		"use strict";
@@ -188,12 +189,14 @@
 	},
 
 	stopDefAction: function(ev){
+		"use strict";
 		console.log(ev);
 		ev.preventDefault();
 		ev.target.removeEventListener('click', ra.stopDefAction, false);
 	},
 
 	getType: function(o){
+		"use strict";
 		//~ console.log('getType: ' + o);
 		let type = o.__proto__.constructor.name;
 		
@@ -206,7 +209,7 @@
 
 
 	hideShow: function(el){
-		
+		"use strict";
 		switch(ra.getType(el)){
 		case 'element': 
 			break;
@@ -281,7 +284,7 @@
 		"use strict";
 		//~ console.log('append: ' + html);
 		//element script
-		let type = ra.getType(html);
+		let type = ra.getType(html), res;
 		
 		switch(type){
 			case 'element': 
@@ -301,13 +304,14 @@
 					console.log('script element created. Trying to ra.appendScript(element)');
 					return ra.appendScript(par, obj);
 				}else if (type === 'htmlcollection' || type === 'nodelist'){
+					res = [];
 					console.log('HTMLCollection created. Trying to recurse ra.append(element)');
-					while(obj.length > 0 ){
-						ra.append(par, obj[0]);
+					for(let i = 0; obj.length > 0; i++){
+						res[i] = ra.append(par, obj[0]);
 					}
 				} else {
 					console.log('else element created. Trying to ra.append(element)');
-					ra.append(par, obj);
+					res = ra.append(par, obj);
 				}
 				
 			break;
@@ -316,7 +320,190 @@
 				console.error(type, 'is wrong. only "string" and "element" is allowed');
 				return false;
 		}
-		return true;
+		return res;
 	}
 
 	}
+
+window.ra.api = {
+
+	/*
+	 * Эта функция для отправки особого POST запроса ajax к api системы
+	 * 2 аргумента:
+	 * data - объект с параметрами
+	 * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
+	 * пример:
+	 *
+	ra.api.req(
+	{'class': 'products', 'method': 'get_products_ids', 'args':
+		{filter:
+				{
+		'id': [1,2,3,4]
+				}
+		}
+	} , function(e){
+	  console.log(JSON.parse(e))
+	  });
+	*/
+	req: function( data, success ) {
+		"use strict";
+		let l = window.location;
+		let params = 'json=' + JSON.stringify(data);
+
+		let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+		xhr.open('POST', l.protocol + '//' + l.host + '?xhr=1');
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState>3 && xhr.status==200) { success(JSON.parse(xhr.responseText)); }
+		};
+		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.send(params);
+		return xhr;
+	},
+
+	update_options: function(data){
+		"use strict";
+		for(let fid in data.full){
+			for(let vid in data.full[fid].vals){
+				//~ console.log(fid + ' ' + vid);
+				if( window['option_' + fid + '_' + vid] ){
+					//~ console.log('element found');
+					if( !data.filter[fid] || data.filter[fid][vid] === undefined ){ 
+						window['option_' + fid + '_' + vid].classList.add('disabled');
+						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = true;
+					} else if ( data.filter[fid] && data.filter[fid][vid] !== undefined ){
+						window['option_' + fid + '_' + vid].classList.remove('disabled');
+						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = '';
+						if(window.filter.features[fid] && window.filter.features[fid][vid] !== undefined){
+							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = true;
+							//~ console.log('yes');
+						}else {
+							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = false;
+							//~ console.log('no');
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	draw_tooltip: function(el, amount){
+		"use strict";
+		let div = window.modef || document.createElement('div')
+		, coord = el.getBoundingClientRect();
+
+		div.id = 'modef';
+		div.classList.add('modef');
+
+		div.innerHTML = '<span>Найдено: ' + amount + ' </span><a onclick="ra.api.show_products(event);" href="#" class="apply">Показать</a>';
+		div.style = 'top: ' + coord.height / -3 + 'px; left: ' + coord.width + 'px;';
+		return div;
+	},
+	
+	select_option: function(e){
+		"use strict";
+		e.preventDefault();
+		let el = e.target.tagName.toLowerCase() === 'span' ? e.target.parentNode.parentNode : e.target.parentNode
+		, fid = el.getAttribute('data-option')
+		, vid = el.getAttribute('data-option-id')
+		, fname = el.getAttribute('data-fname')
+		, oname = el.getAttribute('data-oname')
+		, arr = ra.api.uri_to_obj(window.location.href);
+		
+		if(fid === null || vid === null){
+			console.log('wrong element');
+			return false;
+		}
+		
+		
+		if(window.filter.features === undefined){
+			window.filter.features = {};
+		}
+		
+		if(window.filter.features[fid] === undefined){
+			window.filter.features[fid] = {};
+		}
+		
+		if(window.filter.features[fid][vid] !== undefined){
+			delete(window.filter.features[fid][vid]);
+			
+			if(Object.keys(window.filter.features[fid]).length === 0){
+				delete(window.filter.features[fid]);
+			}
+		} else {
+			window.filter.features[fid][vid] = vid;
+		}
+		
+		//~ console.log(arr);
+		if( arr.path.data[fname] === undefined ){
+			arr.path.data[fname] = [oname];
+			arr.path.sort.push(fname);
+		}else if (arr.path.data[fname] !== undefined && !arr.path.data[fname].includes(oname)){
+			arr.path.data[fname].push(oname);
+		} else if (arr.path.data[fname] !== undefined && arr.path.data[fname].includes(oname)){
+			arr.path.data[fname].splice(arr.path.data[fname].indexOf(oname), 1);
+			if(arr.path.data[fname].length === 0){
+				delete(arr.path.fname);
+				arr.path.sort.splice(arr.path.sort.indexOf(fname), 1);
+			}
+		}
+		console.log(arr);
+		window.history.pushState(null, null, ra.api.obj_to_uri(arr));
+		
+		
+		let data = {'class': 'features', 'method': 'get_options_mix', 'args': {'filter': window.filter}};
+		let data2 = {'class': 'products', 'method': 'count_products', 'args': {'filter': window.filter}};
+		ra.api.req(data, function(obj){
+			ra.api.update_options(obj);
+		});
+		ra.api.req(data2, function(amount){
+			ra.append(el, ra.api.draw_tooltip(el, amount));
+		});
+	},
+	
+	show_products: function(){
+		"use strict";
+		let uri = window.location.href;
+		uri += '?ajax=1';
+		ra.getAjax(uri, function(obj){
+			window.items.innerHTML = JSON.parse(obj);
+		});
+	},
+	
+	uri_to_obj: function(uri){
+		"use strict";
+		let obj = Object.create(Object.prototype)
+		, sort = new Array
+		, data = Object.create(Object.prototype)
+		, arr = ra.parse_uri(uri);
+
+		let path = ra.parse_uri_path(arr.path);
+		//~ console.log(path);
+
+		for(let i = 0, el = ''; i < path.length; i++){
+			el = path[i].split('-' , 2);
+			
+			data[el[0]] = el.length === 2 ? el[1].split('.') : '';
+			sort.push(el[0]);
+		}
+		obj.data = data;
+		obj.sort = sort;
+		arr.path = obj;
+		return arr;
+	},
+	
+	obj_to_uri: function(obj){
+		"use strict";
+		let s = '', path = '';
+		
+		for(let i = 0, sort = obj.path.sort, k = obj.path.sort.length; i < k; i++){
+			if(ra.getType(obj.path.data[sort[i]]) === 'string' && obj.path.data[sort[i]] === ''){
+				path += '/' + sort[i];
+			} else if (ra.getType(obj.path.data[sort[i]]) === 'array'){
+				path += '/' + sort[i] + '-' + obj.path.data[sort[i]].join('.');
+			}
+		}
+		s += obj.scheme + '//' + obj.host + path;
+		return s;
+	}
+}
