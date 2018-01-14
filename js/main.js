@@ -401,18 +401,20 @@ window.ra.api = {
 	},
 
 	toggle: function(el, cla){
-		let n = el.getElementsByTagName('*');
-		for(let i = 0; i < n.length; i++){
-			if(n[i].classList.contains('toggle')){
-			console.log(n[i]);
-				n[i].classList.toggle(cla);
-			} 
+		console.log(el);
+		if(el.classList.contains('toggle')){
+			el.classList.toggle(cla);
+		}
+		let n = el.nextElementSibling;
+		if(n !== null && n.classList.contains('toggle')){
+			ra.api.toggle(n, cla);
 		}
 	},
 	
 	select_option: function(e){
 		"use strict";
 		e.preventDefault();
+		console.log(e.target);
 		if(e.target.classList.contains('toggle')){
 			return ra.api.toggle(e.target, 'collapsed');
 		}
