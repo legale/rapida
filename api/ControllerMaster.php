@@ -326,7 +326,7 @@ class ControllerMaster extends Simpla
 					return false;
 				}
 				if(in_array($f, array('sort', 'page') )){
-					$res[$f] = $o[0];
+					$res[$f] = $o;
 				}else{
 					$res['filter'][$f] = explode('.', $o);
 				}
