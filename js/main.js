@@ -399,10 +399,25 @@ window.ra.api = {
 		div.style = 'top: ' + coord.height / -3 + 'px; left: ' + coord.width + 'px; width: 0;';
 		return div;
 	},
+
+	toggle: function(el, cla){
+		let n = el.getElementsByTagName('*');
+		for(let i = 0; i < n.length; i++){
+			if(n[i].classList.contains('toggle')){
+			console.log(n[i]);
+				n[i].classList.toggle(cla);
+			} 
+		}
+	},
 	
 	select_option: function(e){
 		"use strict";
 		e.preventDefault();
+		if(e.target.classList.contains('toggle')){
+			return ra.api.toggle(e.target, 'collapsed');
+		}
+		
+		
 		let el = e.target.tagName.toLowerCase() === 'span' ? e.target.parentNode.parentNode : e.target.parentNode
 		, fid = el.getAttribute('data-option')
 		, vid = el.getAttribute('data-option-id')
