@@ -409,6 +409,10 @@ window.ra.api = {
 		, fname = el.getAttribute('data-fname')
 		, oname = el.getAttribute('data-oname')
 		, arr = ra.api.uri_to_obj(window.location.href);
+		if(el.classList.contains('disabled')){
+			console.log('element disabled');
+			return false;
+		}
 		
 		if(fid === null || vid === null){
 			console.log('wrong element');
