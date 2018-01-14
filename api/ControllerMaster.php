@@ -75,7 +75,7 @@ class ControllerMaster extends Simpla
 				return false;
 			}
 		}
-		//~ dtimer::log(__METHOD__ . ' uri_arr ' . var_export($arr, true));
+		dtimer::log(__METHOD__ . ' uri_arr ' . var_export($arr, true));
 
 		$res = '';
 		
@@ -313,12 +313,7 @@ class ControllerMaster extends Simpla
 					return false;
 				}
 			}
-			
-			if($f === 'sort'){
-				$res['sort'] = $o;
-				//убираем использованный элемент
-				array_shift($a);
-			}
+
 
 			//перебираем оставшуюся часть массива - тут у нас опции
 			foreach($a as $o){
@@ -330,7 +325,11 @@ class ControllerMaster extends Simpla
 					dtimer::log(__METHOD__ . __LINE__ ." error", 2);
 					return false;
 				}
-				$res['filter'][$f] = explode('.', $o);
+				if(in_array($f, array('sort', 'page') )){
+					$res[$f] = $o[0];
+				}else{
+					$res['filter'][$f] = explode('.', $o);
+				}
 			}
 			break;
 		}
