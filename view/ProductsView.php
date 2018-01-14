@@ -223,7 +223,6 @@ class ProductsView extends View
 			
 			//ajax
 			if(!empty($_GET['ajax'])){
-				$this->design->assign('filter', json_encode($filter));
 				$html = $this->design->fetch('products_content.tpl');
 				
 				//~ return false;
@@ -265,8 +264,8 @@ class ProductsView extends View
 			$this->design->assign('meta_title', $keyword);
 		}
 		
-		//передадим фильтр для использования в аякс запросах
-		$this->design->assign('filter', json_encode($filter));
+		//передадим фильтр в шаблон
+		$this->design->assign('filter', $filter);
 		$this->body = $this->design->fetch('products.tpl');
 		dtimer::log(__METHOD__ . " return ");
 		return $this->body;
