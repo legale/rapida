@@ -55,11 +55,11 @@ class View extends Simpla
 			}
 			
 			// Берем валюту из сессии
-			if(isset($_SESSION['currency_id']))
+			if(isset($_SESSION['currency_id'])){
 				$this->currency = $this->money->get_currency($_SESSION['currency_id']);
-			// Или первую из списка
-			else
+			}else{
 				$this->currency = reset($this->currencies);
+			}
 	
 			// Пользователь, если залогинен
 			if(isset($_SESSION['user_id']))
