@@ -451,7 +451,7 @@ window.ra.api = {
 				arr.path.sort.splice(arr.path.sort.indexOf(fname), 1);
 			}
 		}
-		console.log(arr);
+		
 		window.history.pushState(null, null, ra.api.obj_to_uri(arr));
 		
 		
