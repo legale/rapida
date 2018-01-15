@@ -428,10 +428,10 @@ window.ra.api = {
 		if(el.classList.contains('disabled')){
 			console.log('element disabled');
 			return false;
-		} else{
-			el.classList.toggle('checked');
 		}
-		
+		else{
+			el.getElementsByTagName('input')[0].classList.toggle('checked');
+		}
 		
 		
 		if(fid === null || vid === null){
