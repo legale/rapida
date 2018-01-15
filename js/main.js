@@ -389,14 +389,13 @@ window.ra.api = {
 	
 	draw_tooltip: function(el, amount){
 		"use strict";
-		let div = window.modef || document.createElement('div')
+		let div = window.tooltip || document.createElement('div')
 		, coord = el.getBoundingClientRect();
 
-		div.id = 'modef';
-		div.classList.add('modef');
+		div.id = 'tooltip';
 
 		div.innerHTML = '<span>Найдено: ' + amount + ' </span><a onclick="ra.api.show_products(event);" href="#" class="apply">Показать</a>';
-		div.style = 'top: ' + coord.height / -3 + 'px; left: ' + coord.width + 'px; width: 0;';
+		div.style = 'top: -4px; left: 0px; opacity: 0;';
 		return div;
 	},
 
@@ -478,8 +477,12 @@ window.ra.api = {
 			ra.api.update_options(obj);
 		});
 		ra.api.req(data2, function(amount){
-			ra.append(el, ra.api.draw_tooltip(el, amount));
-			setTimeout(function(){modef.style.width = '';}, 5);
+			let tt = ra.append(el, ra.api.draw_tooltip(el, amount));
+			if(window.screen.width >= 768){
+				tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
+			}
+			
+			setTimeout(function(){tooltip.style.opacity = '';}, 5);
 		});
 	},
 	
@@ -490,7 +493,7 @@ window.ra.api = {
 		ra.getAjax(uri, function(obj){
 			window.items.innerHTML = JSON.parse(obj);
 		});
-		setTimeout(function(){modef.style.width = '0px'; modef.style.opacity = '0';}, 30);
+		setTimeout(function(){tooltip.style.opacity = '0';}, 30);
 	},
 	
 	uri_to_obj: function(uri){
