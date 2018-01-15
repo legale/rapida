@@ -428,7 +428,11 @@ window.ra.api = {
 		if(el.classList.contains('disabled')){
 			console.log('element disabled');
 			return false;
+		} else{
+			el.classList.toggle('checked');
 		}
+		
+		
 		
 		if(fid === null || vid === null){
 			console.log('wrong element');
