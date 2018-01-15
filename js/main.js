@@ -430,7 +430,7 @@ window.ra.api = {
 			return false;
 		}
 		else{
-			el.getElementsByTagName('input')[0].classList.toggle('checked');
+			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
 		}
 		
 		
