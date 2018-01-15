@@ -441,17 +441,15 @@ window.ra.api = {
 			console.log('element disabled');
 			return false;
 		}
-		else{
-			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
-			let tt = ra.append(el, ra.api.draw_waiter(el));
-			tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
-			tt.style.opacity = '1';
-		}
-		
 		
 		if(fid === null || vid === null){
 			console.log('wrong element');
 			return false;
+		}else{
+			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
+			let tt = ra.append(el, ra.api.draw_waiter(el));
+			tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
+			tt.style.opacity = '1';
 		}
 		
 		
