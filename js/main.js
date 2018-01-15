@@ -398,6 +398,18 @@ window.ra.api = {
 		div.style = 'top: -4px; left: 0px; opacity: 0;';
 		return div;
 	},
+	
+	draw_waiter: function(el){
+		"use strict";
+		let div = window.tooltip || document.createElement('div')
+		, coord = el.getBoundingClientRect();
+
+		div.id = 'tooltip';
+
+		div.innerText = 'Думаю...';
+		div.style = 'top: -4px; left: 0px; opacity: 0;';
+		return div;
+	},
 
 	toggle: function(el, cla){
 		console.log(el);
@@ -431,6 +443,7 @@ window.ra.api = {
 		}
 		else{
 			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
+			ra.append(el, ra.api.draw_waiter(el));
 		}
 		
 		
