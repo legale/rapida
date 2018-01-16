@@ -440,6 +440,8 @@ window.ra.api = {
 		if(el.classList.contains('disabled')){
 			console.log('element disabled');
 			return false;
+		}else if (el.id === 'filter'){
+			
 		}
 		
 		if(fid === null || vid === null){
@@ -495,9 +497,7 @@ window.ra.api = {
 		});
 		ra.api.req(data2, function(amount){
 			let tt = ra.append(el, ra.api.draw_tooltip(el, amount));
-			if(window.screen.width >= 768){
-				tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
-			}
+			tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
 			
 			setTimeout(function(){tooltip.style.opacity = '';}, 5);
 		});
