@@ -222,6 +222,7 @@ class Categories extends Simpla
 		$pointers[0] = &$tree;
 		$pointers[0]['path'] = array();
 		$pointers[0]['level'] = 0;
+		$pointers[0]['visible_count'] = 0;
 		
 		// Выбираем все категории
 		$query = $this->db->placehold("SELECT * FROM __categories c ORDER BY c.parent_id, c.pos");
@@ -241,6 +242,7 @@ class Categories extends Simpla
 					{
 					// В дерево категорий (через указатель) добавляем текущую категорию
 					$pointers[$category['id']] = $category;
+					$pointers[$category['id']]['visible_count'] = 0;
 					$pointers[$category['parent_id']]['subcategories'][] = &$pointers[$category['id']]; 
 					//~ print_r($pointers);
 					// Путь к текущей категории
@@ -263,8 +265,11 @@ class Categories extends Simpla
 		
 		// Для каждой категории id всех ее деток узнаем
 		$ids = array_reverse(array_keys($pointers));
-		foreach ($ids as $id)
-			{
+		foreach ($ids as $id){
+			if(!empty($pointers[$id]['visible'])){
+				$pointers[$pointers[$id]['parent_id']]['visible_count']++;
+			}
+			
 			if ($id > 0)
 				{
 				$pointers[$id]['children'][] = $id;
