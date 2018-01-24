@@ -2,7 +2,16 @@
  * В этом классе собраны все функции js, которые используются для работы
  */
 window.ra = {
-
+	walk: function(obj, cb){
+		if (typeof obj !== 'object'){
+			return false;
+		}
+		for (var i = 0; i < obj.length; i++) {
+			cb(obj[i]);
+		};
+		return true;
+	},
+	
 	parse_uri: function(uri){
 		"use strict";
 		var a = document.createElement('a');
@@ -118,7 +127,6 @@ window.ra = {
 		"use strict";
 		//если у нас объект, то проверим какой именно
 		if(typeof(elements) !== 'object'){
-			console.log('live func argument is not an obj ');
 			return false;
 		}
 
@@ -143,10 +151,8 @@ window.ra = {
 	search_tree: function (type, name, e){
 		"use strict";
 		if(e === undefined || e === null || e.classList === undefined){
-			console.log('element is empty');
 			return false;
 		} else {
-			console.log(e);
 		}
 
 
@@ -171,7 +177,6 @@ window.ra = {
 				break;
 
 			default:
-				console.log(type + " is unknown");
 				return false;
 		}
 
@@ -190,14 +195,12 @@ window.ra = {
 
 	stopDefAction: function(ev){
 		"use strict";
-		console.log(ev);
 		ev.preventDefault();
 		ev.target.removeEventListener('click', ra.stopDefAction, false);
 	},
 
 	getType: function(o){
 		"use strict";
-		//~ console.log('getType: ' + o);
 		let type = o.__proto__.constructor.name;
 		
 		if(type.match(/HTML.+?Element/)){
@@ -260,7 +263,6 @@ window.ra = {
 			
 			//set event listeners
 			xhr.onreadystatechange = function() {
-				console.log('state:' + xhr.readyState);
 				if (xhr.readyState > 3 && xhr.status >= 200 && xhr.status < 300){
 					yes(xhr.responseText);
 				}else if(xhr.readyState > 3 && xhr.status!=200){
@@ -282,17 +284,14 @@ window.ra = {
 
 	append: function(par, html){
 		"use strict";
-		//~ console.log('append: ' + html);
 		//element script
 		let type = ra.getType(html), res;
 		
 		switch(type){
 			case 'element': 
 				if(html.nodeName.toLowerCase() === 'script'){
-					console.log('script element arg found. Trying to ra.appendScript(element)');
 					return ra.appendScript(par, html);
 				}else{
-					console.log('else element arg found. Trying to appendChild(element)');
 					return par.appendChild(html);
 				}
 			break;
@@ -301,23 +300,19 @@ window.ra = {
 				let obj = ra.createHtml(html);
 				type = ra.getType(obj);
 				if(type === 'element' && obj.nodeName.toLowerCase() === 'script'){
-					console.log('script element created. Trying to ra.appendScript(element)');
 					return ra.appendScript(par, obj);
 				}else if (type === 'htmlcollection' || type === 'nodelist'){
 					res = [];
-					console.log('HTMLCollection created. Trying to recurse ra.append(element)');
 					for(let i = 0; obj.length > 0; i++){
 						res[i] = ra.append(par, obj[0]);
 					}
 				} else {
-					console.log('else element created. Trying to ra.append(element)');
 					res = ra.append(par, obj);
 				}
 				
 			break;
 			
 			default: 
-				console.error(type, 'is wrong. only "string" and "element" is allowed');
 				return false;
 		}
 		return res;
@@ -327,24 +322,7 @@ window.ra = {
 
 window.ra.api = {
 
-	/*
-	 * Эта функция для отправки особого POST запроса ajax к api системы
-	 * 2 аргумента:
-	 * data - объект с параметрами
-	 * success - коллбек функция, которой будет вызвана после получения ответа сервера с передачей ей этого ответа
-	 * пример:
-	 *
-	ra.api.req(
-	{'class': 'products', 'method': 'get_products_ids', 'args':
-		{filter:
-				{
-		'id': [1,2,3,4]
-				}
-		}
-	} , function(e){
-	  console.log(JSON.parse(e))
-	  });
-	*/
+
 	req: function( data, success ) {
 		"use strict";
 		let l = window.location;
@@ -365,9 +343,7 @@ window.ra.api = {
 		"use strict";
 		for(let fid in data.full){
 			for(let vid in data.full[fid].vals){
-				//~ console.log(fid + ' ' + vid);
 				if( window['option_' + fid + '_' + vid] ){
-					//~ console.log('element found');
 					if( !data.filter[fid] || data.filter[fid][vid] === undefined ){ 
 						window['option_' + fid + '_' + vid].classList.add('disabled');
 						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = true;
@@ -376,10 +352,8 @@ window.ra.api = {
 						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = '';
 						if(window.filter.features[fid] && window.filter.features[fid][vid] !== undefined){
 							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = true;
-							//~ console.log('yes');
 						}else {
 							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = false;
-							//~ console.log('no');
 						}
 					}
 				}
@@ -412,7 +386,6 @@ window.ra.api = {
 	},
 
 	toggle: function(el, cla){
-		console.log(el);
 		if(el.classList.contains('toggle')){
 			el.classList.toggle(cla);
 		}
@@ -425,7 +398,6 @@ window.ra.api = {
 	select_option: function(e){
 		"use strict";
 		e.preventDefault();
-		console.log(e.target);
 		if(e.target.classList.contains('toggle')){
 			return ra.api.toggle(e.target, 'collapsed');
 		}
@@ -438,14 +410,12 @@ window.ra.api = {
 		, oname = el.getAttribute('data-oname')
 		, arr = ra.api.uri_to_obj(window.location.href);
 		if(el.classList.contains('disabled')){
-			console.log('element disabled');
 			return false;
 		}else if (el.id === 'filter'){
 			
 		}
 		
 		if(fid === null || vid === null){
-			console.log('wrong element');
 			return false;
 		}else{
 			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
@@ -473,7 +443,6 @@ window.ra.api = {
 			window.filter.features[fid][vid] = vid;
 		}
 		
-		//~ console.log(arr);
 		if( arr.path.data[fname] === undefined ){
 			arr.path.data[fname] = [oname];
 			arr.path.sort.push(fname);
@@ -521,7 +490,6 @@ window.ra.api = {
 		, arr = ra.parse_uri(uri);
 
 		let path = ra.parse_uri_path(arr.path);
-		//~ console.log(path);
 
 		for(let i = 0, el = ''; i < path.length; i++){
 			el = path[i].split('-' , 2);
