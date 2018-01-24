@@ -80,7 +80,7 @@ class Bender
 				{
 					case "cssmin":
 						require_once realpath( dirname( __file__ ) . "/Bender/cssmin.php" );
-						$packed = CssMin::minify( $str );
+						$packed = Cssmin::minify( $str );
 						break;
 					default:
 						$packed = $str;
