@@ -1,4 +1,4 @@
-!function () {
+
     class DLAnimate {
         constructor() {
             //create raf function
@@ -63,6 +63,7 @@
 
         show(el, options = {}) {
             this.el = el;
+			let elf = el[0] || el;
             //skip animate if requestAnimationFrame is not supported
             if (!this.canAnimate) {
                 return this._show(el);
@@ -76,7 +77,7 @@
             this._reset();
 
             // return if element is NOT hidden
-            if (!this._isHidden(el) && !this.in_progress) {
+            if (!this._isHidden(elf) && !this.in_progress) {
                 return;
             }
 
@@ -107,6 +108,7 @@
 
         hide(el, options = {}) {
             this.el = el;
+            let elf = el[0] || el;
             if (!this.canAnimate) {
                 return this._hide(el);
             }
@@ -116,7 +118,7 @@
 
             this._reset();
             //return if element is hidden and animation not in progress
-            if (this._isHidden(el) && !this.in_progress) {
+            if (this._isHidden(elf) && !this.in_progress) {
                 return;
             }
 
@@ -147,7 +149,7 @@
         }
 
         _finishHandler(arr, abort) {
-            let el = arr[0], track = arr[1], duration = arr[2], fn = arr[3], eventName, isCssTrack = true;
+            let el = arr[0][0] || arr[0], track = arr[1], duration = arr[2], fn = arr[3], eventName, isCssTrack = true;
 
             if (track === 'transition') {
                 eventName = 'transitionend';
@@ -156,7 +158,9 @@
             } else {
                 isCssTrack = false;
             }
-
+			
+			
+			
             if (abort) {
                 el.removeEventListener(eventName, this.handler[eventName]);
                 return;
@@ -242,6 +246,13 @@
                 str = str.split(' ');
             }
             
+            if(!el.constructor.name.match(/HTML.+?Element/)){
+				for(let i = 0; i < el.length; i++){
+					this._classList(action, el[i], str);
+				}
+				return;
+			}
+			            
             for (let i = 0; i < str.length; i++) {
 				if(typeof str[i] === 'object'){
 					this._classList(action, el, str[i]);
@@ -256,11 +267,23 @@
         }
 
         _hide(el) {
-            el.style.display = 'none';
+            if(el.constructor.name.match(/HTML.+?Element/)){
+				el.style.display = 'none';
+			}else{
+				for(let i = 0; i < el.length; i++){
+					this._hide(el[i]);
+				}
+			}
         }
 
         _show(el) {
-            el.style.display = 'block';
+            if(el.constructor.name.match(/HTML.+?Element/)){
+				el.style.display = 'block';
+			}else{
+				for(let i = 0; i < el.length; i++){
+					this._show(el[i]);
+				}
+			}
         }
 
         _isHidden(el) {
@@ -271,5 +294,5 @@
             return getComputedStyle(el)[prop];
         }
     }
-    window.DLAnimate = new DLAnimate();
-}();
+    //~ window.DLAnimate = new DLAnimate();
+
