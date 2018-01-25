@@ -124,7 +124,7 @@
 
             this.finisher_hide = [el, settings.track, settings.duration, () => {
                 this._hide(el);
-                this._removeClasses(el, settings.classNames.leaveActive);
+                this._removeClasses(el, [settings.classNames.leave, settings.classNames.leaveActive]);
                 options.systemOnEnd && options.systemOnEnd();
                 this.finisher_hide = false;
                 this.in_progress = false;
