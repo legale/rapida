@@ -201,7 +201,7 @@ window.ra = {
 
 	getType: function(o){
 		"use strict";
-		let type = o.__proto__.constructor.name;
+		let type = o.constructor.name;
 		
 		if(type.match(/HTML.+?Element/)){
 			return 'element';
