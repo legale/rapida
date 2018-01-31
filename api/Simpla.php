@@ -137,6 +137,48 @@ function translit_url($string, $reverse = false)
 	return strtr($string, $converter);
 }
     
+function translit_ya($string, $reverse = false)
+{
+	if (!is_string($string)) {
+		trigger_error(__METHOD__ . 'argument type error');
+		return false;
+	}
+	//тут удаляем все кроме букв, цифр и _ + ~
+	$string = preg_replace("/[^\w\d\_\s\~\+]+/u", '', $string);
+	
+
+	//самая быстрая функция для замены подстроки в строке strtr пробел меняем на подчеркивание
+	$pairs = array(' ' => '_', '-' => '+');
+	if ($reverse === true) {
+		$pairs = array_flip($pairs);
+	}
+	$string = strtr($string, $pairs);
+	
+
+	$converter = array(
+		'а' => 'a', 'б' => 'b', 'в' => 'v',
+		'г' => 'g', 'д' => 'd', 'е' => 'e',
+		'ё' => 'yo', 'ж' => 'zh', 'з' => 'z',
+		'и' => 'i', 'й' => 'y', 'к' => 'k',
+		'л' => 'l', 'м' => 'm', 'н' => 'n',
+		'о' => 'o', 'п' => 'p', 'р' => 'r',
+		'с' => 's', 'т' => 't', 'у' => 'u',
+		'ф' => 'f', 'х' => 'h', 'ц' => 'c',
+		'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shch',
+		'ь' => '', 'ы' => 'y', 'ъ' => '',
+		'э' => 'e', 'ю' => 'yu', 'я' => 'ya'
+	  );
+	if ($reverse === true) {
+		uasort($converter, function ($a, $b) {
+			return strlen($b) - strlen($a);
+		});
+		$converter = array_flip($converter);
+	}
+	$string = mb_strtolower($string);
+
+	return strtr($string, $converter);
+}
+    
 
 
 // отладчик ошибок
