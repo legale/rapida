@@ -136,8 +136,6 @@ class ProductsView extends View
 						//тут проверим количество переданных значений опций и количество полученных из базы,
 						//если не совпадает - return false
 						if(count($ids) !== count($vals)){
-					
-						dtimer::log(__METHOD__ . __LINE__ ." count($ids) !== count($vals) ", 2 );
 							return false;
 						}
 						
