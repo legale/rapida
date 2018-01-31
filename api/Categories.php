@@ -130,6 +130,7 @@ class Categories extends Simpla
 	public function update_category($id, $category)
 	{
 		$category = array_map(function($c){return is_null($c) ? 0 : $c;}, $category);
+		$category['url'] = $category['url'] ? $category['url'] : translit($category['name']);
 		
 		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $category, intval($id));
 		$this->db->query($query);
