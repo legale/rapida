@@ -541,6 +541,11 @@ class Products extends Simpla
 			return false;
 		}
 		
+		if(!empty($product['name']) && empty($product['url'])){
+			$product['url'] = translit_ya($product['name']);
+		}
+		
+		
 		$q = $this->db->placehold("   UPDATE __products SET ?% WHERE id = ?", $product, $pid);
 		if($this->db->query($q)){
 			return (int)$pid;
