@@ -118,6 +118,7 @@ function delete_link(e) {
 			<h2>Параметры страницы</h2>
 			<ul>
 				<li><label class=property>Адрес</label><div class="page_url">/catalog/</div><input name="save[category][url]" class="page_url" type="text" value="{$category['url']|escape}" /></li>
+				<li><label class=property>Адрес2</label><div class="page_url">/catalog/</div><input name="save[category][url2]" class="page_url" type="text" value="{$category['url2']|escape}" /></li>
 				<li><label class=property>Заголовок</label><input name="save[category][meta_title]" class="simpla_inp" type="text" value="{$category['meta_title']|escape}" /></li>
 				<li><label class=property>Ключевые слова</label><input name="save[category][meta_keywords]" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}" /></li>
 				<li><label class=property>Описание</label><textarea name="save[category][meta_description]" class="simpla_inp">{$category['meta_description']|escape}</textarea></li>
