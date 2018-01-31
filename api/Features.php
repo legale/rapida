@@ -211,7 +211,7 @@ class Features extends Simpla
 		
 		//используем транслит собственного приготовления
 		if(!isset($feature['trans'])){
-			$feature['trans'] = translit_url($feature['name']);
+			$feature['trans'] = translit_ya($feature['name']);
 		}
 
 		//вытаскиваем макс позицию из свойств
@@ -255,7 +255,7 @@ class Features extends Simpla
 			// добавим 1 строку для значения по умолчанию
 			$val = '';
 			$trans = '';
-			$optionhash = hash('md4', translit_url($val));
+			$optionhash = hash('md4', translit_ya($val));
 			$this->db->query("INSERT INTO __options_uniq SET `id` = 0, `val`= '$val', `trans` = '$trans', `md4` = 0x$optionhash ");
 
 		}
@@ -334,8 +334,8 @@ class Features extends Simpla
 		$val = trim((string)$val);
 		$fid = (int)$feature_id;
 		$pid = (int)$product_id;
-		$trans = translit_url($val);
-		//Хеш будем получать не по чистому значению $val, а по translit_url($val), чтобы можно было из ЧПУ вернуться к хешу
+		$trans = translit_ya($val);
+		//Хеш будем получать не по чистому значению $val, а по translit_ya($val), чтобы можно было из ЧПУ вернуться к хешу
 		$optionhash = hash('md4', $trans);
 		$this->db->query("SELECT `id` FROM __options_uniq WHERE `md4`= 0x$optionhash ");
 		
