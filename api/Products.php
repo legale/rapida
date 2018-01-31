@@ -573,8 +573,7 @@ class Products extends Simpla
 		}
 		unset($e);
 		
-		if(empty($product['url']))
-		{
+		if(!empty($product['name']) && empty($product['url'])){
 			$product['url'] = translit_ya($product['name']);
 		}
 
