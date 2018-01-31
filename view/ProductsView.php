@@ -214,7 +214,7 @@ class ProductsView extends View
 
 			if(is_array($products)){
 				foreach($products as $pid=>&$product){
-					$product['variants'] = is_array($variants[$pid]) ? $variants[$pid] : array();
+					$product['variants'] = isset($variants[$pid]) && is_array($variants[$pid]) ? $variants[$pid] : array();
 				}
 			}
 			
