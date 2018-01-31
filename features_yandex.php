@@ -4,9 +4,11 @@ $s = new Simpla();
 
 
 //~ print_r($cats);
+
+$s->db->query("SELECT id, name FROM __features WHERE 1");
+$vals = $s->db->results_array();
 $cnt = 0;
 
-$vals = $s->db->query("SELECT id, name FROM __features WHERE 1");
 foreach($vals as $v){
 	$cnt++;	
 	$s->db->query("UPDATE __features SET trans = ? WHERE 1 AND id = ?", translit_ya($v['name']), $v['id']);
@@ -14,11 +16,15 @@ foreach($vals as $v){
 print "$cnt features updated!\n";
 
 
-$vals = $s->db->query("SELECT id, val FROM __options_uniq WHERE 1");
+$s->db->query("SELECT id, val FROM __options_uniq WHERE 1");
+$vals = $s->db->results_array();
 $cnt = 0;
+
 foreach($vals as $v){
 	$cnt++;	
-	$s->db->query("UPDATE __options_uniq SET trans = ? WHERE 1 AND id = ?", translit_ya($v['val']), $v['id']);
+	$trans = translit_ya($v['val']);
+	$hash = hash('MD4', $trans);
+	$s->db->query("UPDATE __options_uniq SET trans = ?, md4 = 0x$hash WHERE 1 AND id = ?", $trans, $v['id']);
 }
 print "$cnt options updated!\n";
 //~ print 'hell';
