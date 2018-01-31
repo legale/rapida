@@ -336,6 +336,10 @@ function ready(){
 					<div class="page_url"> /products/</div>
 					<input name="save[product][url]" class="page_url" type="text" value="{$product['url']|escape}" />
 				</li>
+				<li><label class=property>Адрес2</label>
+					<div class="page_url"> /products/</div>
+					<input name="save[product][url2]" class="page_url" type="text" value="{$product['url2']|escape}" />
+				</li>
 				<li><label class=property>Заголовок</label>
 					<input name="save[product][meta_title]"  type="text" value="{$product['meta_title']|escape}" />
 				</li>
