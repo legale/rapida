@@ -575,7 +575,7 @@ class Products extends Simpla
 		
 		if(empty($product['url']))
 		{
-			$product['url'] = translit_url($product['name']);
+			$product['url'] = translit_ya($product['name']);
 		}
 
 		// Если есть товар с таким URL, добавляем к нему число
