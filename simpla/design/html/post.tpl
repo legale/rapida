@@ -11,149 +11,72 @@
 {* Подключаем Tiny MCE *}
 {include file='tinymce_init.tpl'}
 
-{* On document load *}
 {literal}
-<script src="design/js/jquery/datepicker/jquery.ui.datepicker-ru.js"></script>
-
 <script>
 $(function() {
+	//включаем обработчик на все элементы, у которых есть аттрибут add_link
+	ra.live('click', document.querySelectorAll('[add_link=true]'), add_link);
+	ra.live('click', document.querySelectorAll('[delete_link=true]'), delete_link);
 
-	$('input[name="date"]').datepicker({
-		regional:'ru'
+	//сортировка картинок
+	$("#imagelist").sortable();
+	
+	// Удаление изображений
+	$(".images a.delete").click( function() {
+		$("input[name='delete_image']").val('1');
+		$(this).closest("ul").fadeOut(200, function() { $(this).remove(); });
+		return false;
 	});
-	
-	// Автозаполнение мета-тегов
-	meta_title_touched = true;
-	meta_keywords_touched = true;
-	meta_description_touched = true;
-	url_touched = true;
-	
-	if($('input[name="meta_title"]').val() == generate_meta_title() || $('input[name="meta_title"]').val() == '')
-		meta_title_touched = false;
-	if($('input[name="meta_keywords"]').val() == generate_meta_keywords() || $('input[name="meta_keywords"]').val() == '')
-		meta_keywords_touched = false;
-	if($('textarea[name="meta_description"]').val() == generate_meta_description() || $('textarea[name="meta_description"]').val() == '')
-		meta_description_touched = false;
-	if($('input[name="url"]').val() == generate_url() || $('input[name="url"]').val() == '')
-		url_touched = false;
-		
-	$('input[name="meta_title"]').change(function() { meta_title_touched = true; });
-	$('input[name="meta_keywords"]').change(function() { meta_keywords_touched = true; });
-	$('textarea[name="meta_description"]').change(function() { meta_description_touched = true; });
-	$('input[name="url"]').change(function() { url_touched = true; });
-	
-	$('input[name="name"]').keyup(function() { set_meta(); });
-	$('select[name="brand_id"]').change(function() { set_meta(); });
-	$('select[name="categories[]"]').change(function() { set_meta(); });
-	
+  
 });
 
-function set_meta()
-{
-	if(!meta_title_touched)
-		$('input[name="meta_title"]').val(generate_meta_title());
-	if(!meta_keywords_touched)
-		$('input[name="meta_keywords"]').val(generate_meta_keywords());
-	if(!meta_description_touched)
-	{
-		descr = $('textarea[name="meta_description"]');
-		descr.val(generate_meta_description());
-		descr.scrollTop(descr.outerHeight());
-	}
-	if(!url_touched)
-		$('input[name="url"]').val(generate_url());
+// ссылка на добавление
+function add_link(e) {
+	"use strict";
+	console.log(e.target);
+	let link_id = e.target.getAttribute('link_id');
+	console.log(link_id);
+	let t = document.querySelector('[container=true][container_id=' + link_id + ']')
+	let n = t.cloneNode(true);
+	t.parentNode.insertBefore(n,t);
+	n.setAttribute('style','');
+	ra.live('click', n.querySelector('[delete_link=true]'), delete_link);
 }
 
-function generate_meta_title()
-{
-	name = $('input[name="name"]').val();
-	return name;
+//функция для удаления
+function delete_link(e) {
+	"use strict";
+	console.log(e.target);
+	ra.search_tree('attribute', 'container', e.target).then(function(v){console.log(v); v.remove()});
 }
-
-function generate_meta_keywords()
-{
-	name = $('input[name="name"]').val();
-	return name;
-}
-
-function generate_meta_description()
-{
-	if(typeof(tinyMCE.get("annotation")) =='object')
-	{
-		description = tinyMCE.get("annotation").getContent().replace(/(<([^>]+)>)/ig," ").replace(/(\&nbsp;)/ig," ").replace(/^\s+|\s+$/g, '').substr(0, 512);
-		return description;
-	}
-	else
-		return $('textarea[name=annotation]').val().replace(/(<([^>]+)>)/ig," ").replace(/(\&nbsp;)/ig," ").replace(/^\s+|\s+$/g, '').substr(0, 512);
-}
-
-function generate_url()
-{
-	url = $('input[name="name"]').val();
-	url = url.replace(/[\s]+/gi, '-');
-	url = translit(url);
-	url = url.replace(/[^0-9a-z_\-]+/gi, '').toLowerCase();	
-	return url;
-}
-
-function translit(str)
-{
-	var ru=("А-а-Б-б-В-в-Ґ-ґ-Г-г-Д-д-Е-е-Ё-ё-Є-є-Ж-ж-З-з-И-и-І-і-Ї-ї-Й-й-К-к-Л-л-М-м-Н-н-О-о-П-п-Р-р-С-с-Т-т-У-у-Ф-ф-Х-х-Ц-ц-Ч-ч-Ш-ш-Щ-щ-Ъ-ъ-Ы-ы-Ь-ь-Э-э-Ю-ю-Я-я").split("-")   
-	var en=("A-a-B-b-V-v-G-g-G-g-D-d-E-e-E-e-E-e-ZH-zh-Z-z-I-i-I-i-I-i-J-j-K-k-L-l-M-m-N-n-O-o-P-p-R-r-S-s-T-t-U-u-F-f-H-h-TS-ts-CH-ch-SH-sh-SCH-sch-'-'-Y-y-'-'-E-e-YU-yu-YA-ya").split("-")   
- 	var res = '';
-	for(var i=0, l=str.length; i<l; i++)
-	{ 
-		var s = str.charAt(i), n = ru.indexOf(s); 
-		if(n >= 0) { res += en[n]; } 
-		else { res += s; } 
-    } 
-    return res;  
-}
-
 </script>
+ 
 {/literal}
 
-{if isset($message_success)}
-<!-- Системное сообщение -->
-<div class="message message_success">
-	<span class="text">{if $message_success == 'added'}Запись добавлена{elseif $message_success == 'updated'}Запись обновлена{/if}</span>
-	<a class="link" target="_blank" href="../blog/{$post['url']}">Открыть запись на сайте</a>
-	{if $smarty.get.return}
-	<a class="button" href="{$smarty.get.return}">Вернуться</a>
-	{/if}
 
-	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/blog/{$post['url']|urlencode}&title={$post['name']|urlencode}&description={$post['annotation']|urlencode}&noparse=false","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/blog/{$post['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$post['name']|urlencode}&url={$config->root_url|urlencode}/blog/{$post['url']|urlencode}&hashtags={$post['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
-  		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
-	</span>
+{foreach $status as $s}
+{if $s['status'] === 3}
+{$s_class = "message message_success"}
+{elseif $s['status'] === 2}
+{$s_class = "message message_warning"}
+{elseif $s['status'] === 1}
+{$s_class = "message message_error"}
+{/if}
+<div class="{$s_class}">
+	<span class="text">{$s['message']}</span>
 </div>
-<!-- Системное сообщение (The End)-->
-{/if}
+{/foreach}
 
-{if isset($message_error)}
-<!-- Системное сообщение -->
-<div class="message message_error">
-	<span class="text">{if $message_error == 'url_exists'}Запись с таким адресом уже существует{/if}</span>
-	{if $smarty.get.return}
-		<a class="button" href="{$smarty.get.return}">Вернуться</a>
-	{/if}
-	</div>
-<!-- Системное сообщение (The End)-->
-{/if}
 
 
 <!-- Основная форма -->
 <form method=post id=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
-		<input class="name" name=name type="text" value="{$post['name']|escape}"/> 
+		<input class="name" name=post[name] type="text" value="{$post['name']|escape}"/> 
 		<input name=id type="hidden" value="{$post['id']|escape}"/> 
 		<div class="checkbox">
-			<input name=visible value='1' type="checkbox" id="active_checkbox" {if $post['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
+			<input name=post[visible] value='1' type="checkbox" id="active_checkbox" {if $post['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
 		</div>
 
 	</div> 
@@ -164,7 +87,7 @@ function translit(str)
 		<!-- Параметры страницы -->
 		<div class="block">
 			<ul>
-				<li><label class=property>Дата</label><input type=text name=date value='{$post['date']|date}'></li>
+				<li><label class=property>Дата</label><input type=text name=post[date] value='{$post['date']|date}'></li>
 			</ul>
 		</div>
 		<div class="block layer">
@@ -172,10 +95,10 @@ function translit(str)
 			<h2>Параметры страницы</h2>
 		<!-- Параметры страницы -->
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name="url" class="page_url" type="text" value="{$post['url']|escape}" /></li>
-				<li><label class=property>Заголовок</label><input name="meta_title" type="text" value="{$post['meta_title']|escape}" /></li>
-				<li><label class=property>Ключевые слова</label><input name="meta_keywords"  type="text" value="{$post['meta_keywords']|escape}" /></li>
-				<li><label class=property>Описание</label><textarea name="meta_description" />{$post['meta_description']|escape}</textarea></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name=post[url] class="page_url" type="text" value="{$post['url']|escape}" /></li>
+				<li><label class=property>Заголовок</label><input name=post[meta_title] type="text" value="{$post['meta_title']|escape}" /></li>
+				<li><label class=property>Ключевые слова</label><input name=post[meta_keywords]  type="text" value="{$post['meta_keywords']|escape}" /></li>
+				<li><label class=property>Описание</label><textarea name=post[meta_description] />{$post['meta_description']|escape}</textarea></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
@@ -187,6 +110,56 @@ function translit(str)
 	
 	<!-- Правая колонка свойств товара -->	
 	<div class="column_right">
+
+		<!-- Изображения -->	
+		<div class="block layer images">
+			<h2>Изображения 
+			</h2>
+			<ul id="imagelist">
+			{if $images}
+				{foreach $images as $image_id=>$image}
+				<li container="true">
+					<a delete_link="true" class="delete"></a>
+					<img id="{$image_id}" src="{$image['basename']|resize:blog:$image_id:100:100}" alt="" />
+					<input type="hidden" name="images[]" value="{$image_id}">
+				</li>
+				{/foreach}
+			{/if}
+			</ul>
+
+			<div class="block">
+
+				<!-- dropzone для перетаскивания изображений -->	
+<!--
+				{if isset($category['id'])}
+					<div id="holder" type="categories" product_id="{$product['id']}">
+						<div class="holder__text">Тяни файл сюда</div>
+					</div> 
+					<p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this input field:<br><input type="file"></label></p>
+					<p id="filereader">File API & FileReader API not supported</p>
+					<p id="formdata">XHR2's FormData is not supported</p>
+					<p id="progress">XHR2's upload progress isn't supported</p>
+					<p>Upload progress: <progress id="uploadprogress" max="100" value="0">0</progress></p>
+
+				{/if}
+-->
+				<!-- dropzone для перетаскивания изображений (The End) -->
+
+				<span class=upload_image><i  add_link="true" link_id="upload_image" class="dash_link" id="upload_image">Добавить изображение</i></span>
+				 или 
+				<span class=add_image_url><i class="dash_link"  add_link="true" link_id="image_url_upload">загрузить из интернета</i></span>
+				
+				<!-- Шаблон для кнопки загрузки нового изображения -->
+				<div container="true" container_id="upload_image" style="display: none;">
+					<input name=new_images[] type=file multiple  accept='image/jpeg,image/png,image/gif'>
+					<a delete_link="true" class="delete"></a>
+				</div>
+				<!-- Шаблон для кнопки загрузки нового изображения (The end) -->
+			</div>
+		</div>
+		<!-- Изображения  END -->
+
+
 		
 	</div>
 	<!-- Правая колонка свойств товара (The End)--> 
@@ -194,12 +167,12 @@ function translit(str)
 	<!-- Описагние товара -->
 	<div class="block layer">
 		<h2>Краткое описание</h2>
-		<textarea name="annotation" class='editor_small'>{$post['annotation']|escape}</textarea>
+		<textarea name=post[annotation] class='editor_small'>{$post['annotation']|escape}</textarea>
 	</div>
 		
 	<div class="block">
 		<h2>Полное  описание</h2>
-		<textarea name="body"  class='editor_large'>{$post['text']|escape}</textarea>
+		<textarea name=post[text]  class='editor_large'>{$post['text']|escape}</textarea>
 	</div>
 	<!-- Описание товара (The End)-->
 	<input class="button_green button_save" type="submit" name="" value="Сохранить" />
