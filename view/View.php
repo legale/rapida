@@ -97,7 +97,4 @@ class View extends Simpla
 		}
 	}
 
-
-
-
 }
