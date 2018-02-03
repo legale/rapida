@@ -62,12 +62,17 @@ function delete_link(e) {
 {elseif $s['status'] === 1}
 {$s_class = "message message_error"}
 {/if}
+
 <div class="{$s_class}">
 	<span class="text">{$s['message']}</span>
 </div>
 {/foreach}
 
-
+{if isset($post['url'])}
+<div class="message message_success">
+	<span class="text"><a href="/blog/{$post['url']}">Открыть на сайте</a></span>
+</div>
+{/if}
 
 <!-- Основная форма -->
 <form method=post id=product enctype="multipart/form-data">
@@ -120,7 +125,9 @@ function delete_link(e) {
 				{foreach $images as $image_id=>$image}
 				<li container="true">
 					<a delete_link="true" class="delete"></a>
-					<img id="{$image_id}" src="{$image['basename']|resize:blog:$image_id:100:100}" alt="" />
+					<a href="/img/blog/{$image['basename']}">
+						<img id="{$image_id}" src="{$image['basename']|resize:blog:$image_id:100:100}" alt="" />
+					</a>
 					<input type="hidden" name="images[]" value="{$image_id}">
 				</li>
 				{/foreach}
