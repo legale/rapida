@@ -122,3 +122,15 @@
 [26-Mar-2018 19:35:49 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
 [26-Mar-2018 19:35:50 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
 [26-Mar-2018 19:35:50 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:47:57 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:47:57 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:47:58 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:47:58 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:47:58 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:48:00 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/view/ProductView.php on line 17
+[26-Mar-2018 19:57:28 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:57:28 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:57:29 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:57:29 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:57:29 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 19:57:30 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/view/ProductView.php on line 17
