@@ -19,7 +19,7 @@ class Feedbacks extends Simpla
 		$query = $this->db->placehold("SELECT f.id, f.name, f.email, f.ip, f.message, f.date FROM __feedbacks f WHERE id=? LIMIT 1", intval($id));
 
 		if ($this->db->query($query))
-			return $this->db->result();
+			return $this->db->result_array();
 		else
 			return false;
 	}
@@ -55,7 +55,7 @@ class Feedbacks extends Simpla
 										FROM __feedbacks f WHERE 1 $keyword_filter ORDER BY f.id $sort $sql_limit");
 
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 
 	public function count_feedbacks($filter = array())
@@ -73,7 +73,7 @@ class Feedbacks extends Simpla
 										FROM __feedbacks f WHERE 1 $keyword_filter");
 
 		$this->db->query($query);
-		return $this->db->result('count');
+		return $this->db->result_array('count');
 
 	}
 

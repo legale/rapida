@@ -19,7 +19,7 @@ class Cart extends Simpla
 	 * Функция возвращает корзину
 	 *
 	 */
-	public function get_cart()
+	public function get()
 	{
 		$cart = array();
 		$cart['purchases'] = array();
@@ -97,7 +97,7 @@ class Cart extends Simpla
 	 * Добавление варианта товара в корзину
 	 *
 	 */
-	public function add_item($varid, $amount = 1)
+	public function add($varid, $amount = 1)
 	{
 		$amount = max(1, $amount);
 
@@ -119,41 +119,47 @@ class Cart extends Simpla
 	
 	/*
 	 *
-	 * Обновление количества товара
+	 * Изменение в т.ч. добавление товаров в корзине
 	 *
 	 */
-	public function update_item($varid, $amount = 1)
+	public function update($varid, $amount)
 	{
-		$amount = max(1, $amount);
+		$varid = (int)$varid; 
+		$amount = (int)$amount;
+		
+		if(isset($_SESSION['shopping_cart'][$varid]) && $amount == 0){
+			unset($_SESSION['shopping_cart'][$varid]);
+			return true;
+		} else if($amount < 0){
+			return false;
+		}
 		
 		// Выберем товар из базы, заодно убедившись в его существовании
 		$variant = $this->variants->get_variant($varid);
 
-		// Если товар существует, добавим его в корзину
-		if (!empty($variant) && $variant['stock'] > 0)
-			{
+		// Если товар существует и есть в наличии, добавим его в корзину
+		if (!empty($variant) && $variant['stock'] >= $amount){
 			// Не дадим больше чем на складе
-			$amount = min($amount, $variant['stock']);
-
-			$_SESSION['shopping_cart'][$varid] = intval($amount);
+			$_SESSION['shopping_cart'][$varid] = $amount;
+			return true;
+		}else{
+			return false;
 		}
-
 	}
-	
 	
 	/*
 	 *
 	 * Удаление товара из корзины
 	 *
 	 */
-	public function delete_item($varid)
+	public function remove($varid, $amount = 1)
 	{
-		if(is_scalar($varid) 
-		&& isset($_SESSION['shopping_cart']) 
-		&& isset($_SESSION['shopping_cart'][$varid])){
-			unset($_SESSION['shopping_cart'][$varid]);
+		$varid = (int)$varid; 
+		$amount = (int)$amount;
+		if(isset($_SESSION['shopping_cart'][$varid]) && $_SESSION['shopping_cart'][$varid] > 0){
+			$_SESSION['shopping_cart'][$varid] = max(0, $_SESSION['shopping_cart'][$varid] - $amount);
 			return true;
-		}else{
+		} else{
 			return false;
 		}
 	}
@@ -163,7 +169,7 @@ class Cart extends Simpla
 	 * Очистка корзины
 	 *
 	 */
-	public function empty_cart()
+	public function empty()
 	{
 		unset($_SESSION['shopping_cart']);
 		unset($_SESSION['coupon_code']);

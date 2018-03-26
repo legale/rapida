@@ -390,7 +390,22 @@ class Minifier
 	protected function saveString()
 	{
 		$this->a = $this->b;
-		if($this->a == "'" || $this->a == '"') // is the character a quote
+		if($this->a == "`") // is the character a GRAVE ACCENT char
+		{
+			// save literal string
+			$stringType = $this->a;
+			
+			while(1)
+			{
+				echo $this->a;
+				$this->a = $this->getChar();
+				
+				if($this->a === $stringType){
+						break 1;
+				}
+			}
+		}
+		else if($this->a == "'" || $this->a == '"') // is the character a quote
 		{
 			// save literal string
 			$stringType = $this->a;

@@ -144,6 +144,11 @@ class Blog extends Simpla
             unset($post['id']);
         }
 
+        //удалим visible, если он не задан
+        if (empty($post['visible'])) {
+            unset($post['visible']);
+        }
+
         foreach ($post as $k => $e) {
             if (empty_($e)) {
                 unset($post[$k]);
@@ -214,7 +219,7 @@ class Blog extends Simpla
             $id,
             $date
         );
-        $next_id = $this->db->result('id');
+        $next_id = $this->db->result_array('id');
         if ($next_id) {
             return $this->get_post(intval($next_id));
         } else {

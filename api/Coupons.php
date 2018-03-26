@@ -121,7 +121,7 @@ class Coupons extends Simpla
 		          FROM __coupons c WHERE 1 $coupon_id_filter $valid_filter";
 
 		if ($this->db->query($query))
-			return $this->db->result('count');
+			return $this->db->result_array('count');
 		else
 			return false;
 	}

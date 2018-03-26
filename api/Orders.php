@@ -125,7 +125,7 @@ class Orders extends Simpla
 									WHERE 1
 									$status_filter $user_filter $label_filter $keyword_filter");
 		$this->db->query($query);
-		return $this->db->result('count');
+		return $this->db->result_array('count');
 	}
 
 	public function update_order($id, $order)
@@ -552,7 +552,7 @@ class Orders extends Simpla
 		if($status!==null)
 			$f = $this->db->placehold('AND status=?', $status);
 		$this->db->query("SELECT MIN(id) as id FROM __orders WHERE id>? $f LIMIT 1", $id);
-		$next_id = $this->db->result('id');
+		$next_id = $this->db->result_array('id');
 		if($next_id)
 			return $this->get_order(intval($next_id));
 		else
@@ -565,7 +565,7 @@ class Orders extends Simpla
 		if($status !== null)
 			$f = $this->db->placehold('AND status=?', $status);
 		$this->db->query("SELECT MAX(id) as id FROM __orders WHERE id<? $f LIMIT 1", $id);
-		$prev_id = $this->db->result('id');
+		$prev_id = $this->db->result_array('id');
 		if($prev_id)
 			return $this->get_order(intval($prev_id));
 		else

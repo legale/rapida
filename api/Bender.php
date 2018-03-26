@@ -39,6 +39,11 @@ class Bender
 		}
 		foreach ( $src as $s )
 		{
+			$s = $this->root_dir . trim($s, '/');
+			
+			if(!file_exists($s)){
+				print __METHOD__." $s not exists!\n";
+			}
 			switch ( $this->get_ext( $s ) )
 			{
 				case "css":
@@ -146,7 +151,6 @@ class Bender
 	// Join array of files into a string
 	protected function join_files( $files )
 	{
-		$path = $this->root_dir;
 		if ( !is_array( $files ) )
 		{
 			return "";
@@ -154,7 +158,7 @@ class Bender
 		$c = "";
 		foreach ( $files as $file )
 		{
-			$c .= file_get_contents( "{$path}/{$file}" );
+			$c .= file_get_contents( $file );
 		}
 		return $c;
 	}
@@ -185,7 +189,7 @@ class Bender
 		foreach ( $files as $file )
 		{
 			//~ print "mtime bundle " . $outputfile_mtime . " mtime src " . filemtime( $root.$file ) . $root.$file;
-			if ( $outputfile_mtime < filemtime( $root.$file ) ){
+			if ( $outputfile_mtime < filemtime( $file ) ){
 				$this->recombine = true;
 			}
 		}

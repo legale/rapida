@@ -500,7 +500,7 @@ class Products extends Simpla
 
 		dtimer::log(__METHOD__ . " query: $query");
 		$this->db->query($query);
-		$res = $this->db->result('count');
+		$res = $this->db->result_array('count');
 		dtimer::log("set_cache_integer key: $keyhash");
 		$this->cache->set_cache_integer($keyhash, $res);
 		return $res;
@@ -767,10 +767,10 @@ class Products extends Simpla
 	public function get_next_product($id)
 	{
 		$this->db->query("SELECT pos FROM __products WHERE id=? LIMIT 1", $id);
-		$pos = $this->db->result('pos');
+		$pos = $this->db->result_array('pos');
 		
 		$this->db->query("SELECT pc.category_id FROM __products_categories pc WHERE product_id=? LIMIT 1", $id);
-		$category_id = $this->db->result('category_id');
+		$category_id = $this->db->result_array('category_id');
 
 		$query = $this->db->placehold("SELECT id FROM __products p, __products_categories pc
 			WHERE pc.product_id=p.id AND p.pos>? 
@@ -778,7 +778,7 @@ class Products extends Simpla
 			AND p.visible ORDER BY p.pos limit 1", $pos, $category_id);
 		$this->db->query($query);
  
-		return $this->get_product((integer)$this->db->result('id'));
+		return $this->get_product((integer)$this->db->result_array('id'));
 	}
 	
 	/*

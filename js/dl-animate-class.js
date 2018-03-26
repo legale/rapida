@@ -1,5 +1,5 @@
 
-    class DLAnimate {
+    class Animator {
         constructor() {
             //create raf function
             let raf = window.requestAnimationFrame ||
@@ -83,7 +83,7 @@
 
             /* set handler on animation finish */
             this.finisher_show = [el, settings.track, settings.duration, () => {
-                this._removeClasses(el, settings.classNames.enterActive);
+                this._removeClasses(el, settings.classNames.active);
                 this.finisher_show = false;
                 this.in_progress = false;
                 settings.systemDoneCallback(el);
@@ -95,12 +95,13 @@
                 this.in_progress = true;
                 this._show(el);
                 this._finishHandler(this.finisher_show);
-                this._addClasses(el, [settings.classNames.enterActive, settings.classNames.enter]);
+                this._addClasses(el, [settings.classNames.active, settings.classNames.enter]);
                 settings.before(el);
             });
 
             this._addFrame(() => {
                 this._removeClasses(el, settings.classNames.enter);
+                this._addClasses(el, settings.classNames.enterTo);
             });
 
             this._nextFrame();
@@ -112,19 +113,21 @@
             if (!this.canAnimate) {
                 return this._hide(el);
             }
-
+			
             let settings = this._calcOptions(options);
             this.settings = settings;
 
-            this._reset();
+            //~ this._reset();
             //return if element is hidden and animation not in progress
             if (this._isHidden(elf) && !this.in_progress) {
+				//~ console.log('hidden');
+				//~ console.log(this._isHidden(elf));
                 return;
             }
 
             this.finisher_hide = [el, settings.track, settings.duration, () => {
                 this._hide(el);
-                this._removeClasses(el, [settings.classNames.leave, settings.classNames.leaveActive]);
+                this._removeClasses(el, [settings.classNames.enterTo, settings.classNames.active]);
                 options.systemOnEnd && options.systemOnEnd();
                 this.finisher_hide = false;
                 this.in_progress = false;
@@ -133,16 +136,16 @@
             }
             ];
 
-
             this._addFrame(() => {
                 this.in_progress = true;
                 this._finishHandler(this.finisher_hide);
-                this._addClasses(el, settings.classNames.leaveActive);
+                this._addClasses(el, settings.classNames.active);
                 settings.before(el);
             });
 
             this._addFrame(() => {
-                this._addClasses(el, settings.classNames.leave);
+                this._removeClasses(el, settings.classNames.enterTo);
+                this._addClasses(el, settings.classNames.enter);
             });
 
             this._nextFrame();
@@ -180,6 +183,7 @@
 
         _calcOptions(options) {
             let classNames = this._mergeSettings(this._classNames(options.name), options.classNames);
+			//~ console.log(classNames);
             delete options.classNames;
 
             let defaults = {
@@ -200,15 +204,13 @@
         _classNames(name) {
             return !name ? {
 				enter: '',
-				enterActive: '',
-				leave: '',
-				leaveActive: '' 
+				enterTo: '',
+				active: ''
 			} 
             : {
                 enter: name + '-enter',
-                enterActive: name + '-enter-active',
-                leave: name + '-leave',
-                leaveActive: name + '-leave-active',
+                enterTo: name + '-enterTo',
+                active: name + '-active'
             }
         }
 
@@ -287,12 +289,12 @@
         }
 
         _isHidden(el) {
-            return this._getStyle(el, 'display') === 'none';
+            return !el.classList.contains(this.settings.classNames.enterTo);
         }
 
         _getStyle(el, prop) {
             return getComputedStyle(el)[prop];
         }
     }
-    //~ window.DLAnimate = new DLAnimate();
+    //~ window.DLAnimate = new Animator();
 

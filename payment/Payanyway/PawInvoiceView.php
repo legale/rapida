@@ -15,7 +15,7 @@ class PawInvoiceView extends View
 	public function fetch()
 	{
 		// Содержимое корзины
-		$this->design->assign('cart',		$this->cart->get_cart());
+		$this->design->assign('cart',		$this->cart->get());
 	
         // Категории товаров
 		$this->design->assign('categories', $this->categories->get_categories_tree());
