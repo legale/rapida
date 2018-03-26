@@ -11,7 +11,7 @@ class BlogView extends View
 	public function fetch()
 	{
 		
-		$url = $this->coMaster->uri_arr['path_arr']['url'];
+		$url = $this->coMaster->uri_arr['path']['url'];
 		
 		// Если указан адрес поста,
 		if(!empty($url))

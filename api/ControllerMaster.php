@@ -125,7 +125,7 @@ class ControllerMaster extends Simpla
 	//генерируем uri из массива параметров
 	public function gen_uri($arr = null, $filter = null){
 		dtimer::log(__METHOD__ . ' filter ' . var_export($filter, true));
-		//если начальный массив параметров не задан, возьмем его из $this->uri_arr['path_arr']
+		//если начальный массив параметров не задан, возьмем его из $this->uri_arr['path']
 		if (!isset($arr)){
 			if(isset($this->uri_arr['path'])){
 				$arr = $this->uri_arr['path'];
@@ -253,19 +253,19 @@ class ControllerMaster extends Simpla
 		
 		//Тут обрабатываем путь
 		if (isset($res['path'])) {
-			$res['path_arr'] = $this->parse_uri_path($res['path']);
+			$res['path'] = $this->parse_uri_path($res['path']);
 			
 			//если у нас нет соответствующего модулю контроллера  - ставим ''
-			dtimer::log(__METHOD__ . " before module choice: " . $res['path_arr']['module']);
-			if(isset($this->modules[$res['path_arr']['module']]) ){
-				$res['ctrl'] = $this->modules[$res['path_arr']['module']];
+			dtimer::log(__METHOD__ . " before module choice: " . $res['path']['module']);
+			if(isset($this->modules[$res['path']['module']]) ){
+				$res['ctrl'] = $this->modules[$res['path']['module']];
 			} else {
 				$res['ctrl'] = '';
 			}
 		}
 
 		if (!isset($uri)) {
-			$this->uri_arr['path_arr'] = $res['path_arr'];
+			$this->uri_arr['path'] = $res['path'];
 			$this->ctrl = $res['ctrl'];
 		}
 
