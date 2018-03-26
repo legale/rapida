@@ -66,7 +66,7 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
         // compile code
         if ($is_registered) {
             $output =
-                "call_user_func_array( \$_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['{$tag}'][0], array( {$_params},\$_smarty_tpl ) )";
+                "call_user_func_array( \$_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['{$tag}'][0], array( {$_params},&\$_smarty_tpl ) )";
         } else {
             $function = $tag_info[ 0 ];
             if (!is_array($function)) {

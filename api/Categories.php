@@ -31,7 +31,7 @@ class Categories extends Simpla
 			{
 			$query = $this->db->placehold("SELECT category_id FROM __products_categories WHERE product_id in(?@) ", (array)$filter['product_id']);
 			$this->db->query($query);
-			$categories_ids = $this->db->results('category_id');
+			$categories_ids = $this->db->results_array('category_id');
 			$result = array();
 			if (!empty($categories_ids)) {
 				foreach ($categories_ids as $id)
@@ -183,7 +183,7 @@ class Categories extends Simpla
 		$categories_ids = (array)$categories_ids;
 		$query = $this->db->placehold("SELECT image FROM __categories WHERE id in(?@)", $categories_ids);
 		$this->db->query($query);
-		$filenames = $this->db->results('image');
+		$filenames = $this->db->results_array('image');
 		if (!empty_($filenames))
 			{
 			$query = $this->db->placehold("UPDATE __categories SET image=NULL WHERE id in(?@)", $categories_ids);
@@ -193,7 +193,7 @@ class Categories extends Simpla
 				if (!empty_($filename)) {
 					$query = $this->db->placehold("SELECT count(*) as count FROM __categories WHERE image=?", $filename);
 					$this->db->query($query);
-					$count = $this->db->result('count');
+					$count = $this->db->result_array('count');
 					if ($count == 0) {
 						@unlink($this->config->root_dir . $this->config->categories_images_dir . $filename);
 					}

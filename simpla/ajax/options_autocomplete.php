@@ -13,7 +13,7 @@
 
 	$simpla->db->query($query);
 		
-	$options = $simpla->db->results('value');
+	$options = $simpla->db->results_array('value');
 
 	$res = new stdClass;
 	$res->query = $keyword;

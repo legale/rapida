@@ -58,9 +58,8 @@ foreach ($simpla->brands->get_brands() as $b)
 
 // Товары
 $simpla->db->query("SELECT url FROM __products WHERE visible=1");
-foreach ($simpla->db->results() as $p)
-	{
-	$url = $simpla->config->root_url . '/products/' . esc($p->url);
+foreach ($simpla->db->results_array() as $p){
+	$url = $simpla->config->root_url . '/products/' . esc($p['url']);
 	print "\t<url>" . "\n";
 	print "\t\t<loc>$url</loc>" . "\n";
 	print "\t</url>" . "\n";

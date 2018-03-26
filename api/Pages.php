@@ -22,11 +22,12 @@ class Pages extends Simpla
 	 */
 	public function get_page($id)
 	{
-		if (gettype($id) == 'string')
+		if (gettype($id) == 'string'){
+			$id = trim($id, '/');
 			$where = $this->db->placehold(' WHERE url=? ', $id);
-		else
+		}else{
 			$where = $this->db->placehold(' WHERE id=? ', intval($id));
-
+		}
 		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
 		          FROM __pages $where LIMIT 1";
 

@@ -36,6 +36,7 @@ class IndexView extends View
 	{
 		parent::__construct();
 		dtimer::log(__METHOD__ . " construct");
+		//~ print_r($this->root->uri_arr);
 	}
 
 		
@@ -48,7 +49,7 @@ class IndexView extends View
 	{
 		dtimer::log(__METHOD__ . " start");
 		// Содержимое корзины
-		$this->design->assign('cart',		$this->cart->get_cart());
+		$this->design->assign('cart',		$this->cart->get());
 	
         // Категории товаров
 		$this->design->assign('categories', $this->categories->get_categories_tree());
@@ -60,7 +61,7 @@ class IndexView extends View
 		if($url !== '404'){
 		
 			// Текущий модуль (для отображения центрального блока)
-			$module = $this->modules[$this->coMaster->uri_arr['path_arr']['module']];
+			$module = $this->modules[$this->root->uri_arr['path']['module']];
 			dtimer::log(__METHOD__ . " module: $module");
 			
 			// Если не задан - берем из настроек

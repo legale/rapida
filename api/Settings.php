@@ -4,11 +4,6 @@
  * Управление настройками магазина, хранящимися в базе данных
  * В отличие от класса Config оперирует настройками доступными админу и хранящимися в базе данных.
  *
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  */
 
 require_once ('Simpla.php');
@@ -25,9 +20,9 @@ class Settings extends Simpla
 		$this->db->query('SELECT name, value FROM __settings');
 
 		// и записываем их в переменную		
-		foreach ($this->db->results() as $result)
-			if (! ($this->vars[$result->name] = @unserialize($result->value)))
-			$this->vars[$result->name] = $result->value;
+		foreach ($this->db->results_array() as $result)
+			if (! ($this->vars[$result['name']] = @unserialize($result['value'])))
+			$this->vars[$result['name']] = $result['value'];
 	}
 
 	public function __get($name)
@@ -51,7 +46,7 @@ class Settings extends Simpla
 			$value = (string)$value;
 
 		$this->db->query('SELECT count(*) as count FROM __settings WHERE name=?', $name);
-		if ($this->db->result('count') > 0)
+		if ($this->db->result_array('count') > 0)
 			$this->db->query('UPDATE __settings SET value=? WHERE name=?', $value, $name);
 		else
 			$this->db->query('INSERT INTO __settings SET value=?, name=?', $value, $name);
