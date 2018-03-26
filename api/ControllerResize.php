@@ -22,7 +22,7 @@ class ControllerResize extends Simpla
         dtimer::$enabled = $this->debug ? true : false;
         dtimer::log(__METHOD__ . ' start');
         //['dir'][0] - is the first part (ex: products) ['dir'][1] is the second (ex: resize)
-        $this->uri = $this->coMaster->uri_arr;
+        $this->uri = $this->root->uri_arr;
 
         $this->type = isset($this->uri['path']['dir'][0])
             ? $this->uri['path']['dir'][0] : null;
