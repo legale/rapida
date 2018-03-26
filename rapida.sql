@@ -534,7 +534,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=428 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
@@ -546,7 +546,7 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue_full */
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
