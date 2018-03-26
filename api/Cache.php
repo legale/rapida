@@ -7,14 +7,14 @@ class Cache extends Simpla
 
 
 	private $tmp = array();
-
-	static private $config = array();
+	public static $config = array();
+	public static $enabled = false;
 	
 	
 
 	// Конструктор
 	public function __construct()
-	{
+	{		
 		// загружаем настройки кеша, если они еще не были загружены
 		$config = array(
 			"default_chmod" => '777', // 777 , 666, 644
@@ -27,7 +27,7 @@ class Cache extends Simpla
 		);
 
 		$ini_config = $this->config->vars_sections['cache'];
-
+		
 		self::$config = array_merge($config, $ini_config);
 		
 		//меняем систему счисления, чтобы chmod и mkdir правильно обрабатывали права, заданные в виде строки
@@ -319,7 +319,7 @@ allow from 127.0.0.1";
 	{
 
 		//Если кеш отключен - останавливаем
-		if (self::$config['cache'] !== true) {
+		if (self::$enabled !== true) {
 			return false;
 		}
 		
@@ -350,7 +350,7 @@ allow from 127.0.0.1";
 			
 			case 'var_export':
 			default:
-			$data = $this->var_export($value);
+			$data = $this->var_export($value, true);
 		}
 
 		$toWrite = true;
@@ -398,7 +398,7 @@ allow from 127.0.0.1";
 	public function get_cache_nosql($keyword, $method = null)
 	{
 		//Если кеш отключен - останавливаем
-		if (self::$config['cache'] !== true) {
+		if (self::$enabled !== true) {
 			return false;
 		}
 
@@ -482,7 +482,7 @@ allow from 127.0.0.1";
 	public function set_cache_integer($keyhash, $value)
 	{
 		//Если кеш отключен - останавливаем
-		if (self::$config['cache'] !== true) {
+		if (self::$enabled !== true) {
 			return false;
 		}
 		
@@ -517,7 +517,7 @@ allow from 127.0.0.1";
 	public function get_cache_integer($keyhash)
 	{
 		//Если кеш отключен - останавливаем
-		if (self::$config['cache'] !== true) {
+		if (self::$enabled !== true) {
 			return false;
 		}
 		
@@ -531,7 +531,7 @@ allow from 127.0.0.1";
 		$query = $this->db->placehold($query);
 		dtimer::log("get_cache_integer $query");
 		$this->db->query($query);
-		$res = $this->db->result('value');
+		$res = $this->db->result_array('value');
 
 		if ($res !== false) {
 			return $res;

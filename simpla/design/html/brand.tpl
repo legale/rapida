@@ -113,17 +113,17 @@ $(function() {
 <!-- Системное сообщение -->
 <div class="message message_success">
 	<span class="text">{if $message_success=='added'}Бренд добавлен{elseif $message_success=='updated'}Бренд обновлен{else}{$message_success}{/if}</span>
-	<a class="link" target="_blank" href="../brands/{$brand['url']}">Открыть бренд на сайте</a>
+	<a class="link" target="_blank" href="../brands/{$brand['trans']}">Открыть бренд на сайте</a>
 	{if $smarty.get.return}
 	<a class="button" href="{$smarty.get.return}">Вернуться</a>
 	{/if}
 	
 	<span class="share">		
-		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}&title={$brand['name']|urlencode}&description={$brand['description']|urlencode}&image={$config->root_url|urlencode}/files/brands/{$brand['image']|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://vkontakte.ru/share.php?url={$config->root_url|urlencode}/brands/{$brand['trans']|urlencode}&title={$brand['name']|urlencode}&description={$brand['description']|urlencode}&image={$config->root_url|urlencode}/files/brands/{$brand['image']|urlencode}&noparse=true","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/vk_icon.png" /></a>
-		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://www.facebook.com/sharer.php?u={$config->root_url|urlencode}/brands/{$brand['trans']|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/facebook_icon.png" /></a>
-		<a href="#" onClick='window.open("http://twitter.com/share?text={$brand['name']|urlencode}&url={$config->root_url|urlencode}/brands/{$brand['url']|urlencode}&hashtags={$brand['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
+		<a href="#" onClick='window.open("http://twitter.com/share?text={$brand['name']|urlencode}&url={$config->root_url|urlencode}/brands/{$brand['trans']|urlencode}&hashtags={$brand['meta_keywords']|replace:' ':''|urlencode}","displayWindow","width=700,height=400,left=250,top=170,status=no,toolbar=no,menubar=no");return false;'>
   		<img src="{$config->root_url}/simpla/design/images/twitter_icon.png" /></a>
 	</span>
 	
@@ -157,7 +157,7 @@ $(function() {
 		<div class="block layer">
 			<h2>Параметры страницы</h2>
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /brands/</div><input name="url" class="page_url" type="text" value="{$brand['url']|escape}" /></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /brands/</div><input name="trans" class="page_url" type="text" value="{$brand['trans']|escape}" /></li>
 				<li><label class=property>Заголовок</label><input name="meta_title" class="simpla_inp" type="text" value="{$brand['meta_title']|escape}" /></li>
 				<li><label class=property>Ключевые слова</label><input name="meta_keywords" class="simpla_inp" type="text" value="{$brand['meta_keywords']|escape}" /></li>
 				<li><label class=property>Описание</label><textarea name="meta_description" class="simpla_inp" />{$brand['meta_description']|escape}</textarea></li>

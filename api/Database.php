@@ -1,22 +1,15 @@
 <?php
 
-
-
 /**
  * Класс для доступа к базе данных
- *
- * @copyright 	2013 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  */
 
 require_once ('Simpla.php');
 
 class Database extends Simpla
 {
-	private $mysqli;
-	private $res;
+	public $mysqli;
+	public $res = false;
 
 	/**
 	 * В конструкторе подключаем базу
@@ -97,10 +90,7 @@ class Database extends Simpla
 		$cnt = count($args);
 		if ($cnt < 1 || !is_string($args[0])) {
 			$this->error_msg = " Error - empty query";
-			$bt = debug_backtrace();
-			$bt = var_export(array_column(array_slice($bt, 1,2), 'function','class'), true);
-			dtimer::log(__METHOD__ . " backtrace: $bt", 1);
-			
+			$this->debug_backtrace( debug_backtrace() );
 			return false;
 		}
 		elseif ($cnt > 1) {
@@ -129,17 +119,22 @@ class Database extends Simpla
 		$this->res = $this->mysqli->query($q);
 		if(!$this->res){
 			dtimer::log(__METHOD__ . " Error: $q ", 1);
-			$bt = debug_backtrace();
-			$bt = var_export(array_column(array_slice($bt, 1,2), 'function','class'), true);
-			dtimer::log(__METHOD__ . " backtrace: $bt", 1);
-			
+			$this->debug_backtrace( debug_backtrace() );
 			return false;
 		} else {
 			dtimer::log(__METHOD__ . " Completed: $q ");
 			return true;
 		} 
-		
-
+	}
+	
+	//для вывода следа в журнал
+	private function debug_backtrace($bt){
+		$bt = array_column(array_slice($bt, 0,2), 'function','class');
+		if(!empty($bt)){
+			$bt = var_export($bt, true);
+			dtimer::log(" backtrace: $bt", 1);
+		}
+		return false;
 	}
 
 	/**
@@ -174,41 +169,6 @@ class Database extends Simpla
 		}
 		else
 			return $tmpl;
-	}
-
-
-	/**
-	 * Возвращает результаты запроса. Необязательный второй аргумент указывает какую колонку возвращать 
-	 * вместо всего массива колонок
-	 */
-	public function results($field = null, $group_field = null)
-	{
-		if (empty($this->res) || $this->res->num_rows == 0) {
-			return false;
-		}
-
-		if (!is_object($this->res)) {
-			$this->error_msg = "exec query first!";
-		}
-
-		$results = array();
-
-		if ($field !== null) {
-			while ($row = $this->res->fetch_object()) {
-				array_push($results, $row->$field);
-			}
-		}
-		elseif ($group_field !== null) {
-			while ($row = $this->res->fetch_object()) {
-				$results[$row->$group_field] = $row;
-			}
-		}
-		else {
-			while ($row = $this->res->fetch_object()) {
-				array_push($results, $row);
-			}
-		}
-		return $results;
 	}
 
 
@@ -259,10 +219,9 @@ class Database extends Simpla
 
 	/**
 	 * Возвращает результаты запроса ассоциативным массивом
-	 * может вывести только 1 конкретное поле одномерным массивом, для этого указывается 1 аргумент (string),
-	 * также может вывести массив с ключами из указанного поля БД, для этого указывается 2 аргумент (string)
+	 * может вывести только 1 конкретное поле одномерным массивом, для этого указывается аргумент (string)
 	 */
-	public function results_array_grouped($field = null){
+	public function results_array_grouped($field){
 		if (!isset($field)) {
 			dtimer::log(__METHOD__ . " argument error", 1);			
 			$bt = debug_backtrace();
@@ -275,7 +234,7 @@ class Database extends Simpla
 			$this->error_msg = "exec query first!";
 		}
 
-		while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+		while ($row = $this->res->fetch_assoc()) {
 			$results[$row[$field]][] = $row;
 		}
 		if(!isset($results)){
@@ -302,33 +261,29 @@ class Database extends Simpla
 		$results = array();
 		
 		if ($field !== null && $group_field !== null && is_array($field) && is_array($group_field) ) {
-			while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+			while ($row = $this->res->fetch_assoc()) {
 				foreach($group_field as $k=>$gf){
 					$results[$k][$row[$gf]] = $row[$field[$k]];
 				}
 			}
-		}
-		elseif ($field !== null && $group_field !== null) {
-			while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+		}elseif ($field !== null && $group_field !== null) {
+			while ($row = $this->res->fetch_assoc()) {
 				$results[$row[$group_field]] = $row[$field];
 			}
-		}
-		elseif ($field !== null) {
-			while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+		}elseif ($field !== null) {
+			while ($row = $this->res->fetch_assoc()) {
 				array_push($results, $row[$field]);
 			}
-		}
-		elseif ($group_field !== null) {
-			while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+		}elseif ($group_field !== null) {
+			while ($row = $this->res->fetch_assoc()) {
 				$key = $row[$group_field];
 				if ($unsetkey === true) {
 					unset($row[$group_field]);
 				}
 				$results[$key] = $row;
 			}
-		}
-		else {
-			while ($row = $this->res->fetch_array(MYSQLI_ASSOC)) {
+		}else {
+			while ($row = $this->res->fetch_assoc()) {
 				array_push($results, $row);
 			}
 		}
@@ -336,45 +291,28 @@ class Database extends Simpla
 	}
 
 	/**
-	 * Возвращает первый результат запроса. Необязательный второй аргумент указывает какую колонку возвращать вместо всего массива колонок
+	 * Возвращает первое значение заданного столбца
 	 */
-	public function result($field = null)
+	public function result_array($col = null)
 	{
-		$result = array();
-		if (!$this->res)
-			{
+		$res = $this->row();
+		if (is_array($res)){
+			 if($col){
+				return array_key_exists($col, $res) ? $res[$col] : false;
+			} else{
+				return $res;
+			}
+		}else{
 			return false;
 		}
-		$row = $this->res->fetch_object();
-		if (!empty($field) && isset($row->$field))
-			return $row->$field;
-		elseif (!empty($field) && !isset($row->$field))
-			return false;
-		else
-			return $row;
 	}
 
 	/**
-	 * Возвращает первый результат запроса в виде массива
+	 * Возвращает очередную строку в виде массива
 	 */
-	public function result_array($field = null, $group_field = null, $unsetkey = false)
+	public function row()
 	{
-		if (!is_object($this->res)) {
-			$this->error_msg = "exec query first!";
-			return false;
-		}
-
-		$row = $this->res->fetch_array(MYSQLI_ASSOC);
-
-		if (isset($field)) {
-			return $row[$field];
-		}
-		else {
-			if ($group_field !== null && $unsetkey === true) {
-				unset($row[$group_field]);
-			}
-			return $row;
-		}
+		return $this->res->fetch_assoc();
 	}
 
 	/**

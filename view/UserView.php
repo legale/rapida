@@ -1,16 +1,5 @@
 <?PHP
 
-/**
- * Simpla CMS
- *
- * @copyright 	2009 Denis Pikusov
- * @link 		http://simp.la
- * @author 		Denis Pikusov
- *
- * Отображение статей на сайте
- * Этот класс использует шаблоны articles.tpl и article.tpl
- *
- */
  
 require_once('View.php');
 
@@ -34,7 +23,7 @@ class UserView extends View
 			$this->design->assign('email', $email);
 			
 			$this->db->query('SELECT count(*) as count FROM __users WHERE email=? AND id!=?', $email, $this->user['id']);
-			$user_exists = $this->db->result('count');
+			$user_exists = $this->db->result_array('count');
 
 			if($user_exists)
 				$this->design->assign('error', 'user_exists');

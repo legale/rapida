@@ -6,13 +6,13 @@
 	$keyword = $simpla->request->get('query', 'string');
 	
 	$simpla->db->query('SELECT u.id, u.name, u.email FROM __users u WHERE u.name LIKE "%'.$simpla->db->escape($keyword).'%" OR u.email LIKE "%'.$simpla->db->escape($keyword).'%"ORDER BY u.name LIMIT ?', $limit);
-	$users = $simpla->db->results();
+	$users = $simpla->db->results_array();
 	
 	$suggestions = array();
 	foreach($users as $user)
 	{
 		$suggestion = new stdClass();
-		$suggestion->value = $user->name." ($user->email)";			
+		$suggestion->value = $user['name']." ($user['email'])";			
 		$suggestion->data = $user;
 		$suggestions[] = $suggestion;
 	}

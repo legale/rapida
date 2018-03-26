@@ -1,4 +1,11 @@
 <?php
+function timer($fu, $arg){
+   $start = microtime(true);
+   call_user_func_array($fu, $arg);
+   $finish = microtime(true) - $start;
+   print("\n$fu: " . $finish);
+}
+
 //функция для обратного преобразования массива parse_url() в строку
 function unparse_url($parsed_url) { 
   $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : ''; 
@@ -230,7 +237,7 @@ class Simpla
 		'sys' => 'System',
 		'bender' => 'Bender', //js css joiner and minifier
 		'coAdmin' => 'ControllerAdmin',
-		'coMaster' => 'ControllerMaster',
+		'root' => 'ControllerMaster',
 		'coSimpla' => 'ControllerSimpla', /* Контроллер Симплы, которые запускает view/indexView.php */
 		'coResize' => 'ControllerResize',
 		'coXhr' => 'ControllerXhr',
@@ -256,6 +263,8 @@ class Simpla
 			//запустим сессию
 			@session_start();
 
+			//log ошибок
+			ini_set('error_log', dirname(__FILE__).'/../'.$this->config->logfile);
 			//уровень отображения ошибок
 			error_reporting($this->config->error_reporting);
 			dtimer::log('error_reporting config.ini: ' . $this->config->error_reporting . ' error_reporting() says: ' . error_reporting());
@@ -264,6 +273,8 @@ class Simpla
 			dtimer::$enabled = $this->config->debug;
 			//локаль
 			setlocale(LC_ALL, $this->config->locale);
+			//кеш
+			$this->cache::$enabled = $this->config->cache;
 		}
 
 	}

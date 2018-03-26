@@ -137,9 +137,7 @@ class Design extends Simpla
         if (is_array(reset($params))) {
             $params = reset($params);
         }
-
-        //~ return print_r($params, true);
-        return $this->coMaster->gen_uri(null, $params);
+        return $this->root->gen_uri(null, $params);
     }
 
     public function plural_modifier($number, $singular, $plural1, $plural2 = null)
@@ -387,15 +385,6 @@ class Design extends Simpla
      * @subpackage plugins
      *
      * Smarty {bender} function plugin
-     *
-     * Type:     function<br>
-     * Name:     bender<br>
-     * Date:     October 27, 2013<br>
-     * Purpose:  combines and compresses javascript & css<br>
-     * Input:
-     *         - src    = path to javascript or css file (can be an array)
-     *         - output = path to output js / css file (optional)
-     *
      * Examples:<br>
      * <pre>
      * {bender src="templates/default/css/style-main.css"} // add first css file

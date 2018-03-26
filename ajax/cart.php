@@ -2,8 +2,8 @@
 	session_start();
 	require_once('../api/Simpla.php');
 	$simpla = new Simpla();
-	$simpla->cart->add_item($simpla->request->get('variant', 'integer'), $simpla->request->get('amount', 'integer'));
-	$cart = $simpla->cart->get_cart();
+	$simpla->cart->add($simpla->request->get('variant', 'integer'), $simpla->request->get('amount', 'integer'));
+	$cart = $simpla->cart->get();
 	$simpla->design->assign('cart', $cart);
 	
 	$currencies = $simpla->money->get_currencies(array('enabled'=>1));

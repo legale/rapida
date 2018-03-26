@@ -20,7 +20,7 @@ class Comments extends Simpla
 		$query = $this->db->placehold("SELECT c.id, c.object_id, c.name, c.ip, c.type, c.text, c.date, c.approved FROM __comments c WHERE id=? LIMIT 1", intval($id));
 
 		if ($this->db->query($query))
-			return $this->db->result();
+			return $this->db->result_array();
 		else
 			return false;
 	}
@@ -72,7 +72,7 @@ class Comments extends Simpla
 										FROM __comments c WHERE 1 $object_id_filter $type_filter $keyword_filter $approved_filter ORDER BY id $sort $sql_limit");
 
 		$this->db->query($query);
-		return $this->db->results();
+		return $this->db->results_array();
 	}
 	
 	// Количество комментариев, удовлетворяющих фильтру
@@ -103,7 +103,7 @@ class Comments extends Simpla
 										FROM __comments c WHERE 1 $object_id_filter $type_filter $keyword_filter $approved_filter", $this->settings->date_format);
 
 		$this->db->query($query);
-		return $this->db->result('count');
+		return $this->db->result_array('count');
 
 	}
 	
