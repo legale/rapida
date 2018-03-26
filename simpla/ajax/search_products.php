@@ -17,16 +17,16 @@
 	$simpla->db->query('SELECT p.id, p.name, i.filename as image FROM __products p
 	                    LEFT JOIN __images i ON i.product_id=p.id AND i.pos=(SELECT MIN(pos) FROM __images WHERE product_id=p.id LIMIT 1)
 	                    WHERE 1 '.$keyword_sql.' ORDER BY p.name LIMIT ?', $limit);
-	$products = $simpla->db->results();
+	$products = $simpla->db->results_array();
 
 	$suggestions = array();
 	foreach($products as $product)
 	{
-		if(!empty($product->image))
-			$product->image = $simpla->design->resize_modifier($product->image, 35, 35);
+		if(!empty($product['image']))
+			$product['image'] = $simpla->design->resize_modifier($product['image'], 35, 35);
 		
 		$suggestion = new stdClass();
-		$suggestion->value = $product->name;
+		$suggestion->value = $product['name'];
 		$suggestion->data = $product;
 		$suggestions[] = $suggestion;
 	}

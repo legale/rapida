@@ -15,7 +15,8 @@ class ControllerXhr extends Simpla
 	private $allowed_classes = array('products', 'brands', 'variants', 'features', 'image', 'cart', 'blog', 'comments');
 	private $allowed_methods = array(
 		'count_products', 'get_products', 'get_products_ids', 'get_product', 'get_variants', 'get_variant', 'get_features',
-		'get_options', 'get_options_mix', 'get_cart', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get','delete_item',
+		'get_options', 'get_options_mix', 'get', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get','remove',
+		'add', 'update' , 'empty'
 	);
 	
 	private $request; //для запроса
@@ -40,22 +41,21 @@ class ControllerXhr extends Simpla
 			$json = json_decode($_POST['json'], true);
 
 
-			if (empty($json['class'])
-				|| empty($json['method']) 
-				|| empty($json['args']))
+			if (empty($json['class']) || empty($json['method'])) 
 			{
-				$this->status = 'arguments error';
+				$this->status = 'arguments error! class and method needed';
 				$this->is_valid = false; 
 			}
 			elseif( !in_array($json['class'], $this->allowed_classes)
 				|| !in_array($json['method'], $this->allowed_methods) ) 
 			{
-				$this->status = 'class/method not allowed';
+				$this->status = 'class or method not allowed';
 				$this->is_valid = false;
 			} 
 			else 
 			{
-				$this->request = $json;
+				
+				$this->request = array_merge(array('args'=> array()), $json);
 				$this->is_valid = true;
 			}
 		}

@@ -48,7 +48,15 @@ var autoComplete = (function(){
         for (var k in options) { if (options.hasOwnProperty(k)) o[k] = options[k]; }
 
         // init
-        var elems = typeof o.selector == 'object' ? [o.selector] : document.querySelectorAll(o.selector);
+			var elems, type = o.selector.constructor.name.toLowerCase();
+        if(type === 'string'){
+			elems = document.querySelectorAll(o.selector);
+		} else if (type.match(/HTML.+?Element/)){
+			elems = [o.selector];
+		} else if (type === 'nodelist' || type === 'htmlcollection'){
+			elems = o.selector;
+		}
+			
         for (var i=0; i<elems.length; i++) {
             var that = elems[i];
 

@@ -15,7 +15,7 @@ $time_start = microtime(true);
 require_once('api/Simpla.php');
 $simpla = new Simpla();
 
-$simpla->coMaster->action();
+$simpla->root->action();
 
 	//Выход из админки
 	if(isset($_GET['logout']))

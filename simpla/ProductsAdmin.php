@@ -161,7 +161,7 @@ class ProductsAdmin extends Simpla
 			    	{		    	
 				    	$query = $this->db->placehold("SELECT pos FROM __products WHERE id=? LIMIT 1", $id);	
 				    	$this->db->query($query);	      
-				    	$initial_pos = $this->db->result('pos');
+				    	$initial_pos = $this->db->result_array('pos');
 		
 				    	if($target_pos > $initial_pos)
 				    		$query = $this->db->placehold("	UPDATE __products set pos=pos-1 WHERE pos>? AND pos<=?", $initial_pos, $target_pos);	

@@ -56,43 +56,43 @@ print "<offers>
 
 $currency_code = reset($currencies)->code;
 
-// В цикле мы используем не results(), a result(), то есть выбираем из базы товары по одному,
+// В цикле мы выбираем строки из базы товары по одной,
 // так они нам одновременно не нужны - мы всё равно сразу же отправляем товар на вывод.
 // Таким образом используется памяти только под один товар
 $prev_product_id = null;
-while ($p = $simpla->db2->result())
+while ($p = $simpla->db2->result_array())
 	{
 
 //тут массив с картинками
 	$p_images = array();
-	foreach ($simpla->products->get_images(array('product_id' => $p->product_id)) as $image) {
+	foreach ($simpla->products->get_images(array('product_id' => $p['product_id'])) as $image) {
 		$p_images[$image->product_id][] = $image->filename;
 	}
 //тут массив со свойствами товаров
 	$features = array();
-	$features[$p->product_id] = $simpla->features->get_product_options(array('product_id' => $p->product_id));
+	$features[$p['product_id']] = $simpla->features->get_product_options(array('product_id' => $p['product_id']));
 
 
 
 	$variant_url = '';
-	if ($prev_product_id === $p->product_id)
-		$variant_url = '?variant=' . $p->variant_id;
-	$prev_product_id = $p->product_id;
+	if ($prev_product_id === $p['product_id'])
+		$variant_url = '?variant=' . $p['variant_id'];
+	$prev_product_id = $p['product_id'];
 
-	$price = round($simpla->money->convert($p->price, $main_currency->id, false), 2);
+	$price = round($simpla->money->convert($p['price'], $main_currency->id, false), 2);
 	print
 		"
-<offer id=' $p->variant_id' available='true'>
-<url>" . $simpla->config->root_url . '/products/' . $p->url . $variant_url . "</url>";
+<offer id=' $p['variant_id']' available='true'>
+<url>" . $simpla->config->root_url . '/products/' . $p['url'] . $variant_url . "</url>";
 	print "
 <price>$price</price>
 <currencyId>" . $currency_code . "</currencyId>
-<categoryId>" . $p->category_id . "</categoryId>
+<categoryId>" . $p['category_id'] . "</categoryId>
 ";
 
 //выводим картинки
-	if (!empty($p_images[$p->product_id])) {
-		foreach ($p_images[$p->product_id] as $img) {
+	if (!empty($p_images[$p['product_id']])) {
+		foreach ($p_images[$p['product_id']] as $img) {
 			$string = htmlspecialchars($simpla->config->root_url . '/files/originals/' . $img);
 			print "
 <picture>" . $string . "</picture>";
@@ -101,14 +101,14 @@ while ($p = $simpla->db2->result())
 
 
 
-	print "<name>" . htmlspecialchars($p->product_name) . ($p->variant_name ? ' ' . htmlspecialchars($p->variant_name) : '') . "</name>
-<description>" . htmlspecialchars(strip_tags($p->annotation)) . "</description>
+	print "<name>" . htmlspecialchars($p['product_name']) . ($p['variant_name'] ? ' ' . htmlspecialchars($p['variant_name']) : '') . "</name>
+<description>" . htmlspecialchars(strip_tags($p['annotation'])) . "</description>
 ";
 
 
 //тут пишем свойства товара
-	if (!empty($features[$p->product_id])) {
-		foreach ($features[$p->product_id] as $feature) {
+	if (!empty($features[$p['product_id']])) {
+		foreach ($features[$p['product_id']] as $feature) {
 			$comma_count = strrpos($feature->name, ", ");
 			if ($feature->name != 'vId' && $feature->name != 'vURL' && $feature->name != '')
 				if ($comma_count) {

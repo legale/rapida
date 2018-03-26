@@ -15,7 +15,7 @@ class Features extends Simpla
 {
 	//тут будут хранится значения опций
 	public $options;
-	//тут будут хранится опции
+	//тут будут хранится сами опции
 	public $features;
 
 	function get_features_ids($filter = array() ){
@@ -35,7 +35,7 @@ class Features extends Simpla
 		}
 				
 		// Выбираем свойства
-		$q = $this->db->placehold("SELECT id, name, trans FROM __features WHERE 1 $in_filter_filter");
+		$q = $this->db->placehold("SELECT * FROM __features WHERE 1 $in_filter_filter");
 		if(!$this->db->query($q)){
 			return false;
 		}
@@ -76,10 +76,11 @@ class Features extends Simpla
 		return $res;
 	}
 	
-	function get_feature($id)
+	function get_feature($id, $col = null)
 	{
 		// Выбираем свойство
-		$query = $this->db->placehold("SELECT * FROM __features WHERE id=? LIMIT 1", (int)$id);
+		$col = $col ? $col : '*';
+		$query = $this->db->placehold("SELECT $col FROM __features WHERE id=? LIMIT 1", (int)$id);
 		$this->db->query($query);
 		return $this->db->result_array();
 	}
@@ -521,7 +522,7 @@ class Features extends Simpla
 			$id_filter = $this->db->placehold(" AND `id` in ( ?@ )", (array)$filter['ids']);
 		}
 		
-		$this->db->query("SELECT id, val, trans, md4 FROM __options_uniq WHERE 1 $id_filter");
+		$this->db->query("SELECT * FROM __options_uniq WHERE 1 $id_filter");
 		if ($reverse === true) {
 			$res = $this->db->results_array(null, 'id', true);
 		}
@@ -535,6 +536,11 @@ class Features extends Simpla
 		return $res;
 	}
 
+	public function get_options_ids_full()
+	{
+		dtimer::log(__METHOD__ . " start");
+		$q = "SELECT * FROM __options_uniq";
+	}
 
 	public function get_options_ids($filter = array() )
 	{
@@ -546,7 +552,7 @@ class Features extends Simpla
 		$key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
 		
 		//выводим из сохраненного массива, если у нас не заданы фильтры по id и md4 и не включен force_no_cache
-		if ( empty($filter['force_no_cache']) && !isset($filter['id']) && !isset($filter['md4']) ) {
+		if ( empty($filter['force_no_cache']) && !isset($filter['id']) && !isset($filter['md4']) && !isset($filter['md42']) ) {
 
 			if(isset($this->options[  $key ."_" . $col ] )){
 				dtimer::log(__METHOD__ . " using saved class variable");
@@ -576,7 +582,7 @@ class Features extends Simpla
 			$res = $this->cache->get_cache_nosql($keyhash);
 
 			//Если у нас был запуск без параметров, сохраним результат в переменную класса.
-			if( empty_(@$filter['id']) ){
+			if( !isset($filter['id']) && !isset($filter['md4']) && !isset($filter['md42']) ){
 				$this->options[$key . "_" . $col] = $res;
 			}		
 		
@@ -603,6 +609,7 @@ class Features extends Simpla
 		//переменные
 		$id_filter = '';
 		$md4_filter = '';
+		$md42_filter = '';
 
 		if (!empty_(@$filter['id']) && count(@$filter['id']) > 0) {
 			$id_filter = $this->db->placehold("AND id in (?@)", $filter['id']);
@@ -611,11 +618,17 @@ class Features extends Simpla
 		if (!empty_(@$filter['md4']) && count(@$filter['md4']) > 0) {
 			$md4_filter = $this->db->placehold("AND md4 in (?$)", $filter['md4']);
 		}
+		
+		if (!empty_(@$filter['md42']) && count(@$filter['md42']) > 0) {
+			$md42_filter = $this->db->placehold("AND md42 in (?$)", $filter['md42']);
+		}
 
 		$this->db->query("SELECT id, val, trans, HEX(md4) as md4 FROM __options_uniq 
 		WHERE 1 
 		$id_filter
-		$md4_filter");
+		$md4_filter
+		$md42_filter
+		");
 		
 		
 		$res = $this->db->results_array( $col, $key );
@@ -629,8 +642,9 @@ class Features extends Simpla
 		dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
 		$this->cache->set_cache_nosql($keyhash, $res);
 
-		dtimer::log(__METHOD__ . ' return db');
+		dtimer::log(__METHOD__ . " return db ");
 		return $res;
+
 	}
 	
 	/*

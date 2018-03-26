@@ -7,10 +7,11 @@ class LoginView extends View
 	function fetch()
 	{
 		dtimer::log(__METHOD__ . " start");
-		if(!isset($this->coMaster->uri_arr['path_arr']['url'])){
+		if(!isset($this->root->uri_arr['path']['url'])){
+			dtimer::log(__METHOD__ . __LINE__ . ' url is not set', 1 );
 			return false;
 		} else {
-			$uri = $this->coMaster->uri_arr['path_arr']['url'];
+			$uri = $this->root->uri_arr['path']['url'];
 		}
 		// Выход
 		if($uri == 'logout')
@@ -48,14 +49,14 @@ class LoginView extends View
 				}
 			}
 			// Если к нам перешли по ссылке для восстановления пароля
-			elseif($uri = 'password_remind' && isset($this->coMaster->uri_arr['path_arr']['arg']) )
+			elseif($uri = 'password_remind' && isset($this->root->uri_arr['path']['arg']) )
 			{
 				// Проверяем существование сессии
 				if(!isset($_SESSION['password_remind_code']) || !isset($_SESSION['password_remind_user_id']))
 				return false;
 				
 				// Проверяем совпадение кода в сессии и в ссылке
-				if($this->coMaster->uri_arr['path_arr']['arg'] != $_SESSION['password_remind_code']){
+				if($this->root->uri_arr['path']['arg'] != $_SESSION['password_remind_code']){
 					return false;
 				}
 				

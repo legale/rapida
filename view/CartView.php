@@ -1,8 +1,6 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
  * Корзина покупок
  * Этот класс использует шаблон cart.tpl
  *
@@ -19,25 +17,11 @@ class CartView extends View
   {
 	parent::__construct();
 	
-    // Если передан id варианта, добавим его в корзину
-    if($variant_id = $this->request->get('variant', 'integer'))
-    {
-		$this->cart->add_item($variant_id, $this->request->get('amount', 'integer'));
-	    header('location: '.$this->config->root_url.'/cart/');
-		
-    }
-
-    // Удаление товара из корзины
-    if($delete_variant_id = intval($this->request->get('delete_variant')))
-    {
-      $this->cart->delete_item($delete_variant_id);
-      if(!isset($_POST['submit_order']) || $_POST['submit_order']!=1)
-			header('location: '.$this->config->root_url.'/cart/');
-	}
-	
 	//выводим пустой coupon_error, чтобы в шаблоне не было ошибки
 	$this->design->assign('coupon_error', '');
 	$this->design->assign('error', '');
+	
+	//~ print_r($_POST);
 	
     // Если нажали оформить заказ
     if(isset($_POST['checkout']))
@@ -54,7 +38,7 @@ class CartView extends View
     	$captcha_code =  $this->request->post('captcha_code', 'string');
 
 		// Скидка
-		$cart = $this->cart->get_cart();
+		$cart = $this->cart->get();
 		$order['discount'] = $cart['discount'];
 		
 		if(isset($cart['coupon'])){
@@ -63,8 +47,9 @@ class CartView extends View
 		}
 		
     	
-    	if(!empty($this->user->id))
+    	if(!empty($this->user->id)){
 	    	$order['user_id'] = $this->user->id;
+    	}
     	
     	if(empty($order['name']))
     	{
@@ -80,6 +65,7 @@ class CartView extends View
     	}
     	else
     	{
+			
 	    	// Добавляем заказ в базу
 	    	$order_id = $this->orders->add_order($order);
 	    	
@@ -93,15 +79,12 @@ class CartView extends View
 	    	if(isset($cart['coupon'])) {
 	    		$this->coupons->update_coupon($cart['coupon']->id, array('usages'=>$usages));
 			}
-	    	
 	    	// Добавляем товары к заказу
-	    	if($amounts = $this->request->post('amounts')){
-				foreach($amounts as $variant_id=>$amount)
-				{
-					$this->orders->add_purchase(array('order_id'=>$order_id, 'variant_id'=>intval($variant_id), 'amount'=>intval($amount)));
-				}
-			}
-	    	
+	    	foreach($_SESSION['shopping_cart'] as $variant_id=>$amount)
+	    	{
+	    		$this->orders->add_purchase(array('order_id'=>$order_id, 'variant_id'=>intval($variant_id), 'amount'=>intval($amount) ));
+	    	}	    	
+
 	    	if ( $order = $this->orders->get_order($order_id) ) {
 				// Стоимость доставки
 				$delivery = $this->delivery->get_delivery($order['delivery_id']);
@@ -116,9 +99,10 @@ class CartView extends View
 				// Отправляем письмо администратору
 				$this->notify->email_order_admin($order['id']);
 				
+				
 				// Очищаем корзину (сессию)
-				$this->cart->empty_cart();
-							
+				$this->cart->empty();
+						
 				// Перенаправляем на страницу заказа
 				header('Location: '.$this->config->root_url.'/order/'.$order['url']);
 			} else {
@@ -134,7 +118,7 @@ class CartView extends View
 	    {
 			foreach($amounts as $variant_id=>$amount)
 			{
-				$this->cart->update_item($variant_id, $amount);         
+				$this->cart->add($variant_id, $amount);         
 			}
 
 	    	$coupon_code = trim($this->request->post('coupon_code', 'string'));
@@ -180,6 +164,8 @@ class CartView extends View
 	//////////////////////////////////////////
 	function fetch()
 	{  
+		
+		
 		// Способы доставки
 		$deliveries = $this->delivery->get_deliveries(array('enabled'=>1));
 		$this->design->assign('deliveries', $deliveries);

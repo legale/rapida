@@ -47,7 +47,7 @@ class Brands extends Simpla
 			return false;
 		}
 
-		$q = $this->db->query("SELECT id, name, url FROM __brands WHERE 1 $id_filter");
+		$q = $this->db->query("SELECT * FROM __brands WHERE 1 $id_filter");
 		
 		
 		$res = $this->db->results_array($col , $key  );
@@ -130,7 +130,7 @@ class Brands extends Simpla
 			$where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $category_id_filter)";
 		}
 		// Выбираем все бренды
-		$query = $this->db->placehold("SELECT b.id, b.name, b.url, b.meta_title,
+		$query = $this->db->placehold("SELECT b.id, b.name, b.trans, b.meta_title,
 		 b.meta_keywords, b.meta_description, b.description, b.image
 								 		FROM __brands b WHERE 1 $where ");
 		$this->db->query($query);
@@ -145,9 +145,9 @@ class Brands extends Simpla
 
 	/*
 	 *
-	 * Функция возвращает бренд по его id или url
-	 * (в зависимости от типа аргумента, int - id, string - url)
-	 * @param $id id или url поста
+	 * Функция возвращает бренд по его id или trans
+	 * (в зависимости от типа аргумента, int - id, string - trans)
+	 * @param $id id или trans поста
 	 *
 	 */
 	public function get_brand($id)
@@ -156,16 +156,15 @@ class Brands extends Simpla
 			$id = "b.id = '$id'";
 		}
 		elseif (is_string($id)) {
-			$id = translit_url($id);
-			$id = "b.url = '$id'";
+			$id = mb_strtolower($id);
+			$id = "b.trans = '$id' OR b.trans2 = '$id'";
 		}
 		else {
-			dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ", 1);
+			dtimer::log(__METHOD__ . " argument trans/id is not set or wrong type! ", 1);
 			return false;
 		}
 
-		$query = "SELECT b.id, b.name, b.url, b.meta_title, b.meta_keywords, 
-		b.meta_description, b.description, b.image
+		$query = "SELECT *
 		FROM __brands b WHERE $id LIMIT 1";
 		$this->db->query($query);
 		return $this->db->result_array();
@@ -194,8 +193,8 @@ class Brands extends Simpla
 			}
 		}
 
-		if (!isset($brand['url']) || empty_($brand['url'])) {
-			$brand['url'] = translit_url($brand['name']);
+		if (!isset($brand['trans']) || empty_($brand['trans'])) {
+			$brand['trans'] = translit_url($brand['name']);
 		}
 
 
@@ -250,14 +249,14 @@ class Brands extends Simpla
 	{
 		$query = $this->db->placehold("SELECT image FROM __brands WHERE id=?", intval($brand_id));
 		$this->db->query($query);
-		$filename = $this->db->result('image');
+		$filename = $this->db->result_array('image');
 		if (!empty($filename))
 			{
 			$query = $this->db->placehold("UPDATE __brands SET image=NULL WHERE id=?", $brand_id);
 			$this->db->query($query);
 			$query = $this->db->placehold("SELECT count(*) as count FROM __brands WHERE image=? LIMIT 1", $filename);
 			$this->db->query($query);
-			$count = $this->db->result('count');
+			$count = $this->db->result_array('count');
 			if ($count == 0)
 				{
 				@unlink($this->config->root_dir . $this->config->brands_images_dir . $filename);

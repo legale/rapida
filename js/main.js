@@ -181,12 +181,15 @@ window.ra = {
 		}
 
 		if(t === true){
-			return e;
+			return new Promise(function(resolve, reject) {
+				resolve(e);
+				reject();
+			});			
 		}
 
 		return new Promise(function(resolve, reject) {
-				resolve(ra.search_tree(type, name, e.parentNode));
-				reject();
+			resolve(ra.search_tree(type, name, e.parentNode));
+			reject();
 		});
 
 
@@ -320,201 +323,27 @@ window.ra = {
 
 	}
 
-window.ra.api = {
-
-
-	req: function( data, success ) {
-		"use strict";
-		let l = window.location;
-		let params = 'json=' + JSON.stringify(data);
-
-		let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-		xhr.open('POST', l.protocol + '//' + l.host + '?xhr=1');
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState>3 && xhr.status==200) { success(JSON.parse(xhr.responseText)); }
-		};
-		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.send(params);
-		return xhr;
-	},
-
-	update_options: function(data){
-		"use strict";
-		for(let fid in data.full){
-			for(let vid in data.full[fid].vals){
-				if( window['option_' + fid + '_' + vid] ){
-					if( !data.filter[fid] || data.filter[fid][vid] === undefined ){ 
-						window['option_' + fid + '_' + vid].classList.add('disabled');
-						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = true;
-					} else if ( data.filter[fid] && data.filter[fid][vid] !== undefined ){
-						window['option_' + fid + '_' + vid].classList.remove('disabled');
-						window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].disabled = '';
-						if(window.filter.features[fid] && window.filter.features[fid][vid] !== undefined){
-							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = true;
-						}else {
-							window['option_' + fid + '_' + vid].getElementsByTagName('input')[0].checked = false;
-						}
-					}
-				}
-			}
-		}
-	},
-	
-	draw_tooltip: function(el, amount){
-		"use strict";
-		let div = window.tooltip || document.createElement('div')
-		, coord = el.getBoundingClientRect();
-
-		div.id = 'tooltip';
-
-		div.innerHTML = '<span>Найдено: ' + amount + ' </span><a onclick="ra.api.show_products(event);" href="#" class="apply">Показать</a>';
-		div.style = 'top: -4px; left: 0px; opacity: 0;';
-		return div;
-	},
-	
-	draw_waiter: function(el){
-		"use strict";
-		let div = window.tooltip || document.createElement('div')
-		, coord = el.getBoundingClientRect();
-
-		div.id = 'tooltip';
-
-		div.innerText = 'Думаю...';
-		div.style = 'top: -4px; left: 0px; opacity: 0;';
-		return div;
-	},
-
-	toggle: function(el, cla){
-		if(el.classList.contains('toggle')){
-			el.classList.toggle(cla);
-		}
-		let n = el.nextElementSibling;
-		if(n !== null && n.classList.contains('toggle')){
-			ra.api.toggle(n, cla);
-		}
-	},
-	
-	select_option: function(e){
-		"use strict";
-		e.preventDefault();
-		if(e.target.classList.contains('toggle')){
-			return ra.api.toggle(e.target, 'collapsed');
-		}
-		
-		
-		let el = e.target.tagName.toLowerCase() === 'span' ? e.target.parentNode.parentNode : e.target.parentNode
-		, fid = el.getAttribute('data-option')
-		, vid = el.getAttribute('data-option-id')
-		, fname = el.getAttribute('data-fname')
-		, oname = el.getAttribute('data-oname')
-		, arr = ra.api.uri_to_obj(window.location.href);
-		if(el.classList.contains('disabled')){
-			return false;
-		}else if (el.id === 'filter'){
-			
-		}
-		
-		if(fid === null || vid === null){
-			return false;
-		}else{
-			el.getElementsByTagName('input')[0].checked = el.getElementsByTagName('input')[0].checked ? false : true;
-			let tt = ra.append(el, ra.api.draw_waiter(el));
-			tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
-			tt.style.opacity = '1';
-		}
-		
-		
-		if(window.filter.features === undefined){
-			window.filter.features = {};
-		}
-		
-		if(window.filter.features[fid] === undefined){
-			window.filter.features[fid] = {};
-		}
-		
-		if(window.filter.features[fid][vid] !== undefined){
-			delete(window.filter.features[fid][vid]);
-			
-			if(Object.keys(window.filter.features[fid]).length === 0){
-				delete(window.filter.features[fid]);
-			}
-		} else {
-			window.filter.features[fid][vid] = vid;
-		}
-		
-		if( arr.path.data[fname] === undefined ){
-			arr.path.data[fname] = [oname];
-			arr.path.sort.push(fname);
-		}else if (arr.path.data[fname] !== undefined && !arr.path.data[fname].includes(oname)){
-			arr.path.data[fname].push(oname);
-		} else if (arr.path.data[fname] !== undefined && arr.path.data[fname].includes(oname)){
-			arr.path.data[fname].splice(arr.path.data[fname].indexOf(oname), 1);
-			if(arr.path.data[fname].length === 0){
-				delete(arr.path.fname);
-				arr.path.sort.splice(arr.path.sort.indexOf(fname), 1);
-			}
-		}
-		
-		window.history.pushState(null, null, ra.api.obj_to_uri(arr));
-		
-		
-		let data = {'class': 'features', 'method': 'get_options_mix', 'args': {'filter': window.filter}};
-		let data2 = {'class': 'products', 'method': 'count_products', 'args': {'filter': window.filter}};
-		ra.api.req(data, function(obj){
-			ra.api.update_options(obj);
-		});
-		ra.api.req(data2, function(amount){
-			let tt = ra.append(el, ra.api.draw_tooltip(el, amount));
-			tt.style.left = tooltip.previousElementSibling.getBoundingClientRect().width + 10 + 'px';
-			
-			setTimeout(function(){tooltip.style.opacity = '';}, 5);
-		});
-	},
-	
-	show_products: function(){
-		"use strict";
-		let uri = window.location.href;
-		uri += '?ajax=1';
-		ra.getAjax(uri, function(obj){
-			window.items.innerHTML = JSON.parse(obj);
-		});
-		setTimeout(function(){tooltip.style.opacity = '0';}, 30);
-	},
-	
-	uri_to_obj: function(uri){
-		"use strict";
-		let obj = Object.create(Object.prototype)
-		, sort = new Array
-		, data = Object.create(Object.prototype)
-		, arr = ra.parse_uri(uri);
-
-		let path = ra.parse_uri_path(arr.path);
-
-		for(let i = 0, el = ''; i < path.length; i++){
-			el = path[i].split('-' , 2);
-			
-			data[el[0]] = el.length === 2 ? el[1].split('.') : '';
-			sort.push(el[0]);
-		}
-		obj.data = data;
-		obj.sort = sort;
-		arr.path = obj;
-		return arr;
-	},
-	
-	obj_to_uri: function(obj){
-		"use strict";
-		let s = '', path = '';
-		
-		for(let i = 0, sort = obj.path.sort, k = obj.path.sort.length; i < k; i++){
-			if(ra.getType(obj.path.data[sort[i]]) === 'string' && obj.path.data[sort[i]] === ''){
-				path += '/' + sort[i];
-			} else if (ra.getType(obj.path.data[sort[i]]) === 'array'){
-				path += '/' + sort[i] + '-' + obj.path.data[sort[i]].join('.');
-			}
-		}
-		s += obj.scheme + '//' + obj.host + path;
-		return s;
+window.ra.api = function( data, success ) {
+	"use strict";
+	if(data === undefined && success === undefined){
+		let text = `
+			example: 
+			let data = {'class': 'products', 'method': 'get_products', 'args': {'filter': {id: [1,2,3,4,5,6,7,8,9,10]}}};
+			ra.api(data, console.log);
+		`;
+		console.log(text);
+		return;
 	}
+	let l = window.location;
+	let params = 'json=' + JSON.stringify(data);
+
+	let xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	xhr.open('POST', l.protocol + '//' + l.host + '?xhr=1');
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState>3 && xhr.status==200) { success(JSON.parse(xhr.responseText)); }
+	};
+	xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.send(params);
+	return xhr;
 }

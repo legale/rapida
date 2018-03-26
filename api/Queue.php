@@ -60,8 +60,8 @@ class Queue extends Simpla
 		from __queue
 		;";
 		$this->db->query($query);
-		$return = $this->db->results();
-		return $return[0]->count;
+		$return = $this->db->result_array('count');
+		return $return;
 	}
 
 	public function count_tasks_full()
@@ -73,9 +73,8 @@ class Queue extends Simpla
 		from __queue_full
 		;";
 		$this->db->query($query);
-		$return = $this->db->results();
-		//print_r($return);
-		return $return[0]->count;
+		$res = $this->db->result_array('count');
+		return $res;
 	}
 
 	public function getlasttask()
@@ -88,14 +87,12 @@ class Queue extends Simpla
 		ORDER BY id
 		LIMIT 1
 		;");
-		$return = $this->db->results()[0];
-		//dtimer::log(__METHOD__.' results:'.print_r($return,true));
+		$return = $this->db->result_array();
 		return $return;
 	}
 
 	public function gettask($id)
 	{
-		//dtimer::log(__METHOD__.' id '.$id);
 		if (empty($id)) return FALSE;
 
 		$this->db->query("
@@ -103,8 +100,8 @@ class Queue extends Simpla
 		FROM __queue
 		WHERE id = $id
 		;");
-		$return = $this->db->results()[0];
-		return $return;
+		$res = $this->db->result_array();
+		return $res;
 	}
 
 	public function check_task_key($keyhash)
@@ -121,9 +118,9 @@ class Queue extends Simpla
 
 		$this->db->query($query);
 
-		$res = $this->db->result();
+		$res = $this->db->result_array('keyhash');
 
-		if (isset($res->keyhash) && $res == $keyhash) {
+		if (isset($res) && $res == $keyhash) {
 			return true;
 		}
 		else {
@@ -140,8 +137,7 @@ class Queue extends Simpla
 		FROM __queue
 		WHERE id = $id
 		;");
-		$task = $this->db->results()[0]->task;
-		//~ $task = json_decode($task);
+		$task = $this->db->result_array('task');
 		return eval($task);
 	}
 
@@ -161,14 +157,9 @@ class Queue extends Simpla
 		//dtimer::log(__METHOD__.' query '.$query);
 
 		$this->db->query($query);
-		$res = $this->db->results()[0];
-		$task = $res->task;
-		//~ $task = json_decode($task);
-		$id = $res->id;
+		$res = $this->db->result_array('task');
+		return eval($task);
 
-
-		eval($task);
-		return $res;
 	}
 
 	public function exec_task_by_method($method)
@@ -187,14 +178,8 @@ class Queue extends Simpla
 		//dtimer::log(__METHOD__.' query '.$query);
 
 		$this->db->query($query);
-		$res = $this->db->results()[0];
-		$task = $res->task;
-		//~ $task = json_decode($task);
-		$id = $res->id;
-
-
-		eval($task);
-		return $res;
+		$res = $this->db->result_array('task');
+		return eval($res);
 	}
 
 	public function task_delete($id)
@@ -228,18 +213,17 @@ class Queue extends Simpla
 		;";
 
 		$this->db->query($query_select);
-		$result = $this->db->result();
+		$res = $this->db->result_array();
 		if ($this->db->affected_rows() <= 0) {
 			return false;
 		}
 
-		$id = $result->id;
+		$id = $res['id'];
 		if ($this->task_delete($id) === false) {
 			return 666;
 		}
 
-		$task = $result->task;
-		//~ $task = json_decode($task);
+		$task = $res['task'];
 
 		dtimer::log("task string before eval: " . $task);
 		eval($task);

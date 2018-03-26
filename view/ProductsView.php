@@ -9,265 +9,240 @@ require_once('View.php');
 
 class ProductsView extends View
 {
- 	/**
-	 *
-	 * Отображение списка товаров
-	 *
-	 */	
-	function fetch()
-	{
-		// Раньше все параметры брались из get query, теперь парсятся coMaster->parse_uri() из самой адресной строки
-		//~ print "<PRE>";
-		//~ print_r($this->coMaster->uri_arr);
-		//~ print "</PRE>";
-		dtimer::log(__METHOD__ . " start");
-				
-		$module = $this->coMaster->uri_arr['path_arr']['module'] ? $this->coMaster->uri_arr['path_arr']['module'] : null;
-		$url = $this->coMaster->uri_arr['path_arr']['url'];
-		 
-		switch($module){
-		case 'brands':
-			if(isset($this->coMaster->uri_arr['path_arr']['brand'])){
-				$this->coMaster->uri_arr['path_arr']['brand'][] = $url;
-			} else {
-				$this->coMaster->uri_arr['path_arr']['brand'] = array($url);
-			}
-			break;
-		case 'catalog':
-			$category_url = $url;
-			break;
-		}
-
-		
-		$filter = array();
-		
-		//если у нас есть фильтрация по бренду, нам понадобятся id брендов для формирования $filter
-		//получим их
-		if( isset($this->coMaster->uri_arr['path_arr']['brand']) ){
-			$brands_urls = $this->coMaster->uri_arr['path_arr']['brand'];
-			//для экономии памяти присваиваем по ссылке
-			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'url')) );
-			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
-		}
-				
-		
-		
-		$filter['visible'] = 1;	
-
-		// Если задан бренд, выберем его из базы
-		if (  (!empty($brands_urls)) ) {
-			if(is_array($brands_urls)){
-				$brand = $this->brands->get_brand( reset($brands_urls) );
-			}
-			
-			if (empty($brand)){
-				dtimer::log(__METHOD__ . __LINE__ ." empty brand ", 2 );
-				return false;
-			}
-			$this->design->assign('brand', $brand);
-		}
-				
-		
-		// Выберем текущую категорию
-		if (  (!empty($category_url)) ) {
-							
-
-			$category = $this->categories->get_category((string)$category_url);
-			
-			//301 moved permanently
-			if(isset($category['url2']) && $category['url2'] !== $category['url'] && $category['url2'] == $category_url){
-				$root = $this->config->root_url . '/';
-				$path = $this->coMaster->uri_arr['path_arr']['module'] . '/';
-				$url =  $root . $path . $category['url'];
-				header("Location: $url",TRUE,301);
-			}
-			
-
-			if (empty($category) || (!$category['visible'] && empty($_SESSION['admin']))){
-				dtimer::log(__METHOD__ . __LINE__ ." empty category ", 2 );
-				return false;
-			}
-			$this->design->assign('category', $category);
-			$filter['category_id'] = $category['children'];
-		}
-		// Если задано ключевое слово
-		$keyword = $this->request->get('keyword');
-		if (  (!empty($keyword)) ) {
-			$this->design->assign('keyword', $keyword);
-			$filter['keyword'] = $keyword;
-		}
-				
-
-		// Сортировка товаров, сохраняем в сесси, чтобы текущая сортировка оставалась для всего сайта
-		if($sort = $this->request->get('sort', 'string'))
-			$_SESSION['sort'] = $sort;
-		if (!empty($_SESSION['sort']))
-			$filter['sort'] = $_SESSION['sort'];
-		else
-			$filter['sort'] = 'pos';			
-		$this->design->assign('sort', $filter['sort']);
-				
-		
-		// Свойства товаров
-		
-		if ( (!empty($category))  ) {
-			//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
-			$features_trans = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => 'trans', 'col' => 'id')) );
-			$features = $this->features->get_features(array('category_id'=>$category['id'], 'in_filter'=>1));
-
-			//тут фильтр в ЧПУ виде
-			if( isset($this->coMaster->uri_arr['path_arr']['filter']) ){
-				//перебираем массив
-				foreach($this->coMaster->uri_arr['path_arr']['filter'] as $name=>$vals){
-
-					//если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq 
-					if( isset($features_trans[$name]) ){
-						//~ print $name . "\n";
-						dtimer::log(__METHOD__ . " options translit: " . print_r($vals, true) );
-						foreach($vals as &$v){
-							$v = hash('md4', $v);
-						}
-						unset($v);
-						dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
-
-						//получим id уникальных значений по их хешам
-						$ids = $this->features->get_options_ids(array('md4'=> $vals, 'return'=>array('key'=>'id', 'col'=>'id')) );
-						
-						//тут проверим количество переданных значений опций и количество полученных из базы,
-						//если не совпадает - return false
-						if(count($ids) !== count($vals)){
-							return false;
-						}
-						
-						//добавим в фильтр по свойствам массив с id значений опций
-						$filter['features'][$features_trans[$name]] = $ids;
-					}
-				}
-			}
-			
-			
-			if (  ( !empty($features) )  ) {
-				$features_ids = array_keys((array)$features);
-			}
-			
-			if(!empty($features_ids)){
-				$filter['feature_id'] = $features_ids;
-			}
-			$options = $this->features->get_options_mix($filter);
-
-			$this->design->assign('features', $features);
-			$this->design->assign('options', $options);
- 		}
-
-		// Постраничная навигация
-		$items_per_page = $this->settings->products_num;
-;
-		// Если не задана, то равна 1
-		$current_page = isset($this->coMaster->uri_arr['path_arr']['page']) ? $this->coMaster->uri_arr['path_arr']['page'] : 1;
-		$this->design->assign('current_page_num', $current_page);
-		// Вычисляем количество страниц
-		$products_count = $this->products->count_products($filter);
-		
+	public $filter = array();
 	
-		// Показать все страницы сразу
-		if($this->request->get('page') == 'all'){
-			$items_per_page = $products_count;
+	public function __construct(){
+		dtimer::log(__METHOD__." start");
+	}
+	
+	//метод для получения страницы
+	public function fetch(){
+		//url категории
+		if( isset($this->root->uri_arr['path']['url']) ){
+			$this->filter['category_url'] = $this->root->uri_arr['path']['url'];
+		}else{
+			dtimer::log(__METHOD__. " category url is not set! aborting.", 1);
+			return false;
+		}
+				
+		//получаем категорию
+		$cat = $this->categories->get_category($this->filter['category_url']);
+		
+		//Остановимя если категории не существует или категория невидимая, а сессия не админская
+		if (empty($cat)){
+			dtimer::log(__METHOD__ . __LINE__ ." empty category ", 2 );
+			return false;
+		} elseif (!$cat['visible'] && empty($_SESSION['admin']) ){
+			dtimer::log(__METHOD__ . __LINE__ ." invisible category ");
+			return false;
 		}
 		
-		$pages_num = ceil($products_count/$items_per_page);
-		$this->design->assign('total_pages_num', $pages_num);
-		$this->design->assign('total_products_num', $products_count);
-
-		$filter['pages'] = $pages_num;
-		$filter['products_count'] = $products_count;
-		$filter['page'] = $current_page;
-		$filter['limit'] = $items_per_page;
+		//REDIRECT
+		//проверяем альтернативное имя
+		//301 moved permanently
+		if(isset($cat['url2']) && $cat['url2'] !== $cat['url'] && $cat['url2'] == $this->filter['category_url']){
+			$arr = $this->root->uri_arr['path'];
+			$arr['url'] = $cat['url'];
+			$url = '/'.$this->root->gen_uri($arr);
+			//~ print_r($url);
+			header("Location: $url",TRUE,301);
+		}		
 		
-		///////////////////////////////////////////////
-		// Постраничная навигация END
-		///////////////////////////////////////////////
-		
+		//преобразуем и запишем себе разобранную адресную строку в виде фильтра, пригодного для api
+		$this->filter = $this->uri_to_api_filter($this->root->uri_arr, $this->filter);
+		//print_r($this->filter);
 
-		$discount = 0;
-		if(isset($_SESSION['user_id']) && $user = $this->users->get_user(intval($_SESSION['user_id'])))
-			$discount = $user['discount'];
-			
+		if( isset($this->filter['redirect']) ){
+			$uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+			header("Location: $uri",TRUE,301);
+		}
+		//REDIRECT END
+
+		//добавляем в фильтр все дочерние категории
+		$this->filter['category_id'] = $cat['children'];
+
+		
+		// Кол-во товаров на странице
+		$this->filter['limit'] = $this->settings->products_num;
+		
+		// Вычисляем количество страниц
+		$this->filter['products_count'] = $this->products->count_products($this->filter);		
+		$this->filter['pages'] = ceil($this->filter['products_count']/$this->filter['limit']);
+		$this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
+		//проверяем есть ли у нас такая страница, если нет - переправляем на последнюю из возможных
+		if($this->filter['page'] > $this->filter['pages']){
+			$this->filter['page'] = $this->filter['pages'];
+			$uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+			header("Location: $uri",TRUE,301);
+		}			
+
 		// Товары получаем их сразу массивом
-		$products = $this->products->get_products($filter);
-			
-		// Если искали товар и найден ровно один - перенаправляем на него
-		if(!empty($keyword) && $products_count == 1){
-			$p = (array)$products;
-			$p = reset($p);
-			header('Location: '.$this->config->root_url.'/products/'.$p['url']);
-		}
-		
+		$products = $this->products->get_products($this->filter);
+
+		//добавим варианты
 		if( !empty($products) )
 		{
 			$pids = array_keys($products);
-
-			$variants = $this->variants->get_variants(array('grouped' => 'product_id', 
-			'product_id'=>$pids));
+			$variants = $this->variants->get_variants(array(
+				'grouped' => 'product_id', 
+				'product_id'=>$pids
+			));
 			
-
 			if(is_array($products)){
 				foreach($products as $pid=>&$product){
 					$product['variants'] = isset($variants[$pid]) && is_array($variants[$pid]) ? $variants[$pid] : array();
 				}
-			}
-			
-			$this->design->assign('products', $products);
-			
-			//ajax
-			if(!empty($_GET['ajax'])){
-				$html = $this->design->fetch('products_content.tpl');
-				
-				//~ return false;
-				print json_encode($html);
-				die;
-			}
+			}			
  		}
+ 		
 		
+		$this->design->assign('products', $products);			
+ 		
+		//ajax
+		if(isset($_GET['ajax'])){
+			$html = $this->design->fetch('products_content.tpl');
+			print json_encode($html);
+			die;
+		}
+
 		// Выбираем бренды, они нужны нам в шаблоне	
-		if(!empty($category))
-		{
-			$brands = $this->brands->get_brands(array('category_id'=>$category['children'], 'visible'=>1));
-			$category['brands'] = $brands;
+
+		$brands = $this->brands->get_brands(array('category_id'=>$cat['children'], 'visible'=>1));
+		
+		//~ print_r($brands);
+		$cat['brands'] = $brands;
+		//~ print_r($cat);
+
+		// Свойства товаров
+		//получим включенные для фильтра на сайте свойства товаров для конкретной категории
+		if($features = $this->features->get_features(array('category_id'=>$cat['id'], 'in_filter'=>1))){
+			$filter['feature_id'] = array_keys($features);
+			$this->design->assign('features', $features);
 		}
 		
-		// Устанавливаем мета-теги в зависимости от запроса
-		if($this->page)
-		{
-			$this->design->assign('meta_title', $this->page['meta_title']);
-			$this->design->assign('meta_keywords', $this->page['meta_keywords']);
-			$this->design->assign('meta_description', $this->page['meta_description']);
+		if($options = $this->features->get_options_mix($this->filter)){
+			$this->design->assign('options', $options);
 		}
-		elseif(isset($category))
-		{
-			$this->design->assign('category', $category);
-			$this->design->assign('meta_title', $category['meta_title']);
-				
-			$this->design->assign('meta_keywords', $category['meta_keywords']);
-			$this->design->assign('meta_description', $category['meta_description']);
-		}
-		elseif(isset($brand))
-		{
-			$this->design->assign('meta_title', $brand['meta_title']);
-			$this->design->assign('meta_keywords', $brand['meta_keywords']);
-			$this->design->assign('meta_description', $brand['meta_description']);
-		}
-		elseif(isset($keyword))
-		{
-			$this->design->assign('meta_title', $keyword);
-		}
-		
-		//передадим фильтр в шаблон
-		$this->design->assign('filter', $filter);
+		//~ // Свойства товаров END
+
+		//~ //передаем данные в шаблоны
+		$this->design->assign('category', $cat);
+
+		$this->design->assign('meta_title', $cat['meta_title']);
+		$this->design->assign('meta_keywords', $cat['meta_keywords']);
+		$this->design->assign('meta_description', $cat['meta_description']);
+
+		$this->design->assign('filter', $this->filter);
+
+		$this->design->assign('current_page_num', $this->filter['page']);
+		$this->design->assign('total_pages_num', $this->filter['pages']);
+		$this->design->assign('total_products_num', $this->filter['products_count']);
+
 		$this->body = $this->design->fetch('products.tpl');
 		dtimer::log(__METHOD__ . " return ");
 		return $this->body;
 	}
+
+
+	//функция по обработке фильтров из адресной строки и преобразованию их в фильтр для api
+	private function uri_to_api_filter($uri_arr, $filter){
+		// Если задано ключевое слово
+		if ( isset($uri_arr['query']['keyword']) ) {
+			$filter['keyword'] = $uri_arr['query']['keyword'];
+		}
+
+		$uri_path = isset($uri_arr['path']) ? $uri_arr['path'] : null;
+		if(!isset($uri_path)){
+			dtimer::log(__METHOD__ . " uri_arr['path'] is not set - returning filter unchanged " );
+			return $filter;
+		}
+		if(isset($uri_arr['module'])){
+			$filter['module'] = $uri_arr['module'];
+		}
+
+		//если задан фильтр по свойствам
+		if(isset($uri_path['features'])){
+			//если не получается преобразовать обычные имена - пробуем альтернативные
+			if( $filter = $this->uri_to_ids_filter($uri_path['features'], $filter) ){
+			}else if ($filter = $this->uri_to_ids_filter($uri_path['features'], $filter, true)){
+			} else {
+				return false;
+			}
+		}
+
+
+		//Если есть бренд
+		if(isset($uri_path['brand'])){
+			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'trans')) );
+			$filter['brand_id'] = array_intersect_key($brands_ids, $uri_path['brand']);
+		}
+		
+		//страница
+		if(isset($uri_path['page'])){
+			$filter['page'] = $uri_path['page'];
+		}
+		//сортировка
+		if(isset($uri_path['sort'])){
+			$filter['sort'] = $uri_path['sort'];
+		}
+		return $filter;
+	}		
 	
-	
+	//функция для преобразования ЧПУ части uri с фильтрами по свойствам $uri_path['features']
+	//флаг служит для задания преобразования по альтернативным названиям параметров trans2
+	private function uri_to_ids_filter($uri_features, $filter, $flag = false){
+		//обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
+		//альтернативный поиск - по полям trans2 и md42 соответственно. 
+		$key = $flag ? 'trans2' : 'trans';
+		$hash = $flag ? 'md42' : 'md4';
+		if($flag){
+			$filter['redirect'] = true;
+		}
+		
+		//массив для результата
+		$filter['features'] = array();
+		
+		dtimer::log(__METHOD__ . " $key $hash ");
+		//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
+		$features_trans = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => $key, 'col' => 'id')) );
+
+		//перебираем массив фильтра из адресной строки
+		foreach($uri_features as $name=>$vals){
+			
+			//если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq 
+			if( !isset($features_trans[$name]) ){
+				dtimer::log(__METHOD__ . " feature '$name' not found! " . print_r($vals, true), 2 );
+				return false;
+			}
+			//~ print $name . "\n";
+			foreach($vals as $k=>$v){
+				$vals[$k] = hash('md4', $k);
+			}
+			//~ dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
+
+			//получим id уникальных значений по их хешам
+			$ids = $this->features->get_options_ids(array($hash => $vals, 'return'=>array('key'=>'id', 'col'=>'id')) );
+			
+				
+			//тут проверим количество переданных значений опций и количество полученных из базы,
+			//если не совпадает - return false
+			if($ids === false || count($ids) !== count($vals)){
+				return false;
+			}else{
+				//добавим в фильтр по свойствам массив с id значений опций
+				//а также правильные названия транслитом
+				if($flag){
+					$features_trans2 = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'trans2')) );
+				}else{
+					$features_trans2 = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => 'id', 'col' => 'trans')) );
+				}
+				$filter['translit'][$features_trans2[$features_trans[$name]]] = $this->features->get_options_ids(array('id' => $ids, 'return'=>array('key'=>'trans', 'col'=>'id')) );
+				$filter['features'][$features_trans[$name]] = $ids;
+			}
+		}
+		
+		return $filter;
+	}
 
 }
+

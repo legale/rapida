@@ -40,6 +40,7 @@ function precheck($p_event, &$p_header){
 		'/^img\/.*/i',
 		'/^compiled\/.*/i',
 		'/^simpla\/files\/.*/i',
+		'/^simpla\/log.txt$/i',
 		'/^cache\/.*/i',
 		'/^distro\/.*/i',
 		'/^design\/.*/i',
