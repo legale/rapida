@@ -134,3 +134,9 @@
 [26-Mar-2018 19:57:29 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
 [26-Mar-2018 19:57:29 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
 [26-Mar-2018 19:57:30 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/view/ProductView.php on line 17
+[26-Mar-2018 20:13:35 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/view/ProductView.php on line 17
+[26-Mar-2018 20:13:38 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/view/ProductView.php on line 17
+[26-Mar-2018 20:14:51 UTC] PHP Notice:  Undefined index: options in /var/www/html/compiled/luxury_candidate/c82e38e1b7cd70a1340b201a84858d733901d573_0.file.product_content.tpl.php on line 136
+[26-Mar-2018 20:14:51 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 20:14:51 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25
+[26-Mar-2018 20:14:51 UTC] PHP Notice:  Trying to get property of non-object in /var/www/html/api/ControllerResize.php on line 25

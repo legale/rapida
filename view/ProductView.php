@@ -14,7 +14,7 @@ class ProductView extends View
 
 	function fetch()
 	{   
-		$product_url = $this->coMaster->uri_arr['path']['url'];
+		$product_url = $this->root->uri_arr['path']['url'];
 		
 		if(empty($product_url)){
 			return false;
@@ -26,7 +26,7 @@ class ProductView extends View
 		//301 moved permanently
 		if(isset($product['url2']) && $product['url2'] === $product_url){
 			$root = $this->config->root_url . '/';
-			$path = $this->coMaster->uri_arr['path']['module'] . '/';
+			$path = $this->root->uri_arr['path']['module'] . '/';
 			$url =  $root . $path . $product['url'];
 			header("Location: $url",TRUE,301);
 		}

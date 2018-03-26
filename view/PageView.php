@@ -1,12 +1,6 @@
 <?PHP
 
 /**
- * Simpla CMS
- *
- * @copyright 	2011 Denis Pikusov
- * @link 		http://simplacms.ru
- * @author 		Denis Pikusov
- *
  * Этот класс использует шаблон page.tpl
  *
  */
@@ -17,7 +11,7 @@ class PageView extends View
 	function fetch($url = null)
 	{
 		if(!isset($url)){
-			$url = $this->coMaster->uri_arr['path']['url'];
+			$url = $this->root->uri_arr['path']['url'];
 		}
 		$page = $this->pages->get_page($url);
 		
