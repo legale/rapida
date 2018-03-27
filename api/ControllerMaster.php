@@ -50,16 +50,18 @@ class ControllerMaster extends Simpla
 	}
 
 	public function action(){
-		$ctrl = isset($this->uri_arr['path']['module']) ? $this->uri_arr['path']['module'] : null;
-		if($ctrl && isset($this->modules[$ctrl]) ){
-			$this->ctrl = $this->modules[$ctrl];
+		if( isset($this->uri_arr['query']['xhr']) ){
+			 $ctrl = 'xhr';
+		 }else if( isset($this->uri_arr['path']['module']) ){
+			$ctrl = $this->uri_arr['path']['module']; 
 		}
 		
-		if(!empty($this->ctrl)){
-			return $this->{$this->ctrl}->action();
+		if(isset($this->modules[$ctrl])){
+			$this->ctrl = $this->modules[$ctrl];
 		} else {
 			return $this->coSimpla->action('404');
-		}
+		}	
+		return $this->{$this->ctrl}->action();
 	}
 
 	//генерируем uri из массива фильтра $filter
@@ -288,6 +290,7 @@ class ControllerMaster extends Simpla
 		if(isset($ar['query'])){
 			$res['query'] = $this->parse_uri_query($ar['query']);
 		}
+				
 		foreach($res as $r){
 			if($r === false){
 				return false;
