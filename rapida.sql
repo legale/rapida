@@ -349,8 +349,7 @@ CREATE TABLE `s_options_uniq` (
   `md42` binary(16) NOT NULL DEFAULT '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE,
-  UNIQUE KEY `val` (`val`),
-  KEY `md42` (`md42`,`md4`,`id`) USING BTREE
+  KEY `md42` (`md42`,`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /* Data for table s_options_uniq */
 INSERT INTO `s_options_uniq` (`id`,`val`,`trans`,`trans2`,`md4`,`md42`) VALUES
