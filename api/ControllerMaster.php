@@ -66,8 +66,8 @@ class ControllerMaster extends Simpla
 
 	//генерируем uri из массива фильтра $filter
 	public function gen_uri_from_filter($uri_arr, $filter){
-		print_r($uri_arr);
-		print_r($filter);
+		//~ print_r($uri_arr);
+		//~ print_r($filter);
 		//сначала префикс
 		$res = $uri_arr['scheme'] . '://' . $uri_arr['host']  ;
 		//модуль
@@ -83,7 +83,7 @@ class ControllerMaster extends Simpla
 			return false;
 		}
 		//теперь опции, если они есть
-		if ( is_array($filter['brand_id']) && count($filter['brand_id']) > 0 ){
+		if ( isset($filter['brand_id']) && is_array($filter['brand_id']) && count($filter['brand_id']) > 0 ){
 			$brands_trans = $this->brands->get_brands_ids(array('return'=>array('key'=> 'id',  'col'=>'trans')));
 			//print_r($brands_trans);
 			$brands = array_intersect_key( array_flip($filter['brand_id']) , $brands_trans );
@@ -91,7 +91,7 @@ class ControllerMaster extends Simpla
 		}
 				
 		//теперь опции, если они есть
-		if ( is_array($filter['features']) && count($filter['features']) > 0 ){
+		if ( isset($filter['features']) && is_array($filter['features']) && count($filter['features']) > 0 ){
 			$features_trans = $this->features->get_features_ids(array('return'=>array('key'=> 'id',  'col'=>'trans')));
 			
 			
