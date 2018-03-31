@@ -469,8 +469,9 @@ class Image extends Simpla
     {
         dtimer::log(__METHOD__ . " start");
 
-        if ($src_w == 0 || $src_h == 0)
+        if ($src_w == 0 || $src_h == 0) {
             return false;
+        }
 
         $dst_w = $src_w;
         $dst_h = $src_h;
@@ -483,7 +484,7 @@ class Image extends Simpla
             $dst_w = $dst_w * ($max_h / $dst_h);
             $dst_h = $max_h;
         }
-        return array($dst_w, $dst_h);
+        return array((int)$dst_w, (int)$dst_h);
     }
 
     /**
