@@ -70,8 +70,9 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива фильтра $filter
     public function gen_uri_from_filter($uri_arr, $filter)
     {
-        //~ print_r($uri_arr);
-        //~ print_r($filter);
+        print_r($uri_arr);
+        print_r($filter);
+        die;
         //сначала префикс
         $res = $uri_arr['scheme'] . '://' . $uri_arr['host'];
         //модуль
@@ -434,7 +435,6 @@ class ControllerMaster extends Simpla
         }
         $uri = isset($_SERVER['HTTPS']) ? "https" : "http";
 		$uri .= isset($_SERVER['HTTP_HOST']) ? "://" . $_SERVER['HTTP_HOST'] : '';
-		$uri .= isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 		$uri .= isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 		return $uri;
 	}
