@@ -101,7 +101,7 @@ class CartView extends View
 				
 				
 				// Очищаем корзину (сессию)
-				$this->cart->empty();
+				$this->cart->empty_cart();
 						
 				// Перенаправляем на страницу заказа
 				header('Location: '.$this->config->root_url.'/order/'.$order['url']);
