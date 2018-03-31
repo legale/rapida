@@ -22,7 +22,8 @@ class ProductView extends View
 			
 		// Выбираем товар из базы
 		$product = $this->products->get_product((string)$product_url);
-		
+		dtimer::log(__METHOD__ . " product array: ". var_export($product, true));
+
 		//301 moved permanently
 		if(isset($product['url2']) && $product['url2'] === $product_url){
 			$root = $this->config->root_url . '/';
