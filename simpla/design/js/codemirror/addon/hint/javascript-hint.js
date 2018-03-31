@@ -53,8 +53,8 @@
     return scriptHint(editor, javascriptKeywords,
                       function (e, cur) {return e.getTokenAt(cur);},
                       options);
-  };
-  CodeMirror.registerHelper("hint", "javascript", javascriptHint);
+  }
+    CodeMirror.registerHelper("hint", "javascript", javascriptHint);
 
   function getCoffeeScriptToken(editor, cur) {
   // This getToken, it is for coffeescript, imitates the behavior of

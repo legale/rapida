@@ -88,7 +88,7 @@ var autoComplete = (function(){
                                 that.sc.scrollTop = selTop + scrTop;
                         }
                 }
-            }
+            };
             addEvent(window, 'resize', that.updateSC);
             document.body.appendChild(that.sc);
 
@@ -133,7 +133,7 @@ var autoComplete = (function(){
                 }
                 else
                     that.sc.style.display = 'none';
-            }
+            };
 
             that.keydownHandler = function(e){
                 var key = window.event ? e.keyCode : e.which;

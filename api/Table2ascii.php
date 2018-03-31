@@ -1,9 +1,26 @@
 <?php
+declare(strict_types=1);
+
+if (!function_exists('mb_str_split')) {
+    /**
+     * @param $string
+     * @param int $split_length
+     * @return array
+     */
+    function mb_str_split($string, $split_length = 1)
+    {
+        preg_match_all('`.`u', $string, $arr);
+        $arr = array_chunk($arr[0], $split_length);
+        $arr = array_map('implode', $arr);
+        return $arr;
+    }
+}
+
 
 /**
  * This library can generate ASCII pseudographic table from an array
  * One public method draw()
- * 
+ *
  * @author Legale <legale.legale@gmail.com>
  * @email legale.legale@gmail.com
  * @license GPL v3
@@ -24,9 +41,10 @@ class Table2ascii
     const VERT = '│';
     private static $MAX_WIDTH;
 
-	public function __construct($MAX_WIDTH = 100){
-		self::$MAX_WIDTH = $MAX_WIDTH;
-	}
+    public function __construct($MAX_WIDTH = 100)
+    {
+        self::$MAX_WIDTH = $MAX_WIDTH;
+    }
 
 
     /**
@@ -73,15 +91,15 @@ class Table2ascii
     private function columns_lengths($table, $headers)
     {
         $headers = array_map('mb_strlen', $headers);
-		$headers = array('len' => $headers,'size' => $headers);
-		
+        $headers = array('len' => $headers, 'size' => $headers);
+
         $cnt = count($headers['len']);
-        $max_width = self::$MAX_WIDTH  - $cnt - 1;
+        $max_width = self::$MAX_WIDTH - $cnt - 1;
         $width = 0;
         $total_size = 0;
         foreach ($table as $num => $row) {
             foreach ($row as $col => $cell) {
-				$cell_len = mb_strlen($cell);
+                $cell_len = mb_strlen($cell);
                 $headers['len'][$col] = max($headers['len'][$col], $cell_len);
                 $headers['size'][$col] += $cell_len;
                 $total_size += $cell_len;
@@ -100,18 +118,18 @@ class Table2ascii
         $headers_orig = $headers;
 
         //setting initial lenght for each column
-        foreach ($headers['len'] as $k=>&$len) {
-			$size = $headers['size'][$k];
-			$perc = $size / $total_size; 
-			$increment = ($perc < 0.01) ? 2 : 6;
-			$len = $increment;
+        foreach ($headers['len'] as $k => &$len) {
+            $size = $headers['size'][$k];
+            $perc = $size / $total_size;
+            $increment = ($perc < 0.01) ? 2 : 6;
+            $len = $increment;
             $chars_left -= $increment;
-        }    
-        foreach ($headers['len'] as $k=>&$len) {
-			$size = $headers['size'][$k];
-			$perc = $size / $total_size; 
-			$increment = ceil($chars_left * $perc);
-			$len += $increment;
+        }
+        foreach ($headers['len'] as $k => &$len) {
+            $size = $headers['size'][$k];
+            $perc = $size / $total_size;
+            $increment = ceil($chars_left * $perc);
+            $len += $increment;
             $chars_left -= $increment;
         }
         //print_r($headers);    
@@ -140,12 +158,12 @@ class Table2ascii
 
     /**
      * @param $col_len
+     * @param string $type
      * @return string
      */
     private function draw_separator($col_len, $type = 'middle')
     {
         $str = '';
-        $first = true;
         $i = 1;
         $cnt = count($col_len);
 
@@ -192,7 +210,6 @@ class Table2ascii
         $str = '';
         $multirow = $this->make_row($row, $col_len);
         foreach ($multirow as $line => $cell_array) {
-            $st = array();
             foreach ($cell_array as $col => $cell) {
                 $max = $col_len[$col];
                 $len = mb_strlen($cell);
@@ -218,6 +235,7 @@ class Table2ascii
     private function make_row($row, $col_len)
     {
         $res = array();
+        $el = array();
         foreach ($row as $col => $cell) {
             $max_len = $col_len[$col];
             $res[$col] = mb_str_split($cell, $max_len);
@@ -237,37 +255,13 @@ class Table2ascii
         $final = array();
         foreach ($cols as $col) {
             foreach ($lines as $line) {
-                $final[$line][$col] = strtr(html_entity_decode($res[$col][$line]), array("\n" =>" ", "\r" => " ", "\t"=> " "));
+                $final[$line][$col] = strtr(html_entity_decode($res[$col][$line]), array("\n" => " ", "\r" => " ", "\t" => " "));
             }
         }
 
         return $final;
     }
 
-    /**
-     * @param $cell
-     * @param $max_len
-     */
-    public function make_cell($cell, $max_len)
-    {
-        return;
-    }
-
 
 }
 
-
-/**
- * @param $string
- * @param int $split_length
- * @return array
- */
-function mb_str_split($string, $split_length = 1)
-{
-    preg_match_all('`.`u', $string, $arr);
-    $arr = array_chunk($arr[0], $split_length);
-    $arr = array_map('implode', $arr);
-    return $arr;
-}
-
-?>

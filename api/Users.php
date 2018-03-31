@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Simpla CMS
@@ -9,12 +10,18 @@
 
 require_once ('Simpla.php');
 
+/**
+ * Class Users
+ */
 class Users extends Simpla
 {	
 
 	// Тут массив с перечнем разрешений, ключи этого массива хранятся в БД в таблице
 	// s_users
-	public $perm_list = array(
+    /**
+     * @var array
+     */
+    public $perm_list = array(
 		0=> 'products', 
 		1=> 'categories', 
 		2=> 'brands', 
@@ -27,7 +34,7 @@ class Users extends Simpla
 		9=> 'pages', 
 		10=> 'blog', 
 		11=> 'comments', 
-		12=> 'feedbacks', 
+		12=> 'feedback', 
 		13=> 'import', 
 		14=> 'export',
 		15=> 'backup', 
@@ -39,9 +46,13 @@ class Users extends Simpla
 		21=> 'payment', 
 		22=> 'managers', 
 	);
-	
 
-	function get_users($filter = array())
+
+    /**
+     * @param array $filter
+     * @return mixed
+     */
+    function get_users($filter = array())
 	{
 		$limit = 1000;
 		$page = 1;
@@ -91,7 +102,11 @@ class Users extends Simpla
 		return $this->db->results_array(null, 'id');
 	}
 
-	function count_users($filter = array())
+    /**
+     * @param array $filter
+     * @return mixed
+     */
+    function count_users($filter = array())
 	{
 		$group_id_filter = '';
 		$keyword_filter = '';
@@ -114,7 +129,11 @@ class Users extends Simpla
 		return $this->db->result_array('count');
 	}
 
-	function get_user($id)
+    /**
+     * @param $id
+     * @return bool
+     */
+    function get_user($id)
 	{
 		dtimer::log(__METHOD__ . " start");
 		if (gettype($id) == 'string'){
@@ -141,7 +160,11 @@ class Users extends Simpla
 		return $user;
 	}
 
-	public function add_user($user)
+    /**
+     * @param $user
+     * @return bool
+     */
+    public function add_user($user)
 	{
 		if (is_object($user)) {
 			$user = (array)$user;
@@ -170,7 +193,11 @@ class Users extends Simpla
 		return $this->db->insert_id();
 	}
 
-	public function update_user($user)
+    /**
+     * @param $user
+     * @return bool
+     */
+    public function update_user($user)
 	{
 		dtimer::log(__METHOD__ . " start");
 		if( isset($user['id']) ){
@@ -219,7 +246,11 @@ class Users extends Simpla
 	 * @param $post
 	 *
 	 */
-	public function delete_user($id)
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function delete_user($id)
 	{
 		if (!empty($id))
 			{
@@ -233,7 +264,10 @@ class Users extends Simpla
 		return false;
 	}
 
-	function get_groups()
+    /**
+     * @return mixed
+     */
+    function get_groups()
 	{
 		// Выбираем группы
 		$query = $this->db->placehold("SELECT g.id, g.name, g.discount FROM __groups AS g ORDER BY g.id ASC");
@@ -241,7 +275,11 @@ class Users extends Simpla
 		return $this->db->results_array(null, 'id');
 	}
 
-	function get_group($id)
+    /**
+     * @param $id
+     * @return mixed
+     */
+    function get_group($id)
 	{
 		// Выбираем группу
 		$query = $this->db->placehold("SELECT * FROM __groups WHERE id=? LIMIT 1", $id);
@@ -252,7 +290,11 @@ class Users extends Simpla
 	}
 
 
-	public function add_group($group)
+    /**
+     * @param $group
+     * @return mixed
+     */
+    public function add_group($group)
 	{
 		if (is_object($group)) {
 			$group = (array)$group;
@@ -273,14 +315,23 @@ class Users extends Simpla
 		return $this->db->insert_id();
 	}
 
-	public function update_group($id, $group)
+    /**
+     * @param $id
+     * @param $group
+     * @return mixed
+     */
+    public function update_group($id, $group)
 	{
 		$query = $this->db->placehold("UPDATE __groups SET ?% WHERE id=? LIMIT 1", $group, intval($id));
 		$this->db->query($query);
 		return $id;
 	}
 
-	public function delete_group($id)
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function delete_group($id)
 	{
 		if (!empty($id))
 			{
@@ -294,7 +345,12 @@ class Users extends Simpla
 		return false;
 	}
 
-	public function check_password($email, $password)
+    /**
+     * @param $email
+     * @param $password
+     * @return bool
+     */
+    public function check_password($email, $password)
 	{
 		$encpassword = md5($this->config->salt_word . $password . md5($password));
 		$query = $this->db->placehold("SELECT id FROM __users WHERE email=? AND password=? LIMIT 1", $email, $encpassword);
@@ -310,7 +366,11 @@ class Users extends Simpla
 	 * Может быть задан id разрешения или его название. Массив разрешений хранится в 
 	 * этом классе в переменной $this->perm_list
 	 */
-	public function check_access($perm)
+    /**
+     * @param $perm
+     * @return bool
+     */
+    public function check_access($perm)
 	{
 		//Если никто не авторизован - стоп
 		if(!isset($_SESSION['user_id'])){

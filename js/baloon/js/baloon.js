@@ -20,10 +20,10 @@ function CreateBaloon() {
 	baloon.appendChild(baloonBody);
 	baloon.appendChild(baloonFooter);
 
-	baloon.onmouseover   = function(e) { this.style.filter = "Alpha(Opacity='100')"; this.style.cursor = 'pointer'; this.style.MozOpacity = '1';}
-	baloon.onmouseout    = function(e) { this.style.filter = "Alpha(Opacity='75')";  this.style.cursor = 'auto'; this.style.MozOpacity = '0.75'; }
-	baloon.onselectstart = function(e) { return false; }
-	baloon.onclick       = function(e) { this.style.display = 'none'; }
+	baloon.onmouseover   = function(e) { this.style.filter = "Alpha(Opacity='100')"; this.style.cursor = 'pointer'; this.style.MozOpacity = '1';};
+	baloon.onmouseout    = function(e) { this.style.filter = "Alpha(Opacity='75')";  this.style.cursor = 'auto'; this.style.MozOpacity = '0.75'; };
+	baloon.onselectstart = function(e) { return false; };
+	baloon.onclick       = function(e) { this.style.display = 'none'; };
 
 	document.body.appendChild(baloon);
 

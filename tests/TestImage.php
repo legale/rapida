@@ -1,14 +1,9 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
-$winpath = 'C:/cygwin64/home/ru/composer/vendor/autoload.ph';
-$cygpath = '/cygdrive/c/cygwin64/home/ru/composer/vendor/autoload.php';
+
 
 require_once('../api/Image.php');
-if(file_exists($winpath) && is_readable($winpath)){
-    require_once($winpath);
-}else if (file_exists($cygpath) && is_readable($cygpath)){
-    require_once($cygpath);
-}
 
 
 /**
@@ -117,7 +112,7 @@ class TestImage extends TestCase
     {
         $c = $this->class;
         $res = $this->reflect($c)->gen_original_dirname($type);
-        dtimer::log(__METHOD__." res: $res");
+        dtimer::log(__METHOD__ . " res: $res");
         $this->assertEquals($expected, $res);
     }
 
@@ -135,7 +130,7 @@ class TestImage extends TestCase
         $type = 'products';
         $item_id = 1;
         $expected = 1;
-        $tmp_name = tempnam(sys_get_temp_dir(), 'curl_tmp');
+        $tmp_name = tempnam(dirname(__FILE__ ) . '/../tmp', 'curl_tmp');
         $c = $this->class;
 
         $_FILES = array(
@@ -152,7 +147,7 @@ class TestImage extends TestCase
         if (is_array($a)) {
             $res = $a['item_id'];
             $this->assertEquals($expected, $res);
-            if(!$c->delete($type, $a['id'])){
+            if (!$c->delete($type, $a['id'])) {
                 $this->assertTrue(false);
             }
 
@@ -182,23 +177,22 @@ class TestImage extends TestCase
             $a = $c->download_new($type, $item_id, $url);
             if (is_array($a)) {
                 $res = $a['item_id'];
-                $filepath_absolute = $a['filepath_absolute'];
                 if (!isset($del[$a['id']])) {
                     $del[$a['id']] = $a['id'];
                 }
-            } else{
+            } else {
                 $res = $a;
             }
 
             $this->assertEquals($exp, $res);
 
         }
-        foreach($del as $id){
-            if(!$c->delete($type, $id)){
+        foreach ($del as $id) {
+            if (!$c->delete($type, $id)) {
                 $this->assertTrue(false);
             }
         }
-
+        return true;
     }
 
     protected function setUp()
@@ -218,7 +212,8 @@ class TestImage extends TestCase
     /**
      * @test image->download()
      */
-    public function download(){
+    public function download()
+    {
 
         $c = $this->class;
         $type = 'products';
@@ -229,10 +224,9 @@ class TestImage extends TestCase
         $res = $c->download($type, $image_id);
         $c->delete($type, $image_id);
 
-        $this->assertEquals($image_id, $res['id'] );
+        $this->assertEquals($image_id, $res['id']);
     }
 
 }
 
 
-?>
