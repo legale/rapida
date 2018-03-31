@@ -652,7 +652,7 @@ class Database extends Simpla
      */
     function restore($filename)
     {
-        dtimer::log(__METHOD__ . " start");
+        dtimer::log(__METHOD__ . " start $filename");
         $templine = '';
         $h = fopen($filename, 'r');
 
@@ -661,7 +661,7 @@ class Database extends Simpla
             while (!feof($h)) {
                 $line = fgets($h);
                 // Only continue if it's not a comment
-                if (substr($line, 0, 2) != '--' && $line != '') {
+                if (is_string($line) && substr($line, 0, 2) != '--' && $line != '') {
                     // Add this line to the current segment
                     $templine .= $line;
                     // If it has a semicolon at the end, it's the end of the query
@@ -673,8 +673,10 @@ class Database extends Simpla
                     }
                 }
             }
+        } else {
+            return false;
         }
-        fclose($h);
+        return fclose($h);
     }
 
 
