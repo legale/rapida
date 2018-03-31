@@ -40,20 +40,20 @@
 		
 			<div id="list" style="width:100%;">
 				
-				{foreach $feedback as $feedback}
+				{foreach $feedback as $item}
 				<div class="row">
 			 		<div class="checkbox cell">
-						<input type="checkbox" name="check[]" value="{$feedback['id']}" />				
+						<input type="checkbox" name="check[]" value="{$item['id']}" />				
 					</div>
 					<div class="name cell">
 						<div class='comment_name'>
-						<a href="mailto:{$feedback['name']|escape}<{$feedback['email']|escape}>?subject=Вопрос от пользователя {$feedback['name']|escape}">{$feedback['name']|escape}</a>
+						<a href="mailto:{$item['name']|escape}<{$item['email']|escape}>?subject=Вопрос от пользователя {$item['name']|escape}">{$item['name']|escape}</a>
 						</div>
 						<div class='comment_text'>
-						{$feedback['message']|escape|nl2br}
+						{$item['message']|escape|nl2br}
 						</div>
 						<div class='comment_info'>
-						Сообщение отправлено {$feedback['date']|date} в {$feedback['date']|time}
+						Сообщение отправлено {$item['date']|date} в {$item['date']|time}
 						</div>
 					</div>
 					<div class="icons cell">
