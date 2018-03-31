@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once('Simpla.php');
 
@@ -7,12 +8,6 @@ require_once('Simpla.php');
  */
 class Image extends Simpla
 {
-
-    private $tables = array();
-    /**
-     * @var array
-     */
-    private $allowed_extentions = array('png', 'gif', 'jpg', 'jpeg', 'ico');
 
     /**
      * @var array
@@ -64,7 +59,8 @@ class Image extends Simpla
         //check if image has pos == 0
         if ($pos == 0) {
             dtimer::log(__METHOD__ . " pos 0 image detected. Trying to find next image with the same item_id: $item_id");
-            if (!$image2 = $this->get($type, array('item_id' => $item_id))) {
+            $image2 = $this->get($type, array('item_id' => $item_id));
+            if (!$image2) {
                 $this->db->query("UPDATE `__$type` SET image = '', image_id = '' ");
                 dtimer::log(__METHOD__ . " unable to get next image with item_id: $item_id");
             } else {
@@ -118,7 +114,8 @@ class Image extends Simpla
         }
         $table = $this->config->db_prefix . 'img_' . $type;
 
-        if ($this->db->query("SELECT * FROM `$table` WHERE ?& ORDER BY `pos` ASC", $filter)) {
+        $res = $this->db->query("SELECT * FROM `$table` WHERE ?& ORDER BY `pos` ASC", $filter);
+        if ($res) {
             return $this->db->results_array(null, 'id');
         } else {
             return false;
@@ -653,6 +650,9 @@ class Image extends Simpla
         }
 
         // Имя оригинального файла
+        if(!isset($url)){
+            return false;
+        }
         $pi = pathinfo($url);
         dtimer::log(__METHOD__ . "pathinfo url: " . var_export($pi, true));
         if (isset($pi['extension'])) {
@@ -858,6 +858,7 @@ class Image extends Simpla
             return false;
         }
 
+        dtimer::log(__METHOD__." before curl download via curl  ");
         if (!$tmp = $this->curl->download($url)) {
             dtimer::log(__METHOD__ . " download failed");
             return false;
@@ -944,6 +945,10 @@ class Image extends Simpla
         return false;
     }
 
+    /**
+     * @param $url
+     * @return bool
+     */
     public function is_url($url)
     {
         dtimer::log(__METHOD__ . " start url: $url");

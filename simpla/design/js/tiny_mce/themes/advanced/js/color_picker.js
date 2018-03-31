@@ -91,9 +91,8 @@ function toHexColor(color) {
 		value = parseInt(value).toString(16);
 
 		return value.length > 1 ? value : '0' + value; // Padd with leading zero
-	};
-
-	color = color.replace(/[\s#]+/g, '').toLowerCase();
+    }
+    color = color.replace(/[\s#]+/g, '').toLowerCase();
 	color = namedLookup[color] || color;
 	matches = /^rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)|([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})|([a-f0-9])([a-f0-9])([a-f0-9])$/.exec(color);
 

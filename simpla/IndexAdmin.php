@@ -31,7 +31,7 @@ class IndexAdmin extends Simpla
 		'BlogAdmin' => 'blog',
 		'PostAdmin' => 'blog',
 		'CommentsAdmin' => 'comments',
-		'FeedbacksAdmin' => 'feedbacks',
+		'FeedbackAdmin' => 'feedback',
 		'ImportAdmin' => 'import',
 		'ImportYmlAdmin' => 'import',
 		'ExportAdmin' => 'export',

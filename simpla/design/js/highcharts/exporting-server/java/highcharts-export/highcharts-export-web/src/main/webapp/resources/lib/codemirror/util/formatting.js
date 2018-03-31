@@ -87,7 +87,7 @@
           lines[i] = mToProcess[1]
             + mToProcess[2].replace(reOpenBrackets, "\n$&").replace(reCloseBrackets, "$1\n$2")
             + mToProcess[3];
-          continue;
+
         }
       }
       return lines.join("\n");

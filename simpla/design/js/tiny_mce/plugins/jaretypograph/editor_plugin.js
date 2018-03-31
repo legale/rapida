@@ -45,7 +45,7 @@
 						
 						//var sel = ed.selection.isCollapsed()?false:true;
 						// dont use selection
-						var sel=false
+						var sel=false;
 						
 						if(sel)
 							ed.selection.setContent(response_text, {format: 'raw'});
@@ -54,11 +54,11 @@
 						}
 						
 					}
-				}
+				};
 				
 				//var sel = ed.selection.isCollapsed()?false:true;
 				// dont use selection
-				var sel=false
+				var sel=false;
 								
 				// Handle selection
 				if (sel) {
@@ -70,7 +70,7 @@
 					var orig = ed.getContent({format:'raw'});
 					var mark = ed.selection.getBookmark();
 					
-					var range = ed.selection.getRng()
+					var range = ed.selection.getRng();
 					var h1 = 0, h2 = 0, text = "";
 					
 					alert(range);

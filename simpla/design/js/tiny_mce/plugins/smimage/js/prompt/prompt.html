@@ -53,7 +53,7 @@ xAddEventListener(
 			input = args['input'] || (typeof(args['input']) == 'number') ? args['input'] : '';
 			var msg = args['msg'] || '';
 			if (typeof(msg) != 'string') {
-				msg = new String(msg);
+				msg = String(msg);
 			}
 
 			if ((navigator.appVersion.indexOf('MSIE') != -1) && (navigator.userAgent.indexOf('Opera') == -1)) {

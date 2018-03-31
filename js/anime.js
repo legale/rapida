@@ -33,7 +33,7 @@
     direction: 'normal',
     autoplay: true,
     offset: 0
-  }
+  };
 
   const defaultTweenSettings = {
     duration: 1000,
@@ -41,7 +41,7 @@
     easing: 'easeOutElastic',
     elasticity: 500,
     round: 0
-  }
+  };
 
   const validTransforms = ['translateX', 'translateY', 'translateZ', 'rotate', 'rotateX', 'rotateY', 'rotateZ', 'scale', 'scaleX', 'scaleY', 'scaleZ', 'skewX', 'skewY', 'perspective'];
   let transformString;
@@ -65,7 +65,7 @@
     rgb: a => /^rgb/.test(a),
     hsl: a => /^hsl/.test(a),
     col: a => (is.hex(a) || is.rgb(a) || is.hsl(a))
-  }
+  };
 
   // BezierEasing https://github.com/gre/bezier-easing
 
@@ -74,19 +74,31 @@
     const kSplineTableSize = 11;
     const kSampleStepSize = 1.0 / (kSplineTableSize - 1.0);
 
-    function A (aA1, aA2) { return 1.0 - 3.0 * aA2 + 3.0 * aA1 };
-    function B (aA1, aA2) { return 3.0 * aA2 - 6.0 * aA1 };
-    function C (aA1)      { return 3.0 * aA1 };
-
-    function calcBezier (aT, aA1, aA2) { return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT };
-    function getSlope (aT, aA1, aA2) { return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1) };
-
-    function binarySubdivide (aX, aA, aB, mX1, mX2) {
+    function A(aA1, aA2) {
+          return 1.0 - 3.0 * aA2 + 3.0 * aA1
+      }
+      function B(aA1, aA2) {
+          return 3.0 * aA2 - 6.0 * aA1
+      }
+      function C(aA1) {
+          return 3.0 * aA1
+      }
+      function calcBezier(aT, aA1, aA2) {
+          return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT
+      }
+      function getSlope(aT, aA1, aA2) {
+          return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1)
+      }
+      function binarySubdivide (aX, aA, aB, mX1, mX2) {
       let currentX, currentT, i = 0;
       do {
         currentT = aA + (aB - aA) / 2.0;
         currentX = calcBezier(currentT, mX1, mX2) - aX;
-        if (currentX > 0.0) { aB = currentT } else { aA = currentT };
+          if (currentX > 0.0) {
+              aB = currentT
+          } else {
+              aA = currentT
+          }
       } while (Math.abs(currentX) > 0.0000001 && ++i < 10);
       return currentT;
     }
@@ -196,11 +208,11 @@
         [0.680, -0.550, 0.265, 1.550], /* InOutBack */
         (t, f) => t < .5 ? elastic(t * 2, f) / 2 : 1 - elastic(t * -2 + 2, f) / 2 /* InOutElastic */
       ]
-    }
+    };
 
     let functions = {
       linear: bezier(0.250, 0.250, 0.750, 0.750)
-    }
+    };
 
     for (let type in equations) {
       equations[type].forEach((f, i) => {
@@ -224,7 +236,7 @@
       let nodes = document.querySelectorAll(str);
       return nodes;
     } catch(e) {
-      return;
+
     }
   }
 
@@ -621,7 +633,7 @@
       if (!transforms[id]) transforms[id] = [];
       transforms[id].push(`${p}(${v})`);
     }
-  }
+  };
 
   // Animations
 
@@ -680,8 +692,10 @@
   let raf = 0;
 
   const engine = (() => {
-    function play() { raf = requestAnimationFrame(step); };
-    function step(t) {
+      function play() {
+          raf = requestAnimationFrame(step);
+      }
+      function step(t) {
       const activeLength = activeInstances.length;
       if (activeLength) {
         let i = 0;
@@ -877,24 +891,24 @@
       for (let i = instance.children.length; i--; ){
         instance.children[i].reset();
       }
-    }
+    };
 
     instance.tick = function(t) {
       now = t;
       if (!startTime) startTime = now;
       const engineTime = (lastTime + now - startTime) * anime.speed;
       setInstanceProgress(engineTime);
-    }
+    };
 
     instance.seek = function(time) {
       setInstanceProgress(adjustTime(time));
-    }
+    };
 
     instance.pause = function() {
       const i = activeInstances.indexOf(instance);
       if (i > -1) activeInstances.splice(i, 1);
       instance.paused = true;
-    }
+    };
 
     instance.play = function() {
       if (!instance.paused) return;
@@ -903,19 +917,19 @@
       lastTime = adjustTime(instance.currentTime);
       activeInstances.push(instance);
       if (!raf) engine();
-    }
+    };
 
     instance.reverse = function() {
       toggleInstanceDirection();
       startTime = 0;
       lastTime = adjustTime(instance.currentTime);
-    }
+    };
 
     instance.restart = function() {
       instance.pause();
       instance.reset();
       instance.play();
-    }
+    };
 
     instance.finished = promise;
 
@@ -972,7 +986,7 @@
       tl.reset();
       if (tl.autoplay) tl.restart();
       return tl;
-    }
+    };
     return tl;
   }
 

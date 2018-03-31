@@ -1,7 +1,7 @@
 {* Вкладки *}
 {capture name=tabs}
 		{if isset($userperm['comments'])}<li><a href="?module=CommentsAdmin">Комментарии</a></li>{/if}
-		<li class="active"><a href="?module=FeedbacksAdmin">Обратная связь</a></li>
+		<li class="active"><a href="?module=FeedbackAdmin">Обратная связь</a></li>
 {/capture}
 
 {* Title *}
@@ -9,10 +9,10 @@
 
 
 {* Поиск *}
-{if isset($feedbacks) || isset($keyword)}
+{if isset($feedback) || isset($keyword)}
 <form method="get">
 <div id="search">
-	<input type="hidden" name="module" value='FeedbacksAdmin'>
+	<input type="hidden" name="module" value='FeedbackAdmin'>
 	<input class="search" type="text" name="keyword" value="{$keyword|escape}" />
 	<input class="search_button" type="submit" value=""/>
 </div>
@@ -21,8 +21,8 @@
 
 {* Заголовок *}
 <div id="header">
-	{if $feedbacks_count}
-	<h1>{$feedbacks_count} {$feedbacks_count|plural:'сообщение':'сообщений':'сообщения'}</h1> 
+	{if $feedback_count}
+	<h1>{$feedback_count} {$feedback_count|plural:'сообщение':'сообщений':'сообщения'}</h1> 
 	{else}
 	<h1>Нет сообщений</h1> 
 	{/if}
@@ -34,13 +34,13 @@
 	{include file='pagination.tpl'}	
 	<!-- Листалка страниц (The End) -->
 		
-	{if $feedbacks}
+	{if $feedback}
 		<form id="list_form" method="post">
 		<input type="hidden" name="session_id" value="{$smarty.session.id}">
 		
 			<div id="list" style="width:100%;">
 				
-				{foreach $feedbacks as $feedback}
+				{foreach $feedback as $feedback}
 				<div class="row">
 			 		<div class="checkbox cell">
 						<input type="checkbox" name="check[]" value="{$feedback['id']}" />				

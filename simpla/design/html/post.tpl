@@ -36,7 +36,7 @@ function add_link(e) {
 	console.log(e.target);
 	let link_id = e.target.getAttribute('link_id');
 	console.log(link_id);
-	let t = document.querySelector('[container=true][container_id=' + link_id + ']')
+	let t = document.querySelector('[container=true][container_id=' + link_id + ']');
 	let n = t.cloneNode(true);
 	t.parentNode.insertBefore(n,t);
 	n.setAttribute('style','');
