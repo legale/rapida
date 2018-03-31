@@ -17,15 +17,7 @@ require_once ('Simpla.php');
 class Feedback extends Simpla
 {
 
-	public function get_feedback($id)
-	{
-		$query = $this->db->placehold("SELECT f.id, f.name, f.email, f.ip, f.message, f.date FROM __feedback f WHERE id=? LIMIT 1", intval($id));
 
-		if ($this->db->query($query))
-			return $this->db->result_array();
-		else
-			return false;
-	}
 
 	public function get_feedback($filter = array(), $new_on_top = false)
 	{	
