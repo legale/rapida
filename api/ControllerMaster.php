@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 /*
@@ -70,9 +70,9 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива фильтра $filter
     public function gen_uri_from_filter($uri_arr, $filter)
     {
-        print_r($uri_arr);
-        print_r($filter);
-        die;
+//        print_r($uri_arr);
+//        print_r($filter);
+//        die;
         //сначала префикс
         $res = $uri_arr['scheme'] . '://' . $uri_arr['host'];
         //модуль
@@ -430,12 +430,12 @@ class ControllerMaster extends Simpla
 
     private function get_uri()
     {
-        if(!isset($_SERVER)){
+        if (!isset($_SERVER)) {
             return false;
         }
         $uri = isset($_SERVER['HTTPS']) ? "https" : "http";
-		$uri .= isset($_SERVER['HTTP_HOST']) ? "://" . $_SERVER['HTTP_HOST'] : '';
-		$uri .= isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-		return $uri;
-	}
+        $uri .= isset($_SERVER['HTTP_HOST']) ? "://" . $_SERVER['HTTP_HOST'] : '';
+        $uri .= isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        return $uri;
+    }
 }
