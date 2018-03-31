@@ -237,7 +237,7 @@ define('INCLUDE_PATH', ini_get('include_path'));
 
 
 //ограничение дуступа скрипта пределами каталога веб сервера
-ini_set('open_basedir', INCLUDE_PATH . "; " . ROOT_DIR . "; " . sys_get_temp_dir());
+//ini_set('open_basedir', INCLUDE_PATH . "; " . ROOT_DIR . "; " . sys_get_temp_dir(). "; http://; https://");
 
 
 // отладчик ошибок
