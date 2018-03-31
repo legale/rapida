@@ -1,5 +1,7 @@
 <?php
-declare(strict_types=1);
+if(defined('PHP7')) {
+     eval("declare(strict_types=1);");
+}
 
 /**
  * Класс-обертка для конфигурационного файла с настройками магазина
@@ -16,7 +18,7 @@ class Config
     /**
      * @var string
      */
-    public $version = '0.0.9b2';
+    public $version = '0.0.9b3';
 
     //слова для формирования соли
     /**
