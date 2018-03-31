@@ -233,10 +233,11 @@ define('API_DIR', dirname(__FILE__) . '/');
 
 //корень сайта
 define('ROOT_DIR', dirname(API_DIR) . '/');
+define('INCLUDE_PATH', ini_get('include_path'));
 
 
 //ограничение дуступа скрипта пределами каталога веб сервера
-ini_set('open_basedir', ROOT_DIR . ";" . sys_get_temp_dir());
+ini_set('open_basedir', INCLUDE_PATH . "; " . ROOT_DIR . "; " . sys_get_temp_dir());
 
 
 // отладчик ошибок
