@@ -45,7 +45,7 @@ class FeedbackView extends View
 				$this->design->assign('message_sent', true);
 				
 				$feedback->ip = $_SERVER['REMOTE_ADDR'];
-				$feedback_id = $this->feedbacks->add_feedback($feedback);
+				$feedback_id = $this->feedback->add_feedback($feedback);
 				
 				// Отправляем email
 				$this->notify->email_feedback_admin($feedback_id);				

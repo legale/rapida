@@ -1,7 +1,8 @@
 /* Just enough of CodeMirror to run runMode under node.js */
 
-function splitLines(string){ return string.split(/\r?\n|\r/); };
-
+function splitLines(string) {
+    return string.split(/\r?\n|\r/);
+}
 function StringStream(string) {
   this.pos = this.start = 0;
   this.string = string;

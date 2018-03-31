@@ -129,7 +129,7 @@ SXE = {
 	currentAction : "insert",
 	inst : tinyMCEPopup.editor,
 	updateElement : null
-}
+};
 
 SXE.focusElement = SXE.inst.selection.getNode();
 
@@ -149,7 +149,7 @@ SXE.initElementDialog = function(element_name) {
 	}
 
 	document.forms[0].insert.value = tinyMCEPopup.getLang(SXE.currentAction, 'Insert', true); 
-}
+};
 
 SXE.insertElement = function(element_name) {
 	var elm = SXE.inst.dom.getParent(SXE.focusElement, element_name.toUpperCase()), h, tagName;
@@ -179,7 +179,7 @@ SXE.insertElement = function(element_name) {
 	}
 	SXE.inst.nodeChanged();
 	tinyMCEPopup.execCommand('mceEndUndoLevel');
-}
+};
 
 SXE.removeElement = function(element_name){
 	element_name = element_name.toLowerCase();
@@ -189,15 +189,15 @@ SXE.removeElement = function(element_name){
 		SXE.inst.nodeChanged();
 		tinyMCEPopup.execCommand('mceEndUndoLevel');
 	}
-}
+};
 
 SXE.showRemoveButton = function() {
 		document.getElementById("remove").style.display = '';
-}
+};
 
 SXE.containsClass = function(elm,cl) {
 	return (elm.className.indexOf(cl) > -1) ? true : false;
-}
+};
 
 SXE.removeClass = function(elm,cl) {
 	if(elm.className == null || elm.className == "" || !SXE.containsClass(elm,cl)) {
@@ -211,12 +211,12 @@ SXE.removeClass = function(elm,cl) {
 		}
 	}
 	elm.className = newClassNames.substring(0,newClassNames.length-1); //removes extra space at the end
-}
+};
 
 SXE.addClass = function(elm,cl) {
 	if(!SXE.containsClass(elm,cl)) elm.className ? elm.className += " " + cl : elm.className = cl;
 	return true;
-}
+};
 
 function insertInlineElement(en) {
 	var ed = tinyMCEPopup.editor, dom = ed.dom;

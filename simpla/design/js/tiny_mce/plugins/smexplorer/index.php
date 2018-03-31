@@ -57,7 +57,7 @@ if ($CONFIG["no_cache"] == 1) {
 // "jSMPreview" Objekt erzeugen
 var jSMP = new jSMPreview();
 
-// jSMPreview: Vorschaubildgröße setzen
+// jSMPreview: Vorschaubildgrï¿½ï¿½e setzen
 jSMP.SetThumbnailSize('<?php echo $CONFIG["preview_thumbnail_size"]; ?>');
 /* ]]> */
 </script>
@@ -95,9 +95,9 @@ jSMP.SetThumbnailSize('<?php echo $CONFIG["preview_thumbnail_size"]; ?>');
 			echo "<li><img class=\"separator\" src=\"img/icon_separator.png\" border=\"0\" /></li>";
 		}
 		?>
-		<li><a id="m5" style="display:none;" href="javascript:;" title="" onclick="SMExplorer_DeleteFiles('<?php echo bin2hex(RC4("id=1&".$GET)); ?>', '<?php echo count($FILES); ?>'); if (window.event) { window.event.returnValue = false; }"><img src="img/icon_delete_file_24x24.png" border="0" /></a></li>
-		<li><a id="m6" style="display:none;" href="javascript:;" title="" onclick="SMExplorer_View_Close(); if (window.event) { window.event.returnValue = false; }"><img src="img/icon_view_24x24.png" border="0" /></a></li>
-		<li><a id="m7" href="javascript:;" title="" onclick="SMExplorer_PageReload('<?php echo bin2hex(RC4("id=1&".$GET)); ?>'); if (window.event){ window.event.returnValue = false; }"><img src="img/icon_reload_24x24.png" border="0" /></a></li>
+		<li><a id="m5" style="display:none;" href="javascript:" title="" onclick="SMExplorer_DeleteFiles('<?php echo bin2hex(RC4("id=1&".$GET)); ?>', '<?php echo count($FILES); ?>'); if (window.event) { window.event.returnValue = false; }"><img src="img/icon_delete_file_24x24.png" border="0" /></a></li>
+		<li><a id="m6" style="display:none;" href="javascript:" title="" onclick="SMExplorer_View_Close(); if (window.event) { window.event.returnValue = false; }"><img src="img/icon_view_24x24.png" border="0" /></a></li>
+		<li><a id="m7" href="javascript:" title="" onclick="SMExplorer_PageReload('<?php echo bin2hex(RC4("id=1&".$GET)); ?>'); if (window.event){ window.event.returnValue = false; }"><img src="img/icon_reload_24x24.png" border="0" /></a></li>
 	</ul>
 </div>
 
@@ -129,7 +129,7 @@ jSMP.SetThumbnailSize('<?php echo $CONFIG["preview_thumbnail_size"]; ?>');
 		if ($SESSION["orderby"] == 1) { $orderby[0]["status"] = 2; } else { $orderby[0]["status"] = 1; }
 		if ($SESSION["orderby"] == 1) { $orderby[0]["icon"] = "icon_up_9x11.png"; } else if ($SESSION["orderby"] == 2) { $orderby[0]["icon"] = "icon_down_9x11.png"; } else { $orderby[0]["icon"] = "icon_none_9x11.png"; }
 
-		// Sortieren nach: Dateigröße
+		// Sortieren nach: Dateigrï¿½ï¿½e
 		if ($SESSION["orderby"] == 3) { $orderby[1]["status"] = 4; } else { $orderby[1]["status"] = 3; }
 		if ($SESSION["orderby"] == 3) { $orderby[1]["icon"] = "icon_up_9x11.png"; } else if ($SESSION["orderby"] == 4) { $orderby[1]["icon"] = "icon_down_9x11.png"; } else { $orderby[1]["icon"] = "icon_none_9x11.png"; }
 
@@ -147,18 +147,18 @@ jSMP.SetThumbnailSize('<?php echo $CONFIG["preview_thumbnail_size"]; ?>');
 		
 		// Tabellenkopf: Titel setzen
 		var title = Array('', '', '', '');
-		if ((<?php echo $orderby[0]["status"]; ?> % 2) == 0) { title[0] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
+		if ((<?php echo $orderby[0]["status"]; ?> % 2) == 0;) { title[0] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
 		else { title[0] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_1', '?'); }
-		if ((<?php echo $orderby[1]["status"]; ?> % 2) == 0) { title[1] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
+		if ((<?php echo $orderby[1]["status"]; ?> % 2) == 0;) { title[1] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
 		else { title[1] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_1', '?'); }
-		if ((<?php echo $orderby[2]["status"]; ?> % 2) == 0) { title[2] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
+		if ((<?php echo $orderby[2]["status"]; ?> % 2) == 0;) { title[2] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_2', '?'); }
 		else { title[2] = tinyMCEPopup.getLang('smexplorer.table_sort_hint_1', '?'); }
 		jSMT.SetHeaderTitle(Array('', title[0], title[1], title[2]));
 
 		// Tabellenkopf: OnClick-Ereignis setzen
 		jSMT.SetHeaderOnClick(Array('', 'SMExplorer_Orderby(\'<?php echo bin2hex(RC4("id=1&orderby=".$orderby[0]["status"]."&".$GET3)); ?>\');', 'SMExplorer_Orderby(\'<?php echo bin2hex(RC4("id=1&orderby=".$orderby[1]["status"]."&".$GET3)); ?>\');', 'SMExplorer_Orderby(\'<?php echo bin2hex(RC4("id=1&orderby=".$orderby[2]["status"]."&".$GET3)); ?>\');'));
 		
-		// Tabellenzeile(n) hinzufügen
+		// Tabellenzeile(n) hinzufï¿½gen
 		<?php
 		for ($i = 0; $i < count($FILES); $i++) {
 			$icon = "";
@@ -198,7 +198,7 @@ jSMP.SetThumbnailSize('<?php echo $CONFIG["preview_thumbnail_size"]; ?>');
 		jSMT.Paint();
 
 		<?php
-		// Hinweis hinzufügen
+		// Hinweis hinzufï¿½gen
 		for ($i = 0; $i < count($FILES); $i++) {
 			echo "document.getElementById('i1".$i."').title = tinyMCEPopup.getLang('smexplorer.file_menu_hint_1', '?'); document.getElementById('i2".$i."').title = tinyMCEPopup.getLang('smexplorer.file_menu_hint_2', '?'); document.getElementById('i3".$i."').title = tinyMCEPopup.getLang('smexplorer.file_menu_hint_3', '?');";
 		}
@@ -251,7 +251,7 @@ window.onload = function() {
 	SMExplorer_WindowResize();
 };
 
-// Menü
+// Menï¿½
 var s1 = '<?php echo $ROOT_FOLDER[$SESSION["treemenu"]]; ?>';
 var s2 = '<?php echo $SESSION["dir"]; ?>';
 if(s1 == s2) {
@@ -259,7 +259,7 @@ if(s1 == s2) {
 	if (document.getElementById('m4') != null) { document.getElementById('m4').style.display = 'none'; }
 }
 
-// Menü: Hinweis hinzufügen
+// Menï¿½: Hinweis hinzufï¿½gen
 SMExplorer_MenuIni();
 /* ]]> */
 </script>

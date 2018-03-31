@@ -195,10 +195,10 @@ CREATE TABLE `s_features` (
 /* Data for table s_features */
 INSERT INTO `s_features` (`id`,`name`,`gid`,`trans`,`trans2`,`pos`,`in_filter`) VALUES
 (1, 'тестовое', 0, 'testovoe', '', 0, 0);
-/* Drop for table s_feedbacks */
-DROP TABLE IF EXISTS `s_feedbacks`;
-/* Create table s_feedbacks */
-CREATE TABLE `s_feedbacks` (
+/* Drop for table s_feedback */
+DROP TABLE IF EXISTS `s_feedback`;
+/* Create table s_feedback */
+CREATE TABLE `s_feedback` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ip` varchar(20) DEFAULT '',
@@ -207,7 +207,7 @@ CREATE TABLE `s_feedbacks` (
   `message` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/* Data for table s_feedbacks */
+/* Data for table s_feedback */
 ;
 /* Drop for table s_groups */
 DROP TABLE IF EXISTS `s_groups`;

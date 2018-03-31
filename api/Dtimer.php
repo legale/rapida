@@ -1,19 +1,86 @@
 <?php
+declare(strict_types=1);
 
+if (!function_exists('convert')) {
+
+//функция для конвертации величин измерения информации
+    /**
+     * @param $size
+     * @return int|string
+     */
+    function convert($size)
+    {
+        if ($size == 0) {
+            return 0;
+        }
+        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        $i = (int)floor(log($size, 1024));
+        return @round($size / pow(1024, $i), 1) . $unit[$i];
+    }
+}
+
+if (!function_exists('convert_time')) {
+//функция для конвертации времени, принимает значения в секундах
+    /**
+     * @param $time
+     * @return int|string
+     */
+    function convert_time($time)
+    {
+        if ($time == 0) {
+            return 0;
+        }
+        //допустимые единицы измерения
+        $unit = array(-4 => 'ps', -3 => 'ns', -2 => 'mcs', -1 => 'ms', 0 => 's');
+        //логарифм времени в сек по основанию 1000
+        //берем значение не больше 0, т.к. секунды у нас последняя изменяемая по тысяче величина, дальше по 60
+        $i = min(0, floor(log($time, 1000)));
+
+        //тут делим наше время на число соответствующее единицам измерения т.е. на миллион для секунд,
+        //на тысячу для миллисекунд
+        $t = @round($time / pow(1000, $i), 1);
+        return $t . $unit[$i];
+    }
+}
+
+
+/**
+ * Class dtimer
+ */
 class dtimer
 {
 
+    /**
+     * @var bool
+     */
     public static $enabled = true;
+    /**
+     * @var
+     */
     protected static $startTime;
+    /**
+     * @var array
+     */
     protected static $points = array();
+    /**
+     * @var array
+     */
     private static $color_array = array(1 => '#f00', 2 => '#ff0', 3 => '#fff');
 
+    /**
+     *
+     */
     public static function reset()
     {
         self::$points = null;
         self::$startTime = null;
     }
 
+    /**
+     * @param string $message
+     * @param null $type
+     * @return bool
+     */
     public static function log($message = '', $type = null)
     {
         //останавливаемся, если отключено
@@ -33,13 +100,20 @@ class dtimer
 
         self::$points[] = array('message' => $message,
             'type' => $type, 'ram' => convert(memory_get_usage(true)), 'time' => microtime(true) - self::$startTime);
+    return true;
     }
 
+    /**
+     *
+     */
     public static function run()
     {
         self::$startTime = microtime(true);
     }
 
+    /**
+     * @return bool
+     */
     public static function show()
     {
         if (self::$enabled !== true) {
@@ -100,9 +174,14 @@ class dtimer
 
         };
         echo "</table>\n";
-        self::$points = array();
+        //self::$points = array();
+        return true;
     }
 
+    /**
+     * @param int $width
+     * @return bool
+     */
     public static function show_console($width = 100)
     {
         require_once(dirname(__FILE__) . '/Table2ascii.php');
@@ -120,7 +199,6 @@ class dtimer
         foreach (self::$points as $item) {
 
             $type = $item['type'];
-            $color_type = self::$color_array[$item['type']];
             $message = $item['message'];
             $ram = $item['ram'];
             //время из последней записи
@@ -132,10 +210,8 @@ class dtimer
 
             if ($total != 0) {
                 $perc = $diff / $total;
-                $color = round(99 - $perc * 50, 3);
                 $perc = round($perc * 100, 1);
             } else {
-                $color = 255;
                 $perc = 0;
             }
             //тут сконвертируем все величины времени
@@ -158,7 +234,7 @@ class dtimer
         //print_r($res);
         print $table->draw($res);
         self::$points = array();
+        return true;
     }
-
 
 }

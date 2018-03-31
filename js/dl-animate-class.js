@@ -42,7 +42,7 @@
         remove(el, options = {}) {
             options.systemDoneCallback = function () {
                 el.parentNode.removeChild(el);
-            }
+            };
 
             this.hide(el, options);
         }
@@ -197,7 +197,7 @@
                 },
                 systemDoneCallback(el){
                 }
-            }
+            };
             return this._mergeSettings(defaults, options);
         }
 

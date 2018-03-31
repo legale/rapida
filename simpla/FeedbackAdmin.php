@@ -3,7 +3,7 @@
 require_once ('api/Simpla.php');
 
 ########################################
-class FeedbacksAdmin extends Simpla
+class FeedbackAdmin extends Simpla
 {
 
 
@@ -30,7 +30,7 @@ class FeedbacksAdmin extends Simpla
 				case 'delete' :
 					{
 						foreach ($ids as $id)
-							$this->feedbacks->delete_feedback($id);
+							$this->feedback->delete_feedback($id);
 						break;
 					}
 			}
@@ -50,20 +50,20 @@ class FeedbacksAdmin extends Simpla
 			$this->design->assign('keyword', $keyword);
 		}
 
-		$feedbacks_count = $this->feedbacks->count_feedbacks($filter);
+		$feedback_count = $this->feedback->count_feedback($filter);
 	// Показать все страницы сразу
 		if ($this->request->get('page') == 'all')
-			$filter['limit'] = $feedbacks_count;
+			$filter['limit'] = $feedback_count;
 
-		$feedbacks = $this->feedbacks->get_feedbacks($filter, true);
+		$feedback = $this->feedback->get_feedback($filter, true);
 
-		$this->design->assign('pages_count', ceil($feedbacks_count / $filter['limit']));
+		$this->design->assign('pages_count', ceil($feedback_count / $filter['limit']));
 		$this->design->assign('current_page', $filter['page']);
 
-		$this->design->assign('feedbacks', $feedbacks);
-		$this->design->assign('feedbacks_count', $feedbacks_count);
+		$this->design->assign('feedback', $feedback);
+		$this->design->assign('feedback_count', $feedback_count);
 
-		return $this->design->fetch('feedbacks.tpl');
+		return $this->design->fetch('feedback.tpl');
 	}
 }
 

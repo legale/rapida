@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Класс уведомлений
@@ -6,7 +7,14 @@
 
 class Notify extends Simpla
 {
-	function email($to, $subject, $message, $from = '', $reply_to = '')
+    /**
+     * @param $to
+     * @param $subject
+     * @param $message
+     * @param string $from
+     * @param string $reply_to
+     */
+    function email($to, $subject, $message, $from = '', $reply_to = '')
 	{
 		$headers = "MIME-Version: 1.0\n";
 		$headers .= "Content-type: text/html; charset=utf-8; \r\n";
@@ -19,7 +27,11 @@ class Notify extends Simpla
 		@mail($to, $subject, $message, $headers);
 	}
 
-	public function email_order_user($order_id)
+    /**
+     * @param $order_id
+     * @return bool
+     */
+    public function email_order_user($order_id)
 	{
 		if (! ($order = $this->orders->get_order(intval($order_id))) || empty($order['email'])){
 			return false;
@@ -72,7 +84,11 @@ class Notify extends Simpla
 	}
 
 
-	public function email_order_admin($order_id)
+    /**
+     * @param $order_id
+     * @return bool
+     */
+    public function email_order_admin($order_id)
 	{
 		if (! ($order = $this->orders->get_order(intval($order_id)))){
 			return false;
@@ -128,8 +144,11 @@ class Notify extends Simpla
 	}
 
 
-
-	public function email_comment_admin($comment_id)
+    /**
+     * @param $comment_id
+     * @return bool
+     */
+    public function email_comment_admin($comment_id)
 	{
 		if (! ($comment = $this->comments->get_comment(intval($comment_id))))
 			return false;
@@ -147,7 +166,12 @@ class Notify extends Simpla
 		$this->email($this->settings->comment_email, $subject, $email_template, $this->settings->notify_from_email);
 	}
 
-	public function email_password_remind($user_id, $code)
+    /**
+     * @param $user_id
+     * @param $code
+     * @return bool
+     */
+    public function email_password_remind($user_id, $code)
 	{
 		if (! ($user = $this->users->get_user(intval($user_id))))
 			return false;
@@ -164,9 +188,13 @@ class Notify extends Simpla
 		$this->design->smarty->clearAssign('code');
 	}
 
-	public function email_feedback_admin($feedback_id)
+    /**
+     * @param $feedback_id
+     * @return bool
+     */
+    public function email_feedback_admin($feedback_id)
 	{
-		if (! ($feedback = $this->feedbacks->get_feedback(intval($feedback_id))))
+		if (! ($feedback = $this->feedback->get_feedback(intval($feedback_id))))
 			return false;
 
 		$this->design->assign('feedback', $feedback);
