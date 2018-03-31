@@ -22,7 +22,7 @@ class ProductView extends View
 			
 		// Выбираем товар из базы
 		$product = $this->products->get_product((string)$product_url);
-		dtimer::log(__METHOD__ . " product array: ". var_export($product, true));
+		dtimer::log(__METHOD__ . " product found " . $product['id']);
 
 		//301 moved permanently
 		if(isset($product['url2']) && $product['url2'] === $product_url){
