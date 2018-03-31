@@ -23,21 +23,24 @@ class ProductsView extends View
         //url категории
         if (isset($this->root->uri_arr['path']['url'])) {
             $this->filter['category_url'] = $this->root->uri_arr['path']['url'];
-        } else if (isset($this->root->uri_arr['query']['cat'])){
-            $this->filter['category_url'] = $this->root->uri_arr['query']['cat'];
-        }else {
+        } else if (isset($this->root->uri_arr['query']['keyword'])) {
+            if (!empty($this->root->uri_arr['query']['cat'])) {
+                $this->filter['category_url'] = $this->root->uri_arr['query']['cat'];
+            }
+        } else {
             dtimer::log(__METHOD__ . " category url is not set! aborting.", 1);
             return false;
         }
 
         //получаем категорию
-        $cat = $this->categories->get_category($this->filter['category_url']);
-
+        if (isset($this->filter['category_url'])) {
+            $cat = $this->categories->get_category($this->filter['category_url']);
+        }
         //Остановимя если категории не существует или категория невидимая, а сессия не админская
-        if (empty($cat)) {
+        if (isset($cat) && empty($cat)) {
             dtimer::log(__METHOD__ . __LINE__ . " empty category ", 2);
             return false;
-        } elseif (!$cat['visible'] && empty($_SESSION['admin'])) {
+        } else if (isset($cat['visible']) && !$cat['visible'] && empty($_SESSION['admin'])) {
             dtimer::log(__METHOD__ . __LINE__ . " invisible category ");
             return false;
         }
@@ -45,7 +48,7 @@ class ProductsView extends View
         //REDIRECT
         //проверяем альтернативное имя
         //301 moved permanently
-        if (isset($cat['url2']) && $cat['url2'] !== $cat['url'] && $cat['url2'] == $this->filter['category_url']) {
+        if (isset($cat) && isset($cat['url2']) && $cat['url2'] !== $cat['url'] && $cat['url2'] == $this->filter['category_url']) {
             $arr = $this->root->uri_arr['path'];
             $arr['url'] = $cat['url'];
             $url = '/' . $this->root->gen_uri($arr);
@@ -64,8 +67,9 @@ class ProductsView extends View
         //REDIRECT END
 
         //добавляем в фильтр все дочерние категории
-        $this->filter['category_id'] = $cat['children'];
-
+        if (isset($cat)) {
+            $this->filter['category_id'] = $cat['children'];
+        }
 
         // Кол-во товаров на странице
         $this->filter['limit'] = $this->settings->products_num;
@@ -110,8 +114,11 @@ class ProductsView extends View
         }
 
         // Выбираем бренды, они нужны нам в шаблоне
-
-        $brands = $this->brands->get_brands(array('category_id' => $cat['children'], 'visible' => 1));
+        $brand_filter['visible'] = 1;
+        if (isset($cat['children'])) {
+            $brand_filter['category_id'] = $cat['children'];
+        }
+        $brands = $this->brands->get_brands($brand_filter);
 
         //~ print_r($brands);
         $cat['brands'] = $brands;
@@ -119,8 +126,13 @@ class ProductsView extends View
 
         // Свойства товаров
         //получим включенные для фильтра на сайте свойства товаров для конкретной категории
-        if ($features = $this->features->get_features(array('category_id' => $cat['id'], 'in_filter' => 1))) {
-            $filter['feature_id'] = array_keys($features);
+        $filter['in_filter'] = 1;
+        if (isset($cat['id'])) {
+            $filter['category_id'] = $cat['id'];
+        }
+        $features = $this->features->get_features($filter);
+        if ($features) {
+            $this->filter['feature_id'] = array_keys($features);
             $this->design->assign('features', $features);
         }
 
@@ -130,12 +142,12 @@ class ProductsView extends View
         //~ // Свойства товаров END
 
         //~ //передаем данные в шаблоны
-        $this->design->assign('category', $cat);
-
-        $this->design->assign('meta_title', $cat['meta_title']);
-        $this->design->assign('meta_keywords', $cat['meta_keywords']);
-        $this->design->assign('meta_description', $cat['meta_description']);
-
+        if (isset($cat['id'])) {
+            $this->design->assign('category', $cat);
+            $this->design->assign('meta_title', $cat['meta_title']);
+            $this->design->assign('meta_keywords', $cat['meta_keywords']);
+            $this->design->assign('meta_description', $cat['meta_description']);
+        }
         $this->design->assign('filter', $this->filter);
 
         $this->design->assign('current_page_num', $this->filter['page']);
