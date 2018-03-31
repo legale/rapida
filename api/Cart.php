@@ -169,7 +169,7 @@ class Cart extends Simpla
 	 * Очистка корзины
 	 *
 	 */
-	public function empty()
+	public function empty_cart()
 	{
 		unset($_SESSION['shopping_cart']);
 		unset($_SESSION['coupon_code']);

@@ -1,5 +1,7 @@
 <?php
-declare(strict_types=1);
+if(defined('PHP7')) {
+     eval("declare(strict_types=1);");
+}
 
 /**
  * Класс для доступа к базе данных
