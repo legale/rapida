@@ -1,24 +1,53 @@
 <?php
+declare(strict_types=1);
 
 require_once ('Simpla.php');
 
-class Curl extends Simpla 
+/**
+ * Class Curl
+ */
+class Curl extends Simpla
 {
 
 	//curl handle
-	public $ch;
+    /**
+     * @var
+     */
+    public $ch;
 	
 	//curl data and header
-	public $curl_data = '';
-	public $curl_content_length = 0;
-	public $curl_headers = array();
+    /**
+     * @var string
+     */
+    public $curl_data = '';
+    /**
+     * @var int
+     */
+    public $curl_content_length = 0;
+    /**
+     * @var array
+     */
+    public $curl_headers = array();
 	
 	//other vars
-	public $fopen; //file handle
-	public $tmp; //tmp filepath
-	public $lastbyte = '';
-	
-	public function download($src){
+    /**
+     * @var
+     */
+    public $fopen; //file handle
+    /**
+     * @var
+     */
+    public $tmp; //tmp filepath
+    /**
+     * @var string
+     */
+    public $lastbyte = '';
+
+    /**
+     * @param $src
+     * @return bool
+     */
+    public function download($src){
 		dtimer::log(__METHOD__ . " start $src");
 		$localbyte = '';
 		
@@ -71,7 +100,12 @@ class Curl extends Simpla
 	
 	}
 
-	private function callbackheader($ch, $hdr) { 
+    /**
+     * @param $ch
+     * @param $hdr
+     * @return int
+     */
+    private function callbackheader($ch, $hdr) {
 		dtimer::log(__METHOD__ . " start curl header: $hdr");
 		//закрываем файл для записи данных, если он еще открыт
 		if(is_resource($this->fopen) ){
@@ -97,9 +131,14 @@ class Curl extends Simpla
 		//~ unset($this->curl_headers['content-length']); //for testing 
 			
 		return strlen($hdr); 
-	} 
-	
-	private function callbackdata($ch, $data){
+	}
+
+    /**
+     * @param $ch
+     * @param $data
+     * @return int
+     */
+    private function callbackdata($ch, $data){
 		dtimer::log(__METHOD__ . " start written data length: ".$this->curl_content_length);
 		$len = strlen($data);
 		$this->curl_content_length += $len;
@@ -121,8 +160,13 @@ class Curl extends Simpla
 
 		return $len;
 	}
-	
-	public function filecheck($remote, $local){
+
+    /**
+     * @param $remote
+     * @param $local
+     * @return bool
+     */
+    public function filecheck($remote, $local){
 		dtimer::log(__METHOD__ . " start remote: $remote local: $local");
 
 		$rfs = $this->remote_filesize($remote);
@@ -158,7 +202,12 @@ class Curl extends Simpla
 	}
 
 
-	public function curl_open($src, $options = array() ){
+    /**
+     * @param $src
+     * @param array $options
+     * @return resource
+     */
+    public function curl_open($src, $options = array() ){
 		dtimer::log(__METHOD__ . " start $src");
 		
 		if(empty($this->ch)){
@@ -207,7 +256,10 @@ class Curl extends Simpla
 		return $this->ch;
 	}
 
-	public function curl_exec(){
+    /**
+     * @return bool|mixed
+     */
+    public function curl_exec(){
 		
 		if($this->ch === null){
 			dtimer::log(__METHOD__ . " please open curl session first", 1);
@@ -216,8 +268,11 @@ class Curl extends Simpla
 		
 		return curl_exec($this->ch);
 	}
-	
-	public function curl_close(){
+
+    /**
+     * @return bool
+     */
+    public function curl_close(){
 		
 		if($this->ch === null){
 			dtimer::log(__METHOD__ . " please open curl session first", 1);
@@ -228,10 +283,13 @@ class Curl extends Simpla
 		return true;
 	}
 
-	public function open_tmp(){
+    /**
+     * @return bool
+     */
+    public function open_tmp(){
 		dtimer::log(__METHOD__ . ' start');
 		if(!is_resource($this->fopen)){
-			$this->tmp = tempnam(sys_get_temp_dir() , 'curl_tmp');
+			$this->tmp = tempnam($this->config->root_dir . 'tmp' , 'curl_tmp');
 			$this->fopen = fopen($this->tmp, 'w+');
 		return true;
 		}else{
@@ -239,8 +297,11 @@ class Curl extends Simpla
 			return false;
 		}
 	}
-	
-	public function close_tmp(){
+
+    /**
+     * @return bool
+     */
+    public function close_tmp(){
 		dtimer::log(__METHOD__ . ' start');
 		if(is_resource($this->fopen)){
 			fclose($this->fopen);
@@ -252,8 +313,11 @@ class Curl extends Simpla
 	}
 
 
-
-	public function remote_filesize($src){
+    /**
+     * @param $src
+     * @return bool|int
+     */
+    public function remote_filesize($src){
 		dtimer::log(__METHOD__ . " start $src");
 		$src = $this->get_link($src);
 		
@@ -266,9 +330,13 @@ class Curl extends Simpla
 			return false;
 		}
 	}
-	
-	
-	public function get_link($src){
+
+
+    /**
+     * @param $src
+     * @return bool
+     */
+    public function get_link($src){
 		dtimer::log(__METHOD__ . " start $src");
 		$opt = array(
 			CURLOPT_URL => $src, // устанавливаем URL
@@ -297,10 +365,14 @@ class Curl extends Simpla
 		}
 	}
 
-	
-	
 
-	public function read_remote($src, $offset, $length) {
+    /**
+     * @param $src
+     * @param $offset
+     * @param $length
+     * @return bool|mixed
+     */
+    public function read_remote($src, $offset, $length) {
 
 		$hdr = array("Range: bytes=".$offset."-".($offset + $length));
 		dtimer::log(__METHOD__ . " range header: '$hdr[0]'" );

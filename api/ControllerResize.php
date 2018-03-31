@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
  * Это класс контроллера XHR запросов, для доступа к API. 
@@ -8,24 +9,55 @@
 
 require_once('Simpla.php');
 
+/**
+ * Class ControllerResize
+ */
 class ControllerResize extends Simpla
 {
+    /**
+     * @var
+     */
     private $uri;
+    /**
+     * @var null
+     */
     private $type;
+    /**
+     * @var null
+     */
     private $basename;
+    /**
+     * @var null
+     */
     private $w;
+    /**
+     * @var null
+     */
     private $h;
-    private $debug = false; //set false for production
+    /**
+     * @var
+     */
+    private $id;
+    /**
+     * @var bool
+     */
+    private $debug = false; //set false for production or true to debug
 
+    /**
+     * ControllerResize constructor.
+     */
     public function __construct()
     {
         dtimer::$enabled = $this->debug ? true : false;
         dtimer::log(__METHOD__ . ' start');
-        //['dir'][0] - is the first part (ex: products) ['dir'][1] is the second (ex: resize)
+
         $this->uri = $this->root->uri_arr;
 
-        $this->type = isset($this->uri['path']['dir'][0])
-            ? $this->uri['path']['dir'][0] : null;
+        $this->type = isset($this->uri['path']['dir'])
+            ? $this->uri['path']['dir'] : null;
+
+        $this->type = isset($this->uri['path']['id'])
+            ? $this->uri['path']['dir'] : null;
 
         $this->w = isset($this->uri['path']['size'][0])
             ? $this->uri['path']['size'][0] : null;
@@ -37,14 +69,17 @@ class ControllerResize extends Simpla
             ? $this->uri['path']['basename'] : null;
     }
 
+    /**
+     * @return bool
+     */
     public function action()
     {
         dtimer::log(__METHOD__ . ' start');
-        $image_id = isset($this->uri['path']['dir'][1])
-            ? (int)$this->uri['path']['dir'][1] : null;
+        $image_id = isset($this->uri['path']['id'])
+            ? (int)$this->uri['path']['id'] : null;
 
-        $q = isset($this->uri['query_arr'])
-            ? $this->uri['query_arr'] : null;
+        $q = isset($this->uri['query'])
+            ? $this->uri['query'] : null;
 
 
         if (isset($q['scheme'], $image_id)) {
@@ -63,14 +98,18 @@ class ControllerResize extends Simpla
             //так вывод будет средсвами php
             //$this->read($this->config->root_dir . $filepath);
             
-            //так через nginx
-			header("HTTP/1.1 301 Moved Permanently"); 
-			header("Location: /$filepath");            
+            //так через веб сервер
+			header("HTTP/1.1 301 Moved Permanently");
+			header("Location: /$filepath");
             exit();
         }
         return true;
     }
 
+    /**
+     * @param $image_id
+     * @return bool
+     */
     private function download($image_id)
     {
         dtimer::log(__METHOD__ . " start image_id: $image_id");
@@ -98,6 +137,12 @@ class ControllerResize extends Simpla
         }
     }
 
+    /**
+     * @param $basename
+     * @param $w
+     * @param $h
+     * @return bool
+     */
     private function resize($basename, $w, $h)
     {
         dtimer::log(__METHOD__ . " start basename: $basename w: $w h: $h");
@@ -108,6 +153,10 @@ class ControllerResize extends Simpla
         return $this->image->resize('img/' . $this->type . '/' . $basename, $w, $h);
     }
 
+    /**
+     * @param $res
+     * @return bool
+     */
     private function read($res)
     {
         dtimer::log(__METHOD__ . " start file: $res");

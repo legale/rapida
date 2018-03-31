@@ -1,7 +1,7 @@
 {* Вкладки *}
 {capture name=tabs}
 	<li class="active"><a href="?module=CommentsAdmin">Комментарии</a></li>
-	{if isset($userperm['feedbacks'])}<li><a href="?module=FeedbacksAdmin">Обратная связь</a></li>{/if}
+	{if isset($userperm['feedback'])}<li><a href="?module=FeedbackAdmin">Обратная связь</a></li>{/if}
 {/capture}
 
 

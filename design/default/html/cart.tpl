@@ -251,11 +251,11 @@ function searchdel_item(e){
 
 	if(e.getAttribute('varid') === null){
 		searchdel_item(e.parentNode);
-		return;
+
 	}else if ( e.getAttribute('varid') !== null ) {
 		console.log("found: " + e.getAttribute('varid') );
 		delete_item(e);
-		return;
+
 	}
 }
 

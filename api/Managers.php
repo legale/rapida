@@ -1,27 +1,32 @@
 <?php
+declare(strict_types=1);
 
-/**
- * Simpla CMS
- *
- * @copyright	2011 Denis Pikusov
- * @link		http://simplacms.ru
- * @author		Denis Pikusov
- *
- */
 
 require_once ('Simpla.php');
 
+/**
+ * Class Managers
+ */
 class Managers extends Simpla
 {
-	public $permissions_list = array(
+    /**
+     * @var array
+     */
+    public $permissions_list = array(
 		'products', 'categories', 'brands', 'features', 'orders', 'labels',
-		'users', 'groups', 'coupons', 'pages', 'blog', 'comments', 'feedbacks', 'import', 'export',
+		'users', 'groups', 'coupons', 'pages', 'blog', 'comments', 'feedback', 'import', 'export',
 		'backup', 'stats', 'design', 'settings', 'currency', 'delivery', 'payment', 'managers', 'license'
 	);
 
-	public $passwd_file = "simpla/.passwd";
+    /**
+     * @var string
+     */
+    public $passwd_file = "simpla/.passwd";
 
-	public function __construct()
+    /**
+     * Managers constructor.
+     */
+    public function __construct()
 	{
 		// Для совмсестимости с режимом CGI
 		if (isset($_SERVER['REDIRECT_REMOTE_USER']) && empty($_SERVER['PHP_AUTH_USER']))
@@ -34,7 +39,10 @@ class Managers extends Simpla
 		}
 	}
 
-	public function get_managers()
+    /**
+     * @return array
+     */
+    public function get_managers()
 	{
 		$lines = explode("\n", @file_get_contents(dirname(dirname(__FILE__)) . '/' . $this->passwd_file));
 		$managers = array();
@@ -62,12 +70,19 @@ class Managers extends Simpla
 		return $managers;
 	}
 
-	public function count_managers($filter = array())
+    /**
+     * @param array $filter
+     * @return int
+     */
+    public function count_managers($filter = array())
 	{
 		return count($this->get_managers());
 	}
 
-	public function get_manager()
+    /**
+     * @return array
+     */
+    public function get_manager()
 	{
 		$manager = array();
 		$manager['login'] = $_SESSION['admin'];
@@ -76,7 +91,11 @@ class Managers extends Simpla
 		return $manager;
 	}
 
-	public function add_manager($manager)
+    /**
+     * @param $manager
+     * @return bool|mixed
+     */
+    public function add_manager($manager)
 	{
 		$manager = (array)$manager;
 		if (!empty($manager['login']))
@@ -109,7 +128,12 @@ class Managers extends Simpla
 			return false;
 	}
 
-	public function update_manager($login, $manager)
+    /**
+     * @param $login
+     * @param $manager
+     * @return bool|mixed
+     */
+    public function update_manager($login, $manager)
 	{
 		$manager = (array)$manager;
 		// Не допускаем двоеточия в логине
@@ -154,7 +178,11 @@ class Managers extends Simpla
 		return false;
 	}
 
-	public function delete_manager($login)
+    /**
+     * @param $login
+     * @return bool
+     */
+    public function delete_manager($login)
 	{
 		$lines = explode("\n", @file_get_contents($this->passwd_file));
 		foreach ($lines as $i => $line)
@@ -167,7 +195,11 @@ class Managers extends Simpla
 		return true;
 	}
 
-	private function crypt_apr1_md5($plainpasswd)
+    /**
+     * @param $plainpasswd
+     * @return string
+     */
+    private function crypt_apr1_md5($plainpasswd)
 	{
 		$salt = substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8);
 		$len = strlen($plainpasswd);
@@ -204,7 +236,11 @@ class Managers extends Simpla
 		return "$" . "apr1" . "$" . $salt . "$" . $tmp;
 	}
 
-	public function access($module)
+    /**
+     * @param $module
+     * @return bool
+     */
+    public function access($module)
 	{	
 		$manager = $this->get_manager();
 		if (is_array($manager['permissions']))

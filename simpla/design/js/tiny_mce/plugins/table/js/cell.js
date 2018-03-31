@@ -8,7 +8,7 @@ function init() {
 
 	document.getElementById('backgroundimagebrowsercontainer').innerHTML = getBrowserHTML('backgroundimagebrowser','backgroundimage','image','table');
 	document.getElementById('bordercolor_pickcontainer').innerHTML = getColorPickerHTML('bordercolor_pick','bordercolor');
-	document.getElementById('bgcolor_pickcontainer').innerHTML = getColorPickerHTML('bgcolor_pick','bgcolor')
+	document.getElementById('bgcolor_pickcontainer').innerHTML = getColorPickerHTML('bgcolor_pick','bgcolor');
 
 	var inst = ed;
 	var tdElm = ed.dom.getParent(ed.selection.getStart(), "td,th");
@@ -102,9 +102,8 @@ function updateAction() {
 					inst.execCommand('mceEndUndoLevel');
 					tinyMCEPopup.close();
 				}
-			};
-
-			if (ed.getParam("accessibility_warnings", 1)) {
+            }
+            if (ed.getParam("accessibility_warnings", 1)) {
 				if (celltype == "th" && scope == "")
 					tinyMCEPopup.confirm(ed.getLang('table_dlg.missing_scope', '', true), doUpdate);
 				else

@@ -2,8 +2,15 @@
 use PHPUnit\Framework\TestCase;
 
 require_once('../api/Database.php');
-require_once('C:/cygwin64/home/ru/composer/vendor/autoload.php');
 
+$winpath = 'd:/cygwin64/home/ru/vendor/autoload.php';
+$cygpath = '/cygdrive/d/cygwin64/home/ru/vendor/autoload.php';
+
+if(file_exists($winpath) && is_readable($winpath)){
+    require_once($winpath);
+}else if (file_exists($cygpath) && is_readable($cygpath)){
+    require_once($cygpath);
+}
 
 class TestDatabase extends TestCase
 {

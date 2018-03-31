@@ -63,7 +63,7 @@
 		<li><a href="?module=BlogAdmin"><img src="design/images/menu/blog.png"><b>Блог</b></a></li>
 	{/if}
 		
-	{if !empty(array_intersect_key( $userperm, array_flip(array('comments','feedbacks','coupons')) ))}
+	{if !empty(array_intersect_key( $userperm, array_flip(array('comments','feedback','coupons')) ))}
 		<li>
 			<a href="?module=CommentsAdmin"><img src="design/images/menu/comments.png"><b>Комментарии</b></a>
 			{if $new_comments_counter}<div class='counter'><span>{$new_comments_counter}</span></div>{/if}

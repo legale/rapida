@@ -8,8 +8,8 @@ window.ra = {
 		}
 		for (var i = 0; i < obj.length; i++) {
 			cb(obj[i]);
-		};
-		return true;
+        }
+        return true;
 	},
 	
 	parse_uri: function(uri){
@@ -111,7 +111,7 @@ window.ra = {
 
 	addwishlist: function ( pid ) {
 		"use strict";
-		window.document.cookie
+		window.document.cookie;
 		return xhr;
 	},
 
@@ -271,7 +271,7 @@ window.ra = {
 				}else if(xhr.readyState > 3 && xhr.status!=200){
 					no({status: xhr.status, statusText: xhr.statusText});
 				}
-			}
+			};
 			//send request
 			xhr.send();
 		});
@@ -321,7 +321,7 @@ window.ra = {
 		return res;
 	}
 
-	}
+	};
 
 window.ra.api = function( data, success ) {
 	"use strict";
@@ -346,4 +346,4 @@ window.ra.api = function( data, success ) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.send(params);
 	return xhr;
-}
+};
