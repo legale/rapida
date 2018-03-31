@@ -1,5 +1,10 @@
 <?php
-declare(strict_types=1);
+if(PHP_VERSION_ID >= 70000) {
+    define('PHP7', true);
+}
+if(defined("PHP7")) {
+    eval("declare(strict_types=1);");
+}
 /**
  * @param $fu
  * @param $arg
@@ -328,7 +333,8 @@ class Simpla
             setlocale(LC_ALL, $this->config->locale);
             //кеш включается через статичекую переменную класса
             /** @var cache $enabled */
-            $this->cache::$enabled = $this->config->cache;
+            $cache_class = $this->cache;
+            $cache_class::$enabled = $this->config->cache;
         }
 
     }

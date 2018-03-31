@@ -1,5 +1,7 @@
 <?PHP
-declare(strict_types=1);
+if(defined('PHP7')) {
+     eval("declare(strict_types=1);");
+}
 require_once('api/Simpla.php');
 
 class ImportYmlAdmin extends Simpla

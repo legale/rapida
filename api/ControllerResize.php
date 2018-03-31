@@ -1,5 +1,7 @@
 <?php
-declare(strict_types=1);
+if(defined('PHP7')) {
+     eval("declare(strict_types=1);");
+}
 
 /*
  * Это класс контроллера XHR запросов, для доступа к API. 
