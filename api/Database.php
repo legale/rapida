@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 /**
@@ -217,7 +217,7 @@ class Database extends Simpla
 
         $results = new stdClass();
 
-        if ( isset($group_field, $field)) {
+        if (isset($group_field, $field)) {
             while ($row = $this->res->fetch_object()) {
                 if (isset($row->$group_field)) {
                     $results->{$row->$group_field} = $row->$field;
