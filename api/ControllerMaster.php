@@ -142,6 +142,13 @@ class ControllerMaster extends Simpla
             }
         }
 
+        if (isset($filter['page'], $arr['page'])) {
+            unset($arr['page']);
+        }
+        if (isset($filter['sort'], $arr['sort'])) {
+            unset($arr['sort']);
+        }
+
         if (isset($filter)) {
             $arr = $this->merge_arrays_keys($arr, $filter);
         }

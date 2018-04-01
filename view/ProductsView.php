@@ -85,6 +85,18 @@ class ProductsView extends View
             header("Location: $uri", TRUE, 301);
         }
 
+        //сделаем массив для пагинации
+        $range = 12;
+        $total = $this->filter['pages'];
+        $page = $this->filter['page'];
+        $first = max(1, $page - $range / 2);
+        $last = min( $first + $range, $total);
+        $this->filter['nav']['first'] = $first;
+        $this->filter['nav']['last'] = $last;
+        $this->filter['nav']['left'] = $page > 1 ? $page - 1 : null;
+        $this->filter['nav']['right'] = $last > $page ? $page + 1 : null;
+
+
         // Товары получаем их сразу массивом
         $products = $this->products->get_products($this->filter);
 
@@ -149,10 +161,6 @@ class ProductsView extends View
             $this->design->assign('meta_description', $cat['meta_description']);
         }
         $this->design->assign('filter', $this->filter);
-
-        $this->design->assign('current_page_num', $this->filter['page']);
-        $this->design->assign('total_pages_num', $this->filter['pages']);
-        $this->design->assign('total_products_num', $this->filter['products_count']);
 
         $this->body = $this->design->fetch('products.tpl');
         dtimer::log(__METHOD__ . " return ");

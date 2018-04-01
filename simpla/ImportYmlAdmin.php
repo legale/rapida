@@ -235,7 +235,6 @@ class ImportYmlAdmin extends Simpla
         $mystery_string = file_get_contents($realpath, false, null, 0, 50);
 
         if (mb_strpos($mystery_string, "\x1f" . "\x8b" . "\x08") !== false) {
-            ;
             return true;
         }
     }
