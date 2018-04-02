@@ -212,7 +212,7 @@ function dbconfig()
 				$conf .= "\n[db]\n";
 			}
 			$count = '';
-			$conf = preg_replace("/db_name.*;/i", 'db_name = "'.$dbname.'";', $conf, -1, $count);
+			$conf = preg_replace("/^db_name.*;/i", 'db_name = "'.$dbname.'";', $conf, -1, $count);
 			if ($count == 0){
 				$conf .= "\n;database name\ndb_name = \"$dbname\";\r\n";
 			}
