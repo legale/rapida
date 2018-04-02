@@ -19,12 +19,14 @@ class SettingsAdmin extends Simpla
 
             $this->settings->site_name = $this->request->post('site_name');
             $this->settings->company_name = $this->request->post('company_name');
+            $this->settings->address = $this->request->post('address');
+            $this->settings->phone = $this->request->post('phone');
+
             $this->settings->date_format = $this->request->post('date_format');
             $this->settings->admin_email = $this->request->post('admin_email');
 
             $this->settings->order_email = $this->request->post('order_email');
             $this->settings->comment_email = $this->request->post('comment_email');
-            $this->settings->phone = $this->request->post('phone');
             $this->settings->notify_from_email = $this->request->post('notify_from_email');
 
             $this->settings->decimals_point = $this->request->post('decimals_point');

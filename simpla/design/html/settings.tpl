@@ -72,7 +72,7 @@
         <h2>Коды счетчиков</h2>
         <ul>
             <li><label class=property>Яндекс метрика</label><input name="yandex_metric" class="simpla_inp" type="text"
-                                                              value="{$settings->yandex_metric|escape}"/></li>
+                                                                   value="{$settings->yandex_metric|escape}"/></li>
             </li>
         </ul>
     </div>
@@ -84,19 +84,21 @@
                                                               value="{$settings->site_name|escape}"/></li>
             <li><label class=property>Имя компании</label><input name="company_name" class="simpla_inp" type="text"
                                                                  value="{$settings->company_name|escape}"/></li>
+            <li><label class=property>Телефон</label><input name="phone" class="simpla_inp" type="text"
+                                                            value="{$settings->phone|escape}"/></li>
+            <li><label class=property>Адрес</label><input name="address" class="simpla_inp" type="text"
+                                                          value="{$settings->address|escape}"/></li>
             <li><label class=property>Формат даты</label><input name="date_format" class="simpla_inp" type="text"
                                                                 value="{$settings->date_format|escape}"/></li>
-            <li><label class=property>Email для восстановления пароля</label><input name="admin_email"
-                                                                                    class="simpla_inp" type="text"
-                                                                                    value="{$settings->admin_email|escape}"/>
             </li>
         </ul>
     </div>
     <div class="block layer">
-        <h2>Оповещения</h2>
+        <h2>Почтовые адреса</h2>
         <ul>
-            <li><label class=property>Телефон</label><input name="phone" class="simpla_inp" type="text"
-                                                            value="{$settings->phone|escape}"/></li>
+            <li><label class=property>Email для восстановления пароля</label><input name="admin_email"
+                                                                                    class="simpla_inp" type="text"
+                                                                                    value="{$settings->admin_email|escape}"/>
             <li><label class=property>Оповещение о заказах</label><input name="order_email" class="simpla_inp"
                                                                          type="text"
                                                                          value="{$settings->order_email|escape}"/></li>
