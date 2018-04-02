@@ -106,7 +106,9 @@
 		<td align="center" style="padding:6px; width:100; padding:6px; background-color:#ffffff; border:1px solid #e0e0e0;font-family:arial;">
 			{$image = $purchase['product']['image']}
 			{$image_id = $purchase['product']['image_id']}
-			<a href="{$config->root_url}/products/{$purchase['product']['url']}"><img border="0" src="{$config->root_url}{$image|resize:products:$image_id:50:50}"></a>
+			<a href="{$config->root_url}/products/{$purchase['product']['url']}">
+				<img border="0" src="{$config->root_url}{$image|resize:products:$image_id:50:50}">
+			</a>
 		</td>
 		<td style="padding:6px; width:250; padding:6px; background-color:#f0f0f0; border:1px solid #e0e0e0;font-family:arial;">
 			<a href="{$config->root_url}/products/{$purchase['product']['url']}">{$purchase['product_name']}</a>
