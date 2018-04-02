@@ -118,12 +118,7 @@ class ProductsView extends View
 
         $this->design->assign('products', $products);
 
-        //ajax
-        if (isset($_GET['ajax'])) {
-            $html = $this->design->fetch('products_content.tpl');
-            print json_encode($html);
-            die;
-        }
+
 
         // Выбираем бренды, они нужны нам в шаблоне
         $brand_filter['visible'] = 1;
@@ -153,6 +148,17 @@ class ProductsView extends View
         }
         //~ // Свойства товаров END
 
+        //передаем фильтр
+        $this->design->assign('filter', $this->filter);
+
+
+        //ajax
+        if (isset($_GET['ajax'])) {
+            $html = $this->design->fetch('products_content.tpl');
+            print json_encode($html);
+            die;
+        }
+
         //~ //передаем данные в шаблоны
         if (isset($cat['id'])) {
             $this->design->assign('category', $cat);
@@ -160,7 +166,7 @@ class ProductsView extends View
             $this->design->assign('meta_keywords', $cat['meta_keywords']);
             $this->design->assign('meta_description', $cat['meta_description']);
         }
-        $this->design->assign('filter', $this->filter);
+
 
         $this->body = $this->design->fetch('products.tpl');
         dtimer::log(__METHOD__ . " return ");

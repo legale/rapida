@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 require_once('../../api/Simpla.php');
 
 $simpla = new Simpla();
