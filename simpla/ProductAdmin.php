@@ -23,10 +23,10 @@ class ProductAdmin extends Simpla
         // Для каждого сценария сделаем свою функцию, чтобы не мешать все в 1 кучу.
 
         //1 сценарий - открытие товара
-        if (empty($_POST) && !empty_(@$_GET['id'])) {
+        if (empty($_POST) && isset($_GET['id'])) {
             $this->open($_GET['id']);
         } //2 сценарий - открытие страницы создания товара
-        elseif (empty($_POST) && empty_(@$_GET['id'])) {
+        elseif (empty($_POST) && !isset($_GET['id'])) {
             $this->create();
             //3-4 сценарии отличаются незначительно поэтому их соединим вместе
         } elseif (!empty($_POST)) {
@@ -38,7 +38,7 @@ class ProductAdmin extends Simpla
     //1. сценарий. Простое открытие существующего товара
     private function open($pid)
     {
-        dtimer::log(__METHOD__ . " start");
+        dtimer::log(__METHOD__ . " start pid: $pid");
 
         //Сначала мы все получим из моделей
         $product = $this->products->get_product((int)$pid);
@@ -155,16 +155,18 @@ class ProductAdmin extends Simpla
     {
         dtimer::log(__METHOD__ . " start");
 
-        if (!empty_(@$p['id'])) {
-            dtimer::log(__METHOD__ . " update");
-            $pid = $this->products->update_product($p);
-            if ($pid === false) {
+        if (!empty($p['id'])) {
+            $pid = $p['id'];
+            dtimer::log(__METHOD__ . " update pid: $pid");
+
+            if (!$this->products->update_product($p)) {
                 $this->status[] = array(
                     'status' => 1,
                     'message' => 'Не удалось обновить товар',
                 );
                 return false;
             }
+
             dtimer::log(__METHOD__ . " update ok $pid");
             return $pid;
         }
@@ -228,35 +230,35 @@ class ProductAdmin extends Simpla
             return false;
         }
 
+        $keep = array_flip(array_diff($raw, array('')));
 
         //тут будут id категорий, которые удалять не нужно
-        $keep = array_flip($raw);
         //тут существующие
         $saved = $this->categories->get_product_categories($pid);
-        if (is_array(@$saved)) {
-            foreach ($saved as $id => $k) {
-                if (!isset($keep[$id])) {
-                    $this->categories->delete_product_category($pid, $id);
+        if ($saved && is_array($saved)) {
+            foreach ($saved as $cid => $k) {
+                if (!isset($keep[$cid])) {
+                    $this->categories->delete_product_category($pid, $cid);
                     $this->status[] = array(
                         'status' => 3,
-                        'message' => "Удалена категория $id",
+                        'message' => "Удалена категория $cid",
                     );
+                }else{
+                    unset($keep[$cid]);
                 }
             }
         }
 
-        //тут поменяем порядок связанных товаров и добавим новые
-        for ($i = 0, $c = count($raw); $i < $c; $i++) {
-            if (empty_(@$raw[$i])) {
-                continue;
-            }
-            $cid = $this->categories->add_product_category($pid, $raw[$i], $i);
+        $i = 0;
+        foreach ($keep as $cid=>$k) {
+            $this->categories->add_product_category($pid, $cid, $i);
             $this->status[] = array(
                 'status' => 3,
-                'message' => "Добавлена категория $cid",
+                'message' => "Добавлена категория $cid на позицию $i",
             );
+            $i++;
         }
-        return;
+        return true;
     }
 
     private function save_images($pid, $raw)
@@ -272,7 +274,9 @@ class ProductAdmin extends Simpla
             $keep = array();
         }
         //тут существующие
-        if ($saved = $this->image->get('products', array('item_id' => $pid))) {
+        $saved = $this->image->get('products', array('item_id' => $pid));
+        dtimer::log(__METHOD__."current images: ".var_export($saved, true));
+        if ($saved !== false) {
             foreach ($saved as $id => $img) {
                 if (!isset($keep[$id])) {
                     $this->image->delete('products', $id);
@@ -282,6 +286,8 @@ class ProductAdmin extends Simpla
                     );
                 }
             }
+        }else{
+
         }
 
         //тут поменяем порядок изображений
@@ -313,6 +319,10 @@ class ProductAdmin extends Simpla
 
 
             if ($img = $this->image->upload('products', $pid, $raw['tmp_name'][$k], $raw['name'][$k])) {
+                $this->status[] = array(
+                    'status' => 3,
+                    'message' => "Добавлено изображение $name",
+                );
                 dtimer::log(__METHOD__ . " image uploaded " . $img['basename']);
                 continue;
             }
@@ -379,10 +389,10 @@ class ProductAdmin extends Simpla
             $pos++;
 
             if (!empty_(@$v['id'])) {
-                if ($this->variants->update_variant($v) === false) {
+                if (!$this->variants->update_variant($v)) {
                     $this->status[] = array(
                         'status' => 2,
-                        'message' => 'Не удалось обновить вариант' . $v['sku'],
+                        'message' => 'Не удалось обновить вариант ' . $v['sku'],
                     );
                 }
             } else {

@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 require_once('Simpla.php');
@@ -25,14 +25,14 @@ class Image extends Simpla
     }
 
     /**
-     * Универсальный метод для добавления изображений
+     * Универсальный метод для удаления изображений
      * @param $type
      * @param $id
      * @return bool
      */
     public function delete($type, $id)
     {
-        dtimer::log(__METHOD__ . " type: $type start id: $id");
+        dtimer::log(__METHOD__ . " start type: $type id: $id");
         //check if type is allowed
         if (!$this->type_check($type)) {
             return false;
@@ -43,8 +43,8 @@ class Image extends Simpla
         //id existence check
         $this->db->query("SELECT * FROM $table WHERE `id` = $id");
         $image = $this->db->result_array();
-        if (empty_($image)) {
-            dtimer::log(__METHOD__ . " id: $id not exists!", 1);
+        if (empty($image)) {
+            dtimer::log(__METHOD__ . " id: $id not exists! unable to delete, abort!", 1);
             return false;
         }
 
@@ -58,28 +58,31 @@ class Image extends Simpla
 
         extract($image);
 
-        //check if image has pos == 0
-        if ($pos == 0) {
-            dtimer::log(__METHOD__ . " pos 0 image detected. Trying to find next image with the same item_id: $item_id");
-            $image2 = $this->get($type, array('item_id' => $item_id));
-            if (!$image2) {
-                $this->db->query("UPDATE `__$type` SET image = '', image_id = '' ");
-                dtimer::log(__METHOD__ . " unable to get next image with item_id: $item_id");
-            } else {
-                $image2 = reset($image2);
-                $id2 = $image['id'];
-                $image2['pos'] = 0;
-                dtimer::log(__METHOD__ . " next image with item_id: $item_id found! id: $id2. Trying to set pos = 0");
-                $this->update($type, $id2, $image2);
-            }
-        }
-
         $q = $this->db->placehold("DELETE FROM `$table` WHERE `id`=?", $id);
         if ($this->db->query($q)) {
             dtimer::log(__METHOD__ . " image with id: $id deleted!");
         } else {
             dtimer::log(__METHOD__ . " unable to delete image with id: $id ", 1);
             return false;
+        }
+
+        //check if image has pos == 0
+        if ((int)$pos === 0) {
+            $item_table = $this->config->db_prefix . $type;
+            dtimer::log(__METHOD__ . " pos 0 image detected!");
+            $image2 = $this->get($type, array('item_id' => $item_id));
+            dtimer::log(__METHOD__ . " image array: " . var_export($image2, true));
+            if ($image2 === false) {
+                dtimer::log(__METHOD__ . " unable to get next image with item_id: $item_id");
+                dtimer::log(__METHOD__ . "Trying to delete image in the table $type with item_id: $item_id");
+                $this->db->query("UPDATE $item_table SET image = '', image_id = 0 WHERE id = $item_id");
+            } else {
+                $image2 = reset($image2);
+                $id2 = $image2['id'];
+                $image2['pos'] = 0;
+                dtimer::log(__METHOD__ . " next image with item_id: $item_id found! id: $id2. Trying to set pos = 0");
+                $this->update($type, $id2, $image2);
+            }
         }
 
         //remove image files
@@ -175,7 +178,7 @@ class Image extends Simpla
         if (isset($pos) && $pos === 0) {
             dtimer::log(__METHOD__ . " new pos 0 image detected. Trying to update table __$type");
             $basename = $image['basename'];
-            if ($this->db->query("UPDATE `__$type` SET `image` = '$basename', image_id = $id  WHERE `id`=$item_id")) {
+            if ($this->db->query("UPDATE `__$type` SET `image` = '$basename', `image_id` = $id  WHERE `id`=$item_id")) {
             } else {
                 dtimer::log(__METHOD__ . " unable to update image table: __$type id: $item_id", 1);
                 return false;
@@ -312,7 +315,7 @@ class Image extends Simpla
         }
 //        print $dst_absolute;
 //        return false;
-        return $res ? $dst : false ;
+        return $res ? $dst : false;
     }
 
     /**
@@ -653,7 +656,7 @@ class Image extends Simpla
         }
 
         // Имя оригинального файла
-        if(!isset($url)){
+        if (!isset($url)) {
             return false;
         }
         $pi = pathinfo($url);
@@ -746,7 +749,7 @@ class Image extends Simpla
         dtimer::log(__METHOD__ . " item_id existence check");
         if (!$skip_item_check && !$this->item_exists($type, $item_id)) {
             return false;
-        }else{
+        } else {
             dtimer::log(__METHOD__ . " item_id check skipped");
         }
 
@@ -834,7 +837,7 @@ class Image extends Simpla
         $id = $id_;
 
         //get image
-        if ( false === ($image = $this->get($type, array('id' => $id)))) {
+        if (false === ($image = $this->get($type, array('id' => $id)))) {
             dtimer::log(__METHOD__ . " unable to get image with id: $id. aborting!", 1);
             return false;
         }
@@ -846,7 +849,7 @@ class Image extends Simpla
 
         //url check
         dtimer::log(__METHOD__ . " url check");
-        if(!$this->is_url($url)){
+        if (!$this->is_url($url)) {
             dtimer::log(__METHOD__ . " is not an url basename: $url", 1);
             return false;
         }
@@ -861,7 +864,7 @@ class Image extends Simpla
             return false;
         }
 
-        dtimer::log(__METHOD__." before curl download via curl  ");
+        dtimer::log(__METHOD__ . " before curl download via curl  ");
         if (!$tmp = $this->curl->download($url)) {
             dtimer::log(__METHOD__ . " download failed");
             return false;
@@ -875,14 +878,14 @@ class Image extends Simpla
         $filepath_absolute = $root . $filepath;
 
         if (file_exists($filepath_absolute)) {
-			dtimer::log(__METHOD__." $filepath_absolute found! deleting ");
-			unlink($filepath_absolute);
-		}
-		
-		if (!rename($tmp, $filepath_absolute)) {
-			dtimer::log(__METHOD__ . " rename $filepath_absolute failed. aborting!", 1);
-			return false;
-		}  
+            dtimer::log(__METHOD__ . " $filepath_absolute found! deleting ");
+            unlink($filepath_absolute);
+        }
+
+        if (!rename($tmp, $filepath_absolute)) {
+            dtimer::log(__METHOD__ . " rename $filepath_absolute failed. aborting!", 1);
+            return false;
+        }
 
         if (file_exists($filepath_absolute)) {
             dtimer::log(__METHOD__ . " downloaded file moved to: $filepath_absolute Updating db.");
