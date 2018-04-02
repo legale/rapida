@@ -72,14 +72,8 @@ class Notify extends Simpla
         $this->design->assign('purchases', $purchases);
 
         // Отправляем письмо
-        // Если в шаблон не передавалась валюта, передадим
-//        if ($this->design->smarty->getTemplateVars('currency') === null) {
-//            $this->design->assign('currency', current($this->money->get_currencies(array('enabled' => 1))));
-//        }
         $email_template = $this->design->fetch($this->config->root_dir . 'design/' . $this->settings->theme . '/html/email_order.tpl');
         $subject = $this->design->get_var('subject');
-        var_export($subject);
-        var_export($this->design->get_var('currency'));
 
         $this->email($order['email'], $subject, $email_template, $this->settings->notify_from_email);
 
