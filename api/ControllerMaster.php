@@ -181,7 +181,7 @@ class ControllerMaster extends Simpla
         if (isset($arr['features']) && is_array($arr['features']) && count($arr['features']) > 0) {
             foreach ($arr['features'] as $name => $v) {
                 if (is_array($v) && count($v) > 0) {
-                    $res .= "/$name-" . implode('.', $v);
+                    $res .= "/$name-" . implode('.', array_keys($v));
                 }
             }
         }
