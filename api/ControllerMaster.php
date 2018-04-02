@@ -173,7 +173,7 @@ class ControllerMaster extends Simpla
 
         //теперь бренды, если они есть
         if (isset($arr['brand']) && is_array($arr['brand']) && count($arr['brand']) > 0) {
-            $res .= '/brand-' . implode('.', $arr['brand']);
+            $res .= '/brand-' . implode('.', array_keys($arr['brand']));
         }
 
 
