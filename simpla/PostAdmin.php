@@ -40,7 +40,7 @@ class PostAdmin extends Simpla
 		dtimer::log(__METHOD__ . " start");
 
         //Сначала мы все получим из моделей
-        $post = $this->blog->get_post((int)$_GET['id']);
+        $post = $this->blog->get_post((int)$id);
         $images = $this->image->get('blog', array('item_id' => $id) );
 		
 		$this->status[] = array(
