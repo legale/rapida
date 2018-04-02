@@ -230,35 +230,35 @@ class ProductAdmin extends Simpla
             return false;
         }
 
+        $keep = array_flip(array_diff($raw, array('')));
 
         //тут будут id категорий, которые удалять не нужно
-        $keep = array_flip($raw);
         //тут существующие
         $saved = $this->categories->get_product_categories($pid);
-        if (is_array(@$saved)) {
-            foreach ($saved as $id => $k) {
-                if (!isset($keep[$id])) {
-                    $this->categories->delete_product_category($pid, $id);
+        if ($saved && is_array($saved)) {
+            foreach ($saved as $cid => $k) {
+                if (!isset($keep[$cid])) {
+                    $this->categories->delete_product_category($pid, $cid);
                     $this->status[] = array(
                         'status' => 3,
-                        'message' => "Удалена категория $id",
+                        'message' => "Удалена категория $cid",
                     );
+                }else{
+                    unset($keep[$cid]);
                 }
             }
         }
 
-        //тут поменяем порядок связанных товаров и добавим новые
-        for ($i = 0, $c = count($raw); $i < $c; $i++) {
-            if (empty_(@$raw[$i])) {
-                continue;
-            }
-            $cid = $this->categories->add_product_category($pid, $raw[$i], $i);
+        $i = 0;
+        foreach ($keep as $cid=>$k) {
+            $this->categories->add_product_category($pid, $cid, $i);
             $this->status[] = array(
                 'status' => 3,
-                'message' => "Добавлена категория $cid",
+                'message' => "Добавлена категория $cid на позицию $i",
             );
+            $i++;
         }
-        return;
+        return true;
     }
 
     private function save_images($pid, $raw)
