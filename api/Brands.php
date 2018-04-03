@@ -47,11 +47,12 @@ class Brands extends Simpla
             $trans_filter = $this->db->placehold("AND trans in (?@)", $filter['trans']);
         }
 
-        $q = $this->db->placehold("SELECT '$col', '$key' FROM __brands WHERE 1 $id_filter $trans_filter");
+        $q = $this->db->placehold("SELECT `$col`, `$key` FROM __brands WHERE 1 $id_filter $trans_filter");
         $this->db->query($q);
 
         $res = $this->db->results_array($col, $key);
-        print_r($res);
+
+
         //Если у нас был запуск без параметров, сохраним результат в переменную класса.
         if (!isset($filter['id']) && !isset($filter['trans'])) {
             $this->brands[$key . "_" . $col] = $res;
@@ -157,7 +158,6 @@ class Brands extends Simpla
      */
     public function get_brand($id)
     {
-        $id = (string)$id;
         dtimer::log(__METHOD__ . " start '$id'");
         if (empty_($id)) {
             dtimer::log('empty id return false', 2);
