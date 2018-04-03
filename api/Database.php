@@ -183,7 +183,6 @@ class Database extends Simpla
         $tpl = trim(array_shift($args));
 
 
-
         // Заменяем все __ на префикс, но только необрамленные кавычками
         $tpl = preg_replace('/([^"\'0-9a-z_])__([a-z_]+[^"\'])/i', "\$1" . $this->config->db_prefix . "\$2", $tpl);
         if (!empty($args)) {
@@ -303,15 +302,19 @@ class Database extends Simpla
 
         $results = array();
 
-        if ($field !== null && $group_field !== null && is_array($field) && is_array($group_field)) {
+        if (is_array($field) && is_array($group_field)) {
             while ($row = $this->res->fetch_assoc()) {
                 foreach ($group_field as $k => $gf) {
-                    $results[$k][$row[$gf]] = $row[$field[$k]];
+                    if (isset($row[$field[$k]])) {
+                        $results[$k][$row[$gf]] = $row[$field[$k]];
+                    }
                 }
             }
         } elseif ($field !== null && $group_field !== null) {
             while ($row = $this->res->fetch_assoc()) {
-                $results[$row[$group_field]] = $row[$field];
+                if (isset($row[$field])) {
+                    $results[$row[$group_field]] = $row[$field];
+                }
             }
         } elseif ($field !== null) {
             while ($row = $this->res->fetch_assoc()) {
