@@ -164,12 +164,60 @@ class ProductsView extends View
             die;
         }
 
-        //~ //передаем данные в шаблоны
+
+        $auto_meta_title = $cat['meta_title'];
+        $auto_meta_keywords = $cat['meta_keywords'];
+        $auto_meta_description =  $cat['meta_description'];
+
+        if (!empty($cat)) {
+            $pairs = array(
+                '{$category}' => $cat['name'] ? $cat['name'].' ' : '',
+                '{$products_count}' => $this->filter['products_count'] .' ',
+                '{$sitename}' => $this->settings->site_name ? $this->settings->site_name.' ' : '',
+                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,
+            );
+            foreach ($features as $fid=>$f) {
+                if ($f['tpl']) {
+                    $pairs['{$'.$f['trans'].'}'] = $f['name'];
+                    $pairs['{$'.$f['trans'].'_list}'] = array();
+                    //$cycler = 0;
+                    if(isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])){
+                        foreach ($options['full'][$fid]['vals'] as $o) {
+                            array_push($pairs['{$'.$f['trans'].'_list}'] ,  $o);
+                        }
+                    }
+
+                    $pairs['{$'.$f['trans'].'_list}'] = implode(', ', array_slice(['{$'.$f['trans'].'_list}'], 0, 3 ));
+                }
+            }
+
+            $auto_meta_title = strtr($auto_meta_title, $pairs);
+            $auto_meta_title = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_title);
+
+            $auto_meta_keywords = strtr($auto_meta_keywords, $pairs);
+            $auto_meta_keywords = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_keywords);
+
+            $auto_meta_description = strtr($auto_meta_description, $pairs);
+            $auto_meta_description = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_description);
+
+            // добавим слова страница № для страниц с пагинацией
+            if ($this->filter['page'] > 1) {
+                $page = $this->filter['page'];
+                $p_num_txt = "-$page- ";
+                $auto_meta_title = $p_num_txt.$auto_meta_title;
+                $auto_meta_description = $p_num_txt.$auto_meta_description;
+            }
+        }
+        dtimer::log(__METHOD__ . ' after auto meta tags ' . __LINE__);
+        //Автоматическая генерация мета тегов для категории END
+
+
+        //передаем данные в шаблоны
         if (isset($cat['id'])) {
             $this->design->assign('category', $cat);
-            $this->design->assign('meta_title', $cat['meta_title']);
-            $this->design->assign('meta_keywords', $cat['meta_keywords']);
-            $this->design->assign('meta_description', $cat['meta_description']);
+            $this->design->assign('meta_title', $auto_meta_title);
+            $this->design->assign('meta_keywords', $auto_meta_keywords);
+            $this->design->assign('meta_description', $auto_meta_description);
         }
 
 
