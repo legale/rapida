@@ -174,7 +174,7 @@ class ProductsView extends View
                 '{$category}' => $cat['name'] ? $cat['name'].' ' : '',
                 '{$products_count}' => $this->filter['products_count'] .' ',
                 '{$sitename}' => $this->settings->site_name ? $this->settings->site_name.' ' : '',
-                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,
+//                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,
             );
             foreach ($features as $fid=>$f) {
                 if ($f['tpl']) {
