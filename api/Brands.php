@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 require_once('Simpla.php');
@@ -31,27 +31,29 @@ class Brands extends Simpla
 
 
         $id_filter = '';
+        $trans_filter = '';
+
+        if (!isset($filter['id']) && !isset($filter['trans']) && isset($this->brands[$key . "_" . $col])) {
+            return $this->brands[$key . "_" . $col];
+        }
 
 
         //фильтр
-
-        if (!isset($filter['id'])) {
-            if (isset($this->brands[$key . "_" . $col])) {
-                dtimer::log(__METHOD__ . " end");
-                return $this->brands[$key . "_" . $col];
-            }
-        } elseif (!empty($ids) && count($ids) > 0) {
-            $id_filter = $this->db->placehold("AND id in (?@)", $ids);
-        } else {
-            return false;
+        if (isset($filter['id'])) {
+            $id_filter = $this->db->placehold("AND id in (?@)", $filter['id']);
         }
 
-        $q = $this->db->placehold("SELECT * FROM __brands WHERE 1 $id_filter");
+        if (isset($filter['trans'])) {
+            $trans_filter = $this->db->placehold("AND trans in (?@)", $filter['trans']);
+        }
+
+        $q = $this->db->placehold("SELECT '$col', '$key' FROM __brands WHERE 1 $id_filter $trans_filter");
         $this->db->query($q);
 
         $res = $this->db->results_array($col, $key);
+        print_r($res);
         //Если у нас был запуск без параметров, сохраним результат в переменную класса.
-        if (!isset($filter['id'])) {
+        if (!isset($filter['id']) && !isset($filter['trans'])) {
             $this->brands[$key . "_" . $col] = $res;
         }
         dtimer::log(__METHOD__ . " end");
@@ -155,6 +157,7 @@ class Brands extends Simpla
      */
     public function get_brand($id)
     {
+        $id = (string)$id;
         dtimer::log(__METHOD__ . " start '$id'");
         if (empty_($id)) {
             dtimer::log('empty id return false', 2);
