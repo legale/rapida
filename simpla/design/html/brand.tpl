@@ -40,13 +40,13 @@ $(function() {
 		meta_keywords_touched = false;
 	if($('textarea[name="meta_description"]').val() == generate_meta_description() || $('textarea[name="meta_description"]').val() == '')
 		meta_description_touched = false;
-	if($('input[name="url"]').val() == generate_url() || $('input[name="url"]').val() == '')
+	if($('input[name="trans"]').val() == generate_url() || $('input[name="trans"]').val() == '')
 		url_touched = false;
 		
 	$('input[name="meta_title"]').change(function() { meta_title_touched = true; });
 	$('input[name="meta_keywords"]').change(function() { meta_keywords_touched = true; });
 	$('input[textarea="meta_description"]').change(function() { meta_description_touched = true; });
-	$('input[name="url"]').change(function() { url_touched = true; });
+	$('input[name="trans"]').change(function() { url_touched = true; });
 	
 	$('input[name="name"]').keyup(function() { set_meta(); });
 	
@@ -59,7 +59,7 @@ $(function() {
 		if(!meta_description_touched)
 			$('textarea[name="meta_description"]').val(generate_meta_description());
 		if(!url_touched)
-			$('input[name="url"]').val(generate_url());
+			$('input[name="trans"]').val(generate_url());
 	}
 	
 	function generate_meta_title()
