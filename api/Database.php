@@ -178,20 +178,25 @@ class Database extends Simpla
     public function placehold()
     {
         $args = func_get_args();
+
         //берем 1 аргумент и обрезаем пробелы по краям
-        $tmpl = trim(array_shift($args));
+        $tpl = trim(array_shift($args));
+
+
+
         // Заменяем все __ на префикс, но только необрамленные кавычками
-        $tmpl = preg_replace('/([^"\'0-9a-z_])__([a-z_]+[^"\'])/i', "\$1" . $this->config->db_prefix . "\$2", $tmpl);
+        $tpl = preg_replace('/([^"\'0-9a-z_])__([a-z_]+[^"\'])/i', "\$1" . $this->config->db_prefix . "\$2", $tpl);
         if (!empty($args)) {
-            $result = $this->sql_placeholder_ex($tmpl, $args, $error);
+            $result = $this->sql_placeholder_ex($tpl, $args, $error);
             if ($result === false) {
                 $error = "Placeholder substitution error. Diagnostics: \"$error\"";
                 trigger_error($error, E_USER_WARNING);
                 return false;
             }
             return $result;
-        } else
-            return $tmpl;
+        } else {
+            return $tpl;
+        }
     }
 
 
@@ -441,11 +446,11 @@ class Database extends Simpla
     private function sql_placeholder_ex($tmpl, $args, &$errormsg)
     {
         // Запрос уже разобран?.. Если нет, разбираем. 
-        if (is_array($tmpl))
+        if (is_array($tmpl)) {
             $compiled = $tmpl;
-        else
+        } else {
             $compiled = $this->sql_compile_placeholder($tmpl);
-
+        }
         list($compiled, $tmpl, $has_named) = $compiled;
 
         // Если есть хотя бы один именованный placeholder, используем 
@@ -791,9 +796,12 @@ class Database extends Simpla
 
         //флаг для первой строки
         $flag = true;
-        while ($row = $this->db->result_array()) {
-
-            /* 
+        while (1) {
+            $row = $this->db->result_array();
+            if ($row === false) {
+                break;
+            }
+            /*
              * Теперь пишем сами значения, каждая строка пишется в круглых скобках через запятую.
              * Будем писать каждое значение в зависимости от его типа данных. 
              * Символьные (кроме bin) char, varchar, text, blob, set и др. будем писать через 

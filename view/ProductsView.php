@@ -58,6 +58,9 @@ class ProductsView extends View
 
         //преобразуем и запишем себе разобранную адресную строку в виде фильтра, пригодного для api
         $this->filter = $this->uri_to_api_filter($this->root->uri_arr, $this->filter);
+        if(!$this->filter){
+            return false;
+        }
 //		print_r($this->filter);
 
         if (isset($this->filter['redirect'])) {
@@ -79,7 +82,7 @@ class ProductsView extends View
         $this->filter['pages'] = ceil($this->filter['products_count'] / $this->filter['limit']);
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
         //проверяем есть ли у нас такая страница, если нет - переправляем на последнюю из возможных
-        if ($this->filter['page'] > $this->filter['pages']) {
+        if ($this->filter['page'] > $this->filter['pages'] || $this->filter['page'] < 1) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
@@ -90,7 +93,7 @@ class ProductsView extends View
         $total = $this->filter['pages'];
         $page = $this->filter['page'];
         $first = max(1, $page - $range / 2);
-        $last = min( $first + $range, $total);
+        $last = min($first + $range, $total);
         $this->filter['nav']['first'] = $first;
         $this->filter['nav']['last'] = $last;
         $this->filter['nav']['left'] = $page > 1 ? $page - 1 : null;
@@ -117,7 +120,6 @@ class ProductsView extends View
 
 
         $this->design->assign('products', $products);
-
 
 
         // Выбираем бренды, они нужны нам в шаблоне
@@ -204,18 +206,19 @@ class ProductsView extends View
 
         //Если есть бренд
         if (isset($uri_path['brand'])) {
-            $brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key' => 'trans')));
-            $filter['brand_id'] = array_intersect_key($brands_ids, $uri_path['brand']);
+            $bids = $this->brands->get_brands_ids(array('trans' => $uri_path['brand']));
+            if ($bids) {
+                $filter['brand_id'] = array_keys($bids);
+            } else{
+                return false;
+            }
         }
 
-        //страница
-        if (isset($uri_path['page'])) {
-            $filter['page'] = $uri_path['page'];
-        }
         //сортировка
         if (isset($uri_path['sort'])) {
             $filter['sort'] = $uri_path['sort'];
         }
+        dtimer::log(__METHOD__ . " return: " .  var_export($filter, true));
         return $filter;
     }
 
