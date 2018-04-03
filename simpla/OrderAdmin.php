@@ -221,7 +221,7 @@ class OrderAdmin extends Simpla
 				$this->design->assign('payment_method', $payment_method);
 		
 				// Валюта оплаты
-				$payment_currency = $this->money->get_currency(intval($payment_method->currency_id));
+				$payment_currency = $this->money->get_currency(intval($payment_method['currency_id']));
 				$this->design->assign('payment_currency', $payment_currency);
 			}
 			// Пользователь

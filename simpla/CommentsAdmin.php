@@ -72,10 +72,10 @@ class CommentsAdmin extends Simpla
 		if ($comments = $this->comments->get_comments($filter)) {
 			foreach ($comments as $comment)
 				{
-				if ($comment->type == 'product')
-					$products_ids[] = $comment->object_id;
-				if ($comment->type == 'blog')
-					$posts_ids[] = $comment->object_id;
+				if ($comment['type'] == 'product')
+					$products_ids[] = $comment['object_id'];
+				if ($comment['type'] == 'blog')
+					$posts_ids[] = $comment['object_id'];
 			}
 		}
 		else {
@@ -90,10 +90,10 @@ class CommentsAdmin extends Simpla
 
 		foreach ($comments as &$comment)
 			{
-			if ($comment->type == 'product' && isset($products->{$comment->object_id}))
-				$comment->product = $products[$comment->object_id];
-			if ($comment->type == 'blog' && isset($posts[$comment->object_id]))
-				$comment->post = $posts[$comment->object_id];
+			if ($comment['type'] == 'product' && isset($products->{$comment['object_id']}))
+				$comment['product'] = $products[$comment['object_id']];
+			if ($comment['type'] == 'blog' && isset($posts[$comment['object_id']]))
+				$comment['post'] = $posts[$comment['object_id']];
 		}
 
 
