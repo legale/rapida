@@ -52,7 +52,6 @@ class ProductsView extends View
             $arr = $this->root->uri_arr['path'];
             $arr['url'] = $cat['url'];
             $url = '/' . $this->root->gen_uri($arr);
-            //~ print_r($url);
             header("Location: $url", TRUE, 301);
         }
 
@@ -82,10 +81,14 @@ class ProductsView extends View
         $this->filter['pages'] = ceil($this->filter['products_count'] / $this->filter['limit']);
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
         //проверяем есть ли у нас такая страница, если нет - переправляем на последнюю из возможных
-        if ($this->filter['page'] > $this->filter['pages'] || $this->filter['page'] < 1) {
+        if($this->filter['page'] < 1){
+            $this->filter['page'] = 1;
+        }
+
+        if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
-            header("Location: $uri", TRUE, 301);
+//            header("Location: $uri", TRUE, 301);
         }
 
         //сделаем массив для пагинации
@@ -206,7 +209,7 @@ class ProductsView extends View
 
         //Если есть бренд
         if (isset($uri_path['brand'])) {
-            $bids = $this->brands->get_brands_ids(array('trans' => $uri_path['brand']));
+            $bids = $this->brands->get_brands_ids(array('trans' => array_keys($uri_path['brand'])));
             if ($bids) {
                 $filter['brand_id'] = array_keys($bids);
             } else{
