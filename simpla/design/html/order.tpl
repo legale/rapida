@@ -259,7 +259,7 @@
 					<img src='design/images/error.png' alt='Товар был удалён' title='Товар был удалён' >
 					{elseif !$purchase['variant']}
 					<img src='design/images/error.png' alt='Вариант товара был удалён' title='Вариант товара был удалён' >
-					{elseif $purchase['variant']['stock'] < $purchase['amount']}
+					{elseif $purchase['variant']['stock'] !== null && $purchase['variant']['stock'] < $purchase['amount']}
 					<img src='design/images/error.png' alt='На складе остал{$purchase['variant']['stock']|plural:'ся':'ось'} {$purchase['variant']['stock']} товар{$purchase['variant']['stock']|plural:'':'ов':'а'}' title='На складе остал{$purchase['variant']['stock']|plural:'ся':'ось'} {$purchase['variant']['stock']} товар{$purchase['variant']['stock']|plural:'':'ов':'а'}'  >
 					{/if}
 				{/if}
