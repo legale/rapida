@@ -165,11 +165,12 @@ class ProductsView extends View
         }
 
 
-        $auto_meta_title = $cat['meta_title'];
-        $auto_meta_keywords = $cat['meta_keywords'];
-        $auto_meta_description =  $cat['meta_description'];
 
         if (!empty($cat)) {
+            $auto_meta_title = $cat['meta_title'];
+            $auto_meta_keywords = $cat['meta_keywords'];
+            $auto_meta_description =  $cat['meta_description'];
+
             $pairs = array(
                 '{$category}' => $cat['name'] ? $cat['name'].' ' : '',
                 '{$products_count}' => $this->filter['products_count'] .' ',
