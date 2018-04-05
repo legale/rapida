@@ -166,7 +166,7 @@ class ProductsView extends View
 
 
 
-        if (!empty($cat)) {
+        if (isset($cat['id'])) {
             $auto_meta_title = $cat['meta_title'];
             $auto_meta_keywords = $cat['meta_keywords'];
             $auto_meta_description =  $cat['meta_description'];
