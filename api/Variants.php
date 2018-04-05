@@ -146,7 +146,7 @@ class Variants extends Simpla
             }
             switch ($this->types[$k]) {
                 case 'i':
-                    $e = (int)$e;
+                    $e = $k === 'stock' && $e === '' ? null : (int)$e;
                     break;
 
                 case 'f':

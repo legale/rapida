@@ -9,6 +9,8 @@ if (defined('PHP7')) {
 class Xmlcsv
 {
 
+    public $zed;
+
     public function __construct()
     {
     }
@@ -19,8 +21,28 @@ class Xmlcsv
      */
     public function xml_open($xmlfile)
     {
-        $z = new XMLReader;
-        $z->open($xmlfile);
-        return $z;
+        $this->zed = new XMLReader;
+        $this->zed->open($xmlfile);
+        return $this->zed;
     }
+
+    public function node_goto($name)
+    {
+        do {
+            if($this->zed->read() === false){
+                return false;
+            }
+            if($this->zed->name === $name){
+                return true;
+            }
+        }while(1);
+    }
+
+    public function node_next($name)
+    {
+        return $this->zed->next($name);
+    }
+
+
+
 }
