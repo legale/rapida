@@ -13,6 +13,15 @@ require_once ('Simpla.php');
 
 class Features extends Simpla
 {
+    private $tokeep = array(
+       'category_id',
+       'feature_id',
+       'features',
+       'brand_id',
+       'product_id',
+        'force_no_cache',
+        'visible'
+    );
 	//тут будут хранится значения опций
 	public $options;
 	//тут будут хранится сами опции
@@ -474,9 +483,10 @@ class Features extends Simpla
 	{
 		
 		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-		$filter_ = $filter;
-		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
-		unset($filter_['method']);
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        $filter_ = $filter;
 		if (isset($filter_['force_no_cache'])) {
 			$force_no_cache = true;
 			unset($filter_['force_no_cache']);
@@ -654,11 +664,11 @@ class Features extends Simpla
 	 */
 	public function get_options_mix($filter = array())
 	{
-		dtimer::log(__METHOD__ . " start");
-		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-		$filter_ = $filter;
-		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
-		unset($filter_['method']);
+        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        $filter_ = $filter;
 		if (isset($filter_['force_no_cache'])) {
 			$force_no_cache = $filter_['force_no_cache'];
 			unset($filter_['force_no_cache']);
@@ -772,9 +782,11 @@ class Features extends Simpla
 	public function get_options_raw($filter = array())
 	{
 		//сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-		$filter_ = $filter;
-		dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
-		unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        $filter_ = $filter;
+        
 		if (isset($filter_['force_no_cache'])) {
 			$force_no_cache = true;
 			unset($filter_['force_no_cache']);
