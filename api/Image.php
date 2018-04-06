@@ -158,7 +158,8 @@ class Image extends Simpla
 
 
         //update image
-        if (!$this->db->query("UPDATE `$table` SET ?% WHERE id=?", $image, $id)) {
+        $q = $this->db->placehold("UPDATE `$table` SET ?% WHERE id=?", $image, $id);
+        if (!$this->db->query($q)) {
             dtimer::log(__METHOD__ . " unable to update image with id: $id", 1);
             return false;
         }
