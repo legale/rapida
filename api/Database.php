@@ -344,9 +344,10 @@ class Database extends Simpla
     public function result_array($col = null)
     {
         $res = $this->row();
+        dtimer::log(__METHOD__.var_export($res,true));
         if (is_array($res)) {
             if ($col) {
-                return array_key_exists($col, $res) ? $res[$col] : false;
+                return $res[$col];
             } else {
                 return $res;
             }

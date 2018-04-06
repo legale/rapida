@@ -768,7 +768,7 @@ class Image extends Simpla
         }
 
         $item_id = (int)$item_id;
-        $this->db->query("SELECT MAX(pos) as pos 
+        $this->db->query("SELECT IFNULL(MAX(pos), 0) as pos 
 		FROM `$table` WHERE `item_id` = ? ", $item_id);
         $pos = $this->db->result_array('pos');
         if (!empty_($pos)) {
