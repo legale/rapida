@@ -15,6 +15,36 @@ require_once('Simpla.php');
 
 class Products extends Simpla
 {
+    private $tokeep = array(
+        'force_no_cache',
+        'limit',
+        'page',
+        'id',
+        'category_id',
+        'brand_id',
+        'no_images',
+        'featured',
+        'in_stock',
+        'discounted',
+        'visible',
+        'sort',
+        'keyword',
+        'features',
+    );
+    private $tokeep2 = array(
+        'force_no_cache',
+        'id',
+        'category_id',
+        'brand_id',
+        'no_images',
+        'featured',
+        'in_stock',
+        'discounted',
+        'visible',
+        'keyword',
+        'features',
+    );
+
     /**
      * Функция работает аналогично get_products, но возвращает только id товаров в одномерном массиве
      * с ключами в виде id товаров
@@ -22,9 +52,10 @@ class Products extends Simpla
     public function get_products_ids($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        dtimer::log("get_products_ids start filter: " . var_export($filter_, true));
-        unset($filter_['method']);
         if (isset($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
@@ -202,9 +233,10 @@ class Products extends Simpla
     public function get_products($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        dtimer::log("get_products start filter: " . var_export($filter_, true));
-        unset($filter_['method']);
         if (isset($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
@@ -369,9 +401,10 @@ class Products extends Simpla
     public function count_products($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep2));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        dtimer::log("count_product start filter: " . var_export($filter_, true));
-        unset($filter_['method'], $filter_['sort'], $filter_['page'], $filter_['limit']);
         if (isset($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);

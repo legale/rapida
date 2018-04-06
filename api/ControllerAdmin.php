@@ -14,6 +14,7 @@ class ControllerAdmin extends Simpla
 		dtimer::log(__METHOD__ . ' constructor');
 	}
 
+
 	public function action()
 	{
 		@ini_set('session.gc_maxlifetime', 86400); // 86400 = 24 часа

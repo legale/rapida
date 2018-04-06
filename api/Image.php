@@ -777,7 +777,7 @@ class Image extends Simpla
         } else {
             $pos = 0;
         }
-       
+
 
         $q = $this->db->placehold("INSERT INTO `$table` SET `item_id` = ?, `basename` = ?, pos = ?", $item_id, $basename, $pos);
         if ($this->db->query($q)) {
