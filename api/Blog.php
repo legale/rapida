@@ -29,9 +29,7 @@ class Blog extends Simpla
             $where = $this->db->placehold(' WHERE b.url=? ', $id);
         }
 
-        $query = $this->db->placehold("SELECT b.id, b.url, b.name, b.annotation, b.text, b.meta_title,
-		                               b.meta_keywords, b.meta_description, b.visible, b.date
-		                               FROM __blog b $where LIMIT 1");
+        $query = $this->db->placehold("SELECT * FROM __blog b $where LIMIT 1");
         if ($this->db->query($query)) {
             return $this->db->result_array();
         } else {
@@ -80,7 +78,7 @@ class Blog extends Simpla
 
         $sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page - 1) * $limit, $limit);
 
-        $query = $this->db->placehold("SELECT b.id, b.url, b.name, b.annotation, b.text,
+        $query = $this->db->placehold("SELECT b.id, b.image, b.image_id, b.url, b.name, b.annotation, b.text,
 		                                      b.meta_title, b.meta_keywords, b.meta_description, b.visible,
 		                                      b.date
 		                                      FROM __blog b WHERE 1 $post_id_filter $visible_filter $keyword_filter
