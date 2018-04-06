@@ -146,8 +146,8 @@ class PostAdmin extends Simpla
 
 
 	private function save_images($id, $raw){
-		dtimer::log(__METHOD__ . " start");
-		//~ print_r($_POST);
+		dtimer::log(__METHOD__ . " start ". var_export($raw,true));
+
 		
 		//тут будут id изображений, которые удалять не нужно
 		if(is_array($raw)){
@@ -155,8 +155,11 @@ class PostAdmin extends Simpla
 		} else {
 			$keep = array();
 		}
+
 		//тут существующие
-		if($saved = $this->image->get('blog', array('item_id'=>$id) )){
+        $saved = $this->image->get('blog', array('item_id'=>$id) );
+
+        if($saved){
 			foreach($saved as $id=>$img){
 				if( !isset($keep[$id]) ){
 					$this->image->delete('blog', $id);
@@ -167,10 +170,10 @@ class PostAdmin extends Simpla
 				}
 			}
 		}
-		
+
 		//тут поменяем порядок изображений
 		for($i = 0, $c = count($raw); $i < $c; $i++){
-			$this->image->update('blog', $raw[$i], array('item_id' => $id, 'pos'=> $i) );
+			$this->image->update('blog', $raw[$i], array('pos'=> $i) );
 		}
 	}
 
