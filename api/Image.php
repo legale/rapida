@@ -769,7 +769,7 @@ class Image extends Simpla
         }
 
         $item_id = (int)$item_id;
-        $this->db->query("SELECT IFNULL(MAX(pos), 0) as pos 
+        $this->db->query("SELECT MAX(pos) as pos 
 		FROM `$table` WHERE `item_id` = ? ", $item_id);
         $pos = $this->db->result_array('pos');
         if (!empty_($pos)) {
@@ -777,6 +777,7 @@ class Image extends Simpla
         } else {
             $pos = 0;
         }
+       
 
         $q = $this->db->placehold("INSERT INTO `$table` SET `item_id` = ?, `basename` = ?, pos = ?", $item_id, $basename, $pos);
         if ($this->db->query($q)) {
