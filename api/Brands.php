@@ -10,6 +10,12 @@ require_once('Simpla.php');
  */
 class Brands extends Simpla
 {
+    private $tokeep = array(
+        'force_no_cache',
+        'visible',
+        'category_id'
+    );
+
     public $brands;
 
     /*
@@ -73,11 +79,11 @@ class Brands extends Simpla
      */
     public function get_brands($filter = array())
     {
-        dtimer::log(__METHOD__ . ' start');
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
-        unset($filter_['method']);
         if (isset($filter_['force_no_cache'])) {
             $force_no_cache = $filter_['force_no_cache'];
             unset($filter_['force_no_cache']);
