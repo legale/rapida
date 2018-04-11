@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
 
 //copy('http://vokruglamp.ru/export/get.php?id=sevenlight', dirname(__FILE__) . '/vokruglamp.xml');
-$realpath = isset($argv[1]) ? $argv[1] : dirname(__FILE__) . '/../sandbox/xmlfile.xml';
+$realpath = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : dirname(__FILE__) . '/../sandbox/xmlfile.xml';
 
 
 $z = $xml->xml_open($realpath);
@@ -47,7 +47,13 @@ if (load_data($name, $res) === false) {
     die;
 }
 
-$res = create_update_help();
+
+
+if(isset($args[2], $args[3])){
+    $res = create_update_help($args[2], $args[3]);
+}else {
+    $res = create_update_help();
+}
 if ($res !== true) {
     print "\n unable to create update help table $name. return: $res ";
     die;
@@ -90,7 +96,7 @@ function get_string_type($str)
 /**
  * @return bool|int
  */
-function create_update_help()
+function create_update_help($sku_fid = 5, $brand_fid = 6)
 {
     //подключаем движок магазина
     require_once(dirname(__FILE__).'/../api/Simpla.php');
@@ -102,8 +108,8 @@ function create_update_help()
     }
     $res = $simpla->db->query("create table t_update_help
         select product_id, u.val as sku, uu.val as brand from s_options o
-        inner join s_options_uniq u on o.`5` = u.id
-        inner join s_options_uniq uu on o.`6` = uu.id");
+        inner join s_options_uniq u on o.`$sku_fid` = u.id
+        inner join s_options_uniq uu on o.`$brand_fid` = uu.id");
     if ($res === false) {
         return 2;
     }
