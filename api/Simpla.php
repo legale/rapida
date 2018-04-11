@@ -198,7 +198,7 @@ function translit_ya($string, $reverse = false)
         return false;
     }
     //тут удаляем все кроме букв, цифр и _ + ~
-    $string = preg_replace("/[^\w\d\_ \~\+\-\,\.\/\\\]+/u", '', $string);
+    $string = preg_replace("/[^\w\d\_\s\~\+\-\,\.\/\\\]+/u", '', $string);
 
 
     //самая быстрая функция для замены подстроки в строке strtr пробел меняем на подчеркивание
