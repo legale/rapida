@@ -63,6 +63,7 @@ class Database extends Simpla
         else {
             if ($this->config->db_charset)
                 $this->mysqli->query('SET NAMES ' . $this->config->db_charset);
+                $this->mysqli->query('SET CHARACTER SET ' . $this->config->db_charset);
             if ($this->config->db_sql_mode)
                 $this->mysqli->query('SET SESSION SQL_MODE = "' . $this->config->db_sql_mode . '"');
             if ($this->config->db_timezone)
