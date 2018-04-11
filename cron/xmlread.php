@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
 
 //copy('http://vokruglamp.ru/export/get.php?id=sevenlight', dirname(__FILE__) . '/vokruglamp.xml');
-$realpath = dirname(__FILE__) . '/../sandbox/vokruglamp.xml';
+$realpath = isset($argv[1]) ? $argv[1] : dirname(__FILE__) . '/../sandbox/xmlfile.xml';
 
 
 $z = $xml->xml_open($realpath);
