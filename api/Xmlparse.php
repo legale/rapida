@@ -4,9 +4,9 @@ if (defined('PHP7')) {
 }
 
 /**
- * Class Xmlcsv
+ * Class Xmlparse
  */
-class Xmlcsv
+class Xmlparse
 {
 
     public $zed;
@@ -41,6 +41,10 @@ class Xmlcsv
     public function node_next($name)
     {
         return $this->zed->next($name);
+    }
+    public function read_raw()
+    {
+        return $this->zed->readOuterXML();
     }
 
 
