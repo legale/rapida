@@ -48,10 +48,9 @@ if (load_data($name, $res) === false) {
 }
 
 
-
-if(isset($argv[2], $argv[3])){
+if (isset($argv[2], $argv[3])) {
     $res = create_update_help($argv[2], $argv[3]);
-}else {
+} else {
     $res = create_update_help();
 }
 if ($res !== true) {
@@ -71,7 +70,6 @@ $res = update_tables();
 print "\n     stock updated: " . $res['stock'];
 print "\n     price updated: " . $res['price'];
 print "\n product not found: " . $res['not found'];
-
 
 
 //dtimer::show();
@@ -99,7 +97,7 @@ function get_string_type($str)
 function create_update_help($sku_fid = 5, $brand_fid = 6)
 {
     //подключаем движок магазина
-    require_once(dirname(__FILE__).'/../api/Simpla.php');
+    require_once(dirname(__FILE__) . '/../api/Simpla.php');
     $simpla = new Simpla();
 
     $res = $simpla->db->query("drop table if exists t_update_help");
@@ -114,11 +112,12 @@ function create_update_help($sku_fid = 5, $brand_fid = 6)
         return 2;
     }
     $res = $simpla->db->query("alter table t_update_help 
-	add `offer_id` VARCHAR(512) DEFAULT null,
+	add `offer_id` VARCHAR(200) DEFAULT null,
 	add primary key (`product_id`) ,
-	add index `sku` (`sku`, `brand`),
-	add index `brand` (`brand`),
-	add index `offer_id` (`offer_id`)");
+	add index `sku` (`sku`, `brand`, `offer_id`),
+	add index `brand` (`brand`, `sku`, `offer_id`),
+	add index `offer_id` (`offer_id`)
+	");
     if ($res === false) {
         return 3;
     }
@@ -136,8 +135,8 @@ function prepare_update_help()
     $simpla = new Simpla();
 
     $q = "update t_update_help h
-        inner join t_xml x on x.`sku` = h.sku and x.`brand` = h.brand 
-        set h.offer_id = x.offer_id";
+        inner join t_xml x on x . `sku` = h . sku and x . `brand` = h . brand 
+        set h . offer_id = x . offer_id";
 
     if ($simpla->db->query($q)) {
         $res = $simpla->db->affected_rows();
@@ -187,7 +186,7 @@ function create_table($name, $fields, $drop = true)
             case 2:
                 $m = $a[0] - 1;
                 $d = $m;
-                $type = "FLOAT($m,$d)";
+                $type = "FLOAT($m, $d)";
                 break;
             case 3:
             default:
@@ -215,7 +214,7 @@ function create_table($name, $fields, $drop = true)
     $body = implode(', ', $elems);
 
 
-    $tail = "ENGINE=InnoDB DEFAULT CHARSET=utf8";
+    $tail = "ENGINE = InnoDB DEFAULT CHARSET = utf8";
     $q = "CREATE TABLE `$name` ($body) $tail";
     if ($drop) {
         $simpla->db->query("DROP TABLE IF EXISTS `$name`");
@@ -223,7 +222,7 @@ function create_table($name, $fields, $drop = true)
 
     $simpla->db->query($q);
 
-    $q = "ALTER TABLE `$name` add primary key (`offer_id`), add index `sku`(`sku`, `brand`)";
+    $q = "ALTER TABLE `$name` add primary key(`offer_id`), add index `sku`(`sku`, `brand`, `offer_id`)";
     $res = $simpla->db->query($q);
 
     // выполняем запрос и возвращаем результат
@@ -265,7 +264,7 @@ function fputcsv_escape($handle, $fields, $delim = ',')
     $row = array();
     foreach ($fields as $k => $col) {
         if (is_iterable($col)) {
-            print " column $k is iterable! Must be string, int, float or bool ";
+            print " column $k is iterable!Must be string, int, float or bool ";
             return false;
         }
         if ($col === null) {
@@ -275,8 +274,8 @@ function fputcsv_escape($handle, $fields, $delim = ',')
         } else {
             $row[] = "\"$col\"";
         }
-    }
-    return fwrite($handle, implode($delim, $row) . "\r\n");
+}
+return fwrite($handle, implode($delim, $row) . "\r\n");
 }
 
 /**
@@ -441,7 +440,7 @@ function yml_get_offer($offer)
 function alter_table($name, $fields)
 {
     //подключаем движок магазина
-    
+
     $si = new Simpla();
     $fields = array_map(function ($s) {
         return '`' . $s . '`';
@@ -457,7 +456,7 @@ function alter_table($name, $fields)
 function update_tables()
 {
     //подключаем движок магазина
-    require_once(dirname(__FILE__).'/../api/Simpla.php');
+    require_once(dirname(__FILE__) . '/../api/Simpla.php');
     $si = new Simpla();
 
     $q_stock = "UPDATE s_variants v
