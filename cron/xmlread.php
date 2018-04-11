@@ -117,7 +117,7 @@ function create_update_help($sku_fid = 5, $brand_fid = 6)
     $simpla->db->query("SELECT MAX(LENGTH(brand)) as len FROM t_update_help");
     $brand_len = $simpla->db->result_array('len');
 
-    $res = $simpla->db->query("ALTER TABLE t_update_help CHANGE `sku` `sku` VARCHAR(44) NOT NULL DEFAULT '', CHANGE `brand` `brand` VARCHAR(22) NOT NULL DEFAULT ''");
+    $res = $simpla->db->query("ALTER TABLE t_update_help CHANGE `sku` `sku` VARCHAR($sku_len) NOT NULL DEFAULT '', CHANGE `brand` `brand` VARCHAR($brand_len) NOT NULL DEFAULT ''");
     if ($res === false) {
         return 3;
     }
