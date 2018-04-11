@@ -57,7 +57,7 @@ class ProductsView extends View
 
         //преобразуем и запишем себе разобранную адресную строку в виде фильтра, пригодного для api
         $this->filter = $this->uri_to_api_filter($this->root->uri_arr, $this->filter);
-        if(!$this->filter){
+        if (!$this->filter) {
             return false;
         }
 //		print_r($this->filter);
@@ -81,7 +81,7 @@ class ProductsView extends View
         $this->filter['pages'] = ceil($this->filter['products_count'] / $this->filter['limit']);
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
         //проверяем есть ли у нас такая страница, если нет - переправляем на последнюю из возможных
-        if($this->filter['page'] < 1){
+        if ($this->filter['page'] < 1) {
             $this->filter['page'] = 1;
         }
 
@@ -165,48 +165,49 @@ class ProductsView extends View
         }
 
 
-
         if (isset($cat['id'])) {
             $auto_meta_title = $cat['meta_title'];
             $auto_meta_keywords = $cat['meta_keywords'];
-            $auto_meta_description =  $cat['meta_description'];
+            $auto_meta_description = $cat['meta_description'];
 
             $pairs = array(
-                '{$category}' => $cat['name'] ? $cat['name'].' ' : '',
-                '{$products_count}' => $this->filter['products_count'] .' ',
-                '{$sitename}' => $this->settings->site_name ? $this->settings->site_name.' ' : '',
+                '{$category}' => $cat['name'] ? $cat['name'] . ' ' : '',
+                '{$products_count}' => $this->filter['products_count'] . ' ',
+                '{$sitename}' => $this->settings->site_name ? $this->settings->site_name . ' ' : '',
 //                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,
             );
-            foreach ($features as $fid=>$f) {
-                if ($f['tpl']) {
-                    $pairs['{$'.$f['trans'].'}'] = $f['name'];
-                    $pairs['{$'.$f['trans'].'_list}'] = array();
-                    //$cycler = 0;
-                    if(isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])){
-                        foreach ($options['full'][$fid]['vals'] as $o) {
-                            array_push($pairs['{$'.$f['trans'].'_list}'] ,  $o);
-                        }
-                    }
+            if (is_array($features)) {
 
-                    $pairs['{$'.$f['trans'].'_list}'] = implode(', ', array_slice(['{$'.$f['trans'].'_list}'], 0, 3 ));
+                foreach ($features as $fid => $f) {
+                    if ($f['tpl']) {
+                        $pairs['{$' . $f['trans'] . '}'] = $f['name'];
+                        $pairs['{$' . $f['trans'] . '_list}'] = array();
+                        //$cycler = 0;
+                        if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
+                            foreach ($options['full'][$fid]['vals'] as $o) {
+                                array_push($pairs['{$' . $f['trans'] . '_list}'], $o);
+                            }
+                        }
+
+                        $pairs['{$' . $f['trans'] . '_list}'] = implode(', ', array_slice(['{$' . $f['trans'] . '_list}'], 0, 3));
+                    }
                 }
             }
-
             $auto_meta_title = strtr($auto_meta_title, $pairs);
-            $auto_meta_title = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_title);
+            $auto_meta_title = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_title);
 
             $auto_meta_keywords = strtr($auto_meta_keywords, $pairs);
-            $auto_meta_keywords = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_keywords);
+            $auto_meta_keywords = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_keywords);
 
             $auto_meta_description = strtr($auto_meta_description, $pairs);
-            $auto_meta_description = preg_replace('/(\{\$.*?\})/i', '' , $auto_meta_description);
+            $auto_meta_description = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_description);
 
             // добавим слова страница № для страниц с пагинацией
             if ($this->filter['page'] > 1) {
                 $page = $this->filter['page'];
                 $p_num_txt = "-$page- ";
-                $auto_meta_title = $p_num_txt.$auto_meta_title;
-                $auto_meta_description = $p_num_txt.$auto_meta_description;
+                $auto_meta_title = $p_num_txt . $auto_meta_title;
+                $auto_meta_description = $p_num_txt . $auto_meta_description;
             }
         }
         dtimer::log(__METHOD__ . ' after auto meta tags ' . __LINE__);
@@ -228,8 +229,9 @@ class ProductsView extends View
     }
 
 
-    //функция по обработке фильтров из адресной строки и преобразованию их в фильтр для api
-    private function uri_to_api_filter($uri_arr, $filter)
+//функция по обработке фильтров из адресной строки и преобразованию их в фильтр для api
+    private
+    function uri_to_api_filter($uri_arr, $filter)
     {
         // Если задано ключевое слово
         if (isset($uri_arr['query']['keyword'])) {
@@ -261,7 +263,7 @@ class ProductsView extends View
             $bids = $this->brands->get_brands_ids(array('trans' => array_keys($uri_path['brand'])));
             if ($bids) {
                 $filter['brand_id'] = array_keys($bids);
-            } else{
+            } else {
                 return false;
             }
         }
@@ -270,13 +272,14 @@ class ProductsView extends View
         if (isset($uri_path['sort'])) {
             $filter['sort'] = $uri_path['sort'];
         }
-        dtimer::log(__METHOD__ . " return: " .  var_export($filter, true));
+        dtimer::log(__METHOD__ . " return: " . var_export($filter, true));
         return $filter;
     }
 
-    //функция для преобразования ЧПУ части uri с фильтрами по свойствам $uri_path['features']
-    //флаг служит для задания преобразования по альтернативным названиям параметров trans2
-    private function uri_to_ids_filter($uri_features, $filter, $flag = false)
+//функция для преобразования ЧПУ части uri с фильтрами по свойствам $uri_path['features']
+//флаг служит для задания преобразования по альтернативным названиям параметров trans2
+    private
+    function uri_to_ids_filter($uri_features, $filter, $flag = false)
     {
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.

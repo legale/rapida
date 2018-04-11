@@ -1,8 +1,8 @@
 <?php
-if(PHP_VERSION_ID >= 70000) {
+if (PHP_VERSION_ID >= 70000) {
     define('PHP7', true);
 }
-if(defined("PHP7")) {
+if (defined("PHP7")) {
     eval("declare(strict_types=1);");
 }
 /**
@@ -106,6 +106,7 @@ function translit($string, $reverse = false)
         trigger_error(__METHOD__ . 'argument type error');
         return false;
     }
+
     $converter = array(
         'а' => 'a', 'б' => 'b', 'в' => 'v',
         'г' => 'g', 'д' => 'd', 'е' => 'e',
@@ -150,7 +151,7 @@ function translit_url($string, $reverse = false)
         return false;
     }
     //тут удаляем все кроме букв, цифр и _ + ~
-    $string = preg_replace("/[^\w\d\_\s\~\+]+/u", '', $string);
+    $string = preg_replace("/[^\w\d\_ \~\+]+/u", '', $string);
 
 
     //самая быстрая функция для замены подстроки в строке strtr() пробел меняем на подчеркивание
@@ -197,11 +198,11 @@ function translit_ya($string, $reverse = false)
         return false;
     }
     //тут удаляем все кроме букв, цифр и _ + ~
-    $string = preg_replace("/[^\w\d\_\s\~\+]+/u", '', $string);
+    $string = preg_replace("/[^\w\d\_ \~\+\-\,\.\/\\\]+/u", '', $string);
 
 
     //самая быстрая функция для замены подстроки в строке strtr пробел меняем на подчеркивание
-    $pairs = array(' ' => '_', '-' => '+');
+    $pairs = array("\xc2\xa0" => ' ','\\' => '%5C', '/' => '%2F', '.' => '%2E', ',' => '%2C', ' ' => '_', '+' => '%2B', '-' => '~');
     if ($reverse === true) {
         $pairs = array_flip($pairs);
     }
@@ -317,7 +318,7 @@ class Simpla
             self::$virgin = false;
 
             //запустим сессию, если запуск не из командной строки
-            if(!$this->config->cli) {
+            if (!$this->config->cli) {
                 session_start();
             }
 
