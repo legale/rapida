@@ -232,7 +232,7 @@ function create_table($name, $fields, $drop = true)
 function load_data($name, $csvrealpath)
 {
     //подключаем движок магазина
-    require_once(dirname(__FILE__) . '/api/Simpla.php');
+    require_once(dirname(__FILE__) . '/../api/Simpla.php');
     $simpla = new Simpla();
 
     $csvrealpath = str_replace('\\', '/', $csvrealpath);
