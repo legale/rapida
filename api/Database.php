@@ -41,14 +41,6 @@ class Database extends Simpla
     }
 
     /**
-     * В деструкторе отсоединяемся от базы
-     */
-    public function __destruct()
-    {
-        $this->disconnect();
-    }
-
-    /**
      * Подключение к базе данных
      * @param null $force_reconnect
      * @return bool|mysqli
@@ -83,6 +75,13 @@ class Database extends Simpla
         return $this->mysqli;
     }
 
+    /**
+     * В деструкторе отсоединяемся от базы
+     */
+    public function __destruct()
+    {
+        $this->disconnect();
+    }
 
     /**
      * Закрываем подключение к базе данных
@@ -135,8 +134,8 @@ class Database extends Simpla
         //обновляем время с последнего запроса
         $this->started = time();
         $this->res = $this->mysqli->query($q);
-        if (!$this->res) {
-            dtimer::log(__METHOD__ . " Error: $q ", 1);
+        if ($this->res === false) {
+            dtimer::log(__METHOD__ . var_export($this->res, true)." Error: $q ", 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
         } else {
@@ -160,17 +159,6 @@ class Database extends Simpla
         }
         return false;
     }
-
-    /**
-     *  Экранирование
-     * @param $str
-     * @returr $str
-     */
-    public function escape($str)
-    {
-        return $this->mysqli->real_escape_string((string)$str);
-    }
-
 
     /**
      * Плейсхолдер для запросов. Пример работы: $query = $db->placehold('SELECT name FROM products WHERE id=?', $id);
@@ -198,6 +186,257 @@ class Database extends Simpla
         }
     }
 
+    /**
+     * Выполнение плейсхолдера
+     * @param $tmpl
+     * @param $args
+     * @param $errormsg
+     * @return bool|string
+     */
+    private function sql_placeholder_ex($tmpl, $args, &$errormsg)
+    {
+        // Запрос уже разобран?.. Если нет, разбираем.
+        if (is_array($tmpl)) {
+            $compiled = $tmpl;
+        } else {
+            $compiled = $this->sql_compile_placeholder($tmpl);
+        }
+        list($compiled, $tmpl, $has_named) = $compiled;
+
+        // Если есть хотя бы один именованный placeholder, используем
+        // первый аргумент в качестве ассоциативного массива.
+        if ($has_named) {
+            $args = isset($args[0]) ? $args[0] : '';
+        }
+
+        // Выполняем все замены в цикле.
+        $p = 0;        // текущее положение в строке
+        $out = '';        // результирующая строка
+        $error = false; // были ошибки?
+
+        foreach ($compiled as $num => $e) {
+            list($key, $type, $start, $length) = $e;
+
+            // Pre-string.
+            $out .= substr($tmpl, $p, $start - $p);
+            $p = $start + $length;
+
+            $repl = '';        // текст для замены текущего placeholder-а
+            $errmsg = ''; // сообщение об ошибке для этого placeholder-а
+            do {
+
+                // Вставляем значение в соответствии с типом placeholder-а.
+                $a = $args[$key];
+
+                //Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
+                if ($type === '') {
+                    // Скалярный placeholder.
+                    if (!is_scalar($a)) {
+                        $error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key";
+                        break;
+                    }
+                    $repl = is_int($a) || is_float($a) ? str_replace(',', '.', $a) : "'" . $this->db->escape($a) . "'";
+                    break;
+                }
+
+                //Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
+                if ($type === '!') {
+                    // Скалярный placeholder.
+                    if (!is_scalar($a)) {
+                        $error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key";
+                        break;
+                    }
+                    $repl = "`" . $this->db->escape($a) . "`";
+                    break;
+                }
+
+                // Если это объект - сделаем его массивом
+                if (is_object($a)) {
+                    $a = (array)$a;
+                }
+                //Если в итоге не получился массив - покажем ошибку
+                if (!is_array($a)) {
+                    $error = $errmsg = "NOT_AN_ARRAY/OBJECT_PLACEHOLDER_$key";
+                    break;
+                }
+
+                if ($type === '$') { // Это список со значениями в HEX для поиска в поле BIN
+                    foreach ($a as $v) {
+                        if (is_null($v)) {
+                            $r = "NULL";
+                        } else {
+                            $r = "0x" . $this->db->escape($v);
+                        }
+
+                        $repl .= ($repl === '' ? "" : ",") . $r;
+                    }
+
+                } elseif ($type === '@') { // Это список со значениями полей.
+                    foreach ($a as $v) {
+                        if (is_null($v))
+                            $r = "NULL";
+                        else
+                            $r = "'" . $this->db->escape($v) . "'";
+
+                        $repl .= ($repl === '' ? "" : ",") . $r;
+                    }
+
+                } elseif ($type === '^') // Это список с названиями столбцов
+                {
+                    foreach ($a as $v) {
+                        if (is_null($v))
+                            $r = "NULL";
+                        else
+                            $r = '`' . $this->db->escape($v) . '`';
+
+                        $repl .= ($repl === '' ? "" : ",") . $r;
+                    }
+                } // Это набор пар `название поля` = 'значение поля' для конструкции SET
+                elseif ($type === '%') {
+                    $lerror = array();
+                    foreach ($a as $k => $v) {
+                        if (!is_string($k) && !is_int($k)) {
+                            $lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key";
+                        } else {
+                            $k = '`' . $this->db->escape($k) . '`';
+                        }
+
+                        if (is_null($v))
+                            $r = "=NULL";
+                        else
+                            $r = "='" . $this->db->escape($v) . "'";
+
+                        $repl .= ($repl === '' ? "" : ", ") . $k . $r;
+                    }
+                    // Если была ошибка, составляем сообщение.
+                    if (count($lerror) > 0) {
+                        $repl = '';
+                        foreach ($a as $k => $v) {
+                            if (isset($lerror[$k])) {
+                                $repl .= ($repl === '' ? "" : ", ") . $lerror[$k];
+                            } else {
+                                $k = $this->db->escape($k);
+                                $repl .= ($repl === '' ? "" : ", ") . $k . "=?";
+                            }
+                        }
+                        $error = $errmsg = $repl;
+                    }
+                } // Это набор пар `название поля` = 'значение поля' для конструкции WHERE
+                elseif ($type === '&') {
+                    $lerror = array();
+                    foreach ($a as $k => $v) {
+                        if (!is_string($k) && !is_int($k)) {
+                            $lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key";
+                        } else {
+                            $k = '`' . $this->db->escape($k) . '`';
+                        }
+
+                        if (is_null($v))
+                            $r = "=NULL";
+                        else
+                            $r = "='" . $this->db->escape($v) . "'";
+
+                        $repl .= ($repl === '' ? "" : " AND ") . $k . $r;
+                    }
+                    // Если была ошибка, составляем сообщение.
+                    if (count($lerror) > 0) {
+                        $repl = '';
+                        foreach ($a as $k => $v) {
+                            if (isset($lerror[$k])) {
+                                $repl .= ($repl === '' ? "" : ", ") . $lerror[$k];
+                            } else {
+                                $k = $this->db->escape($k);
+                                $repl .= ($repl === '' ? "" : ", ") . $k . "=?";
+                            }
+                        }
+                        $error = $errmsg = $repl;
+                    }
+                }
+            } while (false);
+            if ($errmsg) $compiled[$num]['error'] = $errmsg;
+            if (!$error) $out .= $repl;
+        }
+        $out .= substr($tmpl, $p);
+
+        // Если возникла ошибка, переделываем результирующую строку
+        // в сообщение об ошибке (расставляем диагностические строки
+        // вместо ошибочных placeholder-ов).
+        if ($error) {
+            $out = '';
+            $p = 0; // текущая позиция
+            foreach ($compiled as $num => $e) {
+                list($key, $type, $start, $length) = $e;
+                $out .= substr($tmpl, $p, $start - $p);
+                $p = $start + $length;
+                if (isset($e['error'])) {
+                    $out .= $e['error'];
+                } else {
+                    $out .= substr($tmpl, $start, $length);
+                }
+            }
+            // Последняя часть строки.
+            $out .= substr($tmpl, $p);
+            $errormsg = $out;
+            return false;
+        } else {
+            $errormsg = false;
+            return $out;
+        }
+    }
+
+    /**
+     * Компиляция плейсхолдера
+     * @param $tmpl
+     * @return array
+     */
+    private function sql_compile_placeholder($tmpl)
+    {
+        $compiled = array();
+        $p = 0;     // текущая позиция в строке
+        $i = 0;     // счетчик placeholder-ов
+        $has_named = false;
+        while (false !== ($start = $p = strpos($tmpl, "?", $p))) {
+            // Определяем тип placeholder-а.
+            switch ($c = substr($tmpl, ++$p, 1)) {
+                case '!' : // Это скалярный тип оборачивается в `a`, `b`
+                case '%' : // Это набор пар `название поля` = 'значение поля' для конструкции SET `a` = 'aa', `b` = 'bb'
+                case '^' : // Это список с названиями столбцов `a`, `b`
+                case '&' : // Это набор пар для конструкции WHERE `a` = 'aa' AND `b` = 'bb'
+                case '$' : // Это список со значениями в HEX 0xAA, 0xBB
+                case '@' : // Это список со значениями полей, оборачивается в 'a', 'b'
+                    $type = $c;
+                    ++$p;
+                    break;
+                default :
+                    $type = '';
+                    break;
+            }
+            // Проверяем, именованный ли это placeholder: "?keyname"
+            if (preg_match('/^((?:[^\s[:punct:]]|_)+)/', substr($tmpl, $p), $pock)) {
+                $key = $pock[1];
+                $has_named = true;
+                $p += strlen($key);
+            } else {
+                $key = $i;
+                if ($type != '#') {
+                    $i++;
+                }
+            }
+            // Сохранить запись о placeholder-е.
+            $compiled[] = array($key, $type, $start, $p - $start);
+        }
+        return array($compiled, $tmpl, $has_named);
+    }
+
+    /**
+     *  Экранирование
+     * @param $str
+     * @returr $str
+     */
+    public function escape($str)
+    {
+        return $this->mysqli->real_escape_string((string)$str);
+    }
 
     /**
      * Возвращает результаты запроса в виде объекта. Если указан 1 аргумент, то будет выведен одномерный объект
@@ -248,7 +487,6 @@ class Database extends Simpla
         }
         return $results;
     }
-
 
     /**
      * /**
@@ -396,248 +634,6 @@ class Database extends Simpla
     }
 
     /**
-     * Компиляция плейсхолдера
-     * @param $tmpl
-     * @return array
-     */
-    private function sql_compile_placeholder($tmpl)
-    {
-        $compiled = array();
-        $p = 0;     // текущая позиция в строке 
-        $i = 0;     // счетчик placeholder-ов 
-        $has_named = false;
-        while (false !== ($start = $p = strpos($tmpl, "?", $p))) {
-            // Определяем тип placeholder-а. 
-            switch ($c = substr($tmpl, ++$p, 1)) {
-                case '!' : // Это скалярный тип оборачивается в `a`, `b`
-                case '%' : // Это набор пар `название поля` = 'значение поля' для конструкции SET `a` = 'aa', `b` = 'bb'
-                case '^' : // Это список с названиями столбцов `a`, `b`
-                case '&' : // Это набор пар для конструкции WHERE `a` = 'aa' AND `b` = 'bb'
-                case '$' : // Это список со значениями в HEX 0xAA, 0xBB 
-                case '@' : // Это список со значениями полей, оборачивается в 'a', 'b' 
-                    $type = $c;
-                    ++$p;
-                    break;
-                default :
-                    $type = '';
-                    break;
-            }
-            // Проверяем, именованный ли это placeholder: "?keyname" 
-            if (preg_match('/^((?:[^\s[:punct:]]|_)+)/', substr($tmpl, $p), $pock)) {
-                $key = $pock[1];
-                $has_named = true;
-                $p += strlen($key);
-            } else {
-                $key = $i;
-                if ($type != '#') {
-                    $i++;
-                }
-            }
-            // Сохранить запись о placeholder-е. 
-            $compiled[] = array($key, $type, $start, $p - $start);
-        }
-        return array($compiled, $tmpl, $has_named);
-    }
-
-    /**
-     * Выполнение плейсхолдера
-     * @param $tmpl
-     * @param $args
-     * @param $errormsg
-     * @return bool|string
-     */
-    private function sql_placeholder_ex($tmpl, $args, &$errormsg)
-    {
-        // Запрос уже разобран?.. Если нет, разбираем. 
-        if (is_array($tmpl)) {
-            $compiled = $tmpl;
-        } else {
-            $compiled = $this->sql_compile_placeholder($tmpl);
-        }
-        list($compiled, $tmpl, $has_named) = $compiled;
-
-        // Если есть хотя бы один именованный placeholder, используем 
-        // первый аргумент в качестве ассоциативного массива. 
-        if ($has_named) {
-            $args = isset($args[0]) ? $args[0] : '';
-        }
-
-        // Выполняем все замены в цикле. 
-        $p = 0;        // текущее положение в строке 
-        $out = '';        // результирующая строка 
-        $error = false; // были ошибки? 
-
-        foreach ($compiled as $num => $e) {
-            list($key, $type, $start, $length) = $e;
-
-            // Pre-string. 
-            $out .= substr($tmpl, $p, $start - $p);
-            $p = $start + $length;
-
-            $repl = '';        // текст для замены текущего placeholder-а 
-            $errmsg = ''; // сообщение об ошибке для этого placeholder-а 
-            do {
-
-                // Вставляем значение в соответствии с типом placeholder-а. 
-                $a = $args[$key];
-
-                //Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
-                if ($type === '') {
-                    // Скалярный placeholder. 
-                    if (!is_scalar($a)) {
-                        $error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key";
-                        break;
-                    }
-                    $repl = is_int($a) || is_float($a) ? str_replace(',', '.', $a) : "'" . $this->db->escape($a) . "'";
-                    break;
-                }
-
-                //Если тип не задан, то это должен быть скалярный тип т.е. не массив или объект
-                if ($type === '!') {
-                    // Скалярный placeholder. 
-                    if (!is_scalar($a)) {
-                        $error = $errmsg = "NOT_A_SCALAR_PLACEHOLDER_$key";
-                        break;
-                    }
-                    $repl = "`" . $this->db->escape($a) . "`";
-                    break;
-                }
-
-                // Если это объект - сделаем его массивом
-                if (is_object($a)) {
-                    $a = (array)$a;
-                }
-                //Если в итоге не получился массив - покажем ошибку
-                if (!is_array($a)) {
-                    $error = $errmsg = "NOT_AN_ARRAY/OBJECT_PLACEHOLDER_$key";
-                    break;
-                }
-
-                if ($type === '$') { // Это список со значениями в HEX для поиска в поле BIN 
-                    foreach ($a as $v) {
-                        if (is_null($v)) {
-                            $r = "NULL";
-                        } else {
-                            $r = "0x" . $this->db->escape($v);
-                        }
-
-                        $repl .= ($repl === '' ? "" : ",") . $r;
-                    }
-
-                } elseif ($type === '@') { // Это список со значениями полей.  
-                    foreach ($a as $v) {
-                        if (is_null($v))
-                            $r = "NULL";
-                        else
-                            $r = "'" . $this->db->escape($v) . "'";
-
-                        $repl .= ($repl === '' ? "" : ",") . $r;
-                    }
-
-                } elseif ($type === '^') // Это список с названиями столбцов
-                {
-                    foreach ($a as $v) {
-                        if (is_null($v))
-                            $r = "NULL";
-                        else
-                            $r = '`' . $this->db->escape($v) . '`';
-
-                        $repl .= ($repl === '' ? "" : ",") . $r;
-                    }
-                } // Это набор пар `название поля` = 'значение поля' для конструкции SET
-                elseif ($type === '%') {
-                    $lerror = array();
-                    foreach ($a as $k => $v) {
-                        if (!is_string($k) && !is_int($k)) {
-                            $lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key";
-                        } else {
-                            $k = '`' . $this->db->escape($k) . '`';
-                        }
-
-                        if (is_null($v))
-                            $r = "=NULL";
-                        else
-                            $r = "='" . $this->db->escape($v) . "'";
-
-                        $repl .= ($repl === '' ? "" : ", ") . $k . $r;
-                    }
-                    // Если была ошибка, составляем сообщение. 
-                    if (count($lerror) > 0) {
-                        $repl = '';
-                        foreach ($a as $k => $v) {
-                            if (isset($lerror[$k])) {
-                                $repl .= ($repl === '' ? "" : ", ") . $lerror[$k];
-                            } else {
-                                $k = $this->db->escape($k);
-                                $repl .= ($repl === '' ? "" : ", ") . $k . "=?";
-                            }
-                        }
-                        $error = $errmsg = $repl;
-                    }
-                } // Это набор пар `название поля` = 'значение поля' для конструкции WHERE
-                elseif ($type === '&') {
-                    $lerror = array();
-                    foreach ($a as $k => $v) {
-                        if (!is_string($k) && !is_int($k)) {
-                            $lerror[$k] = "NOT_A_STRING_OR_INTEGER_KEY_{$k}_FOR_PLACEHOLDER_$key";
-                        } else {
-                            $k = '`' . $this->db->escape($k) . '`';
-                        }
-
-                        if (is_null($v))
-                            $r = "=NULL";
-                        else
-                            $r = "='" . $this->db->escape($v) . "'";
-
-                        $repl .= ($repl === '' ? "" : " AND ") . $k . $r;
-                    }
-                    // Если была ошибка, составляем сообщение. 
-                    if (count($lerror) > 0) {
-                        $repl = '';
-                        foreach ($a as $k => $v) {
-                            if (isset($lerror[$k])) {
-                                $repl .= ($repl === '' ? "" : ", ") . $lerror[$k];
-                            } else {
-                                $k = $this->db->escape($k);
-                                $repl .= ($repl === '' ? "" : ", ") . $k . "=?";
-                            }
-                        }
-                        $error = $errmsg = $repl;
-                    }
-                }
-            } while (false);
-            if ($errmsg) $compiled[$num]['error'] = $errmsg;
-            if (!$error) $out .= $repl;
-        }
-        $out .= substr($tmpl, $p);
-
-        // Если возникла ошибка, переделываем результирующую строку 
-        // в сообщение об ошибке (расставляем диагностические строки 
-        // вместо ошибочных placeholder-ов). 
-        if ($error) {
-            $out = '';
-            $p = 0; // текущая позиция 
-            foreach ($compiled as $num => $e) {
-                list($key, $type, $start, $length) = $e;
-                $out .= substr($tmpl, $p, $start - $p);
-                $p = $start + $length;
-                if (isset($e['error'])) {
-                    $out .= $e['error'];
-                } else {
-                    $out .= substr($tmpl, $start, $length);
-                }
-            }
-            // Последняя часть строки. 
-            $out .= substr($tmpl, $p);
-            $errormsg = $out;
-            return false;
-        } else {
-            $errormsg = false;
-            return $out;
-        }
-    }
-
-    /**
      * @param $filename
      * @param bool $skip_create
      */
@@ -656,39 +652,6 @@ class Database extends Simpla
         }
         fclose($h);
     }
-
-    /**
-     * @param $filename
-     */
-    function restore($filename)
-    {
-        dtimer::log(__METHOD__ . " start $filename");
-        $templine = '';
-        $h = fopen($filename, 'r');
-
-        // Loop through each line
-        if ($h) {
-            while (!feof($h)) {
-                $line = fgets($h);
-                // Only continue if it's not a comment
-                if (is_string($line) && substr($line, 0, 2) != '--' && $line != '') {
-                    // Add this line to the current segment
-                    $templine .= $line;
-                    // If it has a semicolon at the end, it's the end of the query
-                    if (substr(trim($line), -1, 1) == ';') {
-                        // Perform the query
-                        $this->mysqli->query($templine) or print ('Error performing query \'<b>' . $templine . '</b>\': ' . $this->mysqli->error . '<br/><br/>');
-                        // Reset temp variable to empty
-                        $templine = '';
-                    }
-                }
-            }
-        } else {
-            return false;
-        }
-        return fclose($h);
-    }
-
 
     /**
      * @param $table
@@ -806,9 +769,9 @@ class Database extends Simpla
             }
             /*
              * Теперь пишем сами значения, каждая строка пишется в круглых скобках через запятую.
-             * Будем писать каждое значение в зависимости от его типа данных. 
-             * Символьные (кроме bin) char, varchar, text, blob, set и др. будем писать через 
-             * экранирование спецсимволов в одинарных кавычках. 
+             * Будем писать каждое значение в зависимости от его типа данных.
+             * Символьные (кроме bin) char, varchar, text, blob, set и др. будем писать через
+             * экранирование спецсимволов в одинарных кавычках.
              * bin будем писать в виде hex строки. 0xcc23865436abc431007759e15a11991a
              * Числа int будем писать без кавычек.
              * Все остальное в одинарных кавычках
@@ -859,6 +822,38 @@ class Database extends Simpla
         fwrite($h, ";\n");
 
         return true;
+    }
+
+    /**
+     * @param $filename
+     */
+    function restore($filename)
+    {
+        dtimer::log(__METHOD__ . " start $filename");
+        $templine = '';
+        $h = fopen($filename, 'r');
+
+        // Loop through each line
+        if ($h) {
+            while (!feof($h)) {
+                $line = fgets($h);
+                // Only continue if it's not a comment
+                if (is_string($line) && substr($line, 0, 2) != '--' && $line != '') {
+                    // Add this line to the current segment
+                    $templine .= $line;
+                    // If it has a semicolon at the end, it's the end of the query
+                    if (substr(trim($line), -1, 1) == ';') {
+                        // Perform the query
+                        $this->mysqli->query($templine) or print ('Error performing query \'<b>' . $templine . '</b>\': ' . $this->mysqli->error . '<br/><br/>');
+                        // Reset temp variable to empty
+                        $templine = '';
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+        return fclose($h);
     }
 
 }

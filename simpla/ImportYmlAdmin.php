@@ -1,6 +1,6 @@
 <?PHP
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 require_once('api/Simpla.php');
 
@@ -206,7 +206,7 @@ class ImportYmlAdmin extends Simpla
                     $this->money->add_currency(array(
                         'name' => $yml_currency['id'], 'sign' => $yml_currency['id'],
                         'code' => $yml_currency['id'],
-                        'rate_from' => '1.00', 'rate_to' => '1.00'));
+                        'rate' => '1'));
                     if ($yml_currency['dbid'] = $this->money->get_currency($yml_currency['id'])) {
                         $yml_currency['dbid'] = $yml_currency['dbid']['id'];
                     }
@@ -247,8 +247,6 @@ class ImportYmlAdmin extends Simpla
             return true;
         }
     }
-
-
 
 
     private function convert_file($source, $dest)
@@ -464,7 +462,7 @@ class ImportYmlAdmin extends Simpla
 
 
         //пишем 1 строку с заголовками
-        fputcsv($fcsv, $fields, ";");
+        $this->fputcsv_escape($fcsv, $fields, ';');
 
         //открываем XML
         $xml = new XMLReader;
@@ -550,6 +548,9 @@ class ImportYmlAdmin extends Simpla
             if ($pics_concat == true && is_array($row['picture'])) {
                 $row['picture'] = implode('|', $row['picture']);
             }
+            if ($pics_concat == true && is_array($row['image'])) {
+                $row['image'] = implode('|', $row['image']);
+            }
 
 
             //меняем цену на выбранную из файла валют
@@ -588,7 +589,7 @@ class ImportYmlAdmin extends Simpla
             //print "";
 
 
-            fputcsv($fcsv, $row, ";");
+            $this->fputcsv_escape($fcsv, $row,';');
 
             //переходим к следующему узлу <offer>
             $xml->next('offer');
@@ -602,6 +603,25 @@ class ImportYmlAdmin extends Simpla
             return false;
         }
 
+    }
+
+    private function fputcsv_escape($handle, $fields, $delim = ',')
+    {
+        $row = array();
+        foreach ($fields as $k => $col) {
+            if (is_iterable($col)) {
+                print " column $k is iterable! Must be string, int, float or bool ";
+                return false;
+            }
+            if ($col === null) {
+                $row[] = 'NULL';
+            } else if (is_string($col)) {
+                $row[] = '"' . str_replace(array("\n", "\r", "\t", $delim), array('\n', '\r', '\t', "\\" . $delim), $col) . '"';
+            } else {
+                $row[] = "\"$col\"";
+            }
+        }
+        return fwrite($handle, implode($delim, $row) . "\r\n");
     }
 
     private function add_minimum_params($params1, $params2)
