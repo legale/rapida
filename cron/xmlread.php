@@ -104,10 +104,20 @@ function create_update_help($sku_fid = 5, $brand_fid = 6)
     if ($res === false) {
         return 1;
     }
-    $res = $simpla->db->query("create table t_update_help
+    $res = $simpla->db->query("CREATE TABLE t_update_help
         select product_id, u.val as sku, uu.val as brand from s_options o
         inner join s_options_uniq u on o.`$sku_fid` = u.id
         inner join s_options_uniq uu on o.`$brand_fid` = uu.id");
+    if ($res === false) {
+        return 2;
+    }
+    $simpla->db->query("SELECT MAX(LENGTH(sku)) as len FROM t_update_help");
+    $sku_len = $simpla->db->result_array('len');
+
+    $simpla->db->query("SELECT MAX(LENGTH(brand)) as len FROM t_update_help");
+    $brand_len = $simpla->db->result_array('len');
+
+    $res = $simpla->db->query("ALTER TABLE t_update_help  CHANGE `sku` `sku` VARCHAR($sku_len), CHANGE `brand` `brand` VARCHAR($brand_len)");
     if ($res === false) {
         return 2;
     }
@@ -115,8 +125,7 @@ function create_update_help($sku_fid = 5, $brand_fid = 6)
 	add `offer_id` VARCHAR(200) DEFAULT null,
 	add primary key (`product_id`) ,
 	add index `sku` (`sku`, `brand`, `offer_id`),
-	add index `brand` (`brand`, `sku`, `offer_id`),
-	add index `offer_id` (`offer_id`)
+	add index `brand` (`brand`, `sku`, `offer_id`)
 	");
     if ($res === false) {
         return 3;
