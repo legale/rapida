@@ -49,8 +49,8 @@ if (load_data($name, $res) === false) {
 
 
 
-if(isset($args[2], $args[3])){
-    $res = create_update_help($args[2], $args[3]);
+if(isset($argv[2], $argv[3])){
+    $res = create_update_help($argv[2], $argv[3]);
 }else {
     $res = create_update_help();
 }
