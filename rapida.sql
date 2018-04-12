@@ -1,5 +1,6 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_blog`;
 CREATE TABLE `s_blog` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(500) NOT NULL,
@@ -20,6 +21,7 @@ CREATE TABLE `s_blog` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_brands`;
 CREATE TABLE `s_brands` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -40,6 +42,7 @@ CREATE TABLE `s_brands` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_cache_integer`;
 CREATE TABLE `s_cache_integer` (
   `updated` date DEFAULT '1000-01-01',
   `keyhash` binary(16) NOT NULL,
@@ -51,6 +54,7 @@ CREATE TABLE `s_cache_integer` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_categories`;
 CREATE TABLE `s_categories` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -75,6 +79,7 @@ CREATE TABLE `s_categories` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_categories_features`;
 CREATE TABLE `s_categories_features` (
   `category_id` smallint(5) unsigned NOT NULL,
   `feature_id` smallint(5) unsigned NOT NULL,
@@ -84,6 +89,7 @@ CREATE TABLE `s_categories_features` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_comments`;
 CREATE TABLE `s_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -100,6 +106,7 @@ CREATE TABLE `s_comments` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_coupons`;
 CREATE TABLE `s_coupons` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(256) NOT NULL,
@@ -114,6 +121,7 @@ CREATE TABLE `s_coupons` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_currencies`;
 CREATE TABLE `s_currencies` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '0',
@@ -130,6 +138,7 @@ CREATE TABLE `s_currencies` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_delivery`;
 CREATE TABLE `s_delivery` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -145,6 +154,7 @@ CREATE TABLE `s_delivery` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_delivery_payment`;
 CREATE TABLE `s_delivery_payment` (
   `delivery_id` int(10) unsigned NOT NULL,
   `payment_method_id` int(10) unsigned NOT NULL,
@@ -153,6 +163,7 @@ CREATE TABLE `s_delivery_payment` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_features`;
 CREATE TABLE `s_features` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -170,6 +181,7 @@ CREATE TABLE `s_features` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_feedback`;
 CREATE TABLE `s_feedback` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -182,6 +194,7 @@ CREATE TABLE `s_feedback` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_groups`;
 CREATE TABLE `s_groups` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
@@ -191,6 +204,7 @@ CREATE TABLE `s_groups` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_img_blog`;
 CREATE TABLE `s_img_blog` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL,
@@ -204,6 +218,7 @@ CREATE TABLE `s_img_blog` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_img_categories`;
 CREATE TABLE `s_img_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL,
@@ -217,6 +232,7 @@ CREATE TABLE `s_img_categories` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_img_products`;
 CREATE TABLE `s_img_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL,
@@ -230,6 +246,7 @@ CREATE TABLE `s_img_products` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_labels`;
 CREATE TABLE `s_labels` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
@@ -240,6 +257,7 @@ CREATE TABLE `s_labels` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_menu`;
 CREATE TABLE `s_menu` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
@@ -249,6 +267,7 @@ CREATE TABLE `s_menu` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_options`;
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`product_id`)
@@ -256,6 +275,7 @@ CREATE TABLE `s_options` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_options_groups`;
 CREATE TABLE `s_options_groups` (
   `id` tinyint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT '',
@@ -265,6 +285,7 @@ CREATE TABLE `s_options_groups` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_options_uniq`;
 CREATE TABLE `s_options_uniq` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `val` varchar(512) DEFAULT '',
@@ -280,6 +301,7 @@ CREATE TABLE `s_options_uniq` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_orders`;
 CREATE TABLE `s_orders` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `delivery_id` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -317,6 +339,7 @@ CREATE TABLE `s_orders` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_orders_labels`;
 CREATE TABLE `s_orders_labels` (
   `order_id` smallint(5) unsigned NOT NULL,
   `label_id` smallint(5) unsigned NOT NULL,
@@ -325,6 +348,7 @@ CREATE TABLE `s_orders_labels` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_pages`;
 CREATE TABLE `s_pages` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) DEFAULT '',
@@ -346,6 +370,7 @@ CREATE TABLE `s_pages` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_payment_methods`;
 CREATE TABLE `s_payment_methods` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `module` varchar(255) DEFAULT '',
@@ -361,6 +386,7 @@ CREATE TABLE `s_payment_methods` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_products`;
 CREATE TABLE `s_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) NOT NULL,
@@ -392,6 +418,7 @@ CREATE TABLE `s_products` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_products_categories`;
 CREATE TABLE `s_products_categories` (
   `product_id` int(10) unsigned NOT NULL,
   `category_id` smallint(5) unsigned NOT NULL,
@@ -400,6 +427,7 @@ CREATE TABLE `s_products_categories` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_purchases`;
 CREATE TABLE `s_purchases` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `order_id` int(10) unsigned NOT NULL,
@@ -418,6 +446,7 @@ CREATE TABLE `s_purchases` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_queue`;
 CREATE TABLE `s_queue` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `keyhash` binary(16) NOT NULL,
@@ -429,6 +458,7 @@ CREATE TABLE `s_queue` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_queue_full`;
 CREATE TABLE `s_queue_full` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `keyhash` binary(16) NOT NULL,
@@ -440,6 +470,7 @@ CREATE TABLE `s_queue_full` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_related_products`;
 CREATE TABLE `s_related_products` (
   `product_id` int(10) unsigned NOT NULL,
   `related_id` int(10) unsigned NOT NULL,
@@ -450,6 +481,7 @@ CREATE TABLE `s_related_products` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_settings`;
 CREATE TABLE `s_settings` (
   `setting_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -459,6 +491,7 @@ CREATE TABLE `s_settings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_slider`;
 CREATE TABLE `s_slider` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `basename` varchar(500) NOT NULL,
@@ -473,6 +506,7 @@ CREATE TABLE `s_slider` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_users`;
 CREATE TABLE `s_users` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
@@ -495,6 +529,7 @@ CREATE TABLE `s_users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+DROP TABLE IF EXISTS `s_variants`;
 CREATE TABLE `s_variants` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `product_id` int(10) unsigned NOT NULL,
