@@ -17,7 +17,7 @@ CREATE TABLE `s_blog` (
   PRIMARY KEY (`id`),
   KEY `enabled` (`visible`),
   KEY `url` (`url`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -38,7 +38,7 @@ CREATE TABLE `s_brands` (
   KEY `id_name` (`id`,`name`),
   KEY `trans2` (`trans2`),
   KEY `trans` (`trans`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -75,7 +75,7 @@ CREATE TABLE `s_categories` (
   KEY `pos` (`pos`),
   KEY `visible` (`visible`),
   KEY `url2` (`url2`)
-) ENGINE=InnoDB AUTO_INCREMENT=641 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -102,7 +102,7 @@ CREATE TABLE `s_comments` (
   PRIMARY KEY (`id`),
   KEY `product_id` (`object_id`),
   KEY `type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -134,7 +134,7 @@ CREATE TABLE `s_currencies` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`) USING BTREE,
   KEY `pos` (`pos`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -150,7 +150,7 @@ CREATE TABLE `s_delivery` (
   `separate_payment` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `pos` (`pos`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -177,7 +177,7 @@ CREATE TABLE `s_features` (
   UNIQUE KEY `name` (`name`),
   KEY `pos` (`pos`),
   KEY `in_filter` (`in_filter`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -214,7 +214,7 @@ CREATE TABLE `s_img_blog` (
   KEY `pos` (`pos`),
   KEY `item_id` (`item_id`) USING BTREE,
   KEY `basename` (`basename`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -228,7 +228,7 @@ CREATE TABLE `s_img_categories` (
   KEY `pos` (`pos`),
   KEY `item_id` (`item_id`) USING BTREE,
   KEY `basename` (`basename`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -242,7 +242,7 @@ CREATE TABLE `s_img_products` (
   KEY `pos` (`pos`),
   KEY `item_id` (`item_id`) USING BTREE,
   KEY `basename` (`basename`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=419348 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -253,7 +253,7 @@ CREATE TABLE `s_labels` (
   `color` varchar(6) DEFAULT '',
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -263,7 +263,7 @@ CREATE TABLE `s_menu` (
   `name` varchar(255) DEFAULT '',
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -271,7 +271,7 @@ DROP TABLE IF EXISTS `s_options`;
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=85149 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -281,7 +281,7 @@ CREATE TABLE `s_options_groups` (
   `name` varchar(255) DEFAULT '',
   `pos` tinyint(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -297,7 +297,7 @@ CREATE TABLE `s_options_uniq` (
   UNIQUE KEY `md4_id` (`md4`,`id`) USING BTREE,
   UNIQUE KEY `val` (`val`),
   KEY `md42` (`md42`,`md4`,`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=454966 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -335,7 +335,7 @@ CREATE TABLE `s_orders` (
   KEY `status` (`status`),
   KEY `code` (`url`),
   KEY `payment_status` (`paid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1013 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -366,7 +366,7 @@ CREATE TABLE `s_pages` (
   PRIMARY KEY (`id`),
   KEY `order_num` (`pos`),
   KEY `url` (`url`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -382,7 +382,7 @@ CREATE TABLE `s_payment_methods` (
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `pos` (`pos`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -414,7 +414,7 @@ CREATE TABLE `s_products` (
   KEY `visible` (`visible`) USING BTREE,
   KEY `url2` (`url2`),
   KEY `stock` (`stock`)
-) ENGINE=InnoDB AUTO_INCREMENT=85149 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -442,7 +442,7 @@ CREATE TABLE `s_purchases` (
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
   KEY `variant_id` (`variant_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1905 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -454,7 +454,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8469024 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -466,7 +466,7 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3644821 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -487,7 +487,10 @@ CREATE TABLE `s_settings` (
   `name` varchar(255) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`setting_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `s_settings`	
+SET `name` = 'theme', `value` = 'default';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -502,7 +505,7 @@ CREATE TABLE `s_slider` (
   PRIMARY KEY (`id`),
   KEY `enabled` (`visible`),
   KEY `url` (`url`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -525,7 +528,7 @@ CREATE TABLE `s_users` (
   KEY `perm` (`admin`),
   KEY `created` (`created`),
   KEY `last_login` (`last_login`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -554,7 +557,7 @@ CREATE TABLE `s_variants` (
   KEY `price2` (`price2`),
   KEY `price3` (`price3`),
   KEY `old_price` (`old_price`)
-) ENGINE=InnoDB AUTO_INCREMENT=85142 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
