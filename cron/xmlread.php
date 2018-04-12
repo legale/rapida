@@ -94,7 +94,7 @@ function get_string_type($str)
 /**
  * @return bool|int
  */
-function create_update_help($sku_fid = 5, $brand_fid = 6)
+function create_update_help($sku_fid = 41, $brand_fid = 50)
 {
     //подключаем движок магазина
     require_once(dirname(__FILE__) . '/../api/Simpla.php');
@@ -477,7 +477,13 @@ function update_tables()
 					THEN 1
 					ELSE 0
 					END,
-				v.stock = x.stock";
+				v.stock = x.stock,
+				p.visible = CASE
+					WHEN x.stock > 0
+					THEN 1
+					ELSE 0
+					END
+				";
 
     $q_price = "UPDATE s_variants v
         INNER JOIN s_products p ON p.id = v.product_id
