@@ -251,8 +251,7 @@ CREATE TABLE `s_menu` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`product_id`),
-
+  PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=85149 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
