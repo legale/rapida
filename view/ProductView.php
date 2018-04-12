@@ -33,7 +33,7 @@ class ProductView extends View
 		}
 
 		
-		if(empty($product) || (!$product['visible'] && empty($_SESSION['admin']))){
+		if(empty($product)){
 			return false;
 		}
 		
