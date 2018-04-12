@@ -1,5 +1,8 @@
 <?php
 ob_start();
+require_once(dirname(__FILE__) . '/../api/Simpla.php');
+$simpla = new Simpla();
+
 
 require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
