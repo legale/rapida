@@ -205,7 +205,7 @@
 <form method="post" id="product" enctype="multipart/form-data">
     <input type="hidden" name="session_id" value="{$smarty.session.id}">
 
-    <a class="link" target="_blank" href="../products/{$product['url']}">Открыть товар на сайте</a>
+    <a class="link" target="_blank" href="../products/{$product['trans']}">Открыть товар на сайте</a>
     <div id="name">
         <input class="name" name="save[product][name]" type="text" value="{$product['name']|escape}"/>
         <input name="save[product][id]" type="hidden" value="{$product['id']|escape}"/>
@@ -363,11 +363,11 @@
             <ul class="list">
                 <li><label class=property>Адрес</label>
                     <div class="page_url"> /products/</div>
-                    <input name="save[product][url]" class="page_url" type="text" value="{$product['url']|escape}"/>
+                    <input name="save[product][url]" class="page_url" type="text" value="{$product['trans']|escape}"/>
                 </li>
                 <li><label class=property>Адрес2</label>
                     <div class="page_url"> /products/</div>
-                    <input name="save[product][url2]" class="page_url" type="text" value="{$product['url2']|escape}"/>
+                    <input name="save[product][url2]" class="page_url" type="text" value="{$product['trans2']|escape}"/>
                 </li>
                 <li><label class=property>Заголовок</label>
                     <input name="save[product][meta_title]" type="text" value="{$product['meta_title']|escape}"/>

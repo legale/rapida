@@ -44,7 +44,7 @@ class Orders extends Simpla
         'email' => 's',
         'comment' => 's',
         'status' => 'i',
-        'url' => 's',
+        'trans' => 's',
         'payment_details' => 's',
         'ip' => 's',
         'total_price' => 'f',
@@ -67,14 +67,14 @@ class Orders extends Simpla
         } elseif (is_string($id)) {
             $id = "o.url = '$id'";
         } else {
-            dtimer::log(__METHOD__ . " argument url/id is not set or wrong type! ");
+            dtimer::log(__METHOD__ . " argument trans/id is not set or wrong type! ");
             return false;
         }
 
         $query = $this->db->placehold("SELECT  o.id, o.delivery_id, o.delivery_price, o.separate_delivery,
 										o.payment_method_id, o.paid, o.payment_date, o.closed, o.discount, o.coupon_code, o.coupon_discount,
 										o.date, o.user_id, o.name, o.address, o.phone, o.email, o.comment, o.status,
-										o.url, o.total_price, o.note, o.ip
+										o.trans, o.total_price, o.note, o.ip
 										FROM __orders o WHERE 1 AND $id LIMIT 1");
 
         if ($this->db->query($query)) {
@@ -135,7 +135,7 @@ class Orders extends Simpla
         $query = $this->db->placehold("SELECT o.id, o.delivery_id, o.delivery_price, o.separate_delivery,
 										o.payment_method_id, o.paid, o.payment_date, o.closed, o.discount, o.coupon_code, o.coupon_discount,
 										o.date, o.user_id, o.name, o.address, o.phone, o.email, o.comment, o.status,
-										o.url, o.total_price, o.note
+										o.trans, o.total_price, o.note
 									FROM __orders AS o 
 									LEFT JOIN __orders_labels AS ol ON o.id=ol.order_id 
 									WHERE 1
@@ -258,7 +258,7 @@ class Orders extends Simpla
         }
 
 
-        $order['url'] = md5(uniqid($this->config->salt_word, true));
+        $order['trans'] = md5(uniqid($this->config->salt_word, true));
         $query = $this->db->placehold("INSERT INTO __orders SET ?%", $order);
         dtimer::log(__METHOD__ . " query: $query");
 

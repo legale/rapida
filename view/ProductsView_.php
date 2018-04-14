@@ -50,7 +50,7 @@ class ProductsView extends View
 		if( isset($this->coMaster->uri_arr['path']['brand']) ){
 			$brands_urls = $this->coMaster->uri_arr['path']['brand'];
 			//для экономии памяти присваиваем по ссылке
-			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'url')) );
+			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'trans')) );
 			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($brands_urls));
 		}
 				
@@ -80,9 +80,9 @@ class ProductsView extends View
 
 			
 			//301 moved permanently
-			if(isset($category['url2']) && $category['url2'] !== $category['url'] && $category['url2'] == $category_url){
+			if(isset($category['url2']) && $category['trans2'] !== $category['trans'] && $category['url2'] == $category_url){
 				$arr = $this->coMaster->uri_arr['path'];
-				$arr['url'] = $category['url'];
+				$arr['url'] = $category['trans'];
 				$url = '/'.$this->coMaster->gen_uri($arr);
 				//~ print_r($url);
 				header("Location: $url",TRUE,301);
@@ -176,7 +176,7 @@ class ProductsView extends View
 		if(!empty($keyword) && $products_count == 1){
 			$p = (array)$products;
 			$p = reset($p);
-			header('Location: '.$this->config->root_url.'/products/'.$p['url']);
+			header('Location: '.$this->config->root_url.'/products/'.$p['trans']);
 		}
 		
 		if( !empty($products) )
@@ -259,7 +259,7 @@ class ProductsView extends View
 		}
 		//Если есть бренд
 		if(isset($urifilter['brand'])){
-			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'url')) );
+			$brands_ids = $this->brands->get_brands_ids(array('return' => array('col' => 'id', 'key'=> 'trans')) );
 			$filter['brand_id'] = array_intersect_key($brands_ids, array_flip($urifilter['brand']));
 		}
 		

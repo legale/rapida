@@ -178,10 +178,13 @@ class Brands extends Simpla
             return false;
         }
 
-        $query = "SELECT *
+        $q = "SELECT *
 		FROM __brands b WHERE $id LIMIT 1";
-        $this->db->query($query);
-        return $this->db->result_array();
+        if($this->db->query($q) && $this->db->affected_rows() > 0){
+            return $this->db->result_array();
+        }else{
+            return false;
+        }
     }
 
     /*
@@ -213,7 +216,7 @@ class Brands extends Simpla
 
         if (!isset($brand['trans']) || $brand['trans'] === '') {
             dtimer::log('brand trans is empty trying to translit name');
-            $brand['trans'] = translit_url($brand['name']);
+            $brand['trans'] = translit_ya($brand['name']);
         }
         //если такой бренд уже есть, вернем его id
         $res = $this->get_brand($brand['trans']);

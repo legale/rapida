@@ -27,10 +27,10 @@ class BlogView extends View
 		}
 	}
 	
-	private function fetch_post($url)
+	private function fetch_post($trans)
 	{
 		// Выбираем пост из базы
-		$post = $this->blog->get_post($url);
+		$post = $this->blog->get_post($trans);
 		
 		// Если не найден - ошибка
 		if(!$post || (!$post['visible'] && empty($_SESSION['admin'])))
@@ -45,24 +45,23 @@ class BlogView extends View
 		if ($this->request->method('post') && $this->request->post('comment'))
 		{
 			$comment = array();
-			$comment->name = $this->request->post('name');
-			$comment->text = $this->request->post('text');
+			$comment['name'] = $this->request->post('name');
+			$comment['text'] = $this->request->post('text');
 			$captcha_code =  $this->request->post('captcha_code', 'string');
 			
 			// Передадим комментарий обратно в шаблон - при ошибке нужно будет заполнить форму
-			$this->design->assign('comment_text', $comment->text);
-			$this->design->assign('comment_name', $comment->name);
-			
+			$this->design->assign('comment', $comment);
+
 			// Проверяем капчу и заполнение формы
 			if ($_SESSION['captcha_code'] != $captcha_code || empty($captcha_code))
 			{
 				$this->design->assign('error', 'captcha');
 			}
-			elseif (empty($comment->name))
+			elseif (empty($comment['name']))
 			{
 				$this->design->assign('error', 'empty_name');
 			}
-			elseif (empty($comment->text))
+			elseif (empty($comment['text']))
 			{
 				$this->design->assign('error', 'empty_comment');
 			}
@@ -76,7 +75,7 @@ class BlogView extends View
 				// Если были одобренные комментарии от текущего ip, одобряем сразу
 				$this->db->query("SELECT 1 FROM __comments WHERE approved=1 AND ip=? LIMIT 1", $comment['ip']);
 				if($this->db->num_rows()>0)
-					$comment->approved = 1;
+					$comment['approved'] = 1;
 				
 				// Добавляем комментарий в базу
 				$comment_id = $this->comments->add_comment($comment);

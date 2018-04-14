@@ -28,7 +28,7 @@
 		<!-- Фото товара -->
 		{if $product['image']}
 		<div class="image">
-			{$url = $product['url']}
+			{$url = $product['trans']}
 			{$name = $product['name']}
 			{$image = $product['image']}
 			{$image_id = $product['image_id']}
@@ -85,7 +85,7 @@
 
 	{foreach $new_products as $product}
 			{$pid = $product['id']}
-			{$url = $product['url']}
+			{$url = $product['trans']}
 			{$name = $product['name']}
 			{$image = $product['image']}
 	<!-- Товар-->
@@ -148,7 +148,7 @@
 
 	{foreach $discounted_products as $product}
 			{$pid = $product['id']}
-			{$url = $product['url']}
+			{$url = $product['trans']}
 			{$name = $product['name']}
 			{$image = $product['image']}
 	<!-- Товар-->

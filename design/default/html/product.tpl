@@ -7,15 +7,15 @@
 <div id="path">
 	<a href="./">Главная</a>
 	{foreach $category['path'] as $cat}
-	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
+	→ <a href="catalog/{$cat['trans']}">{$cat['name']|escape}</a>
 	{/foreach}
 	{if $brand}
-	→ <a href="catalog/{$cat['url']}/{$brand['url']}">{$brand['name']|escape}</a>
+	→ <a href="catalog/{$cat['trans']}/{$brand['trans']}">{$brand['name']|escape}</a>
 	{/if}
 	→  {$product['name']|escape}                
 </div>
 <!-- Хлебные крошки #End /-->
-			{$url = $product['url']}
+			{$url = $product['trans']}
 			{$name = $product['name']}
 			{$image = $product['image']}
 			{$image_id = $product['image_id']}
@@ -104,10 +104,10 @@
 	<!-- Соседние товары /-->
 	<div id="back_forward">
 		{if $prev_product}
-			←&nbsp;<a class="prev_page_link" href="products/{$prev_product['url']}">{$prev_product['name']|escape}</a>
+			←&nbsp;<a class="prev_page_link" href="products/{$prev_product['trans']}">{$prev_product['name']|escape}</a>
 		{/if}
 		{if $next_product}
-			<a class="next_page_link" href="products/{$next_product['url']}">{$next_product['name']|escape}</a>&nbsp;→
+			<a class="next_page_link" href="products/{$next_product['trans']}">{$next_product['name']|escape}</a>&nbsp;→
 		{/if}
 	</div>
 	
@@ -121,7 +121,7 @@
 <ul class="tiny_products">
 	{foreach $related_products as $related_product}
 			{$pid = $related_product['id']}
-			{$url = $related_product['url']}
+			{$url = $related_product['trans']}
 			{$name = $related_product['name']}
 			{$image = $related_product['image']}
 			{$image_id = $related_product['image_id']}
@@ -131,7 +131,7 @@
 		<!-- Фото товара -->
 		{if $image}
 		<div class="image">
-			<a href="products/{$related_product['url']}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
+			<a href="products/{$related_product['trans']}"><img src="{$image|resize:products:$image_id:200:200}" alt="{$name|escape}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->

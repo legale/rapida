@@ -1,7 +1,7 @@
 {* Шаблон текстовой страницы *}
 
 {* Канонический адрес страницы *}
-{$canonical="/{$page['url']}" scope=parent}
+{$canonical="/{$page['trans']}" scope=parent}
 
 <!-- Заголовок страницы -->
 <h1 data-page="{$page['id']}">{$page['header']|escape}</h1>

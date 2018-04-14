@@ -25,10 +25,10 @@ class ProductView extends View
 		dtimer::log(__METHOD__ . " product found " . $product['id']);
 
 		//301 moved permanently
-		if(isset($product['url2']) && $product['url2'] === $product_url){
+		if(isset($product['trans2']) && $product['trans2'] === $product_url){
 			$root = $this->config->root_url . '/';
 			$path = $this->root->uri_arr['path']['module'] . '/';
-			$url =  $root . $path . $product['url'];
+			$url =  $root . $path . $product['trans'];
 			header("Location: $url",TRUE,301);
 		}
 
