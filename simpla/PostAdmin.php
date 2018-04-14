@@ -172,7 +172,7 @@ class PostAdmin extends Simpla
 		}
 
 		//тут поменяем порядок изображений
-		for($i = 0, $c = count($raw); $i < $c; $i++){
+		for($i = 0, $c = count($keep); $i < $c; $i++){
 			$this->image->update('blog', $raw[$i], array('pos'=> $i) );
 		}
 	}

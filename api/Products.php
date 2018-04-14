@@ -186,7 +186,7 @@ class Products extends Simpla
         }
         $query = $this->db->placehold("SELECT  
 					p.id,
-					p.url,
+					p.trans,
 					p.name
 				FROM __products p
 				WHERE 
@@ -540,7 +540,7 @@ class Products extends Simpla
         if (is_int($id)) {
             $filter = "p.id = $id";
         } else if (is_scalar($id)) {
-            $filter = "p.url = '$id' OR p.url2 = '$id'";
+            $filter = "p.trans = '$id' OR p.trans = '$id'";
         }
         $query = "SELECT *
 				FROM __products AS p
@@ -562,8 +562,8 @@ class Products extends Simpla
             return false;
         }
 
-        if (!empty($product['name']) && empty($product['url'])) {
-            $product['url'] = translit_ya($product['name']);
+        if (!empty($product['name']) && empty($product['trans'])) {
+            $product['trans'] = translit_ya($product['name']);
         }
 
 
@@ -600,16 +600,16 @@ class Products extends Simpla
         }
         unset($e);
 
-        if (!empty($product['name']) && empty($product['url'])) {
-            $product['url'] = translit_ya($product['name']);
+        if (!empty($product['name']) && empty($product['trans'])) {
+            $product['trans'] = translit_ya($product['name']);
         }
 
-        // Если есть товар с таким URL, добавляем к нему число
-        while ($this->get_product((string)$product['url'])) {
-            if (preg_match('/(.+)_([0-9]+)$/', $product['url'], $parts))
-                $product['url'] = $parts[1] . '_' . ($parts[2] + 1);
+        // Если есть товар с таким trans, добавляем к нему число
+        while ($this->get_product((string)$product['trans'])) {
+            if (preg_match('/(.+)_([0-9]+)$/', $product['trans'], $parts))
+                $product['trans'] = $parts[1] . '_' . ($parts[2] + 1);
             else
-                $product['url'] = $product['url'] . '_2';
+                $product['trans'] = $product['trans'] . '_2';
         }
 
         //узнаем позицию последнего товара
@@ -703,8 +703,8 @@ class Products extends Simpla
         $new_id = $this->products->add_product($product);
         $this->db->query('UPDATE __products SET pos=? WHERE id=?', $product->pos + 1, $new_id);
 
-        // Очищаем url
-        $this->db->query('UPDATE __products SET url="" WHERE id=?', $new_id);
+        // Очищаем trans
+        $this->db->query('UPDATE __products SET trans="" WHERE id=?', $new_id);
 
         // Дублируем категории
         $categories = $this->categories->get_product_categories($id);

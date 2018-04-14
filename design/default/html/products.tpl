@@ -3,13 +3,13 @@
 {* Канонический адрес страницы *}
 {if isset($category, $brand) && $category && $brand}
 {$condition = 1}
-{$canonical="/catalog/{$category['url']}/{$brand['url']}" scope=parent}
+{$canonical="/catalog/{$category['trans']}/{$brand['trans']}" scope=parent}
 {elseif isset($category) && $category}
 {$condition = 2}
-{$canonical="/catalog/{$category['url']}" scope=parent}
+{$canonical="/catalog/{$category['trans']}" scope=parent}
 {elseif isset($brand) && $brand}
 {$condition = 3}
-{$canonical="/brands/{$brand['url']}" scope=parent}
+{$canonical="/brands/{$brand['trans']}" scope=parent}
 {elseif isset($keyword) && $keyword}
 {$condition = 4}
 {$canonical="/products?keyword={$keyword|escape}" scope=parent}
@@ -23,13 +23,13 @@
 	<a href="/">Главная</a>
 	{if isset($category) && $category}
 	{foreach $category['path'] as $cat}
-	→ <a href="catalog/{$cat['url']}">{$cat['name']|escape}</a>
+	→ <a href="catalog/{$cat['trans']}">{$cat['name']|escape}</a>
 	{/foreach}  
 	{if isset($brand) && $brand}
-	→ <a href="catalog/{$cat['url']}/{$brand['url']}">{$brand['name']|escape}</a>
+	→ <a href="catalog/{$cat['trans']}/{$brand['trans']}">{$brand['name']|escape}</a>
 	{/if}
 	{elseif isset($brand) && $brand}
-	→ <a href="brands/{$brand['url']}">{$brand['name']|escape}</a>
+	→ <a href="brands/{$brand['trans']}">{$brand['name']|escape}</a>
 	{elseif isset($keyword) && $keyword}
 	→ Поиск
 	{/if}
@@ -60,9 +60,9 @@
 	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>
 	{foreach $category['brands'] as $b}
 		{if $b['image']}
-		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['url']], page=>'' ]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['trans']], page=>'' ]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
 		{else}
-		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['url']], page=>'' ]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['trans']], page=>'' ]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
 		{/if}
 	{/foreach}
 </div>
