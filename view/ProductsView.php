@@ -157,16 +157,16 @@ class ProductsView extends View
         $meta_filter = '';
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
-                $meta_filter .= " " . $features[$fid]['name'] ." ". implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
+                $meta_filter .= " " . $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
             }
         }
 
+        $meta_filter = " " . $meta_filter . " ";
 
         //~ // Свойства товаров END
 
         //передаем фильтр
         $this->design->assign('filter', $this->filter);
-
 
 
         //ajax
@@ -194,11 +194,11 @@ class ProductsView extends View
                     if ($f['tpl'] == 0) {
                         continue;
                     }
-                    $pairs['{$' . $f['trans'] . '}'] = $f['name'];
+                    $pairs['{$' . $f['trans'] . '}'] = " " . $f['name'] . " ";
                     $pairs['{$' . $f['trans'] . '_list}'] = array();
                     //$cycler = 0;
                     if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
-                        $pairs['{$' . $f['trans'] . '_list}'] = implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));
+                        $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3)) . " ";
                     }
                 }
             }
