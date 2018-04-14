@@ -18,7 +18,7 @@ class Config
     /**
      * @var string
      */
-    public $version = '0.0.9b6';
+    public $version = '0.0.9b7';
 
     //слова для формирования соли
     /**

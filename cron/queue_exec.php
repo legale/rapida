@@ -12,8 +12,8 @@ require_once(dirname(__FILE__) . '/../api/Simpla.php');
 }
 
 
-echo "<pre>\n";
 $simpla = new Simpla();
+echo "<pre>\n";
 dtimer::$enabled = false;
 $task = 0;
 dtimer::log("start queue");

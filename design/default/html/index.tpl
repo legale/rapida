@@ -83,7 +83,7 @@
 				{* Выводим только страницы из первого меню *}
 				{if $p['menu_id'] == 1}
 				<li {if $page && $page['id'] == $p['id']}class="selected"{/if}>
-					<a data-page="{$p['id']}" href="{$p['url']}">{$p['name']|escape}</a>
+					<a data-page="{$p['id']}" href="{$p['trans']}">{$p['name']|escape}</a>
 				</li>
 				{/if}
 			{/foreach}
@@ -164,7 +164,7 @@
 				{if $c['visible']}
 					<li>
 						{if $c['image']}<img src="{$config->categories_images_dir}{$c['image']}" alt="{$c['name']|escape}">{/if}
-						<a {if isset($category) && $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['url']}" data-category="{$c['id']}">{$c['name']|escape}</a>
+						<a {if isset($category) && $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['trans']}" data-category="{$c['id']}">{$c['name']|escape}</a>
 						{if isset($c['subcategories'])}{categories_tree categories=$c['subcategories']}{/if}
 					</li>
 				{/if}
@@ -185,9 +185,9 @@
 				<h2>Все бренды:</h2>
 				{foreach $all_brands as $b}	
 					{if $b['image']}
-					<a href="brands/{$b['url']}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
+					<a href="brands/{$b['trans']}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
 					{else}
-					<a href="brands/{$b['url']}">{$b['name']}</a>
+					<a href="brands/{$b['trans']}">{$b['name']}</a>
 					{/if}
 				{/foreach}
 			</div>
@@ -219,7 +219,7 @@
 				<ul id="browsed_products">
 				{foreach $browsed_products as $browsed_product}
 					<li>
-					{$url = $browsed_product['url']}
+					{$url = $browsed_product['trans']}
 					{$name = $browsed_product['name']}
 					{$image = $browsed_product['image']}
 					{$image_id = $browsed_product['image_id']}
@@ -239,7 +239,7 @@
 				<h2>Новые записи в <a href="blog">блоге</a></h2>
 				{foreach $last_posts as $post}
 				<ul>
-					<li data-post="{$post['id']}">{$post['date']|date} <a href="blog/{$post['url']}">{$post['name']|escape}</a></li>
+					<li data-post="{$post['id']}">{$post['date']|date} <a href="blog/{$post['trans']}">{$post['name']|escape}</a></li>
 				</ul>
 				{/foreach}
 			</div>

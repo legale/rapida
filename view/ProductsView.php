@@ -48,9 +48,9 @@ class ProductsView extends View
         //REDIRECT
         //проверяем альтернативное имя
         //301 moved permanently
-        if (isset($cat) && isset($cat['url2']) && $cat['url2'] !== $cat['url'] && $cat['url2'] == $this->filter['category_url']) {
+        if (isset($cat) && isset($cat['trans2']) && $cat['trans'] !== $cat['trans'] && $cat['trans2'] == $this->filter['category_url']) {
             $arr = $this->root->uri_arr['path'];
-            $arr['url'] = $cat['url'];
+            $arr['url'] = $cat['trans'];
             $url = '/' . $this->root->gen_uri($arr);
             header("Location: $url", TRUE, 301);
         }
@@ -151,10 +151,22 @@ class ProductsView extends View
         if ($options = $this->features->get_options_mix($this->filter)) {
             $this->design->assign('options', $options);
         }
+
+
+        //тут записываем выбранные фильтры в отдельную переменную
+        $meta_filter = '';
+        if (isset($this->filter['features'])) {
+            foreach ($this->filter['features'] as $fid => $vids) {
+                $meta_filter .= " " . $features[$fid]['name'] ." ". implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
+            }
+        }
+
+
         //~ // Свойства товаров END
 
         //передаем фильтр
         $this->design->assign('filter', $this->filter);
+
 
 
         //ajax
@@ -177,30 +189,23 @@ class ProductsView extends View
 //                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,
             );
             if (is_array($features)) {
-
                 foreach ($features as $fid => $f) {
-                    if ($f['tpl']) {
-                        $pairs['{$' . $f['trans'] . '}'] = $f['name'];
-                        $pairs['{$' . $f['trans'] . '_list}'] = array();
-                        //$cycler = 0;
-                        if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
-                            foreach ($options['full'][$fid]['vals'] as $o) {
-                                array_push($pairs['{$' . $f['trans'] . '_list}'], $o);
-                            }
-                        }
-
-                        $pairs['{$' . $f['trans'] . '_list}'] = implode(', ', array_slice(['{$' . $f['trans'] . '_list}'], 0, 3));
+                    if ($f['tpl'] == 0) {
+                        continue;
+                    }
+                    $pairs['{$' . $f['trans'] . '}'] = $f['name'];
+                    $pairs['{$' . $f['trans'] . '_list}'] = array();
+                    //$cycler = 0;
+                    if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
+                        $pairs['{$' . $f['trans'] . '_list}'] = implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));
                     }
                 }
             }
+
+
             $auto_meta_title = strtr($auto_meta_title, $pairs);
-            $auto_meta_title = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_title);
-
             $auto_meta_keywords = strtr($auto_meta_keywords, $pairs);
-            $auto_meta_keywords = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_keywords);
-
             $auto_meta_description = strtr($auto_meta_description, $pairs);
-            $auto_meta_description = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_description);
 
             // добавим слова страница № для страниц с пагинацией
             if ($this->filter['page'] > 1) {
@@ -217,6 +222,7 @@ class ProductsView extends View
         //передаем данные в шаблоны
         if (isset($cat['id'])) {
             $this->design->assign('category', $cat);
+            $this->design->assign('meta_filter', $meta_filter);
             $this->design->assign('meta_title', $auto_meta_title);
             $this->design->assign('meta_keywords', $auto_meta_keywords);
             $this->design->assign('meta_description', $auto_meta_description);

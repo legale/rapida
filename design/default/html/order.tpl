@@ -12,7 +12,7 @@
 <table id="purchases">
 
 {foreach $purchases as $purchase}
-			{$url = $purchase['product']['url']}
+			{$url = $purchase['product']['trans']}
 			{$name = $purchase['product']['name']}
 			{$image = $purchase['product']['image']}
 			{$image_id = $purchase['product']['image_id']}
@@ -27,7 +27,7 @@
 		<a href="/products/{$url}">{$name|escape}</a>
 		{$purchase['variant_name']|escape}
 		{if $order['paid'] && $purchase['variants'][0]['attachment']}
-			<a class="download_attachment" href="order/{$order['url']}/{$purchase['variants'][0]['attachment']}">скачать файл</a>
+			<a class="download_attachment" href="order/{$order['trans']}/{$purchase['variants'][0]['attachment']}">скачать файл</a>
 		{/if}
 	</td>
 

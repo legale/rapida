@@ -16,7 +16,7 @@ class Coupons extends Simpla
 
 	/*
 	 *
-	 * Функция возвращает купон по его id или url
+	 * Функция возвращает купон по его id или trans
 	 * (в зависимости от типа аргумента, int - id, string - code)
 	 * @param $id id или code купона
 	 *

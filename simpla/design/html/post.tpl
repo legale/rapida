@@ -68,9 +68,9 @@ function delete_link(e) {
 </div>
 {/foreach}
 
-{if isset($post['url'])}
+{if isset($post['trans'])}
 <div class="message message_success">
-	<span class="text"><a href="/blog/{$post['url']}">Открыть на сайте</a></span>
+	<span class="text"><a href="/blog/{$post['trans']}">Открыть на сайте</a></span>
 </div>
 {/if}
 
@@ -100,7 +100,7 @@ function delete_link(e) {
 			<h2>Параметры страницы</h2>
 		<!-- Параметры страницы -->
 			<ul>
-				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name=post[url] class="page_url" type="text" value="{$post['url']|escape}" /></li>
+				<li><label class=property>Адрес</label><div class="page_url"> /blog/</div><input name=post[trans] class="page_url" type="text" value="{$post['trans']|escape}" /></li>
 				<li><label class=property>Заголовок</label><input name=post[meta_title] type="text" value="{$post['meta_title']|escape}" /></li>
 				<li><label class=property>Ключевые слова</label><input name=post[meta_keywords]  type="text" value="{$post['meta_keywords']|escape}" /></li>
 				<li><label class=property>Описание</label><textarea name=post[meta_description] />{$post['meta_description']|escape}</textarea></li>

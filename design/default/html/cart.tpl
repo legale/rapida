@@ -17,7 +17,7 @@
 <tr varid="{$purchase['variants'][0]['id']}">
 	{* Изображение товара *}
 	<td class="image">
-		{$url = $purchase['product']['url']}
+		{$url = $purchase['product']['trans']}
 		{$image = $purchase['product']['image']}
 		{$image_id = $purchase['product']['image_id']}
 		{$pname = $purchase['product']['name']}
@@ -138,13 +138,13 @@ $("input[name='coupon_code']").keypress(function(event){
 		{$image = $product['image']}
 		{$image_id = $product['image_id']}
 		<div class="image">
-			<a href="products/{$product['url']}"><img src="{$product['image']resize:products:$image_id:200:200}" alt="{$product['name|escape']}"/></a>
+			<a href="products/{$product['trans']}"><img src="{$product['image']resize:products:$image_id:200:200}" alt="{$product['name|escape']}"/></a>
 		</div>
 		{/if}
 		<!-- Фото товара (The End) -->
 
 		<!-- Название товара -->
-		<h3><a data-product="{$product['id']}" href="products/{$product['url']}">{$product['name|escape']}</a></h3>
+		<h3><a data-product="{$product['id']}" href="products/{$product['trans']}">{$product['name|escape']}</a></h3>
 		<!-- Название товара (The End) -->
 
 		{if $product['variants|count'] > 0}

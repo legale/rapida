@@ -20,12 +20,12 @@ class Slider extends Simpla
 
 	/*
 	*
-	* Функция возвращает слайд по его id или url
+	* Функция возвращает слайд по его id или trans
 	*
 	*/
 	public function get_slide($id)
 	{
-		$filter = is_int($id) ? "AND id = $id" : "AND url = '$id'";
+		$filter = is_int($id) ? "AND id = $id" : "AND trans = '$id'";
 		
 		$query = "SELECT * FROM __slides WHERE 1 $filter ORDER BY pos LIMIT 1";
 		$this->db->query($query);

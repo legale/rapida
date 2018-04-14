@@ -63,7 +63,7 @@ class Database extends Simpla
         else {
             if ($this->config->db_charset)
                 $this->mysqli->query('SET NAMES ' . $this->config->db_charset);
-                $this->mysqli->query('SET CHARACTER SET ' . $this->config->db_charset);
+            $this->mysqli->query('SET CHARACTER SET ' . $this->config->db_charset);
             if ($this->config->db_sql_mode)
                 $this->mysqli->query('SET SESSION SQL_MODE = "' . $this->config->db_sql_mode . '"');
             if ($this->config->db_timezone)
@@ -136,7 +136,7 @@ class Database extends Simpla
         $this->started = time();
         $this->res = $this->mysqli->query($q);
         if ($this->res === false) {
-            dtimer::log(__METHOD__ . var_export($this->res, true)." Error: $q ", 1);
+            dtimer::log(__METHOD__ . var_export($this->res, true) . " Error: $q ", 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
         } else {
@@ -265,6 +265,9 @@ class Database extends Simpla
                     foreach ($a as $v) {
                         if (is_null($v)) {
                             $r = "NULL";
+                        } else if (is_bool($v)) {
+                            $v = $v === true ? 1 : 0;
+                            $r = "=$v";
                         } else {
                             $r = "0x" . $this->db->escape($v);
                         }
@@ -274,22 +277,28 @@ class Database extends Simpla
 
                 } elseif ($type === '@') { // Это список со значениями полей.
                     foreach ($a as $v) {
-                        if (is_null($v))
+                        if (is_null($v)) {
                             $r = "NULL";
-                        else
+                        } else if (is_bool($v)) {
+                            $v = $v === true ? 1 : 0;
+                            $r = "=$v";
+                        } else {
                             $r = "'" . $this->db->escape($v) . "'";
-
+                        }
                         $repl .= ($repl === '' ? "" : ",") . $r;
                     }
 
                 } elseif ($type === '^') // Это список с названиями столбцов
                 {
                     foreach ($a as $v) {
-                        if (is_null($v))
+                        if (is_null($v)) {
                             $r = "NULL";
-                        else
+                        } else if (is_bool($v)) {
+                            $v = $v === true ? 1 : 0;
+                            $r = "=$v";
+                        } else {
                             $r = '`' . $this->db->escape($v) . '`';
-
+                        }
                         $repl .= ($repl === '' ? "" : ",") . $r;
                     }
                 } // Это набор пар `название поля` = 'значение поля' для конструкции SET
@@ -302,11 +311,14 @@ class Database extends Simpla
                             $k = '`' . $this->db->escape($k) . '`';
                         }
 
-                        if (is_null($v))
+                        if (is_null($v)) {
                             $r = "=NULL";
-                        else
+                        } else if (is_bool($v)) {
+                            $v = $v === true ? 1 : 0;
+                            $r = "=$v";
+                        } else {
                             $r = "='" . $this->db->escape($v) . "'";
-
+                        }
                         $repl .= ($repl === '' ? "" : ", ") . $k . $r;
                     }
                     // Если была ошибка, составляем сообщение.
@@ -332,11 +344,14 @@ class Database extends Simpla
                             $k = '`' . $this->db->escape($k) . '`';
                         }
 
-                        if (is_null($v))
+                        if (is_null($v)) {
                             $r = "=NULL";
-                        else
+                        } else if (is_bool($v)) {
+                            $v = $v === true ? 1 : 0;
+                            $r = "=$v";
+                        } else {
                             $r = "='" . $this->db->escape($v) . "'";
-
+                        }
                         $repl .= ($repl === '' ? "" : " AND ") . $k . $r;
                     }
                     // Если была ошибка, составляем сообщение.
@@ -531,7 +546,7 @@ class Database extends Simpla
      */
     public function results_array($field = null, $group_field = null, $unsetkey = false)
     {
-        if (empty($this->res) || $this->res->num_rows == 0) {
+        if (empty($this->res)) {
             return false;
         }
 
@@ -785,7 +800,9 @@ class Database extends Simpla
                 if (is_null($row[$name])) {
                     $row[$name] = 'NULL';
                     continue;
-                } elseif ($row[$name] === '') {
+                } else if (is_bool($row[$name])) {
+                    $row[$name] = $row[$name] === true ? 1 : 0;
+                } else if ($row[$name] === '') {
                     $row[$name] = "''";
                     continue;
                 }

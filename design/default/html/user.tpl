@@ -32,7 +32,7 @@
 <ul id="orders_history">
 {foreach $orders as $order}
 	<li>
-	{$order['date']|date} <a href='order/{$order['url']}'>Заказ №{$order['id']}</a>
+	{$order['date']|date} <a href='order/{$order['trans']}'>Заказ №{$order['id']}</a>
 	{if $order['paid'] == 1}оплачен,{/if} 
 	{if $order['status'] == 0}ждет обработки{elseif $order['status'] == 1}в обработке{elseif $order['status'] == 2}выполнен{/if}
 	</li>

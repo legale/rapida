@@ -1,7 +1,7 @@
 {* Страница отдельной записи блога *}
 
 {* Канонический адрес страницы *}
-{$canonical="/blog/{$post['url']}" scope=parent}
+{$canonical="/blog/{$post['trans']}" scope=parent}
 
 <!-- Заголовок /-->
 <h1 data-post="{$post['id']}">{$post['name']|escape}</h1>
@@ -13,10 +13,10 @@
 <!-- Соседние записи /-->
 <div id="back_forward">
 	{if $prev_post}
-		←&nbsp;<a class="prev_page_link" href="blog/{$prev_post['url']}">{$prev_post['name']}</a>
+		←&nbsp;<a class="prev_page_link" href="blog/{$prev_post['trans']}">{$prev_post['name']}</a>
 	{/if}
 	{if $next_post}
-		<a class="next_page_link" href="blog/{$next_post['url']}">{$next_post['name']}</a>&nbsp;→
+		<a class="next_page_link" href="blog/{$next_post['trans']}">{$next_post['name']}</a>&nbsp;→
 	{/if}
 </div>
 

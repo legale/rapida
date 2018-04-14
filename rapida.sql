@@ -264,6 +264,10 @@ CREATE TABLE `s_menu` (
   `pos` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `s_menu` VALUES 
+(1, 'Основное меню', 0),
+(2, 'Другие страницы', 1);
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

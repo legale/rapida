@@ -30,10 +30,10 @@
 					<input type="checkbox" name="check[]" value="{$page['id']}" />				
 				</div>
 				<div class="name cell">
-					<a href="{url module=PageAdmin id=$page['id'] return=$smarty.server.REQUEST_URI}">{$page['header']|escape}</a>
+					<a href="{url module=PageAdmin id=$page['id']}">{$page['header']|escape}</a>
 				</div>
 				<div class="icons cell">
-					<a class="preview" title="Предпросмотр в новом окне" href="../{$page['url']}" target="_blank"></a>
+					<a class="preview" title="Предпросмотр в новом окне" href="../{$page['trans']}" target="_blank"></a>
 					<a class="enable" title="Активна" href="#"></a>
 					<a class="delete" title="Удалить" href="#"></a>
 				</div>
