@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Simpla CMS
- *
- * @copyright    2011 Denis Pikusov
- * @link        http://simplacms.ru
- * @author        Denis Pikusov
- *
- */
-
 require_once('Simpla.php');
 
 /**
@@ -331,20 +322,17 @@ class Features extends Simpla
      */
     public function update_feature($id, $feature)
     {
+        $id = (int)$id;
         if (is_object($feature)) {
             $feature = (array)$feature;
         }
-        $id = (int)$id;
 
         if (isset($feature['id'])) {
             unset($feature['id']);
         }
 
-        if (!is_array($feature) || !is_int($id)) {
-            $t1 = gettype($id);
-            $t2 = gettype($feature);
-            dtimer::log(__METHOD__ . " argument type error $t1 $t2", 1);
-            return false;
+        if (!empty($feature['name']) && empty($feature['trans'])) {
+            $feature['trans'] = translit_ya($feature['name']);
         }
 
         foreach ($feature as $k => $e) {
@@ -353,6 +341,10 @@ class Features extends Simpla
             } else {
                 $feature[$k] = trim($e);
             }
+        }
+        if(count($feature) === 0){
+            dtimer::log(__METHOD__." nothing to change - feature is empty! abort. ",1);
+            return false;
         }
 
         $this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
