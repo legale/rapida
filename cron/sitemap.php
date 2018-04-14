@@ -252,7 +252,6 @@ $b = '';
 
 //*
 // Категории + feature
-
 $cats = $simpla->categories->get_categories();
 foreach ($cats as $c) {
     if ($c['visible']) {
@@ -266,12 +265,12 @@ foreach ($cats as $c) {
         // обнуляем ненужный больше массив
 
         $cat_feat = array();
-        if($features) {
+        if ($features) {
             foreach ($features as $fid => $f) {
                 if ($options) {
                     foreach ($options['filter'][$fid] as $vid => $val) {
-                        $features[$fid] = array($vid);
-                        $p_count = $simpla->products->count_products(array('visible' => 1, 'category_id' => $c['children'], 'features' => $features, 'method' => 'sitemap'));
+                        $features_filter = array($fid => array($vid));
+                        $p_count = $simpla->products->count_products(array('visible' => 1, 'category_id' => $c['children'], 'features' => $features_filter, 'method' => 'sitemap'));
                         $pages_num = ceil($p_count / $items_per_page);
                         $page = 1;
                         while ($page <= $pages_num) {
@@ -320,8 +319,7 @@ foreach ($cats as $c) {
     }
 }
 
-$c = '';
-$cats = '';
+unset($cats, $c, $features, $options);
 ////*/
 
 
