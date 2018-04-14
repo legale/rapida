@@ -248,8 +248,16 @@ class Brands extends Simpla
      */
     public function update_brand($id, $brand)
     {
-        $query = $this->db->placehold("UPDATE __brands SET ?% WHERE id=? LIMIT 1", $brand, intval($id));
-        $this->db->query($query);
+        $id = (int)$id;
+        if (isset($brand['id'])) {
+            unset($brand['id']);
+        }
+        if(!empty($brand['name']) && empty($brand['trans'])){
+            $brand['trans'] = translit_ya($brand['name']);
+        }
+
+        $q = $this->db->placehold("UPDATE __brands SET ?% WHERE id=? LIMIT 1", $brand, intval($id));
+        $this->db->query($q);
         return $id;
     }
 
