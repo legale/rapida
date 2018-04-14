@@ -161,6 +161,9 @@ class ProductsView extends View
             }
         }
 
+        //кладем meta_filter в обычный фильтр, чтобы можно было видеть его из браузера.
+        $this->filter['meta_filter'] = $meta_filter;
+
         //~ // Свойства товаров END
 
         //передаем фильтр
