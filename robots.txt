@@ -1,6 +1,6 @@
 User-agent: *
-
-Disallow: /sections/404
+Sitemap: http://sevenlight.ru/sitemap.xml
+host: sevenlight.ru
 
 Disallow: /simpla/
 Disallow: /order/
@@ -13,6 +13,13 @@ Disallow: /cart/
 Disallow: /resize/
 Disallow: /password.php
 
+User-agent: AhrefsBot
+Disallow: /
 
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
 
 
