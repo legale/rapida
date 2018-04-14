@@ -161,8 +161,6 @@ class ProductsView extends View
             }
         }
 
-        $meta_filter = " " . $meta_filter . " ";
-
         //~ // Свойства товаров END
 
         //передаем фильтр
@@ -194,11 +192,11 @@ class ProductsView extends View
                     if ($f['tpl'] == 0) {
                         continue;
                     }
-                    $pairs['{$' . $f['trans'] . '}'] = " " . $f['name'] . " ";
+                    $pairs['{$' . $f['trans'] . '}'] = " " . $f['name'];
                     $pairs['{$' . $f['trans'] . '_list}'] = array();
                     //$cycler = 0;
                     if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
-                        $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3)) . " ";
+                        $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));
                     }
                 }
             }
