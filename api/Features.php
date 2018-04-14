@@ -937,7 +937,7 @@ class Features extends Simpla
 
 
         //собираем столбцы, которые нам понадобятся для select
-        $select = "SELECT `o`.`product_id` as `pid`, " . implode(', ', array_map(function ($a) {
+        $select = "SELECT " . implode(', ', array_map(function ($a) {
                 return '`' . $a . '`';
             }, $filter['feature_id']));
 

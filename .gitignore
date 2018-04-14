@@ -8,6 +8,8 @@ design/**
 .vscode/**
 sandbox/**
 .idea/**
+*.xml
+*.xml.gz
 
 /simpla/design/compiled/**
 img/**

@@ -16,9 +16,9 @@ class Blog extends Simpla
 
     /*
 	 *
-	 * Функция возвращает пост по его id или url
-	 * (в зависимости от типа аргумента, int - id, string - url)
-	 * @param $id id или url поста
+	 * Функция возвращает пост по его id или trans
+	 * (в зависимости от типа аргумента, int - id, string - trans)
+	 * @param $id id или trans поста
 	 *
 	 */
     public function get_post($id)
@@ -26,7 +26,7 @@ class Blog extends Simpla
         if (is_int($id)) {
             $where = $this->db->placehold(' WHERE b.id=? ', intval($id));
         } else {
-            $where = $this->db->placehold(' WHERE b.url=? ', $id);
+            $where = $this->db->placehold(' WHERE b.trans=? ', $id);
         }
 
         $query = $this->db->placehold("SELECT * FROM __blog b $where LIMIT 1");
@@ -78,7 +78,7 @@ class Blog extends Simpla
 
         $sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page - 1) * $limit, $limit);
 
-        $query = $this->db->placehold("SELECT b.id, b.image, b.image_id, b.url, b.name, b.annotation, b.text,
+        $query = $this->db->placehold("SELECT b.id, b.image, b.image_id, b.trans, b.name, b.annotation, b.text,
 		                                      b.meta_title, b.meta_keywords, b.meta_description, b.visible,
 		                                      b.date
 		                                      FROM __blog b WHERE 1 $post_id_filter $visible_filter $keyword_filter

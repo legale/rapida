@@ -1,6 +1,6 @@
 
 {$pid = $product['id']}
-{$url = $product['url']}
+{$url = $product['trans']}
 {$name = $product['name']}
 {$image = $product['image']}
 {$image_id = $product['image_id']}

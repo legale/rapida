@@ -1,6 +1,8 @@
+{* Вкладки *}
 {capture name=tabs}
-	<li class="active"><a href="?module=ImportAdmin">Импорт</a></li>
+	{if isset($userperm['import'])}<li class="active"><a href="?module=ImportAdmin">Импорт</a></li>{/if}
 	{if isset($userperm['import'])}<li><a href="?module=ImportYmlAdmin">Импорт YML</a></li>{/if}
+	{if isset($userperm['import'])}<li><a href="?module=ImportSingleAdmin">Импорт отдельных параметров</a></li>{/if}
 	{if isset($userperm['export'])}<li><a href="?module=ExportAdmin">Экспорт</a></li>{/if}
 	{if isset($userperm['backup'])}<li><a href="?module=BackupAdmin">Бекап</a></li>{/if}
 	{if isset($userperm['export'])}<li><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
@@ -17,7 +19,7 @@
 
 	// On document load
 	$(function(){
- 		Piecon.setOptions({fallback: 'force'});
+ 		Piecon.setOptions({fallback: false});
  		Piecon.setProgress(0);
     	$("#progressbar").progressbar({ value: 1 });
 		in_process=true;
@@ -38,9 +40,9 @@
     					//~ count++;
     				//~ }
 
-    				Piecon.setProgress(Math.round(100*data.from/data.totalsize * 100) / 100);
-   					$("#progressbar").progressbar({ value: 100*data.from/data.totalsize });
-   					$("ul#import_result").text('progress: ' + Math.round(data.from / 1024) + ' of ' + Math.round(data.totalsize / 1024) + ' kb');
+    				Piecon.setProgress(Math.round(100*data.from/data.total_size * 100) / 100);
+   					$("#progressbar").progressbar({ value: 100*data.from/data.total_size });
+   					$("ul#import_result").text('progress: ' + Math.round(data.from / 1024) + ' of ' + Math.round(data.total_size / 1024) + ' kb');
   				
     				if(data != false && !data.end)
     				{

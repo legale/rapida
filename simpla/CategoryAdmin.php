@@ -177,7 +177,7 @@ class CategoryAdmin extends Simpla
 		}
 		
 		//тут поменяем порядок изображений
-		for($i = 0, $c = count($raw); $i < $c; $i++){
+		for($i = 0, $c = count($keep); $i < $c; $i++){
 			$this->image->update('categories', $raw[$i], array('item_id' => $cid, 'pos'=> $i) );
 		}
 	}

@@ -16,19 +16,19 @@ class Pages extends Simpla
 
 	/*
 	 *
-	 * Функция возвращает страницу по ее id или url (в зависимости от типа)
-	 * @param $id id или url страницы
+	 * Функция возвращает страницу по ее id или trans (в зависимости от типа)
+	 * @param $id id или trans страницы
 	 *
 	 */
 	public function get_page($id)
 	{
 		if (gettype($id) == 'string'){
 			$id = trim($id, '/');
-			$where = $this->db->placehold(' WHERE url=? ', $id);
+			$where = $this->db->placehold(' WHERE trans=? ', $id);
 		}else{
 			$where = $this->db->placehold(' WHERE id=? ', intval($id));
 		}
-		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
+		$query = "SELECT id, trans, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
 		          FROM __pages $where LIMIT 1";
 
 		$this->db->query($query);
@@ -53,13 +53,11 @@ class Pages extends Simpla
 		if (isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND visible = ?', intval($filter['visible']));
 
-		$query = "SELECT id, url, header, name, meta_title, meta_description, meta_keywords, body, menu_id, pos, visible
-		          FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
+		$q = "SELECT *  FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
 
-		$this->db->query($query);
+		$this->db->query($q);
 
 		$pages = $this->db->results_array(null, 'id');
-
 		return $pages;
 	}
 
@@ -70,9 +68,9 @@ class Pages extends Simpla
 	 */
 	public function add_page($page)
 	{
-		if (is_object($page)) {
-			$page = (array)$page;
-		}
+        if(!empty($page['name']) && empty($page['trans'])){
+            $page['trans'] = translit_ya($page['name']);
+        }
 		//удалим id, если он сюда закрался, при создании id быть не должно
 		if (isset($page['id'])) {
 			unset($page['id']);
@@ -100,6 +98,9 @@ class Pages extends Simpla
 	 */
 	public function update_page($id, $page)
 	{
+	    if(!empty($page['name']) && empty($page['trans'])){
+	        $page['trans'] = translit_ya($page['name']);
+        }
 		$query = $this->db->placehold('UPDATE __pages SET ?% WHERE id in (?@)', $page, (array)$id);
 		if (!$this->db->query($query))
 			return false;

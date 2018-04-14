@@ -80,7 +80,7 @@ class Categories extends Simpla
 			return $category = $this->all_categories[intval($id)];
 		elseif (is_string($id))
 			foreach ($this->all_categories as $cat)
-			if ($cat['url'] == $id || $cat['url2'] == $id){
+			if ($cat['trans'] == $id || $cat['trans2'] == $id){
 				return $this->get_category((int)$cat['id']);
 			}
 
@@ -104,18 +104,17 @@ class Categories extends Simpla
 			}
 		}
 
-		if (!isset($category['url']) || empty_($category['url'])) {
-			$category['url'] = preg_replace("/[\s]+/ui", '_', $category['name']);
-			$category['url'] = strtolower(preg_replace("/[^0-9a-zа-я_]+/ui", '', $category['url']));
-		}	
+		if (!isset($category['trans']) || empty_($category['trans'])) {
+			$category['trans'] = translit_ya($category['name']);
+		}
 
 		// Если есть категория с таким URL, добавляем к нему число
-		while ($this->get_category((string)$category['url']))
+		while ($this->get_category((string)$category['trans']))
 			{
-			if (preg_match('/(.+)_([0-9]+)$/', $category['url'], $parts))
-				$category['url'] = $parts[1] . '_' . ($parts[2] + 1);
+			if (preg_match('/(.+)_([0-9]+)$/', $category['trans'], $parts))
+				$category['trans'] = $parts[1] . '_' . ($parts[2] + 1);
 			else
-				$category['url'] = $category['url'] . '_2';
+				$category['trans'] = $category['trans'] . '_2';
 		}
 
 		$this->db->query("INSERT INTO __categories SET ?%", $category);
@@ -131,8 +130,8 @@ class Categories extends Simpla
 	{
 		$category = array_map(function($c){return is_null($c) ? 0 : $c;}, $category);
 		
-		if(!empty($category['name']) && empty($category['url'])){
-			$category['url'] = translit_ya($category['name']);
+		if(!empty($category['name']) && empty($category['trans'])){
+			$category['trans'] = translit_ya($category['name']);
 		}
 		
 		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $category, intval($id));
@@ -227,7 +226,7 @@ class Categories extends Simpla
 		$pointers[0]['path'] = array();
 		$pointers[0]['level'] = 0;
 		$pointers[0]['visible_count'] = 0;
-		
+
 		// Выбираем все категории
 		$query = $this->db->placehold("SELECT * FROM __categories c ORDER BY c.parent_id, c.pos");
 		

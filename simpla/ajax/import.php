@@ -7,13 +7,13 @@ class ImportAjax extends Simpla
 {
 
     // Соответствие полей в базе и имён колонок в файле
-const DELIM = '|';
+    const DELIM = '|';
 
     // Соответствие имени колонки и поля в базе
-const SUBDELIM = '/';
-const COL_DELIM = ';'; // Временная папка
+    const SUBDELIM = '/';
+    const COL_DELIM = ';'; // Временная папка
     const COL_ENCLOSURE = '"';           // Временный файл
-        private $columns_names = array(
+    private $columns_names = array(
         'name' => array('product', 'name', 'товар', 'название', 'наименование'),
         'url' => array('url', 'адрес'),
         'visible' => array('visible'),
@@ -32,7 +32,7 @@ const COL_DELIM = ';'; // Временная папка
         'description' => array('description', 'описание'),
         'images' => array('images', 'изображения')
     );                       // Разделитель значений одной колонки
-        private $internal_columns_names = array();                    // Разделитель подкаегорий в файле
+    private $internal_columns_names = array();                    // Разделитель подкаегорий в файле
     private $import_files_dir = '../files/import/';                   //Разделитель колонок
     private $import_file = 'import.csv';                   //Контейнер колонки
     private $products_count = 250;
@@ -175,10 +175,11 @@ const COL_DELIM = ';'; // Временная папка
 
 
         // Проверим не пустое ли название и артинкул (должно быть хоть что-то из них)
-        if (empty_(@$item['name']) && empty_(@$item['sku'])) {
+        if (!isset($item['name']) && !isset($item['sku'])) {
             dtimer::log(__METHOD__ . " empty sku ", 1);
             return false;
         }
+        dtimer::log(__METHOD__ . " item array: " . var_export($item, true));
 
         // Подготовим товар для добавления в базу
         $product = array();
@@ -222,19 +223,21 @@ const COL_DELIM = ';'; // Временная папка
         }
 
         // Если задан бренд
-        if (!empty_(@$item['brand'])) {
+        if (isset($item['vendor'])) {
             // Найдем его по имени
-            if ($brand = $this->brands->get_brand($item['brand'])) {
+            $brand = $this->brands->get_brand($item['vendor']);
+            if ($brand !== false) {
                 $product['brand_id'] = $brand['id'];
             } else {
                 // Создадим, если не найден
-                if (($product['brand_id'] = $this->brands->add_brand(array('name' => $item['brand']))) === false) {
+                $product['brand_id'] = $this->brands->add_brand(array('name' => $item['vendor']));
+                if ($product['brand_id'] === false) {
                     dtimer::log(__METHOD__ . " failed on add_brand", 1);
                     return false;
                 }
             }
         }
-        
+
 
         // Если задана категория и если такая категория еще не создана
         $category_id = null;
@@ -267,7 +270,6 @@ const COL_DELIM = ';'; // Временная папка
             }
         }
 
-        
 
         //если нет артикула, значит мы его сгенерируем из имени
         if (isset($item['sku'])) {
@@ -311,7 +313,7 @@ const COL_DELIM = ';'; // Временная папка
                 }
             }
         }
-        
+
 
         if (!empty_(@$varid) && !empty_(@$pid)) {
             // Нужно вернуть обновленный товар
@@ -342,7 +344,7 @@ const COL_DELIM = ';'; // Временная папка
                     }
                 }
             }
-            
+
             // Характеристики товаров
             $features = array(); //массив для записи пар id свойства и id значения свойства
             foreach ($item as $feature_name => $feature_value) {
@@ -356,6 +358,10 @@ const COL_DELIM = ';'; // Временная папка
                         } else {
                             //иначе добавляем свойство в базу и пишем в наш глобальный массив
                             $fid = $this->features->add_feature(array('name' => $feature_name));
+                            if(!isset($fid)){
+                                dtimer::log(__METHOD__." unable to add feature $f_name Abort! ",1);
+                                return false;
+                            }
                             $GLOBALS['features'][$feature_name] = $fid;
                         }
 
@@ -387,7 +393,7 @@ const COL_DELIM = ';'; // Временная папка
                 dtimer::log(__METHOD__ . " unable to add options", 1);
                 return false;
             }
-            
+
 
             return $imported_item;
         }
