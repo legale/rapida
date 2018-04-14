@@ -171,7 +171,7 @@ class Features extends Simpla
         $name = trim($name);
         $group = array();
         $group['pos'] = (int)$group['pos'];
-        $group['name'] = str_replace("\xc2\xa0" ,'', trim($group['name']));
+        $group['name'] = str_replace("\xc2\xa0", '', trim($group['name']));
         $group['pos'] = (int)$group['pos'];
         $q = $this->db->placehold("INSERT INTO __options_groups SET `name` = ?, `pos` = ? ", $name, $pos);
         $this->db->query($q);
@@ -242,7 +242,7 @@ class Features extends Simpla
         }
         //если имя не задано - останавливаемся
         if (isset($feature['name'])) {
-            $name = str_replace("\xc2\xa0" ,'', $feature['name']);
+            $name = str_replace("\xc2\xa0", '', $feature['name']);
         } else {
             return false;
         }
@@ -342,16 +342,18 @@ class Features extends Simpla
                 $feature[$k] = trim($e);
             }
         }
-        if(count($feature) === 0){
-            dtimer::log(__METHOD__." nothing to change - feature is empty! abort. ",1);
+        if (count($feature) === 0) {
+            dtimer::log(__METHOD__ . " nothing to change - feature is empty! abort. ", 1);
             return false;
         }
 
         $this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
-        if (isset($feature['in_filter']) && (bool)$feature['in_filter'] === true) {
-            $this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`, `product_id`)");
-        } else {
-            $this->db->query("ALTER TABLE __options DROP INDEX `$id` ");
+        if (isset($feature['in_filter'])) {
+            if ((bool)$feature['in_filter'] === true) {
+                $this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`, `product_id`)");
+            } else {
+                $this->db->query("ALTER TABLE __options DROP INDEX `$id` ");
+            }
         }
         return $id;
     }
@@ -393,7 +395,7 @@ class Features extends Simpla
         //получим значение для записи в таблицу options из таблицы s_options_uniq
         //сделаем хеш
         trim((string)$val);
-        $val = str_replace("\xc2\xa0" ,'',$val);
+        $val = str_replace("\xc2\xa0", '', $val);
         $fid = (int)$feature_id;
         $pid = (int)$product_id;
         $trans = translit_ya($val);
