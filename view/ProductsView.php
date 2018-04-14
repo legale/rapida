@@ -183,6 +183,7 @@ class ProductsView extends View
             $auto_meta_description = $cat['meta_description'];
 
             $pairs = array(
+                '{$meta_filter}' => $meta_filter,
                 '{$category}' => $cat['name'] ? $cat['name'] . ' ' : '',
                 '{$products_count}' => $this->filter['products_count'] . ' ',
                 '{$sitename}' => $this->settings->site_name ? $this->settings->site_name . ' ' : '',
