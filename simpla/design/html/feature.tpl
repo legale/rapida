@@ -89,6 +89,7 @@ $(function() {
 			<ul>
 				<li><input type="text" name="trans" value="{$feature['trans']|escape}"><label>translit для адресной строки</label></li>
 				<li><input type="checkbox" name="in_filter" {if $feature['in_filter']}checked{/if} value="1"><label>Использовать в фильтре</label></li>
+				<li><input type="checkbox" name="tpl" {if $feature['tpl']}checked{/if} value="1"><label>Разрешить переменные &#123;${$feature['trans']}&#125; &#123;${$feature['trans']}_list&#125; для мета тегов</label></li>
 			</ul>
 		</div>
 		<!-- Параметры страницы (The End)-->
