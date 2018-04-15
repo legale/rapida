@@ -269,7 +269,7 @@ class Import_single extends Simpla
         if (isset($item['featured'])) {
             $product['featured'] = intval($item['featured']);
         }
-        
+
 
         $product['id'] = $pid = $item['product_id'];
         unset($item['product_id']);

@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 require_once('../../api/Simpla.php');
 
 
@@ -220,7 +220,7 @@ class ImportAjax extends Simpla
         // Если задан бренд
         if (isset($item['vendor'])) {
             // Найдем его по имени
-            $brand = $this->brands->get_brand($item['vendor']);
+            $brand = $this->brands->get_brand(translit_ya($item['vendor']));
             if ($brand !== false) {
                 $product['brand_id'] = $brand['id'];
             } else {
