@@ -210,7 +210,7 @@ class Import_single extends Simpla
 
             // Если не найдена - добавим ее
             if (isset($id)) {
-                $id = $this->categories->add_category(array('name' => $name, 'parent_id' => $parent, 'meta_title' => $name, 'meta_keywords' => $name, 'meta_description' => $name, 'url' => translit_url($name)));
+                $id = $this->categories->add_category(array('name' => $name, 'parent_id' => $parent, 'meta_title' => $name, 'meta_keywords' => $name, 'meta_description' => $name, ));
             }
 
             $parent = $id;
@@ -269,12 +269,7 @@ class Import_single extends Simpla
         if (isset($item['featured'])) {
             $product['featured'] = intval($item['featured']);
         }
-
-        if (isset($item['url'])) {
-            $product['url'] = $item['url'];
-        } elseif (isset($item['name'])) {
-            $product['url'] = translit_ya($item['name']);
-        }
+        
 
         $product['id'] = $pid = $item['product_id'];
         unset($item['product_id']);
