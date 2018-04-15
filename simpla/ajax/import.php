@@ -267,7 +267,7 @@ class ImportAjax extends Simpla
 
 
         //если нет артикула, значит мы его сгенерируем из имени
-        if (isset($item['sku'])) {
+        if (!empty($item['sku'])) {
             $variant['sku'] = $item['sku'];
         } else {
             $variant['sku'] = md5($item['name']);
