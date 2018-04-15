@@ -261,7 +261,7 @@ class ImportAjax extends Simpla
             if ($item['stock'] == '') {
                 $variant['stock'] = null;
             } else {
-                $variant['stock'] = $item['stock'];
+                $variant['stock'] = max(0, $item['stock']);
             }
         }
 
