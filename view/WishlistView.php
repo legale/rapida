@@ -7,7 +7,8 @@ class WishlistView extends View
 
 	public function fetch()
 	{
-		print_r($_COOKIE);
+	    return false;
+//		print_r($_COOKIE);
 		if(!empty($_COOKIE['wishlist_products'])){
 			$pids = explode(',', $_COOKIE['wishlist_products']);
 			// Выбираем товары из базы
