@@ -401,13 +401,14 @@ class Features extends Simpla
         $trans = translit_ya($val);
         //Хеш будем получать не по чистому значению $val, а по translit_ya($val), чтобы можно было из ЧПУ вернуться к хешу
         $optionhash = hash('md4', $trans);
-        $this->db->query("SELECT `id` FROM __options_uniq WHERE `md4`= 0x$optionhash ");
+        $this->db->query("SELECT `id` FROM __options_uniq WHERE `md4` = 0x$optionhash ");
 
         //Если запись уже есть - продолжаем работу, если нет добавляем запись в таблицу
         if ($this->db->affected_rows() > 0) {
             $vid = $this->db->result_array('id');
         } else {
-            $q = $this->db->query("INSERT INTO __options_uniq SET `val`= ?, `trans` = ?, `md4` = 0x$optionhash ", $val, $trans);
+            $q = $this->db->query("INSERT INTO __options_uniq SET `val`= ?, `trans` = ?, `md4` = 0x$optionhash 
+              ON DUPLICATE KEY UPDATE `val`= ?, `trans` = ?, `md4` = 0x$optionhash", $val, $trans, $val, $trans);
             if ($q !== false) {
                 $vid = $this->db->insert_id();
             } else {
