@@ -545,10 +545,10 @@ class ImportYmlAdmin extends Simpla
             }
 
             //соединяем картинки через |
-            if ($pics_concat == true && is_array($row['picture'])) {
+            if ($pics_concat == true && isset($row['picture']) && is_array($row['picture'])) {
                 $row['picture'] = implode('|', $row['picture']);
             }
-            if ($pics_concat == true && is_array($row['image'])) {
+            if ($pics_concat == true && isset($row['image']) && is_array($row['image'])) {
                 $row['image'] = implode('|', $row['image']);
             }
 
