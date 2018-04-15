@@ -609,7 +609,7 @@ class ImportYmlAdmin extends Simpla
     {
         $row = array();
         foreach ($fields as $k => $col) {
-            if (is_iterable($col)) {
+            if (is_array($col)) {
                 print " column $k is iterable! Must be string, int, float or bool ";
                 return false;
             }
