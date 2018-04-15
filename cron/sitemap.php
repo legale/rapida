@@ -253,9 +253,12 @@ $b = '';
 //*
 // Категории + feature
 $cats = $simpla->categories->get_categories();
+$len = count($cats);
+$cnt = 0;
 foreach ($cats as $c) {
+    $cnt++;
     if ($c['visible']) {
-
+        print $c['name'] . " $cnt/$len \n";
         //тут сами свойства
         $features = $simpla->features->get_features(array('visible' => 1, 'category_id' => $c['children'], 'method' => 'sitemap'));
 //        print_r($fids);
