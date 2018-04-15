@@ -36,7 +36,7 @@ fwrite($fopen, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . 
 
 // Главная страница
 //for cron!
-$hostname = $simpla->config->host;
+$hostname = 'http://' . $simpla->config->host;
 $url = $hostname . '/';
 
 fwrite($fopen, "<url>" . "\n");
