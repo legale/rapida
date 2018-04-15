@@ -216,11 +216,6 @@ class ImportAjax extends Simpla
             $product['featured'] = intval($item['featured']);
         }
 
-        if (!empty_(@$item['url'])) {
-            $product['url'] = $item['url'];
-        } elseif (!empty_(@$item['name'])) {
-            $product['url'] = translit_url($item['name']);
-        }
 
         // Если задан бренд
         if (isset($item['vendor'])) {
@@ -425,7 +420,7 @@ class ImportAjax extends Simpla
 
             // Если не найдена - добавим ее
             if (empty_(@$id)) {
-                $id = $this->categories->add_category(array('name' => $name, 'parent_id' => $parent, 'meta_title' => $name, 'meta_keywords' => $name, 'meta_description' => $name, 'url' => translit_url($name)));
+                $id = $this->categories->add_category(array('name' => $name, 'parent_id' => $parent, 'meta_title' => $name, 'meta_keywords' => $name, 'meta_description' => $name));
             }
 
             $parent = $id;
