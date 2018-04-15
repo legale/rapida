@@ -359,7 +359,7 @@ class Products extends Simpla
             }
             $features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
         }
-        $query = $this->db->placehold("SELECT *
+        $query = $this->db->placehold("SELECT p.id, p.trans, p.image, p.image_id, p.brand_id, p.name
 				FROM __products p 
 				WHERE 
 					1
