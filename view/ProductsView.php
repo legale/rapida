@@ -155,6 +155,14 @@ class ProductsView extends View
 
         //тут записываем выбранные фильтры в отдельную переменную
         $meta_filter = array();
+        //Сначала бренды
+        if (isset($this->filter['brand_id'])) {
+            foreach ($this->filter['brand_id'] as $bid) {
+                $meta_filter[] = $brands[$bid]['name'];
+
+            }
+        }
+        //теперь свойства
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
                 $meta_filter[] = $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
