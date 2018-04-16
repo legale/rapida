@@ -87,11 +87,10 @@ class ControllerMaster extends Simpla
         } else {
             return false;
         }
-        //теперь опции, если они есть
+        //теперь бренды если они есть
         if (isset($filter['brand_id']) && is_array($filter['brand_id']) && count($filter['brand_id']) > 0) {
             $brands_trans = $this->brands->get_brands_ids(array('return' => array('key' => 'id', 'col' => 'trans')));
-            //print_r($brands_trans);
-            $brands = array_intersect_key(array_flip($filter['brand_id']), $brands_trans);
+            $brands = array_intersect_key($brands_trans, array_flip($filter['brand_id']));
             $res .= '/' . 'brand-' . implode('.', $brands);
         }
 
