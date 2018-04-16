@@ -133,8 +133,11 @@ class ProductsView extends View
         $brands = $this->brands->get_brands($brand_filter);
 
         //~ print_r($brands);
+        //тут запилим все бренды (надо оценить необходимость)
         $cat['brands'] = $brands;
-        //~ print_r($cat);
+        //тут первый из выбранных брендов, чтобы можно было выводить отдельные параметры из бренда на странице
+        $cat['brand'] = $brands[reset($this->filter['brand_id'])];
+//        print_r($cat['brand']);
 
         // Свойства товаров
         //получим включенные для фильтра на сайте свойства товаров для конкретной категории
