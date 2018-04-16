@@ -136,7 +136,7 @@ class ProductsView extends View
         //тут запилим все бренды (надо оценить необходимость)
         $cat['brands'] = $brands;
         //Если выбран только 1 бренд, запилим его в шаблон
-        if(count($this->filter['brand_id']) === 1) {
+        if(isset(($this->filter['brand_id']) && count($this->filter['brand_id']) === 1) {
             $cat['brand'] = $brands[reset($this->filter['brand_id'])];
         }
 //        print_r($cat['brand']);
