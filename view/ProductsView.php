@@ -163,14 +163,17 @@ class ProductsView extends View
         //Сначала бренды
         if (isset($this->filter['brand_id'])) {
             foreach ($this->filter['brand_id'] as $bid) {
-                $meta_filter[] = $brands[$bid]['name'];
-
+                if(isset($brands[$bid]['name'])) {
+                    $meta_filter[] = $brands[$bid]['name'];
+                }
             }
         }
         //теперь свойства
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
-                $meta_filter[] = $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
+                if(isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
+                    $meta_filter[] = $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
+                }
             }
         }
         $meta_filter = implode(' - ', $meta_filter);
