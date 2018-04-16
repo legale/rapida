@@ -136,7 +136,7 @@ class ProductsView extends View
         //тут запилим все бренды (надо оценить необходимость)
         $cat['brands'] = $brands;
         //Если выбран только 1 бренд, запилим его в шаблон
-        if(isset($this->filter['brand_id']) && count($this->filter['brand_id']) === 1) {
+        if (isset($this->filter['brand_id']) && count($this->filter['brand_id']) === 1) {
             $cat['brand'] = $brands[reset($this->filter['brand_id'])];
         }
 //        print_r($cat['brand']);
@@ -163,7 +163,7 @@ class ProductsView extends View
         //Сначала бренды
         if (isset($this->filter['brand_id'])) {
             foreach ($this->filter['brand_id'] as $bid) {
-                if(isset($brands[$bid]['name'])) {
+                if (isset($brands[$bid]['name'])) {
                     $meta_filter[] = $brands[$bid]['name'];
                 }
             }
@@ -171,7 +171,7 @@ class ProductsView extends View
         //теперь свойства
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
-                if(isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
+                if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $meta_filter[] = $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
                 }
             }
