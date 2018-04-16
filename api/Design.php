@@ -137,7 +137,7 @@ class Design extends Simpla
         if (is_array(reset($params))) {
             $params = reset($params);
         }
-        return $this->root->gen_uri(null, $params);
+        return $this->root->gen_uri($this->root->uri_arr['path'], $params);
     }
 
     public function plural_modifier($number, $singular, $plural1, $plural2 = null)
