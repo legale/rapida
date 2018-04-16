@@ -131,14 +131,11 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива параметров
     public function gen_uri($arr = null, $filter = null)
     {
-        dtimer::log(__METHOD__ . ' filter ' . var_export($filter, true));
-        //если начальный массив параметров не задан, возьмем его из $this->uri_arr['path']
-        if (!isset($arr)) {
-            if (isset($this->uri_arr['path'])) {
-                $arr = $this->uri_arr['path'];
-            } else {
-                return false;
-            }
+        dtimer::log(__METHOD__ . ' arr: ' . var_export($arr, true));
+        dtimer::log(__METHOD__ . ' filter: ' . var_export($filter, true));
+        //если начальные параметры не заданы просто вернем false
+        if (!isset($arr) || !isset($filter)) {
+            return false;
         }
 
         if (isset($filter['page'], $arr['page'])) {
@@ -147,12 +144,23 @@ class ControllerMaster extends Simpla
         if (isset($filter['sort'], $arr['sort'])) {
             unset($arr['sort']);
         }
+        if(isset($filter['brand'])){
+            $filter['brand'] = is_array($filter['brand']) ? array_flip($filter['brand']) : array((string)$filter['brand']=> 0);
+        }
+        if(isset($filter['features']) && is_array($filter['features'])){
+            foreach($filter['features'] as $fname => $vals){
+                $filter['features'][$fname] = is_array($vals) ? array_flip($vals) : array((string)$vals => 0);
+            }
+        }
+
+
+        dtimer::log(__METHOD__ . ' filter before merge: ' . var_export($filter, true));
+
 
         if (isset($filter)) {
             $arr = $this->merge_arrays_keys($arr, $filter);
         }
-
-        dtimer::log(__METHOD__ . ' arr: ' . print_r($arr, true));
+        dtimer::log(__METHOD__ . ' compiled: ' . print_r($arr, true));
 
         $res = '';
 
@@ -163,7 +171,7 @@ class ControllerMaster extends Simpla
 
 
         //сначала модуль
-        $res .= $arr['module'];
+        $res .= '/' . $arr['module'];
 
         //теперь url, если есть
         if (isset($arr['url']) && $arr['url'] !== '') {
@@ -208,8 +216,8 @@ class ControllerMaster extends Simpla
 
         foreach ($a as $a_key => $a_val) {
             //если массив и такой элемент есть в массиве b запускаем рекурсию
-            if (is_array($a_val) && isset($b[$a_key])) {
-                $a[$a_key] = merge_arrays_keys($a_val, $b[$a_key]);
+            if (is_array($a_val) && isset($b[$a_key]) && is_array($b[$a_key])) {
+                $a[$a_key] = $this->merge_arrays_keys($a_val, $b[$a_key]);
             } else {
                 //иначе проверяем если в массиве b есть такое значение, убираем его из обоих массивов
                 if (isset($b[$a_key])) {
