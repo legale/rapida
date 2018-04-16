@@ -2,11 +2,13 @@
 $time_start = microtime(true);
 
 print "<pre>\r\n";
-print "Rapida sitemap generator v0.0.1 \r\n";
+print "Rapida sitemap generator v0.0.2 \r\n";
 
 
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
 $simpla = new Simpla();
+//отключаем логгер, чтобы экономить память
+dtimer::$enabled = false;
 
 //кол-во товаров на странице
 $items_per_page = $simpla->settings->products_num;
@@ -115,7 +117,6 @@ foreach($simpla->brands->get_brands() as $b) {
         $page++;
     }
 }
-dtimer::reset();
 
 foreach($brands as $b) {
     $brand = $b[0];
@@ -164,7 +165,6 @@ foreach($simpla->categories->get_categories() as $c) {
         }
     }
 }
-dtimer::reset();
 
 foreach($cat as $c) {
     if($c[1] == 1) {
@@ -213,7 +213,6 @@ foreach ($simpla->categories->get_categories() as $c) {
         }
     }
 }
-dtimer::reset();
 
 foreach ($brands as $b) {
     $cat_trans = $b[0];
@@ -243,12 +242,98 @@ foreach ($brands as $b) {
         fwrite($fopen, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
     }
 }
-dtimer::reset();
 //~ print "memory  brand usage: ".memory_get_usage(true)." bytes\r\n";
 
 $c = '';
 $b = '';
 ////*/
+
+//*
+// Категории + brand + feature
+$cats = $simpla->categories->get_categories();
+$len = count($cats);
+$cnt = 0;
+foreach ($cats as $c) {
+    $cnt++;
+    if ($c['visible']) {
+        print $c['name'] . " $cnt/$len \n";
+        $brands = $simpla->brands->get_brands(array('category_id' => $c['children']));
+        if(is_array($brands)){
+            $blen = count($brands);
+        }
+        $bcnt = 0;
+        foreach ($brands as $b) {
+            $bcnt++;
+            if($bcnt % 10 === 0) {
+                print $b['name'] . " $bcnt/$blen \n";
+            }
+            //тут сами свойства
+            $features = $simpla->features->get_features(array('visible' => 1, 'category_id' => $c['children'], 'brand_id' => $b['id'], 'method' => 'sitemap'));
+//        print_r($fids);
+
+            //тут значения свойств
+            $options = $simpla->features->get_options_mix(array('visible' => 1, 'feature_id' => array_keys($features), 'category_id' => $c['children'], 'brand_id' => $b['id'], 'method' => 'sitemap'));
+            // обнуляем ненужный больше массив
+
+            $cat_feat = array();
+            if ($features) {
+                foreach ($features as $fid => $f) {
+                    if (isset($options['filter'][$fid])) {
+                        foreach ($options['filter'][$fid] as $vid => $val) {
+                            $features_filter = array($fid => array($vid));
+                            $p_count = $simpla->products->count_products(array('visible' => 1, 'category_id' => $c['children'], 'features' => $features_filter, 'brand_id' => $b['id'], 'method' => 'sitemap'));
+                            $pages_num = ceil($p_count / $items_per_page);
+                            $page = 1;
+                            while ($page <= $pages_num) {
+                                $cat_feat[] = array($c['trans'], $b['trans'], $f['trans'], $options['full'][$fid]['trans'][$vid], $page);
+                                $page++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        if ($cat_feat) {
+            foreach ($cat_feat as $cf) {
+                $cat_trans = $cf[0];
+                $brand_trans = $cf[1];
+                $feature_trans = $cf[2] . '-' . $cf[3];
+                $page = $cf[4];
+                if ($page == 1) {
+                    $url = "$hostname/catalog/$cat_trans/brand-$brand_trans/$feature_trans";
+                } else {
+                    $url = "$hostname/catalog/$cat_trans/brand-$brand_trans/$feature_trans/page-$page";
+                }
+                $fopen = fopen($smap_n_prefix . $sitemap_index . $smap_n_ext, 'a');
+                fwrite($fopen, "<url>" . "\n");
+                fwrite($fopen, "<loc>$url</loc>" . "\n");
+                fwrite($fopen, "</url>" . "\n");
+                if (++$url_index == 50000) {
+                    fwrite($fopen, '</urlset>' . "\n");
+                    fclose($fopen);
+                    gzconvert($smap_n_prefix . $sitemap_index . $smap_n_ext);
+
+                    $url_index = 0;
+                    $sitemap_index++;
+                    $sitemaps[] = $sitemap_index;
+                    if (file_exists($smap_n_prefix . $sitemap_index . $smap_n_ext)) {
+                        @unlink($smap_n_prefix . $sitemap_index . $smap_n_ext);
+                    }
+                    $fopen = fopen($smap_n_prefix . $sitemap_index . $smap_n_ext, 'a');
+                    fwrite($fopen, '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
+                    fwrite($fopen, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
+                }
+            }
+        }
+    }
+}
+
+unset($cats, $c, $features, $options, $brands);
+////*/
+
 
 //*
 // Категории + feature
@@ -270,7 +355,7 @@ foreach ($cats as $c) {
         $cat_feat = array();
         if ($features) {
             foreach ($features as $fid => $f) {
-                if ($options) {
+                if (isset($options['filter'][$fid])) {
                     foreach ($options['filter'][$fid] as $vid => $val) {
                         $features_filter = array($fid => array($vid));
                         $p_count = $simpla->products->count_products(array('visible' => 1, 'category_id' => $c['children'], 'features' => $features_filter, 'method' => 'sitemap'));
@@ -286,7 +371,6 @@ foreach ($cats as $c) {
         }
 
 
-        dtimer::reset();
         if ($cat_feat) {
             foreach ($cat_feat as $cf) {
                 $cat_trans = $cf[0];
@@ -318,99 +402,11 @@ foreach ($cats as $c) {
                 }
             }
         }
-        dtimer::reset();
     }
 }
 
 unset($cats, $c, $features, $options);
 ////*/
-
-
-/*
-// Категории + brand + feature
-
-$cats = $simpla->categories->get_categories();
-foreach($cats as $c) {
-    if($c->visible) {
-        $brands = $simpla->brands->get_brands(array('category_id'=>$c->children));
-        foreach($brands as $b) {
-            //получаем массив свойств для категории
-            $f0_object = array();
-            $f0_object = $simpla->features->get_features(array('category_id'=>$c->children, 'in_filter'=>1));
-            //фильтруем массив, убирая те id, которые есть в $filter_minus
-            //и создаем массив из нужных feature_id
-            $f0_ids = array();
-            for(reset($f0_object), $i = key($f0_object); next($f0_object); $i = key($f0_object)) {
-                if(in_array($f0_object[$i]->id, $filter_minus)) {
-                    unset($f0_object[$i]);
-                } else {
-                    $f0_ids[] = $f0_object[$i]->id;
-                }
-            }
-            //print_r($f0_ids);
-            //die;
-            //создаем массив из features и options
-            $feat_opt0 = feat_opt(array('visible' => 1 , 'brand_id' => $b->id , 'feature_id'=>$f0_ids, 'f0_object'=>$f0_object, 'category_id'=>$c->children, 'method' => 'sitemap'));
-            // обнуляем ненужный больше массив
-            unset($f0_object);
-            //print_r($feat_opt0);
-            if ($feat_opt0) {
-                foreach ($feat_opt0 as $f0) {
-                    $features = array();
-                    $features[$f0['id']][] = $f0['translit'];
-                    $p_count = $simpla->products->count_products(array('visible' => 1, 'brand_id' => $b->id , 'category_id'=>$c->children, 'features'=>$features, 'sort' => 'click_desc', 'method' => 'sitemap' ));
-                    $pages_num = ceil($p_count/$items_per_page);
-                    $page = 1;
-                    while ($page <= $pages_num) {
-                        $cat_feat[] = array($c->url, $b->url , $f0['url'], $f0['translit'], $page);
-                        $page++;
-                    }
-                }
-            }
-            dtimer::reset();
-            if ($cat_feat) {
-                foreach($cat_feat as $cf) {
-                    $cat = $cf[0];
-                    $brand = $cf[1];
-                    $f_url = $cf[2].'-'.$cf[3];
-                    $page = $cf[4];
-                    if ($page == 1) {
-                        $url = $hostname.'/catalog/'.$cat.'/'.'brand-'.$brand.'/'.$f_url;
-                    } else {
-                        $url = $hostname.'/catalog/'.$cat.'/'.'brand-'.$brand.'/'.$f_url.'/page-'.$page;
-                    }
-                    $fopen = fopen($smap_n_prefix.$sitemap_index.$smap_n_ext, 'a');
-                    fwrite($fopen, "<url>"."\n");
-                    fwrite($fopen, "<loc>$url</loc>"."\n");
-                    fwrite($fopen, "</url>"."\n");
-                    if (++$url_index == 50000) {
-                        fwrite($fopen, '</urlset>'."\n");
-                        fclose($fopen);
-                        gzconvert($smap_n_prefix.$sitemap_index.$smap_n_ext);
-
-                        $url_index=0;
-                        $sitemap_index++;
-                        $sitemaps[] = $sitemap_index;
-                        if (file_exists($smap_n_prefix.$sitemap_index.$smap_n_ext)) {
-                            @unlink($smap_n_prefix.$sitemap_index.$smap_n_ext);
-                        }
-                        $fopen = fopen($smap_n_prefix.$sitemap_index.$smap_n_ext, 'a');
-                        fwrite($fopen, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-                        fwrite($fopen, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
-                    }
-                }
-            }
-            $cat_feat = '';
-            dtimer::reset();
-        }
-        unset($brands);
-    }
-}
-
-$c = '';
-$cats = '';
-////*/
-
 
 /*
 // Категории + feature + feature
@@ -501,12 +497,11 @@ unset($c);
 //*/
 
 
-/*
+//*
 // Товары
-$simpla->db->query("SELECT url, last_modify FROM __products WHERE visible=1");
-foreach($simpla->db->results() as $p) {
-    $url = $hostname.'/products/'.esc($p->url);
-    $last_modify = substr($p->last_modify, 0, 10);
+$simpla->db->query("SELECT trans FROM __products WHERE visible=1");
+foreach($simpla->db->results_array() as $p) {
+    $url = $hostname.'/products/'.esc($p['trans']);
     $fopen = fopen($smap_n_prefix.$sitemap_index.$smap_n_ext, 'a');
     fwrite($fopen, "<url>"."\n");
     fwrite($fopen, "<loc>$url</loc>"."\n");
@@ -533,6 +528,7 @@ $p = '';
 
 fwrite($fopen, '</urlset>' . "\n");
 fclose($fopen);
+gzconvert($smap_n_prefix . $sitemap_index . $smap_n_ext);
 
 // удаляем старый составной sitemap, если он создан
 if (file_exists($smap_xml . '.xml')) {
