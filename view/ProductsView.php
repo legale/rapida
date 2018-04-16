@@ -135,8 +135,10 @@ class ProductsView extends View
         //~ print_r($brands);
         //тут запилим все бренды (надо оценить необходимость)
         $cat['brands'] = $brands;
-        //тут первый из выбранных брендов, чтобы можно было выводить отдельные параметры из бренда на странице
-        $cat['brand'] = $brands[reset($this->filter['brand_id'])];
+        //Если выбран только 1 бренд, запилим его в шаблон
+        if(count($this->filter['brand_id']) === 1) {
+            $cat['brand'] = $brands[reset($this->filter['brand_id'])];
+        }
 //        print_r($cat['brand']);
 
         // Свойства товаров
