@@ -16,7 +16,7 @@ class ControllerSimpla extends Simpla
 
     public function action($url = null)
     {
-
+        dtimer::log(__METHOD__ . " action start ");
         require_once('view/IndexView.php');
         $view = new IndexView();
 
