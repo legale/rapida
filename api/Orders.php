@@ -65,7 +65,7 @@ class Orders extends Simpla
         if (is_int($id)) {
             $id = "o.id = '$id'";
         } elseif (is_string($id)) {
-            $id = "o.url = '$id'";
+            $id = "o.trans = '$id'";
         } else {
             dtimer::log(__METHOD__ . " argument trans/id is not set or wrong type! ");
             return false;
