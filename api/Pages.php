@@ -22,6 +22,7 @@ class Pages extends Simpla
 	 */
 	public function get_page($id)
 	{
+	    dtimer::log(__METHOD__. " start");
 		if (gettype($id) == 'string'){
 			$id = trim($id, '/');
 			$where = $this->db->placehold(' WHERE trans=? ', $id);
@@ -43,6 +44,7 @@ class Pages extends Simpla
 	 */
 	public function get_pages($filter = array())
 	{
+        dtimer::log(__METHOD__." start ");
 		$menu_filter = '';
 		$visible_filter = '';
 		$pages = array();
@@ -52,7 +54,6 @@ class Pages extends Simpla
 
 		if (isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND visible = ?', intval($filter['visible']));
-
 		$q = "SELECT *  FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
 
 		$this->db->query($q);
