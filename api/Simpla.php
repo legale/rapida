@@ -326,7 +326,7 @@ class Simpla
             dtimer::log("error_reporting config.ini: " . $this->config->error_reporting . " error_reporting() says: " . error_reporting());
             //выключатель отладчика
             dtimer::log(__METHOD__ . " debuger");
-            dtimer::$enabled = $this->config->debug;
+            dtimer::$enabled = isset($_SESSION['admin']) && $this->config->debug ? true : false;
             //локаль
             setlocale(LC_ALL, $this->config->locale);
             //кеш включается через статичекую переменную класса
