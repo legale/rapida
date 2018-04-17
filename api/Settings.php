@@ -15,7 +15,7 @@ class Settings extends Simpla
 	function __construct()
 	{
 		parent::__construct();
-		
+	dtimer::log(__METHOD__ . " start ");
 		// Выбираем из базы настройки
 		$this->db->query('SELECT name, value FROM __settings');
 

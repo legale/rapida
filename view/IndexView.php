@@ -49,6 +49,7 @@ class IndexView extends View
 	{
 		dtimer::log(__METHOD__ . " start");
 		// Содержимое корзины
+        dtimer::log(__METHOD__ . " fetch ");
 		$this->design->assign('cart',		$this->cart->get());
 	
         // Категории товаров
