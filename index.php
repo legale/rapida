@@ -27,7 +27,7 @@ $simpla->root->action();
 // Отладочная информация
 
 	//показываем отладочную информацию из dtimer
-	if($simpla->config->debug === true && isset($_SESSION['admin'])){
+	if(dtimer::$enabled){
 		dtimer::show();
 	}
 	
