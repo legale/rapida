@@ -120,7 +120,7 @@
 	<!-- Шапка -->
 	<div id="header">
 		<div id="logo">
-			<a href="/"><img src="design/{$settings->theme|escape}/images/logo.png" title="{$settings->site_name|escape}" alt="{$settings->site_name|escape}"/></a>
+			<a href="/"><img src="/design/{$settings->theme|escape}/images/logo.png" title="{$settings->site_name|escape}" alt="{$settings->site_name|escape}"/></a>
 		</div>	
 		<div id="contact">
 			<span id="phone">{$settings->phone}</span>
