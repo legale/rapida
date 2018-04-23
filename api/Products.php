@@ -540,7 +540,8 @@ class Products extends Simpla
         if (is_int($id)) {
             $filter = "p.id = $id";
         } else if (is_scalar($id)) {
-            $filter = "p.trans = '$id' OR p.trans = '$id'";
+            $id = $this->db->escape($id);
+            $filter = "p.trans = \"$id\" OR p.trans2 = \"$id\"";
         }
         $query = "SELECT *
 				FROM __products AS p
