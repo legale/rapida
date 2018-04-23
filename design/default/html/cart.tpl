@@ -55,7 +55,7 @@
 	{* Удалить из корзины *}
 	<td class="remove">
 		<a href="#">
-		<img src="design/{$settings->theme}/images/delete.png" title="Удалить из корзины" alt="Удалить из корзины">
+		<img src="/design/{$settings->theme}/images/delete.png" title="Удалить из корзины" alt="Удалить из корзины">
 		</a>
 	</td>
 			
