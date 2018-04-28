@@ -262,6 +262,7 @@ function translit_ya($string, $reverse = false)
         'ю' => 'yu',
         'я' => 'ya',
         ' ' => '_',
+        '/' => '__',
     );
     if ($reverse === true) {
         $converter = array_flip($converter);
