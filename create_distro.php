@@ -1,4 +1,9 @@
 <?php
+session_start();
+if(!isset($_SESSION['admin'])){
+    exit('Who the hell are you?');
+}
+
 define( 'PCLZIP_TEMPORARY_DIR', './' );
 
 require_once('api/Simpla.php');

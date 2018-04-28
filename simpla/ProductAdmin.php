@@ -159,7 +159,7 @@ class ProductAdmin extends Simpla
             $pid = $p['id'];
             dtimer::log(__METHOD__ . " update pid: $pid");
 
-            if (!$this->products->update_product($p)) {
+            if (!$this->products->update_product($pid, $p)) {
                 $this->status[] = array(
                     'status' => 1,
                     'message' => 'Не удалось обновить товар',
