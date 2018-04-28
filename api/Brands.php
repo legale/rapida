@@ -13,7 +13,10 @@ class Brands extends Simpla
     private $tokeep = array(
         'force_no_cache',
         'visible',
-        'category_id'
+        'category_id',
+        'trans',
+        'trans2',
+
     );
 
     public $brands;
@@ -38,6 +41,7 @@ class Brands extends Simpla
 
         $id_filter = '';
         $trans_filter = '';
+        $trans2_filter = '';
 
         if (!isset($filter['id']) && !isset($filter['trans']) && isset($this->brands[$key . "_" . $col])) {
             return $this->brands[$key . "_" . $col];
@@ -49,11 +53,15 @@ class Brands extends Simpla
             $id_filter = $this->db->placehold("AND id in (?@)", $filter['id']);
         }
 
+        if (isset($filter['trans2'])) {
+            $trans2_filter = $this->db->placehold("AND trans2 in (?@)", $filter['trans2']);
+        }
+
         if (isset($filter['trans'])) {
             $trans_filter = $this->db->placehold("AND trans in (?@)", $filter['trans']);
         }
 
-        $q = $this->db->placehold("SELECT `$col`, `$key` FROM __brands WHERE 1 $id_filter $trans_filter");
+        $q = $this->db->placehold("SELECT `$col`, `$key` FROM __brands WHERE 1 $id_filter $trans_filter $trans2_filter");
         $this->db->query($q);
 
         $res = $this->db->results_array($col, $key);
@@ -121,10 +129,18 @@ class Brands extends Simpla
 
         $cat_id_filter = '';
         $visible_filter = '';
+        $trans_filter = '';
+        $trans2_filter = '';
         $where = '';
         $where_flag = false;
 
 
+        if (isset($filter['trans'])) {
+            $trans_filter = $this->db->placehold("AND b.trans in(?@)", $filter['trans']);
+        }
+        if (isset($filter['trans2'])) {
+            $trans2_filter = $this->db->placehold("AND b.trans2 in(?@)", $filter['trans2']);
+        }
         if (isset($filter['visible'])) {
             $visible_filter = $this->db->placehold("AND p.visible=?", intval($filter['visible']));
             $where_flag = true;
@@ -138,9 +154,7 @@ class Brands extends Simpla
             $where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $cat_id_filter)";
         }
         // Выбираем все бренды
-        $query = $this->db->placehold("SELECT b.id, b.name, b.trans, b.meta_title,
-		 b.meta_keywords, b.meta_description, b.description, b.image
-								 		FROM __brands b WHERE 1 $where ");
+        $query = $this->db->placehold("SELECT * FROM __brands b WHERE 1 $trans_filter $trans2_filter $where ");
         $this->db->query($query);
 
         $res = $this->db->results_array(null, 'id');
