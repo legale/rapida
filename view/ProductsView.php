@@ -33,7 +33,7 @@ class ProductsView extends View
         }
 
         //получаем категорию
-        dtimer::log(__METHOD__ . __LINE__ . " ". $this->filter['category_url']);
+        dtimer::log(__METHOD__ . __LINE__ . " " . $this->filter['category_url']);
         if (isset($this->filter['category_url'])) {
             $cat = $this->categories->get_category($this->filter['category_url']);
         }
@@ -63,7 +63,7 @@ class ProductsView extends View
         }
 //		print_r($this->filter);
 
-        if (isset($this->filter['redirect'])) {
+        if (!empty($this->filter['redirect'])) {
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
         }
@@ -174,7 +174,7 @@ class ProductsView extends View
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
-                    if(empty($vals_text)){
+                    if (empty($vals_text)) {
                         continue;
                     }
                     $vals_string = implode(', ', $vals_text);
@@ -266,8 +266,7 @@ class ProductsView extends View
 
 
 //функция по обработке фильтров из адресной строки и преобразованию их в фильтр для api
-    private
-    function uri_to_api_filter($uri_arr, $filter)
+    private function uri_to_api_filter($uri_arr, $filter)
     {
         // Если задано ключевое слово
         if (isset($uri_arr['query']['keyword'])) {
@@ -296,9 +295,9 @@ class ProductsView extends View
 
         //Если есть бренд
         if (isset($uri_path['brand'])) {
-            $bids = $this->brands->get_brands_ids(array('trans' => array_keys($uri_path['brand'])));
-            if ($bids) {
-                $filter['brand_id'] = array_keys($bids);
+            //если не получается преобразовать обычные имена - пробуем альтернативные
+            if ($filter = $this->uri_brand_to_ids_filter($uri_path['brand'], $filter)) {
+            } else if ($filter = $this->uri_brand_to_ids_filter($uri_path['brand'], $filter, true)) {
             } else {
                 return false;
             }
@@ -312,10 +311,33 @@ class ProductsView extends View
         return $filter;
     }
 
+//функция для преобразования ЧПУ части uri с брендом $uri_path['brand']
+//флаг служит для задания преобразования по альтернативным названиям параметров trans2
+    private function uri_brand_to_ids_filter($uri_brand, $filter, $flag = false)
+    {
+        dtimer::log(__METHOD__ . " start " . var_export($uri_brand, true));
+        //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
+        //альтернативный поиск - по полям trans2 и md42 соответственно.
+        $key = $flag ? 'trans2' : 'trans';
+        if ($flag) {
+            $filter['redirect'] = true;
+        }
+
+        //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
+        $brands_trans = $this->brands->get_brands_ids(array($key => array_keys($uri_brand), 'in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
+        if (!empty($brands_trans)) {
+            $filter['brand_id'] = array_values($brands_trans);
+        } else {
+            return false;
+        }
+
+        return $filter;
+    }
+
+
 //функция для преобразования ЧПУ части uri с фильтрами по свойствам $uri_path['features']
 //флаг служит для задания преобразования по альтернативным названиям параметров trans2
-    private
-    function uri_to_ids_filter($uri_features, $filter, $flag = false)
+    private function uri_to_ids_filter($uri_features, $filter, $flag = false)
     {
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
@@ -333,19 +355,13 @@ class ProductsView extends View
         //перебираем массив фильтра из адресной строки
         foreach ($uri_features as $name => $vals) {
 
-            //если заданный в адресной строке у нас есть, получим хеш опции для поиска в таблице s_options_uniq
+            //если ничего не нашлось - останавливаемся
             if (!isset($features_trans[$name])) {
                 dtimer::log(__METHOD__ . " feature '$name' not found! " . print_r($vals, true), 2);
                 return false;
             }
+            //переворачиваем массив, потому что значения у нас идут в ключах, а нам нужно наоборот
             $vals = array_flip($vals);
-//            print_r($vals);
-//            die;
-            //~ print $name . "\n";
-//            foreach ($vals as $k => $v) {
-//                $vals[$k] = $k;
-//            }
-            //~ dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
 
             //получим id уникальных значений по их хешам
             $ids = $this->features->get_options_ids(array($key => $vals, 'return' => array('key' => 'id', 'col' => 'id')));
