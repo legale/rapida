@@ -439,8 +439,8 @@ $import_ajax = new ImportAjax();
 
 $json = json_encode($import_ajax->import());
 
-dtimer::show();
-die;
+//dtimer::show();
+//die;
 
 header("Content-type: application/json; charset=UTF-8");
 header("Cache-Control: must-revalidate");
