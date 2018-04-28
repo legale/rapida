@@ -337,7 +337,7 @@ class ImportAjax extends Simpla
             $features = array(); //массив для записи пар id свойства и id значения свойства
             foreach ($item as $feature_name => $feature_value) {
                 //если слишком длинный параметр, запишем его в текстовую таблицу
-                if (mb_strlen($feature_value) > 500) {
+                if (mb_strlen($feature_value) > 512) {
                     $this->features->update_text_option($pid, $feature_name, $feature_value);
                     continue;
                 }
