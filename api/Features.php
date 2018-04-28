@@ -551,64 +551,25 @@ class Features extends Simpla
     public
     function get_options_uniq($filter = array())
     {
-
-        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
-        $filter = array_intersect_key($filter, array_flip($this->tokeep));
-        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
-        $filter_ = $filter;
-        if (isset($filter_['force_no_cache'])) {
-            $force_no_cache = true;
-            unset($filter_['force_no_cache']);
-        }
-
-
-        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
-        ksort($filter_);
-        $filter_string = var_export($filter_, true);
-        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
-
-        //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
-            dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
-
-
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log(__METHOD__ . " add task force_no_cache keyhash: $keyhash");
-
-            $task = '$this->features->get_options_uniq(';
-            $task .= $filter_string;
-            $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
-
-        if (isset($res) && !empty_($res)) {
-            dtimer::log(__METHOD__ . " return cache res count: " . count($res));
-            return $res;
-        }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        $ids = null;
-        $reverse = false;
         $id_filter = '';
-        if (isset($filter['ids'])) {
-            $id_filter = $this->db->placehold(" AND `id` in ( ?@ )", (array)$filter['ids']);
+        $trans_filter = '';
+        $trans2_filter = '';
+        $val_filter = '';
+        if (isset($filter['val'])) {
+            $val_filter = $this->db->placehold(" AND `val` in ( ?@ )", (array)$filter['val']);
+        }
+        if (isset($filter['trans'])) {
+            $trans_filter = $this->db->placehold(" AND `trans` in ( ?@ )", (array)$filter['trans']);
+        }
+        if (isset($filter['trans2'])) {
+            $trans2_filter = $this->db->placehold(" AND `trans2` in ( ?@ )", (array)$filter['trans2']);
+        }
+        if (isset($filter['id'])) {
+            $id_filter = $this->db->placehold(" AND `id` in ( ?@ )", (array)$filter['id']);
         }
 
-        $this->db->query("SELECT * FROM __options_uniq WHERE 1 $id_filter");
-        if ($reverse === true) {
-            $res = $this->db->results_array(null, 'id', true);
-        } else {
-            $res = $this->db->results_array(null, 'val', true);
-        }
-
-        dtimer::log("set_cache_nosql key: $keyhash");
-        $this->cache->set_cache_nosql($keyhash, $res);
-        dtimer::log(__METHOD__ . ' return db');
+        $this->db->query("SELECT * FROM __options_uniq WHERE 1 $id_filter $trans_filter $trans2_filter $val_filter");
+        $res = $this->db->results_array(null, 'id');
         return $res;
     }
 
