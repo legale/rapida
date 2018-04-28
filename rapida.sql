@@ -304,7 +304,91 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`product_id`)
+  `2` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `3` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `4` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `5` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `6` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `7` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `8` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `9` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `10` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `11` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `12` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `13` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `14` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `15` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `20` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `21` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `22` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `23` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `24` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `25` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `26` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `27` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `28` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `29` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `30` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `31` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `32` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `33` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `34` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `35` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `36` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `37` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `38` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `39` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `40` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `41` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `42` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `43` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `44` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `45` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `46` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `47` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `48` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `49` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `50` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `51` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `52` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `53` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `54` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `55` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `56` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `57` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `58` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `59` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `60` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `61` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `62` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `63` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `64` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `65` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `66` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `67` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `68` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `69` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `70` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `71` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `72` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `73` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `74` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `75` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `76` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `77` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `78` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `79` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `80` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `81` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `82` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `83` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `84` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `85` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `86` mediumint(8) unsigned NOT NULL DEFAULT 0,
+  `1` mediumint(9) DEFAULT NULL,
+  PRIMARY KEY (`product_id`),
+  KEY `19` (`product_id`),
+  KEY `21` (`21`,`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /* Data for table s_options */
 ;
@@ -507,7 +591,7 @@ CREATE TABLE `s_queue` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue */
 /* Drop for table s_queue_full */
 DROP TABLE IF EXISTS `s_queue_full`;
@@ -519,7 +603,7 @@ CREATE TABLE `s_queue_full` (
   `task` varchar(5000) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyhash` (`keyhash`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /* $skipdata is true. Data skipped s_queue_full */
 /* Drop for table s_related_products */
 DROP TABLE IF EXISTS `s_related_products`;
