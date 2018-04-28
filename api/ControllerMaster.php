@@ -382,7 +382,8 @@ class ControllerMaster extends Simpla
         if (!isset($_SERVER)) {
             return false;
         }
-        $uri = isset($_SERVER['HTTPS']) ? "https" : "http";
+
+        $uri = !empty($_SERVER['HTTPS']) ? "https" : "http";
         $uri .= isset($_SERVER['HTTP_HOST']) ? "://" . $_SERVER['HTTP_HOST'] : '';
         $uri .= isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         return $uri;

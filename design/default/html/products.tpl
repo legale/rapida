@@ -57,12 +57,12 @@
 {if isset($category['brands']) && $category['brands']}
 
 <div id="brands">
-	<a href="{chpu_url params=[brand=>[], page=>'' ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>
+	<a href="{chpu_url params=[brand=>[], page=> null ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>
 	{foreach $category['brands'] as $b}
 		{if $b['image']}
-		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['trans']], page=>'' ]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=['page' => null, 'brand'=>$b['trans']]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
 		{else}
-		<a data-brand="{$b['id']}" href="{chpu_url params=[brand=>[$b['trans']], page=>'' ]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=['page' => null, 'brand'=>$b['trans']]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
 		{/if}
 	{/foreach}
 </div>
@@ -88,7 +88,7 @@
 			{$otrans=$options['full'][$f['id']]['trans'][$k]}
 			{if isset($options['filter'][$f['id']][$k])}
 			<a {if isset($filter['features'][$f['id']][$k])}class="selected" {/if}
-			href="{chpu_url params=[filter=>[$f['trans']=>[$otrans]], page=>'' ]}">{$o|escape}</a>
+			href="{chpu_url params=[features=>[$f['trans']=>[$otrans]], page=>null ]}">{$o|escape}</a>
 			{else}
 			{$o|escape}
 			{/if}
