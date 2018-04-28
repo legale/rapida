@@ -120,7 +120,7 @@ class Cache extends Simpla
 
 		$full_path = $path . "/" . $securityKey;
 		
-		$full_pathx = hash('fnv132', $full_path);
+		$full_pathx = hash('md5', $full_path);
 		dtimer::log(__METHOD__ . " '$path' '$securityKey'");
 		dtimer::log(__METHOD__ . " full_path: '$full_path'");
 
