@@ -93,7 +93,7 @@ class Brands extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_brands' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -165,24 +165,20 @@ class Brands extends Simpla
     public function get_brand($id)
     {
         dtimer::log(__METHOD__ . " start '$id'");
-        if (empty_($id)) {
-            dtimer::log('empty id return false', 2);
-            return false;
-        } else if (is_int($id)) {
-            $id = "b.id = '$id'";
+        if ($id === (int)$id) {
+            $filter = $this->db->placehold("AND id = $id");
         } else if (is_string($id)) {
-            $id = mb_strtolower($id);
-            $id = "b.trans = '$id' OR b.trans2 = '$id'";
+            $trans = encode_param(translit_ya($id));
+            $filter = $this->db->placehold("AND name = ? OR trans = ?", $id, $trans);
         } else {
-            dtimer::log(__METHOD__ . " argument trans/id is not set or wrong type! ", 1);
+            dtimer::log(__METHOD__ . " bad arg ", 1);
             return false;
         }
 
-        $q = "SELECT *
-		FROM __brands b WHERE $id LIMIT 1";
-        if($this->db->query($q) && $this->db->affected_rows() > 0){
+        $q = "SELECT * FROM __brands b WHERE 1 $filter LIMIT 1";
+        if ($this->db->query($q) && $this->db->affected_rows() > 0) {
             return $this->db->result_array();
-        }else{
+        } else {
             return false;
         }
     }
@@ -200,26 +196,30 @@ class Brands extends Simpla
     public function add_brand($brand)
     {
         dtimer::log(__METHOD__ . " start " . var_export($brand, true));
-        if (is_object($brand)) {
-            $brand = (array)$brand;
-        }
-        //удалим id, если он сюда закрался, при создании id быть не должно
-        if (isset($brand['id'])) {
-            unset($brand['id']);
-        }
-
+        //удалим пустые
         foreach ($brand as $k => $e) {
             if (empty_($e)) {
                 unset($brand[$k]);
             }
         }
 
-        if (!isset($brand['trans']) || $brand['trans'] === '') {
-            dtimer::log('brand trans is empty trying to translit name');
-            $brand['trans'] = translit_ya($brand['name']);
+        if (!isset($brand['name'])) {
+            dtimer::log(__METHOD__ . " brand name is not set! abort ", 1);
+            return false;
+        } else {
+            //удалим все непечатаемые символы и удалим лишние пробелы
+            $brand['name'] = filter_spaces(filter_ascii($brand['name']));
         }
+
+        //удалим id, если он сюда закрался, при создании id быть не должно
+        if (isset($brand['id'])) {
+            unset($brand['id']);
+        }
+
+        $brand['trans'] = encode_param(translit_ya($brand['name']));
+
         //если такой бренд уже есть, вернем его id
-        $res = $this->get_brand($brand['trans']);
+        $res = $this->get_brand($brand['name']);
         if ($res) {
             return $res['id'];
         }
@@ -248,26 +248,31 @@ class Brands extends Simpla
      */
     public function update_brand($id, $brand)
     {
+        dtimer::log(__METHOD__ . " start $id" . var_export($brand, true));
         $id = (int)$id;
         if (isset($brand['id'])) {
             unset($brand['id']);
         }
-        if(!empty($brand['name']) && empty($brand['trans'])){
-            $brand['trans'] = translit_ya($brand['name']);
+        if (count($brand) === 0) {
+            dtimer::log(__METHOD__ . " nothing to change - brand is empty! abort. ", 1);
+            return false;
         }
 
-        $q = $this->db->placehold("UPDATE __brands SET ?% WHERE id=? LIMIT 1", $brand, intval($id));
+
+        if (isset($brand['name'])) {
+            //удалим все непечатаемые символы и удалим лишние пробелы
+            $brand['name'] = filter_spaces(filter_ascii($brand['name']));
+            $brand['trans'] = encode_param(translit_ya($brand['name']));
+        }
+
+
+        $q = $this->db->placehold("UPDATE __brands SET ?% WHERE id=? LIMIT 1", $brand, $id);
         $this->db->query($q);
         return $id;
     }
 
     /*
-     *
      * Удаление бренда
-     * @param $id
-     *
-     */
-    /**
      * @param $id
      */
     public function delete_brand($id)

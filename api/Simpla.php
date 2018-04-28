@@ -5,17 +5,114 @@ if (PHP_VERSION_ID >= 70000) {
 if (defined("PHP7")) {
     eval("declare(strict_types=1);");
 }
+
+
 /**
- * @param $fu
- * @param $arg
+ * benchmark function for scoring function perfomance by cycling it given times
+ * @return bool|mixed
  */
-function timer($fu, $arg)
-{
+function bmark(){
     $start = microtime(true);
-    call_user_func_array($fu, $arg);
-    $finish = microtime(true) - $start;
-    print("\n$fu: " . $finish);
+    $args = func_get_args();
+    $len = count($args);
+
+    if($len < 3){
+        trigger_error("At least 3 args expected. Only $len given.", 256);
+        return false;
+    }
+
+    $cnt = array_shift($args);
+    $fun = array_shift($args);
+
+
+    $i = 0;
+    while($i < $cnt){
+        $i++;
+        $res = call_user_func_array($fun, $args);
+    }
+    $end = $start - microtime(true);
+    print "\n$fun ($cnt): $end\n";
+    return $res;
 }
+
+
+function parse_url_($url)
+{
+    $res = array();
+
+    //scheme
+    $pos = stripos($url,'://');
+    if(!$pos){
+        return false;
+    }
+    $res['scheme'] = substr($url, 0, $pos);
+    $url = substr($url, $pos+3);
+    if($url === ''){
+        return false;
+    }
+    $pos = stripos($url,'@');
+
+    //auth
+    if($pos){
+        $auth = substr($url, 0, $pos);
+        $url = substr($url, $pos+1);
+
+        $pos = stripos($auth,':');
+        if($pos){
+            $res['user'] = substr($auth,0, $pos);
+            $res['pass'] = substr($auth, $pos+1);
+        }else{
+            $res['user'] = $auth;
+        }
+    }
+    if($url === ''){
+        return false;
+    }
+
+    //fragment
+    $pos = stripos($url,'#');
+    if($pos){
+        $res['fragment'] = substr($url, $pos+1);
+        $url = substr($url,0, $pos);
+        //return $url;
+    }
+    if($url === ''){
+        return false;
+    }
+    //query
+    $pos = stripos($url,'?');
+    if($pos){
+        $res['query'] = substr($url, $pos+1);
+        $url = substr($url,0, $pos);
+        //return $url;
+    }
+    if($url === ''){
+        return false;
+    }
+    //host
+    $pos = stripos($url,'/');
+    if($pos){
+        $res['host'] = substr($url, 0, $pos);
+        $url = substr($url, $pos);
+        //return $url;
+        //port
+        $pos = stripos($res['host'],':');
+        if($pos){
+            $res['port'] = substr($res['host'], $pos+1);
+            $res['host'] = substr($res['host'],0, $pos);
+        }
+    }else{
+        return false;
+    }
+
+    //path
+    if($url !== ''){
+        $res['path'] = $url;
+    }
+
+    return $res;
+}
+
 
 //функция для обратного преобразования массива parse_url() в строку
 /**
@@ -91,100 +188,32 @@ function empty_($var)
     }
 }
 
-/*
- * Этот обычный транслит
- * Если второй аргумент задан true - производится детранслит
- */
-/**
- * @param $string
- * @param bool $reverse
- * @return bool|string
- */
-function translit($string, $reverse = false)
-{
-    if (!is_string($string)) {
-        trigger_error(__METHOD__ . 'argument type error');
-        return false;
-    }
-
-    $converter = array(
-        'а' => 'a', 'б' => 'b', 'в' => 'v',
-        'г' => 'g', 'д' => 'd', 'е' => 'e',
-        'ё' => 'e', 'ж' => 'zh', 'з' => 'z',
-        'и' => 'i', 'й' => 'j', 'к' => 'k',
-        'л' => 'l', 'м' => 'm', 'н' => 'n',
-        'о' => 'o', 'п' => 'p', 'р' => 'r',
-        'с' => 's', 'т' => 't', 'у' => 'u',
-        'ф' => 'f', 'х' => 'h', 'ц' => 'c',
-        'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
-        'ь' => '\'', 'ы' => 'y', 'ъ' => '\'\'',
-        'э' => 'e', 'ю' => 'yu', 'я' => 'ya'
-    );
-    if ($reverse === true) {
-        uasort($converter, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-        $converter = array_flip($converter);
-    }
-    $string = mb_strtolower($string);
-
-    return strtr($string, $converter);
+//удаляем неразрывный пробел
+function filter_spaces($str){
+    return trim(preg_replace("/\s+/u", ' ', $str));
 }
 
-/*
- * Этот транслит предназначен для формирования пригодного для url текста. Соль в том, что сохраняется возможность полной 
- * детранслитерации, в т.ч. мягкого и твердого знака, пропадает только буква ё. Мягкий знак и твердый знак в целях 
- * совместимости со стандартом RFC 3986 становяться ~ и ~~ соответственно, пробел становится подчеркиванием. Для разделения 
- * в адресной строке параметров товаров и их значений используется . и + Точкой разделены название свойства и значение,
- * плюсом разделены несколько значений у одного свойства
- * Если второй аргумент задан true - производится детранслит.
- */
-/**
- * @param $string
- * @param bool $reverse
- * @return bool|string
- */
-function translit_url($string, $reverse = false)
-{
-    if (!is_string($string)) {
-        trigger_error(__METHOD__ . 'argument type error');
-        return false;
-    }
-    //тут удаляем все кроме букв, цифр и _ + ~
-    $string = preg_replace("/[^\w\d\_ \~\+]+/u", '', $string);
-
-
-    //самая быстрая функция для замены подстроки в строке strtr() пробел меняем на подчеркивание
-    $pairs = array(' ' => '_', '-' => '+');
-    if ($reverse === true) {
-        $pairs = array_flip($pairs);
-    }
-    $string = strtr($string, $pairs);
-
-
-    $converter = array(
-        'а' => 'a', 'б' => 'b', 'в' => 'v',
-        'г' => 'g', 'д' => 'd', 'е' => 'e',
-        'ё' => 'e', 'ж' => 'zh', 'з' => 'z',
-        'и' => 'i', 'й' => 'j', 'к' => 'k',
-        'л' => 'l', 'м' => 'm', 'н' => 'n',
-        'о' => 'o', 'п' => 'p', 'р' => 'r',
-        'с' => 's', 'т' => 't', 'у' => 'u',
-        'ф' => 'f', 'х' => 'h', 'ц' => 'c',
-        'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
-        'ь' => '~', 'ы' => 'y', 'ъ' => '~~',
-        'э' => 'eh', 'ю' => 'yu', 'я' => 'ya'
-    );
-    if ($reverse === true) {
-        uasort($converter, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
-        $converter = array_flip($converter);
-    }
-    $string = mb_strtolower($string);
-
-    return strtr($string, $converter);
+//меняем местами пробелы и подчеркивания
+function convert_spaces($str, $reverse = false ){
+    $pairs = $reverse ? array_flip(array(' ' => '_', '_' => ' ')) : array(' ' => '_', '_' => ' ');
+    return strtr($str, $pairs);
 }
+
+//фильтруем все непечатыемые символы
+function filter_ascii($str){
+    return preg_replace('/[^[:ascii:]а-яА-Я]/u', '', $str);
+}
+
+//заменяет в строке дефисы на волну поскольку они используется системой в качестве разделителей
+function encode_param($str){
+    return strtr($str, array('-' => '~', '~' => ''));
+}
+
+//меняет обратно волну на дефис
+function decode_param($str){
+    return strtr($str, array('~' => '-'));
+}
+
 
 /**
  * @param $string
@@ -197,42 +226,51 @@ function translit_ya($string, $reverse = false)
         trigger_error(__METHOD__ . 'argument type error');
         return false;
     }
-    //тут удаляем все кроме букв, цифр и _ + ~
-    $string = preg_replace("/[^\w\d\_\s\~\+\-\,\.\/\\\]+/u", '', $string);
-
-
-    //самая быстрая функция для замены подстроки в строке strtr пробел меняем на подчеркивание
-    $pairs = array("\xc2\xa0" => '_', '\\' => '%5C', '/' => '%2F', '.' => '%2E', ',' => '%2C', ' ' => '_', '+' => '%2B', '-' => '~');
-    if ($reverse === true) {
-        $pairs = array_flip($pairs);
-    }
-    $string = strtr($string, $pairs);
-
 
     $converter = array(
-        'а' => 'a', 'б' => 'b', 'в' => 'v',
-        'г' => 'g', 'д' => 'd', 'е' => 'e',
-        'ё' => 'yo', 'ж' => 'zh', 'з' => 'z',
-        'и' => 'i', 'й' => 'y', 'к' => 'k',
-        'л' => 'l', 'м' => 'm', 'н' => 'n',
-        'о' => 'o', 'п' => 'p', 'р' => 'r',
-        'с' => 's', 'т' => 't', 'у' => 'u',
-        'ф' => 'f', 'х' => 'h', 'ц' => 'c',
-        'ч' => 'ch', 'ш' => 'sh', 'щ' => 'shch',
-        'ь' => '', 'ы' => 'y', 'ъ' => '',
-        'э' => 'e', 'ю' => 'yu', 'я' => 'ya'
+        'а' => 'a',
+        'б' => 'b',
+        'в' => 'v',
+        'г' => 'g',
+        'д' => 'd',
+        'е' => 'e',
+        'ё' => 'yo',
+        'ж' => 'zh',
+        'з' => 'z',
+        'и' => 'i',
+        'й' => 'j',
+        'к' => 'k',
+        'л' => 'l',
+        'м' => 'm',
+        'н' => 'n',
+        'о' => 'o',
+        'п' => 'p',
+        'р' => 'r',
+        'с' => 's',
+        'т' => 't',
+        'у' => 'u',
+        'ф' => 'f',
+        'х' => 'kh',
+        'ц' => 'c',
+        'ч' => 'ch',
+        'ш' => 'sh',
+        'щ' => 'shh',
+        'ь' => '\'',
+        'ы' => 'yi',
+        'ъ' => '\'\'',
+        'э' => 'eh',
+        'ю' => 'yu',
+        'я' => 'ya',
+        ' ' => '_',
     );
     if ($reverse === true) {
-        uasort($converter, function ($a, $b) {
-            return strlen($b) - strlen($a);
-        });
         $converter = array_flip($converter);
     }
     $string = mb_strtolower($string);
+    $string = filter_spaces(filter_ascii($string));
 
     return strtr($string, $converter);
 }
-
 
 //каталог настоящего файла
 define('API_DIR', dirname(__FILE__) . '/');

@@ -18,7 +18,7 @@ class Config
     /**
      * @var string
      */
-    public $version = '0.0.9b8';
+    public $version = '0.0.9b9';
 
     //слова для формирования соли
     /**
@@ -69,7 +69,7 @@ class Config
             if (is_array($ini)) {
                 foreach ($ini as $section => $content) {
                     foreach ($content as $name => $value) {
-                        if ($value < 2 && $value === strval((int)$value)) {
+                        if ($value < 2 && $value == strval((int)$value)) {
                             $value = (bool)$value;
                         }
                         $this->vars_sections[$section][$name] = $value;

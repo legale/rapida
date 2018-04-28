@@ -13,6 +13,8 @@ class FeatureAdmin extends Simpla
 			$feature['name'] = $this->request->post('name');
 			$feature['trans'] = $this->request->post('trans');
 			$feature['in_filter'] = intval($this->request->post('in_filter'));
+			$feature['tpl'] = intval($this->request->post('tpl'));
+			$feature['visible'] = intval($this->request->post('visible'));
 			$feature['gid'] = (int)$_POST['gid'];
 			$feature_categories = $this->request->post('feature_categories');
 
