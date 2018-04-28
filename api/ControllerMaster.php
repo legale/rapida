@@ -129,8 +129,8 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива параметров
     public function gen_uri($arr = null, $filter = null)
     {
-        dtimer::log(__METHOD__ . ' arr: ' . var_export($arr, true));
-        dtimer::log(__METHOD__ . ' filter: ' . var_export($filter, true));
+        dtimer::log(__METHOD__ . ' start arr: ' . var_export($arr, true));
+        dtimer::log(__METHOD__ . ' start filter: ' . var_export($filter, true));
         //если начальные параметры не заданы просто вернем false
         if (!isset($arr) || !isset($filter)) {
             return false;
