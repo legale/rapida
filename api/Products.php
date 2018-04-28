@@ -582,40 +582,28 @@ class Products extends Simpla
 
     public function add_product($product)
     {
-        if (is_object($product)) {
-            $product = (array)$product;
-        }
+
         //удалим id, если он сюда закрался, при создании id быть не должно
         if (isset($product['id'])) {
             unset($product['id']);
         }
-        //если имя не задано - выходим
-        if (!isset($product['name']) || empty_($product['name'])) {
-            dtimer::log(__METHOD__ . " product name is emtpy", 2);
+        //удалим пустые
+        foreach ($product as $k => $e) {
+            if (empty_($e)) {
+                unset($product[$k]);
+            }else{
+                $product[$k] = trim($e);
+            }
+        }
+        //если имя не задано - останавливаемся
+        if (!isset($product['name'])) {
+            dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
             return false;
-        }
-
-        //если не указан бренд, поставим 0, что значит без бренда
-        if (!isset($product['brand_id']) || empty_($product['brand_id'])) {
-            $product['brand_id'] = 0;
-        }
-
-        foreach ($product as &$e) {
-            $e = trim($e);
-        }
-        unset($e);
-
-        if (!empty($product['name']) && empty($product['trans'])) {
+        } else {
+            $product['name'] = filter_spaces(filter_ascii( $product['name']));
             $product['trans'] = translit_ya($product['name']);
         }
 
-        // Если есть товар с таким trans, добавляем к нему число
-        while ($this->get_product((string)$product['trans'])) {
-            if (preg_match('/(.+)_([0-9]+)$/', $product['trans'], $parts))
-                $product['trans'] = $parts[1] . '_' . ($parts[2] + 1);
-            else
-                $product['trans'] = $product['trans'] . '_2';
-        }
 
         //узнаем позицию последнего товара
         $this->db->query("SELECT MAX(pos) as pos FROM __products");
@@ -713,8 +701,9 @@ class Products extends Simpla
 
         // Дублируем категории
         $categories = $this->categories->get_product_categories($id);
-        foreach ($categories as $c)
+        foreach ($categories as $c) {
             $this->categories->add_product_category($new_id, $c->category_id);
+        }
 
         // Дублируем изображения
         $images = $this->image->get('products', array('item_id' => $id));
