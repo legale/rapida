@@ -60,7 +60,7 @@ class Features extends Simpla
      */
     function get_features($filter = array())
     {
-        dtimer::log(__METHOD__ . ' start');
+        dtimer::log(__METHOD__ . ' start ');
         $gid_filter = '';
         $category_id_filter = '';
         if (isset($filter['category_id'])) {
@@ -96,13 +96,24 @@ class Features extends Simpla
      * @param null $col
      * @return mixed
      */
-    function get_feature($id, $col = null)
+    function get_feature($id)
     {
+        dtimer::log(__METHOD__ . " start $id");
         // Выбираем свойство
-        $col = $col ? $col : '*';
-        $query = $this->db->placehold("SELECT $col FROM __features WHERE id=? LIMIT 1", (int)$id);
+        if ($id === (int)$id) {
+            $filter = $this->db->placehold("AND id = $id");
+        } else if (is_string($id)) {
+            $trans = encode_param(translit_ya($id));
+            $filter = $this->db->placehold("AND name = ? OR trans = ?", $id, $trans);
+        } else {
+            dtimer::log(__METHOD__ . " bad arg ", 1);
+            return false;
+        }
+
+        $query = $this->db->placehold("SELECT * FROM __features WHERE 1 $filter LIMIT 1");
         $this->db->query($query);
         return $this->db->result_array();
+
     }
 
     /**
@@ -122,7 +133,8 @@ class Features extends Simpla
     /**
      * @return array
      */
-    public function get_options_tree()
+    public
+    function get_options_tree()
     {
         dtimer::log(__METHOD__ . " start");
         $groups = array();
@@ -145,7 +157,8 @@ class Features extends Simpla
     /**
      * @return mixed
      */
-    public function get_options_groups()
+    public
+    function get_options_groups()
     {
         dtimer::log(__METHOD__ . " start");
         $q = "SELECT * FROM __options_groups ORDER BY pos";
@@ -158,7 +171,8 @@ class Features extends Simpla
      * @param $name
      * @return mixed
      */
-    public function add_option_group($name)
+    public
+    function add_option_group($name)
     {
         dtimer::log(__METHOD__ . " start");
         $this->db->query("SELECT MAX(`pos`) as `pos` FROM __options_groups");
@@ -177,6 +191,13 @@ class Features extends Simpla
         $this->db->query($q);
         $res = $this->db->results_array(null, 'id');
         return $res;
+    }
+
+
+    public function update_text_option($pid, $name, $value)
+    {
+        $q = $this->db->placehold("INSERT INTO __text_options SET `product_id` = ? , `name` = ? , `value` = ? ON DUPLICATE KEY UPDATE `value` = ?", $pid, $name, $value, $value);
+        return $this->db->query($q);
     }
 
     /**
@@ -207,7 +228,8 @@ class Features extends Simpla
      * @param $gid
      * @return mixed
      */
-    public function get_option_group($gid)
+    public
+    function get_option_group($gid)
     {
         dtimer::log(__METHOD__ . " start");
         $q = $this->db->placehold("SELECT * FROM __options_groups WHERE id=? LIMIT 1", intval($gid));
@@ -222,43 +244,37 @@ class Features extends Simpla
      * @param $feature
      * @return mixed
      */
-    public function add_feature($feature)
+    public
+    function add_feature($feature)
     {
         dtimer::log(__METHOD__ . ' start');
-        if (is_object($feature)) {
-            $feature = (array)$feature;
+
+        //удалим пустые
+        foreach ($feature as $k => $e) {
+            if (empty_($e)) {
+                unset($feature[$k]);
+            }
         }
         //удалим id, если он сюда закрался, при создании id быть не должно
         if (isset($feature['id'])) {
             unset($feature['id']);
         }
 
-        foreach ($feature as $k => $e) {
-            if (empty_($e)) {
-                unset($feature[$k]);
-            } else {
-                $feature[$k] = trim($e);
-            }
-        }
         //если имя не задано - останавливаемся
-        if (isset($feature['name'])) {
-            $name = str_replace("\xc2\xa0", '', $feature['name']);
-        } else {
+        if (!isset($feature['name'])) {
+            dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
             return false;
-        }
-
-        //проверка, чтобы избежать дублирования свойств
-        if ($this->db->query("SELECT id FROM __features WHERE 1 AND name = ?", $name)) {
-            $res = $this->db->result_array();
-            if (!empty_($res['id'])) {
-                return false;
-            }
+        } else {
+            $feature['name'] = filter_spaces(filter_ascii( $feature['name']));
+            $feature['trans'] = encode_param(translit_ya($feature['name']));
         }
 
 
-        //используем транслит собственного приготовления
-        if (!isset($feature['trans'])) {
-            $feature['trans'] = translit_ya($feature['name']);
+
+        //если такое свойство уже есть, вернем его id
+        $res = $this->get_feature($feature['name']);
+        if ($res) {
+            return $res['id'];
         }
 
         //вытаскиваем макс позицию из свойств
@@ -286,24 +302,6 @@ class Features extends Simpla
         /*
          * Тут часть, касающаяся таблицы со свойствами
          */
-
-        //сначала проверим, есть ли целевая таблица, создадим ее, если ее еще нет
-        if (!$this->db->query("SELECT 1 FROM __options LIMIT 1")) {
-            $this->db->query("CREATE TABLE `s_options` (
-				 `id` int(11) NOT NULL AUTO_INCREMENT,
-				 PRIMARY KEY (`id`),
-				) ENGINE=MyISAM DEFAULT CHARSET=utf8
-				");
-        }
-        if (!$this->db->query("SELECT 1 FROM __options_uniq LIMIT 1")) {
-            $this->db->query("CREATE TABLE __options_uniq (`id` INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT, `val` VARCHAR(1024) NOT NULL, `val` VARCHAR(1024) NOT NULL, `md4` BINARY(16) UNIQUE KEY NOT NULL) ENGINE=MyISAM CHARSET=utf8");
-            // добавим 1 строку для значения по умолчанию
-            $val = '';
-            $trans = '';
-            $optionhash = hash('md4', translit_ya($val));
-            $this->db->query("INSERT INTO __options_uniq SET `id` = 0, `val`= '$val', `trans` = '$trans', `md4` = 0x$optionhash ");
-
-        }
         if (!$this->db->query("SELECT `$id` FROM __options LIMIT 1")) {
             $this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0'");
             //делаем индекс, только если это свойство будет в фильтре
@@ -320,31 +318,23 @@ class Features extends Simpla
      * @param $feature
      * @return bool|int
      */
-    public function update_feature($id, $feature)
+    public
+    function update_feature($id, $feature)
     {
         $id = (int)$id;
-        if (is_object($feature)) {
-            $feature = (array)$feature;
-        }
 
         if (isset($feature['id'])) {
             unset($feature['id']);
         }
-
-        if (!empty($feature['name']) && empty($feature['trans'])) {
-            $feature['trans'] = translit_ya($feature['name']);
-        }
-
-        foreach ($feature as $k => $e) {
-            if (empty_($e)) {
-                unset($feature[$k]);
-            } else {
-                $feature[$k] = trim($e);
-            }
-        }
         if (count($feature) === 0) {
             dtimer::log(__METHOD__ . " nothing to change - feature is empty! abort. ", 1);
             return false;
+        }
+
+        //если имя задано, чистим его от лишних пробелов и непечатаемых символов
+        if (isset($feature['name'])) {
+            $feature['name'] = filter_spaces(filter_ascii( $feature['name']));
+            $feature['trans'] = encode_param(translit_ya($feature['name']));
         }
 
         $this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
@@ -362,7 +352,8 @@ class Features extends Simpla
     /**
      * @param $id
      */
-    public function delete_feature($id)
+    public
+    function delete_feature($id)
     {
         $this->db->query("DELETE FROM __features WHERE id=? LIMIT 1", intval($id));
         $this->db->query("ALTER TABLE __options DROP ?!", (int)$id);
@@ -372,7 +363,8 @@ class Features extends Simpla
     /**
      * @param $id
      */
-    public function delete_options($id)
+    public
+    function delete_options($id)
     {
         $this->db->query("DELETE FROM __options WHERE product_id=?", (int)$id);
     }
@@ -384,31 +376,28 @@ class Features extends Simpla
      * @param $val
      * @return bool
      */
-    public function update_option($product_id, $feature_id, $val)
+    public
+    function update_option($product_id, $feature_id, $val)
     {
         dtimer::log(__METHOD__ . " arguments '$product_id' '$feature_id' '$val'");
-        if (!isset($product_id) || !isset($feature_id) || !isset($val)) {
-            dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$val'", 1);
-            return false;
-        }
 
-        //получим значение для записи в таблицу options из таблицы s_options_uniq
-        //сделаем хеш
-        trim((string)$val);
-        $val = str_replace("\xc2\xa0", '', $val);
+
+        //неразрывный пробел
+        //$val = str_replace("\xc2\xa0", '', $val);
+
         $fid = (int)$feature_id;
         $pid = (int)$product_id;
-        $trans = translit_ya($val);
-        //Хеш будем получать не по чистому значению $val, а по translit_ya($val), чтобы можно было из ЧПУ вернуться к хешу
-        $optionhash = hash('md4', $trans);
-        $this->db->query("SELECT `id` FROM __options_uniq WHERE `md4` = 0x$optionhash ");
+        $val = filter_spaces(filter_ascii(($val)));
+        $trans = encode_param(translit_ya($val));
+
+        $this->db->query("SELECT `id` FROM __options_uniq WHERE `trans` = ? ", $trans);
 
         //Если запись уже есть - продолжаем работу, если нет добавляем запись в таблицу
         if ($this->db->affected_rows() > 0) {
             $vid = $this->db->result_array('id');
         } else {
-            $q = $this->db->query("INSERT INTO __options_uniq SET `val`= ?, `trans` = ?, `md4` = 0x$optionhash 
-              ON DUPLICATE KEY UPDATE `val`= ?, `trans` = ?, `md4` = 0x$optionhash", $val, $trans, $val, $trans);
+            $q = $this->db->query("INSERT INTO __options_uniq SET `val`= ?, `trans` = ?
+              ON DUPLICATE KEY UPDATE `val`= ?, `trans` = ?", $val, $trans, $val, $trans);
             if ($q !== false) {
                 $vid = $this->db->insert_id();
             } else {
@@ -444,7 +433,8 @@ class Features extends Simpla
      * @param $value
      * @return bool|int
      */
-    public function update_option_direct($product_id, $feature_id, $value)
+    public
+    function update_option_direct($product_id, $feature_id, $value)
     {
         if (!isset($product_id) || !isset($feature_id) || !isset($value)) {
             dtimer::log(__METHOD__ . " arguments error 3 args needed '$product_id' '$feature_id' '$value'", 1);
@@ -481,7 +471,8 @@ class Features extends Simpla
      * @param $filter
      * @return bool
      */
-    public function update_options_direct($filter)
+    public
+    function update_options_direct($filter)
     {
         dtimer::log(__METHOD__ . ' start');
 
@@ -500,7 +491,7 @@ class Features extends Simpla
         }
 
         $set_options = $this->db->placehold("?%", $features);
-        $q = $this->db->placehold("INSERT INTO __options 
+        $q = $this->db->placehold("INSERT INTO __options
 		SET `product_id` = ? , $set_options ON DUPLICATE KEY UPDATE $set_options", $pid);
 
 
@@ -519,7 +510,8 @@ class Features extends Simpla
      * @param $id
      * @param $category_id
      */
-    public function add_feature_category($id, $category_id)
+    public
+    function add_feature_category($id, $category_id)
     {
         $query = $this->db->placehold("INSERT IGNORE INTO __categories_features SET feature_id=?, category_id=?", $id, $category_id);
         $this->db->query($query);
@@ -531,7 +523,8 @@ class Features extends Simpla
      * @param $categories
      * @return bool
      */
-    public function update_feature_categories($id, $categories)
+    public
+    function update_feature_categories($id, $categories)
     {
         $id = intval($id);
         $query = $this->db->placehold("DELETE FROM __categories_features WHERE feature_id=?", $id);
@@ -555,7 +548,8 @@ class Features extends Simpla
      * @param array $filter
      * @return array
      */
-    public function get_options_uniq($filter = array())
+    public
+    function get_options_uniq($filter = array())
     {
 
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
@@ -572,7 +566,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_options_uniq' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -623,7 +617,8 @@ class Features extends Simpla
      * @param array $filter
      * @return mixed
      */
-    public function get_options_ids($filter = array())
+    public
+    function get_options_ids($filter = array())
     {
         dtimer::log(__METHOD__ . " start");
         dtimer::log(__METHOD__ . " filter: " . var_export($filter, true));
@@ -632,8 +627,8 @@ class Features extends Simpla
         $col = isset($filter['return']['col']) ? $filter['return']['col'] : 'val';
         $key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
 
-        //выводим из сохраненного массива, если у нас не заданы фильтры по id и md4 и не включен force_no_cache
-        if (empty($filter['force_no_cache']) && !isset($filter['id']) && !isset($filter['md4']) && !isset($filter['md42'])) {
+        //выводим из сохраненного массива, если у нас не заданы фильтры по id и trans и не включен force_no_cache
+        if (empty($filter['force_no_cache']) && !isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
 
             if (isset($this->options[$key . "_" . $col])) {
                 dtimer::log(__METHOD__ . " using saved class variable");
@@ -655,7 +650,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_options_ids' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -663,7 +658,7 @@ class Features extends Simpla
             $res = $this->cache->get_cache_nosql($keyhash);
 
             //Если у нас был запуск без параметров, сохраним результат в переменную класса.
-            if (!isset($filter['id']) && !isset($filter['md4']) && !isset($filter['md42'])) {
+            if (!isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
                 $this->options[$key . "_" . $col] = $res;
             }
 
@@ -689,26 +684,26 @@ class Features extends Simpla
 
         //переменные
         $id_filter = '';
-        $md4_filter = '';
-        $md42_filter = '';
+        $trans_filter = '';
+        $trans2_filter = '';
 
         if (isset($filter['id']) && count($filter['id']) > 0) {
             $id_filter = $this->db->placehold("AND id in (?@)", $filter['id']);
         }
 
-        if (isset($filter['md4']) && count($filter['md4']) > 0) {
-            $md4_filter = $this->db->placehold("AND md4 in (?$)", $filter['md4']);
+        if (isset($filter['trans']) && count($filter['trans']) > 0) {
+            $trans_filter = $this->db->placehold("AND trans in (?@)", $filter['trans']);
         }
 
-        if (isset($filter['md42']) && count($filter['md42']) > 0) {
-            $md42_filter = $this->db->placehold("AND md42 in (?$)", $filter['md42']);
+        if (isset($filter['trans2']) && count($filter['trans2']) > 0) {
+            $trans2_filter = $this->db->placehold("AND trans2 in (?@)", $filter['trans2']);
         }
 
-        $this->db->query("SELECT id, val, trans, HEX(md4) as md4 FROM __options_uniq 
+        $this->db->query("SELECT id, val, trans FROM __options_uniq
 		WHERE 1 
 		$id_filter
-		$md4_filter
-		$md42_filter
+		$trans_filter
+		$trans2_filter
 		");
 
 
@@ -716,7 +711,7 @@ class Features extends Simpla
 
 
         //Если у нас был запуск без параметров, сохраним результат в переменную класса.
-        if (!isset($filter['id']) && !isset($filter['md4'])) {
+        if (!isset($filter['id']) && !isset($filter['trans'])) {
             dtimer::log(__METHOD__ . " save res to class variable");
             $this->options[$key . "_" . $col] = $res;
         }
@@ -737,7 +732,8 @@ class Features extends Simpla
      * @param array $filter
      * @return array|bool
      */
-    public function get_options_mix($filter = array())
+    public
+    function get_options_mix($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
@@ -753,7 +749,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_options_mix' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -857,7 +853,8 @@ class Features extends Simpla
      * @param array $filter
      * @return array|bool
      */
-    public function get_options_raw($filter = array())
+    public
+    function get_options_raw($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
@@ -874,7 +871,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_options_raw' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -1016,7 +1013,8 @@ class Features extends Simpla
      * @param $product_id
      * @return bool
      */
-    public function get_product_options_direct($product_id)
+    public
+    function get_product_options_direct($product_id)
     {
 
         if (!isset($product_id)) {
@@ -1040,7 +1038,8 @@ class Features extends Simpla
      * @param $product_id
      * @return bool
      */
-    public function get_product_options($product_id)
+    public
+    function get_product_options($product_id)
     {
         dtimer::log(__METHOD__ . " start");
         if (!isset($product_id)) {

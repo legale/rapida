@@ -279,10 +279,9 @@ class ProductsView extends View
 	//функция для преобразования uri в id для $filter['features']
 	//флаг служит для задания преобразования по альтернативным названиям параметров trans2
 	private function uri_to_ids_filter($urifilter, $filter, $flag = false){
-		//обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
-		//альтернативный поиск - по полям trans2 и md42 соответственно. 
+		//обычный поиск просходит по полям trans в таблице features в таблице options_uniq
+		//альтернативный поиск - по полю trans2.
 		$key = $flag ? 'trans2' : 'trans';
-		$hash = $flag ? 'md42' : 'md4';
 		if($flag){
 			$filter['redirect'] = true;
 		}
@@ -290,7 +289,7 @@ class ProductsView extends View
 		//массив для результата
 		$filter['features'] = array();
 		
-		dtimer::log(__METHOD__ . " $key $hash ");
+		dtimer::log(__METHOD__ . " $key ");
 		//тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
 		$features_trans = $this->features->get_features_ids( array('in_filter'=>1, 'return' => array('key' => $key, 'col' => 'id')) );
 
@@ -304,13 +303,13 @@ class ProductsView extends View
 			}
 			//~ print $name . "\n";
 			foreach($vals as &$v){
-				$v = hash('md4', $v);
+				$v = uri2str( $v);
 			}
 			unset($v);
 			//~ dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
 
 			//получим id уникальных значений по их хешам
-			$ids = $this->features->get_options_ids(array($hash => $vals, 'return'=>array('key'=>'id', 'col'=>'id')) );
+			$ids = $this->features->get_options_ids(array($key => $vals, 'return'=>array('key'=>'id', 'col'=>'id')) );
 			
 				
 			//тут проверим количество переданных значений опций и количество полученных из базы,

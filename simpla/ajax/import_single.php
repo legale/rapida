@@ -307,7 +307,7 @@ class Import_single extends Simpla
         }
 
         //Обновляем товар
-        $this->products->update_product($product);
+        $this->products->update_product($pid, $product);
 
 
 

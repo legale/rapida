@@ -74,50 +74,59 @@ class Categories extends Simpla
 	// Функция возвращает заданную категорию
 	public function get_category($id)
 	{
-		if (!isset($this->all_categories))
-			$this->init_categories();
-		if (is_int($id) && array_key_exists(intval($id), $this->all_categories))
-			return $category = $this->all_categories[intval($id)];
-		elseif (is_string($id))
-			foreach ($this->all_categories as $cat)
-			if ($cat['trans'] == $id || $cat['trans2'] == $id){
-				return $this->get_category((int)$cat['id']);
-			}
+	    dtimer::log(__METHOD__." start: $id");
+		if($id == strval((int)$id)){
+		    $id = (int)$id;
+		}else{
+		    $id = $id;
+		}
+
+	    if (!isset($this->all_categories)) {
+            $this->init_categories();
+        }
+		if (is_int($id) && array_key_exists($id, $this->all_categories))
+			return $category = $this->all_categories[$id];
+		else if (is_string($id)) {
+            foreach ($this->all_categories as $cat)
+                if ($cat['trans'] == $id || $cat['trans2'] == $id) {
+                    return $cat;
+                }
+        }
 
 		return false;
 	}
 	
 	// Добавление категории
-	public function add_category($category)
+	public function add_category($cat)
 	{
-		if (is_object($category)) {
-			$category = (array)$category;
+        dtimer::log(__METHOD__ . ' start');
+        //удалим пустые
+        foreach ($cat as $k => $e) {
+            if (empty_($e)) {
+                unset($cat[$k]);
+            }
+        }
+        //удалим id, если он сюда закрался, при создании id быть не должно
+		if (isset($cat['id'])) {
+			unset($cat['id']);
 		}
-		//удалим id, если он сюда закрался, при создании id быть не должно
-		if (isset($category['id'])) {
-			unset($category['id']);
-		}
+        //если имя не задано - останавливаемся
+        if (!isset($cat['name'])) {
+            dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
+            return false;
+        } else {
+            $cat['name'] = filter_spaces(filter_ascii( $cat['name']));
+            $cat['trans'] = translit_ya($cat['name']);
+        }
 
-		foreach ($category as $k => $e) {
-			if (empty_($e)) {
-				unset($category[$k]);
-			}
-		}
 
-		if (!isset($category['trans']) || empty_($category['trans'])) {
-			$category['trans'] = translit_ya($category['name']);
-		}
+        //если такое свойство уже есть, вернем его id
+        $res = $this->get_category($cat['trans']);
+        if ($res) {
+            return $res['id'];
+        }
 
-		// Если есть категория с таким URL, добавляем к нему число
-		while ($this->get_category((string)$category['trans']))
-			{
-			if (preg_match('/(.+)_([0-9]+)$/', $category['trans'], $parts))
-				$category['trans'] = $parts[1] . '_' . ($parts[2] + 1);
-			else
-				$category['trans'] = $category['trans'] . '_2';
-		}
-
-		$this->db->query("INSERT INTO __categories SET ?%", $category);
+		$this->db->query("INSERT INTO __categories SET ?%", $cat);
 		$id = $this->db->insert_id();
 		$this->db->query("UPDATE __categories SET pos=id WHERE id=?", $id);
 		unset($this->categories_tree);
@@ -126,18 +135,28 @@ class Categories extends Simpla
 	}
 	
 	// Изменение категории
-	public function update_category($id, $category)
+	public function update_category($id, $cat)
 	{
-		$category = array_map(function($c){return is_null($c) ? 0 : $c;}, $category);
+        $id = (int)$id;
+
+        if (isset($cat['id'])) {
+            unset($cat['id']);
+        }
+        if (count($cat) === 0) {
+            dtimer::log(__METHOD__ . " cat is empty! abort. ", 1);
+            return false;
+        }
+        //если имя задано, чистим его от лишних пробелов и непечатаемых символов
+        if (isset($cat['name'])) {
+            $cat['name'] = filter_spaces(filter_ascii( $cat['name']));
+            $cat['trans'] = translit_ya($cat['name']);
+        }
+
 		
-		if(!empty($category['name']) && empty($category['trans'])){
-			$category['trans'] = translit_ya($category['name']);
-		}
-		
-		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $category, intval($id));
+		$query = $this->db->placehold("UPDATE __categories SET ?% WHERE id=? LIMIT 1", $cat, intval($id));
 		$this->db->query($query);
 		$this->init_categories(true);
-		return intval($id);
+		return $id;
 	}
 	
 	// Удаление категории

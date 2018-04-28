@@ -180,7 +180,7 @@ class Variants extends Simpla
 
 
         if ($variant['stock'] > 0) {
-            if (!$this->products->update_product(array('id' => $pid, 'stock' => 1))) {
+            if (!$this->products->update_product($pid, array('stock' => 1))) {
                 dtimer::log(__METHOD__ . "update product stock failed", 1);
                 return false;
             }
@@ -189,11 +189,11 @@ class Variants extends Simpla
                 $pid = $this->db->result_array('pid');
                 dtimer::log("returned pid: " . var_export($pid, true));
                 if ($this->db->num_rows() > 0) {
-                    $res = $this->products->update_product(array('id' => $pid, 'stock' => 1));
+                    $res = $this->products->update_product($pid, array('stock' => 1));
                 } else {
                     $this->db->query("SELECT product_id as pid FROM __variants WHERE id = $vid");
                     $pid = $this->db->result_array('pid');
-                    $res = $this->products->update_product(array('id' => $pid, 'stock' => 0));
+                    $res = $this->products->update_product($pid, array('stock' => 0));
                 }
             }
         }

@@ -11,9 +11,15 @@ $xml = new Xmlparse();
 $realpath = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : dirname(__FILE__) . '/../sandbox/xmlfile.xml';
 
 
+if (!file_exists($realpath)) {
+    print "\n file not found. xml file: $realpath ";
+    exit();
+}
+
 $z = $xml->xml_open($realpath);
 if (!$z) {
     print "\n unable to open xml file $realpath ";
+    exit();
 }
 $pre_res = loop_xml_file($xml);
 
@@ -73,6 +79,7 @@ $res = update_tables();
 print "\n     stock updated: " . $res['stock'];
 print "\n     price updated: " . $res['price'];
 print "\n product not found: " . $res['not found'];
+print "\n";
 
 
 //dtimer::show();
@@ -83,9 +90,9 @@ print "\n product not found: " . $res['not found'];
  */
 function get_string_type($str)
 {
-    if (strval((int)$str) === $str) {
+    if (strval((int)$str) == $str) {
         return 1;
-    } else if (strval((float)$str) === $str) {
+    } else if (strval((float)$str) == $str) {
         return 2;
     } else if ($str === 'true' || $str === 'false' || $str === 'TRUE' || $str === 'FALSE') {
         return 0;
@@ -127,8 +134,9 @@ function create_update_help($sku_fid = 41, $brand_fid = 50)
     $res = $simpla->db->query("alter table t_update_help 
 	add `offer_id` VARCHAR(200) DEFAULT null,
 	add primary key (`product_id`) ,
-	add index `sku` (`sku`, `brand`, `offer_id`),
-	add index `brand` (`brand`, `sku`, `offer_id`)
+	add index `offer_id` (`offer_id`),
+	add index `sku` (`sku`),
+	add index `brand` (`brand`)
 	");
     if ($res === false) {
         return 4;
@@ -173,6 +181,7 @@ function create_table($name, $fields, $drop = true)
     require_once(dirname(__FILE__).'/../api/Simpla.php');
     $simpla = new Simpla();
     $elems = array();
+    $fields_new = array();
     $type = '';
     $uniq = array();
     $name_replace = array('param_артикул' => 'sku', 'param_бренд' => 'brand', 'param_остаток поставщика' => 'stock');
@@ -218,6 +227,7 @@ function create_table($name, $fields, $drop = true)
         }
 
         $field = isset($name_replace[$field]) ? $name_replace[$field] : $field;
+        $fields_new[] = $field;
         $elems[] = "`$field` $type DEFAULT NULL";
     }
 
@@ -225,17 +235,28 @@ function create_table($name, $fields, $drop = true)
     //пишем массив в строку через запятую
     $body = implode(', ', $elems);
 
-
-    $tail = "ENGINE = InnoDB DEFAULT CHARSET = utf8";
-    $q = "CREATE TABLE `$name` ($body) $tail";
     if ($drop) {
         $simpla->db->query("DROP TABLE IF EXISTS `$name`");
     }
 
-    $simpla->db->query($q);
+    $tail = "ENGINE = InnoDB DEFAULT CHARSET = utf8";
+    $q = "CREATE TABLE `$name` ($body) $tail";
 
-    $q = "ALTER TABLE `$name` add primary key(`offer_id`), add index `sku`(`sku`, `brand`, `offer_id`)";
+    if($simpla->db->query($q)){
+        print "\n" . $q . "\n";
+    }
+
+    $alter_array = array();
+    foreach (array_slice($fields_new, 0, 64) as $field) {
+        $alter_array[] = "ADD INDEX(`$field`)";
+    }
+
+    $q = "ALTER TABLE `$name` " . (implode(', ', $alter_array));
+
     $res = $simpla->db->query($q);
+    if(!$res){
+        print "\n" . $q . "\n";
+    }
 
     // выполняем запрос и возвращаем результат
     return $res;

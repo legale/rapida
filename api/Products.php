@@ -65,7 +65,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_products_ids' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -245,7 +245,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'get_products' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -414,7 +414,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = hash('md4', 'count_products' . $filter_string);
+        $keyhash = hash('fnv132', __METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -552,23 +552,27 @@ class Products extends Simpla
         return $product;
     }
 
-    public function update_product($product)
+    public function update_product($id, $product)
     {
+        dtimer::log(__METHOD__ . " start $id" . var_export($product, true));
         //получим pid
-        if (isset($product['id']) && !empty_($product['id'])) {
-            $pid = $product['id'];
+        $id = (int)$id;
+        if (isset($product['id'])) {
             unset($product['id']);
-        } else {
-            dtimer::log(__METHOD__ . " pid is not set!", 1);
+        }
+        if (count($product) === 0) {
+            dtimer::log(__METHOD__ . " product is empty! abort. ", 1);
             return false;
         }
 
-        if (!empty($product['name']) && empty($product['trans'])) {
+        if(isset($product['name'])){
+            //удалим все непечатаемые символы и удалим лишние пробелы
+            $product['name'] = filter_spaces(filter_ascii($product['name']));
             $product['trans'] = translit_ya($product['name']);
         }
 
 
-        $q = $this->db->placehold("   UPDATE __products SET ?% WHERE id = ?", $product, $pid);
+        $q = $this->db->placehold("   UPDATE __products SET ?% WHERE id = ?", $product, $id);
         if ($this->db->query($q)) {
             return true;
         } else {

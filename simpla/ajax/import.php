@@ -218,18 +218,11 @@ class ImportAjax extends Simpla
 
 
         // Если задан бренд
-        if (isset($item['vendor'])) {
-            // Найдем его по имени
-            $brand = $this->brands->get_brand(translit_ya((string)$item['vendor']));
-            if ($brand !== false) {
-                $product['brand_id'] = $brand['id'];
-            } else {
-                // Создадим, если не найден
-                $product['brand_id'] = $this->brands->add_brand(array('name' => $item['vendor']));
-                if ($product['brand_id'] === false) {
-                    dtimer::log(__METHOD__ . " failed on add_brand", 1);
-                    return false;
-                }
+        if (isset($item['vendor']) && !empty($item['vendor'])) {
+            $product['brand_id'] = $this->brands->add_brand(array('name' => $item['vendor']));
+            if ($product['brand_id'] === false) {
+                dtimer::log(__METHOD__ . " failed on add_brand", 1);
+                return false;
             }
         }
 
@@ -285,7 +278,7 @@ class ImportAjax extends Simpla
             // и обновим товар
             if (!empty_(@$product)) {
                 $product['id'] = $pid;
-                $this->products->update_product($product);
+                $this->products->update_product($pid, $product);
             }
             // и вариант
             if (!empty_(@$variant)) {
@@ -343,6 +336,12 @@ class ImportAjax extends Simpla
             // Характеристики товаров
             $features = array(); //массив для записи пар id свойства и id значения свойства
             foreach ($item as $feature_name => $feature_value) {
+                //если слишком длинный параметр, запишем его в текстовую таблицу
+                if (mb_strlen($feature_value) > 500) {
+                    $this->features->update_text_option($pid, $feature_name, $feature_value);
+                    continue;
+                }
+
                 // Если нет такого названия колонки, значит это название свойства
                 if (!in_array($feature_name, $this->internal_columns_names)) {
                     // Свойство добавляем только если для товара указана категория и непустое значение свойства
@@ -353,9 +352,14 @@ class ImportAjax extends Simpla
                         } else {
                             //иначе добавляем свойство в базу и пишем в наш глобальный массив
                             $fid = $this->features->add_feature(array('name' => $feature_name));
-                            if(!isset($fid)){
-                                dtimer::log(__METHOD__." unable to add feature $f_name Abort! ",1);
-                                return false;
+                            if (!$fid) {
+                                dtimer::log(__METHOD__ . " unable to add feature: $feature_name Possible duplicate. ", 2);
+                                $feature = $this->features->get_feature($feature_name);
+                                $fid = $feature['id'];
+                                if (!$fid) {
+                                    dtimer::log(__METHOD__ . " Unable to get feature: $feature_name Abort ", 1);
+                                    return false;
+                                }
                             }
                             $GLOBALS['features'][$feature_name] = $fid;
                         }
@@ -435,8 +439,8 @@ $import_ajax = new ImportAjax();
 
 $json = json_encode($import_ajax->import());
 
-//dtimer::show();
-//die;
+dtimer::show();
+die;
 
 header("Content-type: application/json; charset=UTF-8");
 header("Cache-Control: must-revalidate");

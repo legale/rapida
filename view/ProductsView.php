@@ -33,6 +33,7 @@ class ProductsView extends View
         }
 
         //получаем категорию
+        dtimer::log(__METHOD__ . __LINE__ . " ". $this->filter['category_url']);
         if (isset($this->filter['category_url'])) {
             $cat = $this->categories->get_category($this->filter['category_url']);
         }
@@ -172,7 +173,12 @@ class ProductsView extends View
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
-                    $meta_filter[] = $features[$fid]['name'] . " " . implode(', ', array_intersect_key($options['full'][$fid]['vals'], $vids));
+                    $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
+                    if(empty($vals_text)){
+                        continue;
+                    }
+                    $vals_string = implode(', ', $vals_text);
+                    $meta_filter[] = $features[$fid]['name'] . " " . $vals_string;
                 }
             }
         }
@@ -314,7 +320,6 @@ class ProductsView extends View
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
         $key = $flag ? 'trans2' : 'trans';
-        $hash = $flag ? 'md42' : 'md4';
         if ($flag) {
             $filter['redirect'] = true;
         }
@@ -322,7 +327,6 @@ class ProductsView extends View
         //массив для результата
         $filter['features'] = array();
 
-        dtimer::log(__METHOD__ . " $key $hash ");
         //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
         $features_trans = $this->features->get_features_ids(array('in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
 
@@ -334,14 +338,17 @@ class ProductsView extends View
                 dtimer::log(__METHOD__ . " feature '$name' not found! " . print_r($vals, true), 2);
                 return false;
             }
+            $vals = array_flip($vals);
+//            print_r($vals);
+//            die;
             //~ print $name . "\n";
-            foreach ($vals as $k => $v) {
-                $vals[$k] = hash('md4', $k);
-            }
+//            foreach ($vals as $k => $v) {
+//                $vals[$k] = $k;
+//            }
             //~ dtimer::log(__METHOD__ . " options md4: " . print_r($vals, true) );
 
             //получим id уникальных значений по их хешам
-            $ids = $this->features->get_options_ids(array($hash => $vals, 'return' => array('key' => 'id', 'col' => 'id')));
+            $ids = $this->features->get_options_ids(array($key => $vals, 'return' => array('key' => 'id', 'col' => 'id')));
 
 
             //тут проверим количество переданных значений опций и количество полученных из базы,
