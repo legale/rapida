@@ -90,9 +90,9 @@ print "\n";
  */
 function get_string_type($str)
 {
-    if (strval((int)$str) == $str) {
+    if (strval((int)$str) === $str) {
         return 1;
-    } else if (strval((float)$str) == $str) {
+    } else if (strval((float)$str) === $str) {
         return 2;
     } else if ($str === 'true' || $str === 'false' || $str === 'TRUE' || $str === 'FALSE') {
         return 0;
@@ -151,7 +151,7 @@ function create_update_help($sku_fid = 41, $brand_fid = 50)
 function prepare_update_help()
 {
     //подключаем движок магазина
-    require_once(dirname(__FILE__).'/../api/Simpla.php');
+    require_once(dirname(__FILE__) . '/../api/Simpla.php');
     $simpla = new Simpla();
 
     $q = "update t_update_help h
@@ -178,7 +178,7 @@ function create_table($name, $fields, $drop = true)
 {
 
     //подключаем движок магазина
-    require_once(dirname(__FILE__).'/../api/Simpla.php');
+    require_once(dirname(__FILE__) . '/../api/Simpla.php');
     $simpla = new Simpla();
     $elems = array();
     $fields_new = array();
@@ -242,7 +242,7 @@ function create_table($name, $fields, $drop = true)
     $tail = "ENGINE = InnoDB DEFAULT CHARSET = utf8";
     $q = "CREATE TABLE `$name` ($body) $tail";
 
-    if($simpla->db->query($q)){
+    if ($simpla->db->query($q)) {
         print "\n" . $q . "\n";
     }
 
@@ -254,7 +254,7 @@ function create_table($name, $fields, $drop = true)
     $q = "ALTER TABLE `$name` " . (implode(', ', $alter_array));
 
     $res = $simpla->db->query($q);
-    if(!$res){
+    if (!$res) {
         print "\n" . $q . "\n";
     }
 
@@ -307,8 +307,8 @@ function fputcsv_escape($handle, $fields, $delim = ',')
         } else {
             $row[] = "\"$col\"";
         }
-}
-return fwrite($handle, implode($delim, $row) . "\r\n");
+    }
+    return fwrite($handle, implode($delim, $row) . "\r\n");
 }
 
 /**
