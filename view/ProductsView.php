@@ -315,7 +315,7 @@ class ProductsView extends View
 //флаг служит для задания преобразования по альтернативным названиям параметров trans2
     private function uri_brand_to_ids_filter($uri_brand, $filter, $flag = false)
     {
-        dtimer::log(__METHOD__ . " start " . var_export($uri_brand, true));
+        dtimer::log(__METHOD__ . $flag ? ' flag=true ': ' flag=false '. " start " . var_export($uri_brand, true));
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
         $key = $flag ? 'trans2' : 'trans';
@@ -339,6 +339,7 @@ class ProductsView extends View
 //флаг служит для задания преобразования по альтернативным названиям параметров trans2
     private function uri_to_ids_filter($uri_features, $filter, $flag = false)
     {
+        dtimer::log(__METHOD__ . $flag ? ' flag=true ': ' flag=false '. " start " . var_export($uri_features, true));
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
         $key = $flag ? 'trans2' : 'trans';
