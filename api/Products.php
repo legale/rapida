@@ -169,7 +169,7 @@ class Products extends Simpla
             foreach ($keywords as $keyword) {
                 $kw = $this->db->escape(trim($keyword));
                 if ($kw !== '') {
-                    $kw_trans = $this->db->escape(translit($kw));
+                    $kw_trans = $this->db->escape(translit_ya($kw));
                     $keyword_filter .= $this->db->placehold(" AND (p.name LIKE \"%$kw%\" OR p.id in (SELECT product_id FROM __variants WHERE sku LIKE \"%$kw_trans%\"))");
                 }
             }
@@ -344,7 +344,7 @@ class Products extends Simpla
             foreach ($keywords as $keyword) {
                 $kw = $this->db->escape(trim($keyword));
                 if ($kw !== '') {
-                    $kw_trans = $this->db->escape(translit($kw));
+                    $kw_trans = $this->db->escape(translit_ya($kw));
                     $keyword_filter .= $this->db->placehold(" AND (p.name LIKE \"%$kw%\" OR p.id in (SELECT product_id FROM __variants WHERE sku LIKE \"%$kw_trans%\"))");
                 }
             }
@@ -468,7 +468,7 @@ class Products extends Simpla
             foreach ($keywords as $keyword) {
                 $kw = $this->db->escape(trim($keyword));
                 if ($kw !== '') {
-                    $kw_trans = $this->db->escape(translit($kw));
+                    $kw_trans = $this->db->escape(translit_ya($kw));
                     $keyword_filter .= $this->db->placehold(" AND (p.name LIKE \"%$kw%\" OR p.id in (SELECT product_id FROM __variants WHERE sku LIKE \"%$kw_trans%\"))");
                 }
             }
