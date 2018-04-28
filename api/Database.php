@@ -110,6 +110,7 @@ class Database extends Simpla
         $cnt = count($args);
         if ($cnt < 1 || !is_string($args[0])) {
             $this->error_msg = " Error - empty query";
+            dtimer::log(__METHOD__." Error - empty query",1);
             $this->debug_backtrace(debug_backtrace());
             return false;
         } elseif ($cnt > 1) {

@@ -46,7 +46,8 @@ class ControllerMaster extends Simpla
         if (isset($_SERVER)) {
             $this->uri = $this->get_uri();
             $this->uri_arr = $this->parse_uri($this->uri);
-            dtimer::log(__METHOD__ . " uri: " . $this->uri);
+            $len = strlen($this->uri);
+            dtimer::log(__METHOD__ . " uri ($len): " . $this->uri);
             dtimer::log(__METHOD__ . " parsed uri: " . var_export($this->uri_arr, true));
         }
     }
@@ -59,7 +60,7 @@ class ControllerMaster extends Simpla
             $ctrl = $this->uri_arr['path']['module'];
         }
 
-        if (isset($this->modules[$ctrl])) {
+        if (isset($ctrl, $this->modules[$ctrl])) {
             $this->ctrl = $this->modules[$ctrl];
         } else {
             return $this->coSimpla->action('404');
@@ -70,9 +71,6 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива фильтра $filter
     public function gen_uri_from_filter($uri_arr, $filter)
     {
-//        print_r($uri_arr);
-//        print_r($filter);
-//        die;
         //сначала префикс
         $res = $uri_arr['scheme'] . '://' . $uri_arr['host'];
         //модуль
@@ -91,7 +89,7 @@ class ControllerMaster extends Simpla
         if (isset($filter['brand_id']) && is_array($filter['brand_id']) && count($filter['brand_id']) > 0) {
             $brands_trans = $this->brands->get_brands_ids(array('return' => array('key' => 'id', 'col' => 'trans')));
             $brands = array_intersect_key($brands_trans, array_flip($filter['brand_id']));
-            $res .= '/' . 'brand-' . implode('.', $brands);
+            $res .= '/' . 'brand-' . implode('-', $brands);
         }
 
         //теперь опции, если они есть
@@ -108,7 +106,7 @@ class ControllerMaster extends Simpla
                         foreach ($v as $vid) {
                             $s .= $options_trans[$vid];
                             if ($vid !== $last) {
-                                $s .= '.';
+                                $s .= '-';
                             }
                         }
                         $res .= "/" . $features_trans[$fid] . "-" . $s;
@@ -144,11 +142,11 @@ class ControllerMaster extends Simpla
         if (isset($filter['sort'], $arr['sort'])) {
             unset($arr['sort']);
         }
-        if(isset($filter['brand'])){
-            $filter['brand'] = is_array($filter['brand']) ? array_flip($filter['brand']) : array((string)$filter['brand']=> 0);
+        if (isset($filter['brand'])) {
+            $filter['brand'] = is_array($filter['brand']) ? array_flip($filter['brand']) : array((string)$filter['brand'] => 0);
         }
-        if(isset($filter['features']) && is_array($filter['features'])){
-            foreach($filter['features'] as $fname => $vals){
+        if (isset($filter['features']) && is_array($filter['features'])) {
+            foreach ($filter['features'] as $fname => $vals) {
                 $filter['features'][$fname] = is_array($vals) ? array_flip($vals) : array((string)$vals => 0);
             }
         }
@@ -180,7 +178,7 @@ class ControllerMaster extends Simpla
 
         //теперь бренды, если они есть
         if (isset($arr['brand']) && is_array($arr['brand']) && count($arr['brand']) > 0) {
-            $res .= '/brand-' . implode('.', array_keys($arr['brand']));
+            $res .= '/brand-' . implode('-', array_keys($arr['brand']));
         }
 
 
@@ -188,7 +186,7 @@ class ControllerMaster extends Simpla
         if (isset($arr['features']) && is_array($arr['features']) && count($arr['features']) > 0) {
             foreach ($arr['features'] as $name => $v) {
                 if (is_array($v) && count($v) > 0) {
-                    $res .= "/$name-" . implode('.', array_keys($v));
+                    $res .= "/$name-" . implode('-', array_keys($v));
                 }
             }
         }
@@ -229,75 +227,13 @@ class ControllerMaster extends Simpla
     }
 
 
-    //парсим uri
-    public function parse_uri__($uri = null)
-    {
-        dtimer::log(__METHOD__ . " start");
-        if (!isset($uri)) {
-            $res = parse_url($_SERVER['REQUEST_URI']);
-            $this->uri_arr = $res;
-        } else {
-            $res = parse_url($uri);
-        }
-
-
-        if (isset($res['query'])) {
-            //Тут можно просто взять $_GET, но у нас свой лунапарк
-
-            $a = explode('&', $res['query']);
-            $c = array();
-            foreach ($a as $b) {
-                $b = explode('=', $b);
-                if (count($b) === 2) {
-                    $c[urldecode($b[0])] = urldecode($b[1]);
-                } else {
-                    dtimer::log(__METHOD__ . ' parse uri query part failed ', 2);
-                    dtimer::log(__METHOD__ . __LINE__ . " error", 2);
-                    return false;
-                }
-            }
-
-            if (!isset($uri)) {
-                $this->uri_arr['query_arr'] = $c;
-            }
-            $res['query_arr'] = $c;
-        }
-
-        //Если у нас в get запросе есть xhr, то сразу поставим контроллер туда, дальше ничего не парсим
-        if (isset($res['query_arr']['xhr'])) {
-            $res['ctrl'] = 'coXhr';
-            if (!isset($uri)) {
-                $this->uri_arr['ctrl'] = $res['ctrl'];
-            }
-            $this->ctrl = $res['ctrl'];
-            return $res;
-        }
-
-        //Тут обрабатываем путь
-        if (isset($res['path'])) {
-            $res['path'] = $this->parse_uri_path($res['path']);
-
-            //если у нас нет соответствующего модулю контроллера  - ставим ''
-            dtimer::log(__METHOD__ . " before module choice: " . $res['path']['module']);
-            if (isset($this->modules[$res['path']['module']])) {
-                $res['ctrl'] = $this->modules[$res['path']['module']];
-            } else {
-                $res['ctrl'] = '';
-            }
-        }
-
-        if (!isset($uri)) {
-            $this->uri_arr['path'] = $res['path'];
-            $this->ctrl = $res['ctrl'];
-        }
-
-        return $res;
-
-    }
-
     public function parse_uri($uri)
     {
+        $len = strlen($uri);
+        dtimer::log(__METHOD__ . " uri ($len): $uri");
         $ar = parse_url($uri);
+        dtimer::log(__METHOD__ . " after parse_url array: " . var_export($ar, true));
+
         $res = array();
         if (isset($ar['scheme'])) {
             $res['scheme'] = $ar['scheme'];
@@ -306,7 +242,8 @@ class ControllerMaster extends Simpla
             $res['host'] = $ar['host'];
         }
         if (isset($ar['path'])) {
-            $res['path'] = $this->parse_uri_path($ar['path']);
+            //сначала раскодируем строку на случае, если она закодирована
+            $res['path'] = $this->parse_uri_path(rawurldecode($ar['path']));
         }
         if (isset($ar['query'])) {
             $res['query'] = $this->parse_uri_query($ar['query']);
@@ -317,12 +254,13 @@ class ControllerMaster extends Simpla
                 return false;
             }
         }
-
         return $res;
     }
 
     private function parse_uri_path($path)
     {
+        $len = strlen($path);
+        dtimer::log(__METHOD__ . " path ($len): $path");
         $tpl = array();
 
         //это массив для результатов
@@ -330,7 +268,6 @@ class ControllerMaster extends Simpla
         $brand = array();
 
         $a = $path;
-
         //Если путь / или пусто
         if ($a === '/' || $a === '') {
             return array('module' => '/');
@@ -373,13 +310,14 @@ class ControllerMaster extends Simpla
             default:
                 $res['url'] = array_shift($a);
 
+
                 //Если больше ничего не осталось, останавливаемся
                 if (count($a) < 1) {
                     break;
                 }
 
                 //иначе продолжаем делить части массива
-                $explode = explode('-', $a[0]);
+                $explode = explode('-', $a[0], 2);
                 $cnt = count($explode);
                 if ($cnt === 2) {
                     list($f, $o) = $explode;
@@ -391,26 +329,22 @@ class ControllerMaster extends Simpla
                 }
 
                 if ($f === 'brand') {
-                    $res['brand'] = array_flip(explode('.', $o));
+                    $res['brand'] = array_flip(explode('-', $o));
                     //убираем использованный элемент
                     array_shift($a);
                     //Если больше ничего не осталось, останавливаемся
                     if (count($a) < 1) {
                         break;
                     }
-                    $explode = explode('-', $a[0]);
-                    if (count($explode) === 2) {
-                        list($f, $o) = $explode;
-                    } else {
-                        return false;
-                    }
+
+
                 }
 
 
                 //перебираем оставшуюся часть массива - тут у нас опции
                 foreach ($a as $o) {
                     //сначала разделяем название и значения
-                    $explode = explode('-', $o);
+                    $explode = explode('-', $o, 2);
                     if (count($explode) === 2) {
                         list($f, $o) = $explode;
                     } else {
@@ -419,13 +353,14 @@ class ControllerMaster extends Simpla
                     if (in_array($f, array('sort', 'page'))) {
                         $res[$f] = $o;
                     } else {
-                        $res['features'][$f] = array_flip(explode('.', $o));
+                        $res['features'][$f] = array_flip(explode('-', $o));
                     }
                 }
                 break;
         }
         return $res;
     }
+
 
     private function parse_uri_query($query)
     {
@@ -434,7 +369,7 @@ class ControllerMaster extends Simpla
         foreach ($a as $b) {
             $b = explode('=', $b);
             if (count($b) === 2) {
-                $c[urldecode($b[0])] = urldecode($b[1]);
+                $c[rawurldecode($b[0])] = rawurldecode($b[1]);
             } else {
                 return false;
             }
