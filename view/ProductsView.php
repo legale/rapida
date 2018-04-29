@@ -80,7 +80,7 @@ class ProductsView extends View
         // Вычисляем количество страниц
         $this->filter['products_count'] = $this->products->count_products($this->filter);
         //если товаров в разделе нет, сделаем кол-во страниц 1, иначе будет 0
-        $this->filter['pages'] = min(1, ceil($this->filter['products_count'] / $this->filter['limit']));
+        $this->filter['pages'] = max(1, ceil($this->filter['products_count'] / $this->filter['limit']));
 
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
 
