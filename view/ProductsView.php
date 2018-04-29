@@ -79,11 +79,12 @@ class ProductsView extends View
 
         // Вычисляем количество страниц
         $this->filter['products_count'] = $this->products->count_products($this->filter);
-        $this->filter['pages'] = ceil($this->filter['products_count'] / $this->filter['limit']);
+        //если товаров в разделе нет, сделаем кол-во страниц 1, иначе будет 0
+        $this->filter['pages'] = min(1, ceil($this->filter['products_count'] / $this->filter['limit']));
 
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
 
-        if ($this->filter['page'] > $this->filter['pages']) {
+        if ($this->filter['page'] < 1 || $this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
