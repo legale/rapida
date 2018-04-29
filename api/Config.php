@@ -100,7 +100,7 @@ class Config
             }
 
             //отправляем заголовки из конфига
-            header($this->vars['http_headers']['value']);
+            //header($this->vars['http_headers']['value']);
         }
 
 
