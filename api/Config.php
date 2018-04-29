@@ -98,6 +98,9 @@ class Config
             if (!isset($this->vars['host']) || $_SERVER['HTTP_HOST'] !== $this->vars['host']['value']) {
                 $this->__set('host', $_SERVER['HTTP_HOST']);
             }
+
+            //отправляем заголовки из конфига
+            header($this->vars['http_headers']['value']);
         }
 
 
