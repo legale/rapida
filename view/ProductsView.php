@@ -89,7 +89,7 @@ class ProductsView extends View
         if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
-//            header("Location: $uri", TRUE, 301);
+            header("Location: $uri", TRUE, 301);
         }
 
         //сделаем массив для пагинации
@@ -284,10 +284,9 @@ class ProductsView extends View
 
         //если задан фильтр по свойствам
         if (isset($uri_path['features'])) {
-            //если не получается преобразовать обычные имена - пробуем альтернативные
-            if ($filter = $this->uri_to_ids_filter($uri_path['features'], $filter)) {
-            } else if ($filter = $this->uri_to_ids_filter($uri_path['features'], $filter, true)) {
-            } else {
+            //если не получается преобразовать обычные имена - пробуем альтернативные (повторная попытка происходит внутри функции)
+            $filter = $this->uri_to_ids_filter($uri_path['features'], $filter);
+            if (!$filter) {
                 return false;
             }
         }
@@ -295,12 +294,12 @@ class ProductsView extends View
 
         //Если есть бренд
         if (isset($uri_path['brand'])) {
-            //если не получается преобразовать обычные имена - пробуем альтернативные
-            if ($filter = $this->uri_brand_to_ids_filter($uri_path['brand'], $filter)) {
-            } else if ($filter = $this->uri_brand_to_ids_filter($uri_path['brand'], $filter, true)) {
-            } else {
+            //если не получается преобразовать обычные имена - пробуем альтернативные (повторная попытка происходит внутри функции)
+            $filter = $this->uri_brand_to_ids_filter($uri_path['brand'], $filter);
+            if (!$filter) {
                 return false;
             }
+
         }
 
         //сортировка
@@ -315,7 +314,8 @@ class ProductsView extends View
 //флаг служит для задания преобразования по альтернативным названиям параметров trans2
     private function uri_brand_to_ids_filter($uri_brand, $filter, $flag = false)
     {
-        dtimer::log(__METHOD__ . $flag ? ' flag=true ': ' flag=false '. " start " . var_export($uri_brand, true));
+        dtimer::log(__METHOD__ . " start " . var_export($uri_brand, true));
+        dtimer::log(__METHOD__ . " filter array: " . var_export($filter, true));
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
         $key = $flag ? 'trans2' : 'trans';
@@ -328,9 +328,11 @@ class ProductsView extends View
         if (!empty($brands_trans)) {
             $filter['brand_id'] = array_values($brands_trans);
         } else {
-            return false;
+            dtimer::log(__METHOD__ . ' nothing found! return false', 2);
+            //запускаем снова, если это был первый запуск
+            return $flag ? false : $this->uri_brand_to_ids_filter($uri_brand, $filter, true);
         }
-
+        dtimer::log(__METHOD__ . ' return filter["brand_id"]:' . var_export($filter['brand_id'], true));
         return $filter;
     }
 
@@ -339,13 +341,12 @@ class ProductsView extends View
 //флаг служит для задания преобразования по альтернативным названиям параметров trans2
     private function uri_to_ids_filter($uri_features, $filter, $flag = false)
     {
-        dtimer::log(__METHOD__ . $flag ? ' flag=true ': ' flag=false '. " start " . var_export($uri_features, true));
+        dtimer::log(__METHOD__ . " start " . var_export($uri_features, true));
+        dtimer::log(__METHOD__ . " filter array: " . var_export($filter, true));
         //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
         //альтернативный поиск - по полям trans2 и md42 соответственно.
         $key = $flag ? 'trans2' : 'trans';
-        if ($flag) {
-            $filter['redirect'] = true;
-        }
+
 
         //массив для результата
         $filter['features'] = array();
@@ -358,8 +359,9 @@ class ProductsView extends View
 
             //если ничего не нашлось - останавливаемся
             if (!isset($features_trans[$name])) {
-                dtimer::log(__METHOD__ . " feature '$name' not found! " . print_r($vals, true), 2);
-                return false;
+                dtimer::log(__METHOD__ . " feature '$name' not found! return false ", 2);
+                //запускаем снова, если это был первый запуск
+                return $flag ? false : $this->uri_to_ids_filter($uri_features, $filter, true);
             }
             //переворачиваем массив, потому что значения у нас идут в ключах, а нам нужно наоборот
             $vals = array_flip($vals);
@@ -371,7 +373,9 @@ class ProductsView extends View
             //тут проверим количество переданных значений опций и количество полученных из базы,
             //если не совпадает - return false
             if ($ids === false || count($ids) !== count($vals)) {
-                return false;
+                dtimer::log(__METHOD__ . ' given names and founded ids not equal. return false ' . var_export($ids,true) . var_export($vals,true), 2);
+                //запускаем снова, если это был первый запуск
+                return $flag ? false : $this->uri_to_ids_filter($uri_features, $filter, true);
             } else {
                 //добавим в фильтр по свойствам массив с id значений опций
                 //а также правильные названия транслитом
@@ -384,7 +388,10 @@ class ProductsView extends View
                 $filter['features'][$features_trans[$name]] = $ids;
             }
         }
-
+        if ($flag) {
+            $filter['redirect'] = true;
+        }
+        dtimer::log(__METHOD__ . ' return filter["features"]:' . var_export($filter['features'], true));
         return $filter;
     }
 
