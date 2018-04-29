@@ -71,6 +71,7 @@ class ControllerMaster extends Simpla
     //генерируем uri из массива фильтра $filter
     public function gen_uri_from_filter($uri_arr, $filter)
     {
+        dtimer::log(__METHOD__ . ' start');
         //сначала префикс
         $res = $uri_arr['scheme'] . '://' . $uri_arr['host'];
         //модуль
@@ -119,7 +120,7 @@ class ControllerMaster extends Simpla
             $res .= '/' . 'sort-' . $filter['sort'];
         }
         //страница
-        if (isset($filter['page'])) {
+        if (isset($filter['page']) && $filter['page'] > 1) {
             $res .= '/' . 'page-' . $filter['page'];
         }
         return $res;

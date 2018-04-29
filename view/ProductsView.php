@@ -80,11 +80,8 @@ class ProductsView extends View
         // Вычисляем количество страниц
         $this->filter['products_count'] = $this->products->count_products($this->filter);
         $this->filter['pages'] = ceil($this->filter['products_count'] / $this->filter['limit']);
+
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
-        //проверяем есть ли у нас такая страница, если нет - переправляем на последнюю из возможных
-        if ($this->filter['page'] < 1) {
-            $this->filter['page'] = 1;
-        }
 
         if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
@@ -396,4 +393,3 @@ class ProductsView extends View
     }
 
 }
-
