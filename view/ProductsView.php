@@ -33,8 +33,9 @@ class ProductsView extends View
         }
 
         //получаем категорию
-        dtimer::log(__METHOD__ . __LINE__ . " " . $this->filter['category_url']);
+
         if (isset($this->filter['category_url'])) {
+            dtimer::log(__METHOD__ . __LINE__ . " " . $this->filter['category_url']);
             $cat = $this->categories->get_category($this->filter['category_url']);
         }
         //Остановимя если категории не существует или категория невидимая, а сессия не админская
@@ -63,11 +64,11 @@ class ProductsView extends View
         }
 //		print_r($this->filter);
 
-        if (!empty($this->filter['redirect'])) {
-            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
-            header("Location: $uri", TRUE, 301);
-        }
-        //REDIRECT END
+//        if (!empty($this->filter['redirect'])) {
+//            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+//            header("Location: $uri", TRUE, 301);
+//        }
+
 
         //добавляем в фильтр все дочерние категории
         if (isset($cat)) {
@@ -89,6 +90,7 @@ class ProductsView extends View
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
         }
+        //REDIRECT END
 
         //сделаем массив для пагинации
         $range = 12;

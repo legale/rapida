@@ -340,7 +340,7 @@ class Products extends Simpla
             }
 
         if (!empty($filter['keyword'])) {
-            $keywords = explode(' ', $filter['keyword']);
+            $keywords = explode('+', $filter['keyword']);
             foreach ($keywords as $keyword) {
                 $kw = $this->db->escape(trim($keyword));
                 if ($kw !== '') {
