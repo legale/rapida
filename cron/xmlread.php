@@ -27,7 +27,7 @@ if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(str
 
 
 if (!file_exists($dst)) {
-    print "\n file not found. xml file: $dsr ";
+    print "\n file not found. xml file: $dst ";
     exit();
 }
 
