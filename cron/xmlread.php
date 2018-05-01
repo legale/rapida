@@ -11,7 +11,7 @@ $dst = realpath(dirname(__FILE__) . '/../sandbox/xmlfile.xml');
 
 $src = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : null;
 
-if ($src !== null && substr(0, 5, strtolower($src)) === 'http') {
+if ($src !== null && substr(strtolower($src), 0, 7) === 'http://' || strtolower($src), 0, 8) === 'https://' ) {
     if (!copy($src, $dst)) {
         print "\n unable to download file: $src ";
         exit();
