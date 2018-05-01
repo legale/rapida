@@ -65,7 +65,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -245,7 +245,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -414,7 +414,7 @@ class Products extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -565,7 +565,7 @@ class Products extends Simpla
             return false;
         }
 
-        if(isset($product['name'])){
+        if (isset($product['name'])) {
             //удалим все непечатаемые символы и удалим лишние пробелы
             $product['name'] = filter_spaces(filter_ascii($product['name']));
             $product['trans'] = translit_ya($product['name']);
@@ -589,18 +589,14 @@ class Products extends Simpla
         }
         //удалим пустые
         foreach ($product as $k => $e) {
-            if (empty_($e)) {
-                unset($product[$k]);
-            }else{
-                $product[$k] = trim($e);
-            }
+            $product[$k] = trim($e);
         }
         //если имя не задано - останавливаемся
         if (!isset($product['name'])) {
             dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
             return false;
         } else {
-            $product['name'] = filter_spaces(filter_ascii( $product['name']));
+            $product['name'] = filter_spaces(filter_ascii($product['name']));
             $product['trans'] = translit_ya($product['name']);
         }
 
