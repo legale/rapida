@@ -7,16 +7,24 @@ $simpla = new Simpla();
 require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
 
-//copy('http://vokruglamp.ru/export/get.php?id=sevenlight', dirname(__FILE__) . '/vokruglamp.xml');
-$realpath = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : dirname(__FILE__) . '/../sandbox/xmlfile.xml';
+$dst = realpath(dirname(__FILE__) . '/../sandbox/xmlfile.xml');
+
+$src = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : null;
+
+if ($src !== null && substr(0, 5, strtolower($src)) === 'http') {
+    if (!copy($src, $dst)) {
+        print "\n unable to download file: $src ";
+        exit();
+    }
+}
 
 
-if (!file_exists($realpath)) {
+if (!file_exists($dst)) {
     print "\n file not found. xml file: $realpath ";
     exit();
 }
 
-$z = $xml->xml_open($realpath);
+$z = $xml->xml_open($dst);
 if (!$z) {
     print "\n unable to open xml file $realpath ";
     exit();
