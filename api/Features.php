@@ -81,10 +81,15 @@ class Features extends Simpla
             $id_filter = $this->db->placehold('AND f.id in(?@)', (array)$filter['id']);
         }
 
+        $visible_filter = '';
+        if (!empty($filter['visible'])) {
+            $visible_filter = $this->db->placehold('AND f.visible = ?', (bool)$filter['visible']);
+        }
+
         // Выбираем свойства
         $q = $this->db->placehold("SELECT * FROM __features AS f
 			WHERE 1
-			$category_id_filter $in_filter_filter $id_filter $gid_filter ORDER BY f.pos");
+			$category_id_filter $in_filter_filter $id_filter $gid_filter $visible_filter ORDER BY f.pos");
         $this->db->query($q);
         $res = $this->db->results_array(null, 'id');
         dtimer::log(__METHOD__ . ' return');
@@ -141,7 +146,7 @@ class Features extends Simpla
         $groups[0] = array('id' => 0, 'name' => '', 'pos' => 0, 'options' => array());
 
         $groups = array_merge($groups, $this->get_options_groups());
-        $opts = $this->get_features();
+        $opts = $this->get_features(array('visible'=>true));
         if ($opts !== false) {
             foreach ($opts as $o) {
                 $groups[$o['gid']]['options'][$o['id']] = $o;
