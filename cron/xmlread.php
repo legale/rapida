@@ -21,13 +21,13 @@ if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(str
 
     if(file_exists($dst)){
         unlink($dst);
-        rename($dst.'_', $dst);
+        rename($dst . '_', $dst);
     }
 }
 
 
 if (!file_exists($dst)) {
-    print "\n file not found. xml file: $realpath ";
+    print "\n file not found. xml file: $dsr ";
     exit();
 }
 
