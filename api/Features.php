@@ -138,15 +138,14 @@ class Features extends Simpla
     /**
      * @return array
      */
-    public
-    function get_options_tree()
+    public function get_options_tree()
     {
         dtimer::log(__METHOD__ . " start");
         $groups = array();
         $groups[0] = array('id' => 0, 'name' => '', 'pos' => 0, 'options' => array());
 
         $groups = array_merge($groups, $this->get_options_groups());
-        $opts = $this->get_features(array('visible'=>true));
+        $opts = $this->get_features(array('visible' => true));
         if ($opts !== false) {
             foreach ($opts as $o) {
                 $groups[$o['gid']]['options'][$o['id']] = $o;
@@ -162,8 +161,7 @@ class Features extends Simpla
     /**
      * @return mixed
      */
-    public
-    function get_options_groups()
+    public function get_options_groups()
     {
         dtimer::log(__METHOD__ . " start");
         $q = "SELECT * FROM __options_groups ORDER BY pos";
@@ -270,10 +268,9 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
             return false;
         } else {
-            $feature['name'] = filter_spaces(filter_ascii( $feature['name']));
+            $feature['name'] = filter_spaces(filter_ascii($feature['name']));
             $feature['trans'] = encode_param(translit_ya($feature['name']));
         }
-
 
 
         //если такое свойство уже есть, вернем его id
@@ -338,7 +335,7 @@ class Features extends Simpla
 
         //если имя задано, чистим его от лишних пробелов и непечатаемых символов
         if (isset($feature['name'])) {
-            $feature['name'] = filter_spaces(filter_ascii( $feature['name']));
+            $feature['name'] = filter_spaces(filter_ascii($feature['name']));
             $feature['trans'] = encode_param(translit_ya($feature['name']));
         }
 
@@ -616,7 +613,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -715,7 +712,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -837,7 +834,7 @@ class Features extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
