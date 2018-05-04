@@ -38,7 +38,6 @@ class Brands extends Simpla
         $col = isset($filter['return']['col']) ? $filter['return']['col'] : 'name';
         $key = isset($filter['return']['key']) ? $filter['return']['key'] : 'id';
 
-
         $id_filter = '';
         $trans_filter = '';
         $trans2_filter = '';
@@ -46,7 +45,6 @@ class Brands extends Simpla
         if (!isset($filter['id']) && !isset($filter['trans']) && isset($this->brands[$key . "_" . $col])) {
             return $this->brands[$key . "_" . $col];
         }
-
 
         //фильтр
         if (isset($filter['id'])) {
@@ -154,7 +152,8 @@ class Brands extends Simpla
             $where = "AND b.id in (SELECT brand_id FROM __products p WHERE 1 $visible_filter $cat_id_filter)";
         }
         // Выбираем все бренды
-        $query = $this->db->placehold("SELECT * FROM __brands b WHERE 1 $trans_filter $trans2_filter $where ");
+        $select = 'id, name, trans, trans2, image, image_id';
+        $query = $this->db->placehold("SELECT $select FROM __brands b WHERE 1 $trans_filter $trans2_filter $where ");
         $this->db->query($query);
 
         $res = $this->db->results_array(null, 'id');
