@@ -326,7 +326,8 @@ class ProductsView extends View
         //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
         $brands_trans = $this->brands->get_brands_ids(array($key => array_keys($uri_brand), 'in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
         if (!empty($brands_trans)) {
-            $filter['brand_id'] = array_values($brands_trans);
+            $ids = array_values($brands_trans);
+            $filter['brand_id'] = array_combine($ids, $ids);
         } else {
             dtimer::log(__METHOD__ . ' nothing found! return false', 2);
             //запускаем снова, если это был первый запуск

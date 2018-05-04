@@ -16,7 +16,7 @@ class ControllerXhr extends Simpla
 	private $allowed_methods = array(
 		'count_products', 'get_products', 'get_products_ids', 'get_product', 'get_variants', 'get_variant', 'get_features',
 		'get_options', 'get_options_mix', 'get', 'get_brands', 'get_brand', 'get_comments', 'get_comment', 'get','remove',
-		'add', 'update' , 'empty'
+		'add', 'update' , 'empty', 'get_brands_ids'
 	);
 	
 	private $request; //для запроса
