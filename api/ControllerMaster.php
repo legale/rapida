@@ -92,6 +92,10 @@ class ControllerMaster extends Simpla
             $brands = array_intersect_key($brands_trans, array_flip($filter['brand_id']));
             $res .= '/' . 'brand-' . implode('-', $brands);
         }
+        //теперь цена если есть
+        if (isset($filter['price'])) {
+            $res .= '/price-'.implode('-', $filter['price']);
+        }
 
         //теперь опции, если они есть
         if (isset($filter['features']) && is_array($filter['features']) && count($filter['features']) > 0) {
@@ -143,9 +147,21 @@ class ControllerMaster extends Simpla
         if (isset($filter['sort'], $arr['sort'])) {
             unset($arr['sort']);
         }
+        //Если задан фильтр цена и он уже есть в адресной строке - убираем его из массива адресной строки
+        if (isset($filter['price'], $arr['price'])) {
+            unset($arr['price']);
+        }
+        //если фильтр цена есть в массиве адресной строки - переворачиваем массив, потому что данные в нем хранятся в ключах массива, а не в значениями
+        if (isset($arr['price'])) {
+            $arr['price'] = array_flip($arr['price']);
+        }
+
+
         if (isset($filter['brand'])) {
             $filter['brand'] = is_array($filter['brand']) ? array_flip($filter['brand']) : array((string)$filter['brand'] => 0);
         }
+
+
         if (isset($filter['features']) && is_array($filter['features'])) {
             foreach ($filter['features'] as $fname => $vals) {
                 $filter['features'][$fname] = is_array($vals) ? array_flip($vals) : array((string)$vals => 0);
@@ -182,6 +198,9 @@ class ControllerMaster extends Simpla
             $res .= '/brand-' . implode('-', array_keys($arr['brand']));
         }
 
+        if (isset($arr['price'])) {
+            $res .= '/price-'.implode('-', $arr['price']);
+        }
 
         //теперь опции, если они есть
         if (isset($arr['features']) && is_array($arr['features']) && count($arr['features']) > 0) {
@@ -337,8 +356,28 @@ class ControllerMaster extends Simpla
                     if (count($a) < 1) {
                         break;
                     }
+                }
+
+                $explode = explode('-', $a[0], 2);
+                $cnt = count($explode);
+                if ($cnt === 2) {
+                    list($f, $o) = $explode;
+                } else if ($cnt === 1) {
+                    $res['args'] = $a;
+                    return $res;
+                } else {
+                    return false;
+                }
 
 
+                if ($f === 'price') {
+                    $res['price'] = array_flip(explode('-', $o));
+                    //убираем использованный элемент
+                    array_shift($a);
+                    //Если больше ничего не осталось, останавливаемся
+                    if (count($a) !== 2) {
+                        break;
+                    }
                 }
 
 
