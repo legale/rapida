@@ -375,7 +375,7 @@ class ControllerMaster extends Simpla
                     //убираем использованный элемент
                     array_shift($a);
                     //Если больше ничего не осталось, останавливаемся
-                    if (count($a) !== 2) {
+                    if (count($a) < 1) {
                         break;
                     }
                 }
