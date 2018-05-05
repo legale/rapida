@@ -199,7 +199,7 @@ function convert_spaces($str, $reverse = false ){
     return strtr($str, $pairs);
 }
 
-//фильтруем все непечатыемые символы
+//фильтруем все непечатаемые символы
 function filter_ascii($str){
     return preg_replace('/[^[:ascii:]а-яА-Я]/u', '', $str);
 }

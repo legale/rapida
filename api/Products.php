@@ -30,6 +30,7 @@ class Products extends Simpla
         'sort',
         'keyword',
         'features',
+        'price'
     );
     private $tokeep2 = array(
         'force_no_cache',
@@ -43,180 +44,8 @@ class Products extends Simpla
         'visible',
         'keyword',
         'features',
+        'price'
     );
-
-    /**
-     * Функция работает аналогично get_products, но возвращает только id товаров в одномерном массиве
-     * с ключами в виде id товаров
-     */
-    public function get_products_ids($filter = array())
-    {
-        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
-        $filter = array_intersect_key($filter, array_flip($this->tokeep));
-        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
-        $filter_ = $filter;
-        if (isset($filter_['force_no_cache'])) {
-            $force_no_cache = true;
-            unset($filter_['force_no_cache']);
-        }
-
-
-        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
-        ksort($filter_);
-        $filter_string = var_export($filter_, true);
-        $keyhash = md5(__METHOD__ . $filter_string);
-
-        //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
-            dtimer::log("get_products_ids normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
-
-
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log("get_products_ids add task force_no_cache keyhash: $keyhash");
-
-            $task = '$this->products->get_products_ids(';
-            $task .= $filter_string;
-            $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
-
-        if (isset($res) && !empty_($res)) {
-            dtimer::log("get_cache get_products_ids cache HIT!");
-            return $res;
-        }
-
-        // По умолчанию
-        $limit = 100;
-        $page = 1;
-        $category_id_filter = '';
-        $brand_id_filter = '';
-        $product_id_filter = '';
-        $features_filter = '';
-        $keyword_filter = '';
-        $visible_filter = '';
-        $is_featured_filter = '';
-        $discounted_filter = '';
-        $in_stock_filter = '';
-        $no_images_filter = '';
-        $group_by = '';
-        $order = 'p.pos DESC';
-
-        if (isset($filter['limit']))
-            $limit = max(1, intval($filter['limit']));
-
-        if (isset($filter['page']))
-            $page = max(1, intval($filter['page']));
-
-        $sql_limit = $this->db->placehold(' LIMIT ?, ? ', ($page - 1) * $limit, $limit);
-
-        if (!empty($filter['id']))
-            $product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
-
-        if (!empty($filter['category_id'])) {
-            $category_id_filter = $this->db->placehold('AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in(?@))', (array)$filter['category_id']);
-        }
-
-        if (!empty($filter['brand_id']))
-            $brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
-
-        if (isset($filter['no_images']))
-            $no_images_filter = 'AND p.id NOT IN (SELECT DISTINCT product_id FROM __images)';
-
-        if (isset($filter['featured']))
-            $is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
-
-        if (isset($filter['in_stock'])) {
-            if ((bool)$filter['in_stock'] == true) {
-                $in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock != 0)';
-            } else {
-                $in_stock_filter = 'AND p.id IN (SELECT product_id FROM s_variants WHERE 1 AND price>0 AND stock = 0)';
-            }
-        }
-
-        if (isset($filter['discounted']))
-            $discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < old_price)';
-
-        if (isset($filter['visible']))
-            $visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
-
-        if (!empty($filter['sort']))
-            switch ($filter['sort']) {
-                case 'pos':
-                    $order = 'p.pos DESC';
-                    break;
-                case 'name':
-                    $order = 'p.name';
-                    break;
-                case 'created':
-                    $order = 'p.created DESC';
-                    break;
-                case 'price':
-                    //$order = 'pv.price IS NULL, pv.price=0, pv.price';
-                    $order = "(SELECT -pv.price FROM __variants pv 
-				WHERE (pv.stock IS NULL OR pv.stock>0) 
-				AND p.id = pv.product_id AND pv.pos=(SELECT MIN(pos) 
-				FROM __variants WHERE (stock>0 OR stock IS NULL) AND product_id=p.id LIMIT 1) LIMIT 1) DESC";
-                    break;
-            }
-
-        if (!empty($filter['keyword'])) {
-            $keywords = explode(' ', $filter['keyword']);
-            foreach ($keywords as $keyword) {
-                $kw = $this->db->escape(trim($keyword));
-                if ($kw !== '') {
-                    $kw_trans = $this->db->escape(translit_ya($kw));
-                    $keyword_filter .= $this->db->placehold(" AND (p.name LIKE \"%$kw%\" OR p.id in (SELECT product_id FROM __variants WHERE sku LIKE \"%$kw_trans%\"))");
-                }
-            }
-        }
-
-        //фильтрация по свойствам товаров
-        if (!empty($filter['features'])) {
-            foreach ($filter['features'] as $fid => $vids) {
-                if (is_array($vids)) {
-                    $features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
-                }
-            }
-            $features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
-        }
-        $query = $this->db->placehold("SELECT  
-					p.id,
-					p.trans,
-					p.name
-				FROM __products p
-				WHERE 
-					1
-					$category_id_filter 
-					$no_images_filter
-					$product_id_filter
-					$brand_id_filter
-					$features_filter
-					$keyword_filter
-					$is_featured_filter
-					$discounted_filter
-					$in_stock_filter
-					$visible_filter
-				ORDER BY $order
-					$sql_limit");
-
-        dtimer::log(__METHOD__ . " query: $query ");
-        //~ dtimer::show();
-        //~ die;
-        $this->db->query($query);
-
-        if ($res = $this->db->results_array(null, 'id')) {
-            dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-            $this->cache->set_cache_nosql($keyhash, $res);
-            return $res;
-        } else {
-            return false;
-        }
-    }
 
     /**
      * Функция возвращает товары
@@ -228,6 +57,7 @@ class Products extends Simpla
      * limit - количество товаров на странице, integer
      * sort - порядок товаров, возможные значения: pos (по умолчанию), name, price
      * keyword - ключевое слово для поиска
+     * price - ценовой фильтр array(min,max)
      * features - фильтр по свойствам товара, массив (id свойства => значение свойства)
      */
     public function get_products($filter = array())
@@ -283,6 +113,7 @@ class Products extends Simpla
         $discounted_filter = '';
         $in_stock_filter = '';
         $no_images_filter = '';
+        $price_filter = '';
         $order = 'p.stock DESC, p.pos DESC';
 
         if (isset($filter['limit']))
@@ -302,6 +133,10 @@ class Products extends Simpla
 
         if (!empty($filter['brand_id']))
             $brand_id_filter = $this->db->placehold('AND p.brand_id in(?@)', (array)$filter['brand_id']);
+
+        if (!empty($filter['price'])) {
+            $price_filter = $this->db->placehold('AND p.id in(SELECT v.product_id FROM __variants v WHERE v.price >= ? AND v.price <= ? AND v.product_id = p.id)', (int)$filter['price'][0], (int)$filter['price'][1]);
+        }
 
         if (isset($filter['no_images']))
             $no_images_filter = 'AND p.id NOT IN (SELECT DISTINCT product_id FROM __images)';
@@ -373,6 +208,7 @@ class Products extends Simpla
 					$discounted_filter
 					$in_stock_filter
 					$visible_filter
+					$price_filter
 				ORDER BY $order
 					$sql_limit");
 
@@ -450,6 +286,7 @@ class Products extends Simpla
         $discounted_filter = '';
         $features_filter = '';
         $no_images_filter = '';
+        $price_filter = '';
 
         if (!empty($filter['category_id'])) {
             $category_id_filter = $this->db->placehold('AND p.id in (SELECT product_id FROM __products_categories WHERE category_id in(?@))', (array)$filter['category_id']);
@@ -463,6 +300,10 @@ class Products extends Simpla
             $product_id_filter = $this->db->placehold('AND p.id in(?@)', (array)$filter['id']);
         }
 
+        if (!empty($filter['price'])) {
+            $price_filter = $this->db->placehold('AND p.id in(SELECT v.product_id FROM __variants v WHERE v.price >= ? AND v.price <= ? AND v.product_id = p.id)', (int)$filter['price'][0], (int)$filter['price'][1]);
+        }
+
         if (!empty($filter['keyword'])) {
             $keywords = explode(' ', $filter['keyword']);
             foreach ($keywords as $keyword) {
@@ -474,12 +315,12 @@ class Products extends Simpla
             }
         }
 
-        if (isset($filter['no_images']))
+        if (isset($filter['no_images'])) {
             $no_images_filter = 'AND p.id NOT IN (SELECT DISTINCT product_id FROM __images)';
-
-        if (isset($filter['featured']))
+        }
+        if (isset($filter['featured'])) {
             $is_featured_filter = $this->db->placehold('AND p.featured=?', intval($filter['featured']));
-
+        }
         if (isset($filter['in_stock'])) {
             if ((bool)$filter['in_stock'] == true) {
                 $in_stock_filter = 'AND p.stock = 1';
@@ -488,12 +329,12 @@ class Products extends Simpla
             }
         }
 
-        if (isset($filter['discounted']))
+        if (isset($filter['discounted'])) {
             $discounted_filter = 'AND p.id IN (SELECT DISTINCT product_id FROM __variants WHERE price < old_price)';
-
-        if (isset($filter['visible']))
+        }
+        if (isset($filter['visible'])) {
             $visible_filter = $this->db->placehold('AND p.visible=?', intval($filter['visible']));
-
+        }
 
         //фильтрация по свойствам товаров
         if (!empty($filter['features'])) {
@@ -517,7 +358,8 @@ class Products extends Simpla
 					$in_stock_filter
 					$discounted_filter
 					$visible_filter
-					$features_filter ");
+					$features_filter
+					$price_filter ");
 
         dtimer::log(__METHOD__ . " query: $query");
         $this->db->query($query);
