@@ -302,6 +302,12 @@ class ProductsView extends View
 
         }
 
+        //Если есть цена
+        if (isset($uri_path['price'])) {
+            $filter['price'] = array_flip($uri_path['price']);
+        }
+
+
         //сортировка
         if (isset($uri_path['sort'])) {
             $filter['sort'] = $uri_path['sort'];
