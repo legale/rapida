@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 require_once('Simpla.php');
@@ -46,6 +46,23 @@ class Curl extends Simpla
     public $lastbyte = '';
 
     /**
+     * @var string
+     */
+    public $data = '';
+
+    public function get($src)
+    {
+        dtimer::log(__METHOD__ . " start $src");
+        $localbyte = '';
+        $src = $this->get_link($src);
+
+
+        $options = array(CURLOPT_WRITEFUNCTION => null);
+        $this->curl_open($src, $options);
+        return $this->curl_exec();
+    }
+
+    /**
      * @param $src
      * @return bool
      */
@@ -61,7 +78,6 @@ class Curl extends Simpla
         if (empty($this->curl_headers)) {
             dtimer::log(__METHOD__ . " http headers empty! ", 1);
             return false;
-
         }
 
         //if content-length header is recieved and last byte saved
@@ -161,9 +177,9 @@ class Curl extends Simpla
             }
         }
 
-
         return $len;
     }
+
 
     /**
      * @param $remote
@@ -214,7 +230,12 @@ class Curl extends Simpla
      */
     public function curl_open($src, $options = array())
     {
-        dtimer::log(__METHOD__ . " start $src");
+        if (empty($src)) {
+            dtimer::log(__METHOD__ . " src is empty!, abort", 1);
+            return false;
+        }
+
+        dtimer::log(__METHOD__ . " START '$src'");
 
         if (empty($this->ch)) {
             $this->ch = curl_init();
@@ -232,7 +253,9 @@ class Curl extends Simpla
         );
 
         $opt = array(
-            CURLOPT_URL => $src, // устанавливаем URL
+            CURLOPT_URL => $src,
+            CURLOPT_REFERER => $src,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36', //User-Agent: header
             CURLOPT_PIPEWAIT => 1, //1 to wait for pipelining/multiplexing
             CURLOPT_FOLLOWLOCATION => 0, //redirect to location header
             CURLOPT_MAXREDIRS => 10, //max redirects
@@ -241,8 +264,9 @@ class Curl extends Simpla
             CURLOPT_RETURNTRANSFER => 1, //вернуть результат через curl_exec($ch), а не на экран.
             CURLOPT_HEADERFUNCTION => $callback['header'],
             CURLOPT_WRITEFUNCTION => $callback['data'],
-            CURLOPT_HTTPHEADER => array(), //reset headers
             CURLOPT_NOBODY => 0, //reset nobody
+            CURLOPT_HTTPHEADER => array(), //reset headers
+            CURLOPT_HTTPGET => 1, //set REQUEST type to GET
         );
 
         if (!empty($options)) {
@@ -351,7 +375,6 @@ class Curl extends Simpla
     {
         dtimer::log(__METHOD__ . " start $src");
         $opt = array(
-            CURLOPT_URL => $src, // устанавливаем URL
             CURLOPT_FOLLOWLOCATION => 0, //redirect to location header
             CURLOPT_SSL_VERIFYHOST => 0, //отключаем проверку соответсвия имени на сертификате хосту
             CURLOPT_RETURNTRANSFER => 1, //вернуть результат через curl_exec($ch), а не на экран.
