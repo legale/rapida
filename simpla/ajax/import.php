@@ -320,15 +320,16 @@ class ImportAjax extends Simpla
                 // Изображений может быть несколько
                 $images = explode(self::DELIM, $item['images']);
                 foreach ($images as $image) {
-                    $image = $image;
-                    if (!empty_(@$image)) {
-                        // Имя файла
-                        $image_basename = pathinfo($image, PATHINFO_BASENAME);
+                    $image = trim($image);
+                    if (!isset($image)) {
+                        return false;
+                    }
+                    // Имя файла
+                    $image_basename = pathinfo($image, PATHINFO_BASENAME);
 
-                        // Добавляем изображение только если такого еще нет в этом товаре
-                        if (!$this->image->get('products', array('item_id' => $pid, 'basename' => $image_basename))) {
-                            $this->image->add('products', $pid, $image, true, true);
-                        }
+                    // Добавляем изображение только если такого еще нет в этом товаре
+                    if (!$this->image->get('products', array('item_id' => $pid, 'basename' => $image_basename))) {
+                        $this->image->add('products', $pid, $image, true, true);
                     }
                 }
             }
@@ -399,9 +400,10 @@ class ImportAjax extends Simpla
     }
 
 
-    // Фозвращает внутреннее название колонки по названию колонки в файле
+// Фозвращает внутреннее название колонки по названию колонки в файле
 
-    private function import_category($category)
+    private
+    function import_category($category)
     {
         // Поле "категория" может состоять из нескольких имен
         //~ print_r($category);
