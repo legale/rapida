@@ -959,7 +959,7 @@ class Image extends Simpla
      */
     public function is_url($url)
     {
-        dtimer::log(__METHOD__ . " start url: $url");
+        dtimer::log(__METHOD__ . " start url: '$url'");
         if(strripos($url, 'http://') === 0 || strripos( $url, 'https://') === 0){
             return true;
         }
