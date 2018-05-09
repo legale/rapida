@@ -26,8 +26,8 @@
 	<!-- Большое фото -->
 	{if $image}
 	<div class="image">
-		<a href="{$image|resize:products:$image_id:800:600}" class="zoom" rel="group">
-			<img src="{$image|resize:products:$image_id:300:300}" alt="{$name|escape}" /></a>
+		<a href="{$image|resize:products:$image['id']:800:600}" class="zoom" rel="group">
+			<img src="{$image|resize:products:$image['id']:300:300}" alt="{$name|escape}" /></a>
 	</div>
 	{/if}
 	<!-- Большое фото (The End)-->
