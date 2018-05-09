@@ -95,27 +95,27 @@ class Design extends Simpla
     }
 
 
-    public function resize_modifier($basename, $type =null, $id = null, $w = null, $h = null)
+    public function resize_modifier($basename, $type = null, $id = null, $w = null, $h = null)
     {
-		$args = func_get_args();
-		foreach($args as $arg){
-			if(count($args) !== 5 || !isset($arg)){
-				return 'args error';
-			}
-		}
-		
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            if (count($args) !== 5 || !isset($arg)) {
+                return 'args error';
+            }
+        }
+
         dtimer::log(__METHOD__ . " start type: $type id: $id basename: $basename w: $w h: $h");
-		if(empty($basename)){
-			return '#';
-		}
-		
-        if($this->image->is_url($basename)){
+        if (empty($basename)) {
+            return '#';
+        }
+
+        if ($this->image->is_url($basename)) {
             $url = parse_url($basename);
             return '/img/' . $type . '_' . $id . '/' . $w . 'x' . $h . '/?' . http_build_query($url);
         }
-		
-		$root = $this->config->root_dir;
-        $filepath =  '/img/' . $type . '_resized/'  . $w . 'x' . $h . '/' . $basename;
+
+        $root = $this->config->root_dir;
+        $filepath = '/img/' . $type . '_resized/' . $w . 'x' . $h . '/' . $basename;
         return $filepath;
     }
 
@@ -223,7 +223,7 @@ class Design extends Simpla
     public function get_brands_plugin($params, $smarty)
     {
         if (!empty($params['var']))
-            $smarty->assign($params['var'], $this->brands->get_brands($params) ? $this->brands->get_brands($params) : array() );
+            $smarty->assign($params['var'], $this->brands->get_brands($params) ? $this->brands->get_brands($params) : array());
     }
 
     public function get_browsed_products($params, $smarty)
@@ -231,25 +231,23 @@ class Design extends Simpla
         if (!empty($_COOKIE['browsed_products'])) {
             $ids = explode(',', $_COOKIE['browsed_products']);
             $ids = array_reverse($ids);
-            if (isset($params['limit'])){
+            if (isset($params['limit'])) {
                 $ids = array_slice($ids, 0, $params['limit']);
-			}
+            }
 
             $products = $this->products->get_products(array('id' => $ids, 'visible' => 1));
-			$variants = $this->variants->get_variants(array('grouped'=> 'product_id', 'product_id' => $ids, 'in_stock' => true));
+            $variants = $this->variants->get_variants(array('grouped' => 'product_id', 'product_id' => $ids, 'in_stock' => true));
 
-			// Выбираем варианты товаров
-			if(!empty($products)){
-				foreach($products as $pid=>$p){
-					if(isset($variants[$pid])){
-						$products[$pid]['variants'] = $variants[$pid];
-					}else{
-						$products[$pid]['variants'] = array();
-					}
-				}
-			}
-
-
+            // Выбираем варианты товаров
+            if (!empty($products)) {
+                foreach ($products as $pid => $p) {
+                    if (isset($variants[$pid])) {
+                        $products[$pid]['variants'] = $variants[$pid];
+                    } else {
+                        $products[$pid]['variants'] = array();
+                    }
+                }
+            }
 
 
             $smarty->assign($params['var'], $products);
