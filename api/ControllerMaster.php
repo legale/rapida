@@ -370,16 +370,6 @@ class ControllerMaster extends Simpla
                 }
 
 
-                if ($f === 'price') {
-                    $res['price'] = array_flip(explode('-', $o));
-                    //убираем использованный элемент
-                    array_shift($a);
-                    //Если больше ничего не осталось, останавливаемся
-                    if (count($a) < 1) {
-                        break;
-                    }
-                }
-
 
                 //перебираем оставшуюся часть массива - тут у нас опции
                 foreach ($a as $o) {
@@ -392,6 +382,8 @@ class ControllerMaster extends Simpla
                     }
                     if (in_array($f, array('sort', 'page'))) {
                         $res[$f] = $o;
+                    } else if($f === 'price'){
+                        $res[$f] = array_flip(explode('-', $o));
                     } else {
                         $res['features'][$f] = array_flip(explode('-', $o));
                     }
