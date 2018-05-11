@@ -3,10 +3,9 @@ window.CodeMirror = {};
 (function() {
 "use strict";
 
-function splitLines(string) {
-        return string.split(/\r?\n|\r/);
-    }
-    function StringStream(string) {
+function splitLines(string){ return string.split(/\r?\n|\r/); };
+
+function StringStream(string) {
   this.pos = this.start = 0;
   this.string = string;
   this.lineStart = 0;

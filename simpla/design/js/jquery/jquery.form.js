@@ -859,5 +859,6 @@ function log() {
 	else if (window.opera && window.opera.postError) {
 		window.opera.postError(msg);
 	}
-}
+};
+
 })(jQuery);

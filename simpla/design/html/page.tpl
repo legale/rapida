@@ -139,7 +139,7 @@ function generate_meta_description()
 
 
 <!-- Основная форма -->
-<form method=post id=product enctype="multipart/form-data">
+<form method=post class=product enctype="multipart/form-data">
 	<input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
 		<input class="name" name=header type="text" value="{$page['header']|escape}"/> 
