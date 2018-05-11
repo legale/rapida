@@ -28,28 +28,6 @@ $(function() {
 		return false;
 	});
 
-	// Автозаполнение мета-тегов
-	meta_title_touched = true;
-	meta_keywords_touched = true;
-	meta_description_touched = true;
-	url_touched = true;
-	
-	if($('input[name="meta_title"]').val() == generate_meta_title() || $('input[name="meta_title"]').val() == '')
-		meta_title_touched = false;
-	if($('input[name="meta_keywords"]').val() == generate_meta_keywords() || $('input[name="meta_keywords"]').val() == '')
-		meta_keywords_touched = false;
-	if($('textarea[name="meta_description"]').val() == generate_meta_description() || $('textarea[name="meta_description"]').val() == '')
-		meta_description_touched = false;
-	if($('input[name="trans"]').val() == generate_url() || $('input[name="trans"]').val() == '')
-		url_touched = false;
-		
-	$('input[name="meta_title"]').change(function() { meta_title_touched = true; });
-	$('input[name="meta_keywords"]').change(function() { meta_keywords_touched = true; });
-	$('input[textarea="meta_description"]').change(function() { meta_description_touched = true; });
-	$('input[name="trans"]').change(function() { url_touched = true; });
-	
-	$('input[name="name"]').keyup(function() { set_meta(); });
-
 
 });
 
@@ -90,7 +68,7 @@ $(function() {
 
 
 <!-- Основная форма -->
-<form method=post id=product enctype="multipart/form-data">
+<form method=post class=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
 		<input class="name" name=name type="text" value="{$brand['name']|escape}"/> 

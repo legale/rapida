@@ -37,7 +37,7 @@ $(function() {
 {/if}
 
 <!-- Основная форма -->
-<form method=post id=product>
+<form method=post class=product>
 
 	<div id="name">
 		<input class="name" name="name" type="text" value="{$feature['name']|escape}"/> 

@@ -61,8 +61,12 @@ class Money extends Simpla
 		return $currencies;
 	}
 
-	public function get_currency($id = null)
+	public function get_currency($id=null)
 	{
+	    if($id === null){
+            return $this->currency;
+        }
+
 		if (!empty($id) && is_integer($id) && isset($this->currencies[$id])){
 			return $this->currencies[$id];
 		}

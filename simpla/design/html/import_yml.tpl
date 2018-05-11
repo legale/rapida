@@ -166,7 +166,7 @@
 		<div class="block">
 		<h1>Импорт товаров из файла Яндекс Маркета формат YML</h1>
 		</div>
-		<form method=post id=product enctype="multipart/form-data">
+		<form method=post class=product enctype="multipart/form-data">
 			<input type=hidden name="session_id" value="{$smarty.session.id}">
 			<div class="block layer">	
 				<h2>Загрузка файла с локального компьютера</h2>

@@ -75,7 +75,7 @@ function delete_link(e) {
 {/if}
 
 <!-- Основная форма -->
-<form method=post id=product enctype="multipart/form-data">
+<form method=post class=product enctype="multipart/form-data">
 <input type=hidden name="session_id" value="{$smarty.session.id}">
 	<div id="name">
 		<input class="name" name=post[name] type="text" value="{$post['name']|escape}"/> 
