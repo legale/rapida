@@ -41,7 +41,7 @@ class ProductView extends View
         $product['images'] = $this->image->get('products', array('item_id' => $product['id']));
 
         //варианты
-        $product['variants'] = $this->variants->get_variants(array('product_id' => $product['id'], 'in_stock'=> true));
+        $product['variants'] = $this->variants->get_variants(array('product_id' => $product['id'], 'in_stock' => true));
 
         // Свойства товара
         //~ $features = $this->features->get_features();
@@ -115,7 +115,7 @@ class ProductView extends View
             $rp = $this->products->get_products(array('id' => $rp_ids, 'in_stock' => 1, 'visible' => 1));
         }
 
-        if(!empty($rp)) {
+        if (!empty($rp)) {
             $rp_variants = $this->variants->get_variants(array('product_id' => array_keys($rp), 'in_stock' => 1));
 
             foreach ($rp_variants as $rp_variant) {
@@ -148,9 +148,10 @@ class ProductView extends View
         $this->design->assign('comments', $comments);
 
         // Категория и бренд товара
-        $product['categories'] = $this->categories->get_categories(array('product_id' => $product['id']));
-        $this->design->assign('brand', $this->brands->get_brand(intval($product['brand_id'])));
-        $this->design->assign('cat', reset($product['categories']));
+        $cat = $this->categories->get_category((int)$product['cat_id']);
+        $brand = $this->brands->get_brand((int)$product['brand_id']);
+        $this->design->assign('brand', $brand);
+        $this->design->assign('cat', $cat);
 
 
         // Добавление в историю просмотров товаров
@@ -167,19 +168,6 @@ class ProductView extends View
         $cookie_val = implode(',', array_slice($browsed_products, -$max_visited_products, $max_visited_products));
         setcookie("browsed_products", $cookie_val, $expire, "/");
 
-
-
-
-        $fids = array_keys($product['options']);
-        if(!empty($fids)) {
-            $features = $this->features->get_features(array('id' => $fids));
-        }
-
-        foreach ($features as $fid=>$f) {
-            if ((bool)$f['tpl']) {
-                $pairs['{$'.$f['trans'].'}'] = $product['options'][$fid]['val'];
-            }
-        }
 //        print "<PRE>";
 //        print_r($pairs);
 //        print_r($features);
@@ -187,21 +175,35 @@ class ProductView extends View
 //        print "</PRE>";
 
 
-        $cat = $this->categories->get_category($product['cid']);
-
         //авто теги
+        $fids = array_keys($product['options']);
+        if (!empty($fids)) {
+            $features = $this->features->get_features(array('id' => $fids));
+        }
+
+        foreach ($features as $fid => $f) {
+            if ((bool)$f['tpl']) {
+                $pairs['{$' . $f['trans'] . '}'] = $product['options'][$fid]['val'];
+            }
+        }
+        //добавляем переменную {$category}
+        $pairs['{$category}'] = $cat['name'];
+        $pairs['{$brand}'] = $brand['name'];
+
+
+        //берем шаблон для тега из категории, если есть, или сразу готовый текст из товара
         $meta_title = $cat['auto_meta_title'] ? $cat['auto_meta_title'] : $product['meta_title'];
         $meta_keywords = $cat['auto_meta_keywords'] ? $cat['auto_meta_keywords'] : $product['meta_keywords'];
         $meta_description = $cat['auto_meta_description'] ? $cat['auto_meta_description'] : $product['meta_description'];
         $annotation = $cat['auto_annotation'] ? $cat['auto_annotation'] : $product['annotation'];
         $description = $cat['auto_description'] ? $cat['auto_description'] : $product['description'];
 
+        //производим замену
         $meta_title = strtr($meta_title, $pairs);
         $meta_keywords = strtr($meta_keywords, $pairs);
         $meta_description = strtr($meta_description, $pairs);
         $annotation = strtr($annotation, $pairs);
         $description = strtr($description, $pairs);
-
 
 
         $this->design->assign('meta_title', $meta_title);
