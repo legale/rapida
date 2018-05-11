@@ -176,6 +176,9 @@ window.ra = {
 
     getType: function (o) {
         "use strict";
+        if(o === null){
+            return 'null';
+        }
         let type = o.constructor.name;
 
         if (type.match(/HTML.+?Element/)) {
