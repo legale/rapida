@@ -202,7 +202,7 @@
 
 
 <!-- Основная форма -->
-<form method="post" id="product" enctype="multipart/form-data">
+<form method="post" class="product" enctype="multipart/form-data">
     <input type="hidden" name="session_id" value="{$smarty.session.id}">
 
     <a class="link" target="_blank" href="../products/{$product['trans']}">Открыть товар на сайте</a>
@@ -219,7 +219,7 @@
         </div>
     </div>
 
-    <div id="product_brand" {if !isset($brands)}style="display:none;"{/if}>
+    <div class="product_brand" {if !isset($brands)}style="display:none;"{/if}>
         <label>Бренд</label>
         <select name="save[product][brand_id]">
             <option value="0" {if !$product['brand_id']}selected{/if} brand_name=''>Не указан</option>
@@ -231,7 +231,7 @@
     </div>
 
 
-    <div id="product_categories">
+    <div class="product_categories">
         <label>Категория</label>
         <div>
             <ul>
@@ -298,15 +298,14 @@
                 </li>
                 <input name="save[variants][product_id][]" type="hidden" value="{$product['id']}"/>
                 <input name="save[variants][id][]" type="hidden" value=""/>
-                <li class="variant_name"><input name="save[variants][name][]" type="" value=""/></li>
-                <li class="variant_sku"><input name="save[variants][sku][]" type="" value=""/></li>
-                <li class="variant_price"><input name="save[variants][price][]" type="" value=""/></li>
-                <li class="variant_price"><input name="save[variants][price1][]" type="" value=""/></li>
-                <li class="variant_price"><input name="save[variants][price2][]" type="" value=""/></li>
-                <li class="variant_price"><input name="save[variants][price3][]" type="" value=""/></li>
-                <li class="variant_discount"><input name="save[variants][old_price][]" type="" value=""/></li>
-                <li class="variant_amount"><input name="save[variants][stock][]" type="" value="∞"/>{$settings->units}
-                </li>
+                <li class="variant_name"><input name="save[variants][name][]" type="" value=""></li>
+                <li class="variant_sku"><input name="save[variants][sku][]" type="" value=""></li>
+                <li class="variant_price"><input name="save[variants][price][]" type="" value=""></li>
+                <li class="variant_price"><input name="save[variants][price1][]" type="" value=""></li>
+                <li class="variant_price"><input name="save[variants][price2][]" type="" value=""></li>
+                <li class="variant_price"><input name="save[variants][price3][]" type="" value=""></li>
+                <li class="variant_discount"><input name="save[variants][old_price][]" type="" value=""></li>
+                <li class="variant_amount"><input name="save[variants][stock][]" type="" value="∞">{$settings->units}</li>
                 <a delete_link="true" class="icons delete"></a>
             </ul>
             <!-- Это шаблон строки нового варианта (The end) -->

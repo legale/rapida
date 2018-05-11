@@ -127,7 +127,7 @@
 
 
 <!-- Основная форма -->
-<form method=post id=category enctype="multipart/form-data">
+<form method="post" class="product" enctype="multipart/form-data">
     <input type=hidden name="session_id" value="{$smarty.session.id}">
     <div id="name">
         <input class="name" name='save[category][name]' type="text" value="{$category['name']|escape}"/>
@@ -137,7 +137,8 @@
                    {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
         </div>
     </div>
-    <div id="product_categories">
+    <label class=property>Родительская категория</label>
+    <div сlass="product_categories">
         <select name="save[category][parent_id]">
             <option value='0'>Корневая категория</option>
             {function name=category_select level=0}
@@ -155,6 +156,7 @@
         </select>
     </div>
 
+
     <!-- Левая колонка -->
     <div class="column_left">
 
@@ -164,21 +166,23 @@
             <ul>
                 <li><label class=property>Адрес</label>
                     <div class="page_url">/catalog/</div>
-                    <input name="save[category][trans]" class="page_url" type="text"
-                           value="{$category['trans']|escape}"/></li>
+                    <input name="save[category][trans]" class="page_url" type="text" value="{$category['trans']|escape}"/>
+                </li>
                 <li><label class=property>Адрес2</label>
                     <div class="page_url">/catalog/</div>
-                    <input name="save[category][trans2]" class="page_url" type="text"
-                           value="{$category['trans2']|escape}"/></li>
-                <li><label class=property>Title</label><input name="save[category][meta_title]" class="simpla_inp"
-                                                                  type="text" value="{$category['meta_title']|escape}"/>
+                    <input name="save[category][trans2]" class="page_url" type="text" value="{$category['trans2']|escape}"/></li>
+
+                <li>
+                    <label class=property>Title</label>
+                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text" value="{$category['meta_title']|escape}"></textarea>
                 </li>
-                <li><label class=property>meta keywords</label><input name="save[category][meta_keywords]"
-                                                                       class="simpla_inp" type="text"
-                                                                       value="{$category['meta_keywords']|escape}"/>
+                <li>
+                    <label class=property>meta keywords</label>
+                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}"></textarea>
                 </li>
-                <li><label class=property>meta description</label><textarea name="save[category][meta_description]"
-                                                                    class="simpla_inp">{$category['meta_description']|escape}</textarea>
+                <li>
+                    <label class=property>meta description</label>
+                    <textarea name="save[category][meta_description]" class="simpla_inp">{$category['meta_description']|escape}</textarea>
                 </li>
             </ul>
         </div>
@@ -189,6 +193,29 @@
 
     <!-- Правая колонка -->
     <div class="column_right">
+
+        <!-- Авто теги для товаров данной категории -->
+        <div class="block layer">
+            <h2>Авто теги для товаров из этой категории</h2>
+            <ul class="list">
+                <li>
+                    <label class="property">auto meta title</label>
+                    <textarea name="save[category][auto_meta_title]">{$category['auto_meta_title']|escape}</textarea>
+                <li>
+                    <label class="property">auto meta keywords</label>
+                    <textarea name="save[category][auto_meta_keywords]">{$category['auto_meta_keywords']|escape}</textarea>
+                <li>
+                    <label class="property">auto meta description</label>
+                    <textarea name="save[category][auto_meta_description]">{$category['auto_meta_description']|escape}</textarea>
+                <li>
+                    <label class="property">auto annotation</label>
+                    <textarea name="save[category][auto_annotation]">{$category['auto_annotation']|escape}</textarea>
+                <li>
+                    <label class="property">auto description</label>
+                    <textarea name="save[category][auto_description]">{$category['auto_description']|escape}</textarea>
+            </ul>
+        </div>
+        <!-- Авто теги для товаров данной категории (The End)-->
 
         <!-- Изображения -->
         <div class="block layer images">
@@ -243,24 +270,7 @@
     </div>
     <!-- Правая колонка (The End)-->
 
-    <!-- Авто теги для товаров данной категории -->
-    <div class="block layer">
-        <h2>auto meta title</h2>
-        <textarea name="save[category][auto_meta_title]" class="editor_small">{$category['auto_meta_title']|escape}</textarea>
 
-        <h2>auto meta keywords</h2>
-        <textarea name="save[category][auto_meta_keywords]" class="editor_small">{$category['auto_meta_keywords']|escape}</textarea>
-
-        <h2>auto meta description</h2>
-        <textarea name="save[category][auto_meta_description]" class="editor_small">{$category['auto_meta_description']|escape}</textarea>
-
-        <h2>auto annotation</h2>
-        <textarea name="save[category][auto_annotation]" class="editor_small">{$category['auto_annotation']|escape}</textarea>
-
-        <h2>auto description</h2>
-        <textarea name="save[category][auto_description]" class="editor_small">{$category['auto_description']|escape}</textarea>
-    </div>
-    <!-- Авто теги для товаров данной категории (The End)-->
 
     <!-- Короткое описание -->
     <div class="block layer">
