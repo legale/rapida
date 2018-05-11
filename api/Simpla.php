@@ -352,7 +352,7 @@ class Simpla
             self::$virgin = false;
 
             //запустим сессию, если запуск не из командной строки
-            if (!$this->config->cli) {
+            if (session_status() === PHP_SESSION_NONE && !$this->config->cli) {
                 session_start();
             }
 
