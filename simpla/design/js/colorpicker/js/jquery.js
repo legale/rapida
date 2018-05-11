@@ -3735,8 +3735,9 @@ jQuery.extend({
 
 		function add( key, value ){
 			s[ s.length ] = encodeURIComponent(key) + '=' + encodeURIComponent(value);
-        }
-        // If an array was passed in, assume that it is an array
+		};
+
+		// If an array was passed in, assume that it is an array
 		// of form elements
 		if ( jQuery.isArray(a) || a.jquery )
 			// Serialize the form elements

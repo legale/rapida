@@ -84,7 +84,8 @@ CodeMirror.defineMode("vbscript", function(conf, parserConf) {
     if (conf.isASP){
         builtinObjsWords = builtinObjsWords.concat(aspBuiltinObjsWords);
         knownWords = knownWords.concat(aspKnownMethods, aspKnownProperties);
-    }
+    };
+
     var keywords = wordRegexp(commonkeywords);
     var atoms = wordRegexp(atomWords);
     var builtinFuncs = wordRegexp(builtinFuncsWords);

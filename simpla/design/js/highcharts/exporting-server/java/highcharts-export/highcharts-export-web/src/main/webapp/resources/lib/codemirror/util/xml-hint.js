@@ -60,7 +60,7 @@
                 from: { line: cursor.line, ch: cursor.ch - typed.length },
                 to: cursor
             };
-        }
+        };
     };
 
     var getActiveElement = function(codeMirror, text) {
