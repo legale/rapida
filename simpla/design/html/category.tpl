@@ -170,14 +170,14 @@
                     <div class="page_url">/catalog/</div>
                     <input name="save[category][trans2]" class="page_url" type="text"
                            value="{$category['trans2']|escape}"/></li>
-                <li><label class=property>Заголовок</label><input name="save[category][meta_title]" class="simpla_inp"
+                <li><label class=property>Title</label><input name="save[category][meta_title]" class="simpla_inp"
                                                                   type="text" value="{$category['meta_title']|escape}"/>
                 </li>
-                <li><label class=property>Ключевые слова</label><input name="save[category][meta_keywords]"
+                <li><label class=property>meta keywords</label><input name="save[category][meta_keywords]"
                                                                        class="simpla_inp" type="text"
                                                                        value="{$category['meta_keywords']|escape}"/>
                 </li>
-                <li><label class=property>Описание</label><textarea name="save[category][meta_description]"
+                <li><label class=property>meta description</label><textarea name="save[category][meta_description]"
                                                                     class="simpla_inp">{$category['meta_description']|escape}</textarea>
                 </li>
             </ul>
@@ -243,12 +243,20 @@
     </div>
     <!-- Правая колонка (The End)-->
 
-    <!-- Описагние категории -->
+    <!-- Короткое описание -->
     <div class="block layer">
-        <h2>Описание</h2>
+        <h2>Короткое описание до 65 535 символов</h2>
+        <textarea name="save[category][annotation]" class="editor_small">{$category['annotation']|escape}</textarea>
+    </div>
+    <!-- Короткое описание (The End)-->
+
+    <!-- Описание -->
+    <div class="block layer">
+        <h2>Описание до 16 777 215 символов</h2>
         <textarea name="save[category][description]" class="editor_large">{$category['description']|escape}</textarea>
     </div>
-    <!-- Описание категории (The End)-->
+    <!-- Описание (The End)-->
+
     <input class="button_green button_save" type="submit" name="" value="Сохранить"/>
 
 </form>

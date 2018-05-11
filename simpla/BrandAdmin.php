@@ -16,6 +16,7 @@ class BrandAdmin extends Simpla
             $brand['id'] = $this->request->post('id', 'integer');
             $brand['name'] = $this->request->post('name');
             $brand['description'] = $this->request->post('description');
+            $brand['annotation'] = $this->request->post('annotation');
 
             $brand['trans'] = trim($this->request->post('trans', 'string'));
             $brand['meta_title'] = $this->request->post('meta_title');
@@ -24,7 +25,6 @@ class BrandAdmin extends Simpla
 
             // Не допустить одинаковые транслит названия разделов.
             $c = $this->brands->get_brand($brand['trans']);
-            print_r($c);
             if ($c && $c['id'] != $brand['id']) {
                 $this->design->assign('message_error', 'url_exists');
 

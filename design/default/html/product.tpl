@@ -35,7 +35,7 @@
 	<!-- Описание товара -->
 	<div class="description">
 	
-		{$product['body']}
+		{$product['description']}
 		
 		
 	</div>

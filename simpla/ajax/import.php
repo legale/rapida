@@ -205,7 +205,7 @@ class ImportAjax extends Simpla
         }
 
         if (isset($item['description'])) {
-            $product['body'] = $item['description'];
+            $product['description'] = $item['description'];
         }
 
         if (isset($item['visible'])) {
