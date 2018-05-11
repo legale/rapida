@@ -6,8 +6,8 @@
 <!-- Хлебные крошки /-->
 <div id="path">
 	<a href="./">Главная</a>
-	{foreach $category['path'] as $cat}
-	→ <a href="catalog/{$cat['trans']}">{$cat['name']|escape}</a>
+	{foreach $cat['path'] as $c}
+	→ <a href="catalog/{$c['trans']}">{$c['name']|escape}</a>
 	{/foreach}
 	{if $brand}
 	→ <a href="catalog/{$cat['trans']}/{$brand['trans']}">{$brand['name']|escape}</a>
