@@ -201,7 +201,7 @@ function convert_spaces($str, $reverse = false ){
 
 //фильтруем все непечатаемые символы
 function filter_ascii($str){
-    return preg_replace('/[^[:ascii:]а-яА-Я]/u', '', $str);
+    return preg_replace('/[^[:ascii:]а-яА-ЯёЁ]/u', '', $str);
 }
 
 //заменяет в строке дефисы на волну поскольку они используется системой в качестве разделителей
