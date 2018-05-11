@@ -41,6 +41,7 @@
             n.setAttribute('style', '');
             ra.live('click', n.querySelector('[delete_link=true]'), delete_link);
         }
+
         //функция для удаления
         function delete_link(e) {
             "use strict";
@@ -277,6 +278,20 @@
     </div>
 
 
+    <div class="product_categories">
+        <label>Основная категория</label>
+        <div>
+            <ul>
+                <li container="true">
+                    <select name="save[product][cat_id]">
+                        {category_select categories=$cats selected_id=$product['cat_id']}
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
     <!-- Варианты товара -->
     <div id="variants_block">
         <ul id="header">
@@ -305,45 +320,46 @@
                 <li class="variant_price"><input name="save[variants][price2][]" type="" value=""></li>
                 <li class="variant_price"><input name="save[variants][price3][]" type="" value=""></li>
                 <li class="variant_discount"><input name="save[variants][old_price][]" type="" value=""></li>
-                <li class="variant_amount"><input name="save[variants][stock][]" type="" value="∞">{$settings->units}</li>
+                <li class="variant_amount"><input name="save[variants][stock][]" type="" value="∞">{$settings->units}
+                </li>
                 <a delete_link="true" class="icons delete"></a>
             </ul>
             <!-- Это шаблон строки нового варианта (The end) -->
             {if isset($product)}
-            {foreach $product['variants'] as $v}
-                <ul container="true">
-                    <li class="variant_move">
-                        <div class="move_zone"></div>
-                    </li>
-                    <li class="variant_name">
-                        <input name="save[variants][product_id][]" type="hidden" value="{$product['id']|escape}"/>
-                        <input name="save[variants][id][]" type="hidden" value="{$v['id']|escape}"/>
-                        <input name="save[variants][name][]" type="text" value="{$v['name']|escape}"/>
-                    </li>
-                    <li class="variant_sku">
-                        <input name="save[variants][sku][]" type="text" value="{$v['sku']|escape}"/>
-                    </li>
-                    <li class="variant_price">
-                        <input name="save[variants][price][]" type="text" value="{$v['price']|escape}"/>
-                    </li>
-                    <li class="variant_price">
-                        <input name="save[variants][price1][]" type="text" value="{$v['price1']|escape}"/>
-                    </li>
-                    <li class="variant_price">
-                        <input name="save[variants][price2][]" type="text" value="{$v['price2']|escape}"/>
-                    </li>
-                    <li class="variant_price">
-                        <input name="save[variants][price3][]" type="text" value="{$v['price3']|escape}"/>
-                    </li>
-                    <li class="variant_discount">
-                        <input name="save[variants][old_price][]" type="text" value="{$v['old_price']|escape}"/>
-                    </li>
-                    <li class="variant_amount">
-                        <input name="save[variants][stock][]" type="text" value="{$v['stock']|escape}"/>
-                        {$settings->units}</li>
-                    <a delete_link="true" class="icons delete"></a>
-                </ul>
-            {/foreach}
+                {foreach $product['variants'] as $v}
+                    <ul container="true">
+                        <li class="variant_move">
+                            <div class="move_zone"></div>
+                        </li>
+                        <li class="variant_name">
+                            <input name="save[variants][product_id][]" type="hidden" value="{$product['id']|escape}"/>
+                            <input name="save[variants][id][]" type="hidden" value="{$v['id']|escape}"/>
+                            <input name="save[variants][name][]" type="text" value="{$v['name']|escape}"/>
+                        </li>
+                        <li class="variant_sku">
+                            <input name="save[variants][sku][]" type="text" value="{$v['sku']|escape}"/>
+                        </li>
+                        <li class="variant_price">
+                            <input name="save[variants][price][]" type="text" value="{$v['price']|escape}"/>
+                        </li>
+                        <li class="variant_price">
+                            <input name="save[variants][price1][]" type="text" value="{$v['price1']|escape}"/>
+                        </li>
+                        <li class="variant_price">
+                            <input name="save[variants][price2][]" type="text" value="{$v['price2']|escape}"/>
+                        </li>
+                        <li class="variant_price">
+                            <input name="save[variants][price3][]" type="text" value="{$v['price3']|escape}"/>
+                        </li>
+                        <li class="variant_discount">
+                            <input name="save[variants][old_price][]" type="text" value="{$v['old_price']|escape}"/>
+                        </li>
+                        <li class="variant_amount">
+                            <input name="save[variants][stock][]" type="text" value="{$v['stock']|escape}"/>
+                            {$settings->units}</li>
+                        <a delete_link="true" class="icons delete"></a>
+                    </ul>
+                {/foreach}
             {/if}
         </div>
 
@@ -366,7 +382,8 @@
                 </li>
                 <li><label class=property>Адрес2</label>
                     <div class="page_url"> /products/</div>
-                    <input name="save[product][trans2]" class="page_url" type="text" value="{$product['trans2']|escape}"/>
+                    <input name="save[product][trans2]" class="page_url" type="text"
+                           value="{$product['trans2']|escape}"/>
                 </li>
                 <li><label class=property>Заголовок</label>
                     <input name="save[product][meta_title]" type="text" value="{$product['meta_title']|escape}"/>
@@ -500,10 +517,10 @@
                             ra.apiAjax(
                                 {
                                     'class': 'products', 'method': 'get_products_ids', 'args': {
-                                    filter: {
-                                        'keyword': term
+                                        filter: {
+                                            'keyword': term
+                                        }
                                     }
-                                }
                                 }, function (e) {
                                     res = JSON.parse(e);
                                     console.log(res);
