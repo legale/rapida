@@ -597,7 +597,7 @@
 
     <div class="block">
         <h2>Полное описание</h2>
-        <textarea name="save[product][body]" class="editor_large">{$product['description']|escape}</textarea>
+        <textarea name="save[product][description]" class="editor_large">{$product['description']|escape}</textarea>
     </div>
     <!-- Описание товара (The End)-->
     <input class="button_green button_save" type="submit" name="" value="Сохранить"/>

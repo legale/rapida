@@ -150,7 +150,7 @@ class ProductView extends View
         // Категория и бренд товара
         $product['categories'] = $this->categories->get_categories(array('product_id' => $product['id']));
         $this->design->assign('brand', $this->brands->get_brand(intval($product['brand_id'])));
-        $this->design->assign('category', reset($product['categories']));
+        $this->design->assign('cat', reset($product['categories']));
 
 
         // Добавление в историю просмотров товаров
@@ -167,9 +167,48 @@ class ProductView extends View
         $cookie_val = implode(',', array_slice($browsed_products, -$max_visited_products, $max_visited_products));
         setcookie("browsed_products", $cookie_val, $expire, "/");
 
-        $this->design->assign('meta_title', $product['meta_title']);
-        $this->design->assign('meta_keywords', $product['meta_keywords']);
-        $this->design->assign('meta_description', $product['meta_description']);
+
+
+
+        $fids = array_keys($product['options']);
+        if(!empty($fids)) {
+            $features = $this->features->get_features(array('id' => $fids));
+        }
+
+        foreach ($features as $fid=>$f) {
+            if ((bool)$f['tpl']) {
+                $pairs['{$'.$f['trans'].'}'] = $product['options'][$fid]['val'];
+            }
+        }
+//        print "<PRE>";
+//        print_r($pairs);
+//        print_r($features);
+//        print_r($product['options']);
+//        print "</PRE>";
+
+
+        $cat = $this->categories->get_category($product['cid']);
+
+        //авто теги
+        $meta_title = $cat['auto_meta_title'] ? $cat['auto_meta_title'] : $product['meta_title'];
+        $meta_keywords = $cat['auto_meta_keywords'] ? $cat['auto_meta_keywords'] : $product['meta_keywords'];
+        $meta_description = $cat['auto_meta_description'] ? $cat['auto_meta_description'] : $product['meta_description'];
+        $annotation = $cat['auto_annotation'] ? $cat['auto_annotation'] : $product['annotation'];
+        $description = $cat['auto_description'] ? $cat['auto_description'] : $product['description'];
+
+        $meta_title = strtr($meta_title, $pairs);
+        $meta_keywords = strtr($meta_keywords, $pairs);
+        $meta_description = strtr($meta_description, $pairs);
+        $annotation = strtr($annotation, $pairs);
+        $description = strtr($description, $pairs);
+
+
+
+        $this->design->assign('meta_title', $meta_title);
+        $this->design->assign('meta_keywords', $meta_keywords);
+        $this->design->assign('meta_description', $meta_description);
+        $this->design->assign('annotation', $annotation);
+        $this->design->assign('description', $description);
 
         return $this->design->fetch('product.tpl');
     }
