@@ -62,12 +62,6 @@ class ProductsView extends View
         if (!$this->filter) {
             return false;
         }
-//		print_r($this->filter);
-
-//        if (!empty($this->filter['redirect'])) {
-//            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
-//            header("Location: $uri", TRUE, 301);
-//        }
 
 
         //добавляем в фильтр все дочерние категории
@@ -85,11 +79,17 @@ class ProductsView extends View
 
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
 
-        if ($this->filter['page'] < 1 || $this->filter['page'] > $this->filter['pages']) {
+        if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
+        }else if($this->filter['page'] < 1 || (isset($this->root->uri_arr['path']['page']) && $this->root->uri_arr['path']['page'] == 1) ){
+            $this->filter['page'] = 1;
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+            header("Location: $uri", TRUE, 301);
         }
+
+
         //REDIRECT END
 
         //сделаем массив для пагинации
@@ -189,9 +189,23 @@ class ProductsView extends View
 
         //~ // Свойства товаров END
 
+        //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
+        if($this->filter['page'] !== 1){
+            $filter = $this->filter;
+            $filter['page'] = 1;
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter);
+            $canonical = $uri;
+            header("Link: <$uri>; rel=\"canonical\"", TRUE);
+        }else if (isset($this->filter['keyword'])){
+            $canonical = $this->config->root_url;
+        }else{
+            $canonical = null;
+        }
+        $this->design->assign('canonical', $canonical);
+
+
         //передаем фильтр
         $this->design->assign('filter', $this->filter);
-
 
         //ajax
         if (isset($_GET['ajax'])) {
