@@ -243,6 +243,25 @@
     </div>
     <!-- Правая колонка (The End)-->
 
+    <!-- Авто теги для товаров данной категории -->
+    <div class="block layer">
+        <h2>auto meta title</h2>
+        <textarea name="save[category][auto_meta_title]" class="editor_small">{$category['auto_meta_title']|escape}</textarea>
+
+        <h2>auto meta keywords</h2>
+        <textarea name="save[category][auto_meta_keywords]" class="editor_small">{$category['auto_meta_keywords']|escape}</textarea>
+
+        <h2>auto meta description</h2>
+        <textarea name="save[category][auto_meta_description]" class="editor_small">{$category['auto_meta_description']|escape}</textarea>
+
+        <h2>auto annotation</h2>
+        <textarea name="save[category][auto_annotation]" class="editor_small">{$category['auto_annotation']|escape}</textarea>
+
+        <h2>auto description</h2>
+        <textarea name="save[category][auto_description]" class="editor_small">{$category['auto_description']|escape}</textarea>
+    </div>
+    <!-- Авто теги для товаров данной категории (The End)-->
+
     <!-- Короткое описание -->
     <div class="block layer">
         <h2>Короткое описание до 65 535 символов</h2>
