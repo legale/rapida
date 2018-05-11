@@ -216,7 +216,7 @@ class ControllerMaster extends Simpla
         }
 
         //теперь страница, если есть
-        if (isset($arr['page']) && $arr['page'] !== '') {
+        if (isset($arr['page']) && $arr['page'] > 1) {
             $res .= '/page-' . $arr['page'];
         }
 
