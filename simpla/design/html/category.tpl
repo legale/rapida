@@ -130,7 +130,8 @@
 <form method="post" class="product" enctype="multipart/form-data">
     <input type=hidden name="session_id" value="{$smarty.session.id}">
     <div id="name">
-        <input class="name" name='save[category][name]' type="text" value="{$category['name']|escape}"/>
+        <label>Название</label><input class="name" name='save[category][name]' type="text" value="{$category['name']|escape}"/>
+        <label>Название в ед. числе</label><input class="name" name='save[category][name_singular]' type="text" value="{$category['name_singular']|escape}"/>
         <input name='save[category][id]' type="hidden" value="{$category['id']|escape}"/>
         <div class="checkbox">
             <input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox"

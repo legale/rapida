@@ -41,7 +41,7 @@
         <h2>Настройки системы</h2>
 
         <div class="switcher">
-            <label class="switcher__title">Кеширование запросов к БД</label>
+            <label class="property">Кеширование запросов к БД</label>
             <input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch"
                    {if $config->cache}checked{/if}>
             <label class="switcher__label" for="cache_switch">
@@ -50,7 +50,7 @@
         </div>
 
         <div class="switcher">
-            <label class="switcher__title">Способ сохранения кеша на диск</label>
+            <label class="property">Способ сохранения кеша на диск</label>
             <select name="method">
                 <option value="json" {if $config->method === 'json'}selected{/if}>json</option>
                 <option value="serialize" {if $config->method === 'serialize'}selected{/if}>serialize</option>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="switcher">
-            <label class="switcher__title">Отладчик работы системы (Появляется в конце каждой страницы)</label>
+            <label class="property">Отладчик работы системы (Появляется в конце каждой страницы)</label>
             <input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch"
                    {if $config->debug}checked{/if}>
             <label class="switcher__label" for="debug_switch">
