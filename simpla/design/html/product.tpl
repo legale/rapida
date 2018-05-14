@@ -208,7 +208,8 @@
 
     <a class="link" target="_blank" href="../products/{$product['trans']}">Открыть товар на сайте</a>
     <div id="name">
-        <input class="name" name="save[product][name]" type="text" value="{$product['name']|escape}"/>
+        <label>Название</label><input class="name" name="save[product][name]" type="text" value="{$product['name']|escape}"/>
+        <label>Короткое название</label><input class="name" name="save[product][name_short]" type="text" value="{$product['name_short']|escape}"/>
         <input name="save[product][id]" type="hidden" value="{$product['id']|escape}"/>
         <div class="checkbox">
             <input name="save[product][visible]" value="1" type="checkbox" id="active_checkbox"
