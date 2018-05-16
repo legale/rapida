@@ -90,6 +90,7 @@ class Import_single extends Simpla
         $str =  fgets($f, 4096);
         $this->columns = str_getcsv($str, self::COL_DELIM, self::COL_ENCLOSURE, self::COL_ESCAPE);
 
+
         // Заменяем имена колонок из файла на внутренние имена колонок
         foreach ($this->columns as $i => $col) {
             $internal_name = $this->get_col_name($col);
@@ -117,10 +118,12 @@ class Import_single extends Simpla
 
         // Проходимся по строкам, пока не конец файла
         // или пока не импортировано достаточно строк для одного запроса
-        for ($k = 0; !feof($f) && $k < $this->products_count; $k++) {
+        for ($k = 0; ($str = fgets($f, 4096)) && $k < $this->products_count; $k++) {
+
             // Читаем строку
-            $str =  fgets($f, 4096);
             $line = str_getcsv($str, self::COL_DELIM, self::COL_ENCLOSURE, self::COL_ESCAPE);
+
+            $item = array();
 
             $product = null;
 
@@ -129,7 +132,6 @@ class Import_single extends Simpla
                 // Проходимся по колонкам строки
                 foreach ($this->columns as $i => $col) {
                     // Создаем массив item[название_колонки]=значение и сразу обрезаем пробелы по краям
-
                     if (isset($line[$i])) {
                         $item[$col] = trim($line[$i]);
                     }
@@ -174,9 +176,11 @@ class Import_single extends Simpla
      */
     private function get_col_name($name)
     {
+        dtimer::log(__METHOD__." $name");
         $name = mb_strtolower($name);
         foreach ($this->col_names as $i => $names) {
             if (in_array($name, $names)) {
+                dtimer::log(__METHOD__." return $i");
                 return $i;
             }
         }
@@ -271,7 +275,7 @@ class Import_single extends Simpla
         }
 
 
-        $product['id'] = $pid = $item['product_id'];
+        $pid = $item['product_id'];
         unset($item['product_id']);
 
         // Если задан бренд
@@ -307,12 +311,33 @@ class Import_single extends Simpla
         }
 
         //Обновляем товар
-        $this->products->update_product($pid, $product);
+        if(!empty($product)) {
+            $this->products->update_product($pid, $product);
+        }
+        // Изображения товаров
+        if (isset($item['images'])) {
+            // Изображений может быть несколько
+            $images = explode(self::DELIM, $item['images']);
+            foreach ($images as $image) {
+                $image = trim($image);
+                if (!isset($image)) {
+                    return false;
+                }
+                // Имя файла
+                $image_basename = pathinfo($image, PATHINFO_BASENAME);
+
+                // Добавляем изображение только если такого еще нет в этом товаре
+                if (!$this->image->get('products', array('item_id' => $pid, 'basename' => $image_basename))) {
+                    $this->image->add('products', $pid, $image, true, true);
+                }
+            }
+        }
 
 
 
         // Характеристики товаров
         $features = array(); //массив для записи пар id свойства и id значения свойства
+
         foreach ($item as $f_name => $f_value) {
             // Если нет такого названия колонки, значит это название свойства
             if (!in_array($f_name, $this->col_names)) {
