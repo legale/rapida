@@ -241,15 +241,11 @@ class ProductsView extends View
                 }
             }
 
+            $pat = '/\{\$.+\}/u';//шаблон для удаление неиспользованных переменных
 
-            $auto_meta_title = strtr($auto_meta_title, $pairs);
-            $auto_meta_title = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_title);
-
-            $auto_meta_keywords = strtr($auto_meta_keywords, $pairs);
-            $auto_meta_keywords = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_keywords);
-
-            $auto_meta_description = strtr($auto_meta_description, $pairs);
-            $auto_meta_description = preg_replace('/(\{\$.*?\})/i', '', $auto_meta_description);
+            $auto_meta_title = preg_replace($pat, '',  strtr($auto_meta_title, $pairs));
+            $auto_meta_keywords = preg_replace($pat, '',  strtr($auto_meta_keywords, $pairs));
+            $auto_meta_description = preg_replace($pat, '',  strtr($auto_meta_description, $pairs));
 
             // добавим слова страница № для страниц с пагинацией
             if ($this->filter['page'] > 1) {
