@@ -42,6 +42,7 @@ class CategoryAdmin extends Simpla
 
         //Сначала мы все получим из моделей
         $category = $this->categories->get_category((int)$cid);
+        //print_r($category);
         $category['images'] = $this->image->get('categories', array('item_id' => $cid) );
 
 
