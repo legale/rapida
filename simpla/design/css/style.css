@@ -4,6 +4,7 @@
 /* все поля ввода */
 input{
 	border: 1px #909090 dotted;
+	width: 100%;
 }
 
 /* Сообщение */
@@ -1153,7 +1154,7 @@ div#order_details div#user
 }
 .order_details input[type=text]
 {
-	width:100%;	
+	width: 100%;
 	margin-bottom: 10px;
 }
 
