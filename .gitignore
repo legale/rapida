@@ -7,6 +7,7 @@ cache/**
 design/**
 .vscode/**
 sandbox/**
+dist/**
 .idea/**
 *.xml
 *.xml.gz

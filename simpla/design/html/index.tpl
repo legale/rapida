@@ -7,6 +7,7 @@
 <title>{$meta_title}</title>
 <link rel="icon" href="design/images/favicon.ico" type="image/x-icon">
 <link href="design/css/style.css" rel="stylesheet" type="text/css" />
+<link href="design/css/grid.css" rel="stylesheet" type="text/css" />
 
 <script src="design/js/jquery/jquery.js"></script>
 <script src="design/js/jquery/jquery.form.js"></script>
@@ -31,7 +32,7 @@
 <a href='/' class='admin_bookmark'></a>
 
 <!-- Вся страница --> 
-<div id="main">
+<div class="container">
 	<!-- Главное меню -->
 	<ul id="main_menu">
 		

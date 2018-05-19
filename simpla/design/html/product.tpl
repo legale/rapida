@@ -201,23 +201,49 @@
     </div>
 {/foreach}
 
+<a class="link" target="_blank" href="../products/{$product['trans']}">Открыть товар на сайте</a>
 
 <!-- Основная форма -->
 <form method="post" class="product" enctype="multipart/form-data">
     <input type="hidden" name="session_id" value="{$smarty.session.id}">
 
-    <a class="link" target="_blank" href="../products/{$product['trans']}">Открыть товар на сайте</a>
-    <div id="name">
-        <label>Название</label><input class="name" name="save[product][name]" type="text" value="{$product['name']|escape}"/>
-        <label>Короткое название</label><input class="name" name="save[product][name_short]" type="text" value="{$product['name_short']|escape}"/>
-        <input name="save[product][id]" type="hidden" value="{$product['id']|escape}"/>
-        <div class="checkbox">
-            <input name="save[product][visible]" value="1" type="checkbox" id="active_checkbox"
-                   {if $product['visible']}checked{/if}/> <label for="active_checkbox">Активен</label>
+    <div class="columns is-variable is-1">
+        <div class="column is-8">
+            <div class="name">
+                <label>Название</label><input class="name" name="save[product][name]" type="text"
+                                              value="{$product['name']|escape}"/>
+                <input name="save[product][id]" type="hidden" value="{$product['id']|escape}"/>
+            </div>
         </div>
-        <div class="checkbox">
-            <input name="save[product][featured]" value="1" type="checkbox" id="featured_checkbox"
-                   {if $product['featured']}checked{/if}/> <label for="featured_checkbox">Рекомендуемый</label>
+        <div class="column is-4">
+            <div class="checkbox">
+                <label for="active_checkbox">Активен</label>
+                <input name="save[product][visible]" value="1" type="checkbox" id="active_checkbox"
+                       {if $product['visible']}checked{/if}/>
+            </div>
+            <div class="checkbox">
+                <label for="featured_checkbox">Рекомендуемый</label>
+                <input name="save[product][featured]" value="1" type="checkbox" id="featured_checkbox"
+                       {if $product['featured']}checked{/if}/>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="columns is-variable is-1">
+            <div class="column is-8">
+                <label>Короткое название</label>
+                <input class="name" name="save[product][name_short]" type="text"
+                       value="{$product['name_short']|escape}"/>
+            </div>
+
+            <div class="column">
+                <label>Кол-во оценок</label>
+                <input name="save[product][votes]" value="{$product['votes']}" type="input">
+            </div>
+            <div class="column">
+                <label>Рейтинг</label>
+                <input name="save[product][rating]" value="{$product['rating']}" type="input">
+            </div>
         </div>
     </div>
 
@@ -231,7 +257,6 @@
             {/foreach}
         </select>
     </div>
-
 
     <div class="product_categories">
         <label>Категория</label>
@@ -277,7 +302,6 @@
             </ul>
         </div>
     </div>
-
 
     <div class="product_categories">
         <label>Основная категория</label>

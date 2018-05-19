@@ -48,6 +48,35 @@ class Products extends Simpla
     );
 
     /**
+     * Функция добавляет просмотр товару
+     */
+    public function add_view($pid)
+    {
+        return $this->db->query("UPDATE __products SET views = views + 1 WHERE id = ?", (int)$pid) ? true : false;
+    }
+
+    /**
+     * Функция присваивает рейтинг товару
+     */
+    public function add_vote($pid, $rating)
+    {
+        $pid = (int)$pid;
+        $p = $this->get_product($pid);
+        if (!$p) {
+            return false;
+        }
+        $rating = (float)$rating;
+        $votes = $p['votes'];
+        $p['votes']++;
+        $p['rating'] = ($p['rating'] * $votes + $rating) / $p['votes'];
+        $update = array(
+            'votes' => $p['votes'],
+            'rating' => $p['rating'],
+        );
+        return $this->update_product($pid, $update) ? array('votes' => $p['votes'], 'rating' => $p['rating'] ) : false;
+    }
+
+    /**
      * Функция возвращает товары
      * Возможные значения фильтра:
      * id - id товара или их массив
@@ -194,7 +223,7 @@ class Products extends Simpla
             }
             $features_filter = "AND p.id in (SELECT product_id FROM __options WHERE 1 $features_filter )";
         }
-        $query = $this->db->placehold("SELECT p.id, p.trans, p.image, p.image_id, p.brand_id, p.name, p.name_short
+        $query = $this->db->placehold("SELECT p.id, p.views, p.votes, p.rating, p.trans, p.image, p.image_id, p.brand_id, p.name, p.name_short
 				FROM __products p 
 				WHERE 
 					1
