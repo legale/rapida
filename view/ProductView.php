@@ -37,6 +37,9 @@ class ProductView extends View
             return false;
         }
 
+        //добавляем просмотр товару
+        $this->products->add_view($product['id']);
+
         //картинки
         $product['images'] = $this->image->get('products', array('item_id' => $product['id']));
 
