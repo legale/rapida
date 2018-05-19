@@ -228,26 +228,25 @@
             </div>
         </div>
     </div>
-    <div class="content">
-        <div class="columns is-variable is-1">
-            <div class="column is-7">
-                <label>Короткое название</label>
-                <input class="name" name="save[product][name_short]" type="text"
-                       value="{$product['name_short']|escape}"/>
-            </div>
 
-            <div class="column is-2">
-                <label>Кол-во просмотров</label>
-                <input name="save[product][views]" value="{$product['views']}" type="input">
-            </div>
-            <div class="column is-2">
-                <label>Кол-во оценок</label>
-                <input name="save[product][votes]" value="{$product['votes']}" type="input">
-            </div>
-            <div class="column is-1">
-                <label>Рейтинг</label>
-                <input name="save[product][rating]" value="{$product['rating']}" type="input">
-            </div>
+    <div class="columns is-variable is-1">
+        <div class="column is-7">
+            <label>Короткое название</label>
+            <input class="name" name="save[product][name_short]" type="text"
+                   value="{$product['name_short']|escape}"/>
+        </div>
+
+        <div class="column is-2">
+            <label>Кол-во просмотров</label>
+            <input name="save[product][views]" value="{$product['views']}" type="input">
+        </div>
+        <div class="column is-2">
+            <label>Кол-во оценок</label>
+            <input name="save[product][votes]" value="{$product['votes']}" type="input">
+        </div>
+        <div class="column is-1">
+            <label>Рейтинг</label>
+            <input name="save[product][rating]" value="{$product['rating']}" type="input">
         </div>
     </div>
 

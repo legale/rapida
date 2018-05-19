@@ -7,11 +7,11 @@ require_once('api/Simpla.php');
 ############################################
 class CategoryAdmin extends Simpla
 {
-	
+
 	//это переменная для сохранения и последующей передачи в шаблон статусов
 	//выполнения отдельных операций
 	private $status = array();
-	
+
 	//единственный общедоступный метод в классе, все остальные методы вызываются уже из него
     public function fetch()
     {
@@ -46,14 +46,14 @@ class CategoryAdmin extends Simpla
 
 
 		$cats = $this->categories->get_categories();
-		
+
 		$this->status[] = array(
 		'status'=> 3,
 		'message'=> 'Выполнено открытие',
 		);
 		//теперь передаем в шаблон
         $this->design->assign('status', $this->status);
-		
+
         //Теперь все это запилим в шаблон
         $this->design->assign('category', $category);
         $this->design->assign('cats', $cats);
@@ -81,46 +81,44 @@ class CategoryAdmin extends Simpla
 		dtimer::log(__METHOD__ . " start");
 		//сначала получим данные для сохранения
 		$save = $this->get_data();
-		
+
 		//теперь обновим или создадим категорию
 		$cid = $this->save_category($save['category']);
-		
+
 		//теперь сохраним/загрузим картинки
 		if( $cid !== false ){
 			$this->save_images($cid, $save['images']);
 			$this->upload_images($cid, $save['new_images']);
 		}
-		
+
 		$this->status[] = array(
 			'status' => 3,
 			'message' => 'Изменения сохранены',
 		);
-		
+
 		//теперь выполним сценарий простого открытия, ведь у нас уже есть $cid
 		$this->open($cid);
 
     }
-    
+
     private function get_data(){
 		dtimer::log(__METHOD__ . " start");
-		//~ print "<pre>";
-        //~ print_r($_POST);
-        //~ print "</pre>";
-        
+
+
         $save = array();
         //Сначала надо получить все аргументы из POST запроса
         //это уже по существующим
         $save['category'] = @$_POST['save']['category'];
         $save['images'] = @$_POST['save']['images'];
 
-		//для загружаемых изображений отдельный массив 
+		//для загружаемых изображений отдельный массив
         $save['new_images'] = @$_FILES['new_images'];
         return $save;
 	}
-	
+
 	private function save_category($c){
-		dtimer::log(__METHOD__ . " start");
-		
+		dtimer::log(__METHOD__ . " start ");
+
 		if( !empty_(@$c['id']) ){
 			dtimer::log(__METHOD__ . " update");
 			$cid = $this->categories->update_category($c['id'], $c);
@@ -145,7 +143,7 @@ class CategoryAdmin extends Simpla
 			);
 			return false;
 		}
-		
+
 		dtimer::log(__METHOD__ . " add ok $cid");
 		return $cid;
 	}
@@ -153,10 +151,7 @@ class CategoryAdmin extends Simpla
 
 	private function save_images($cid, $raw){
 		dtimer::log(__METHOD__ . " start");
-		//~ print_r($_POST);
-		
-		
-		
+
 		//тут будут id изображений, которые удалять не нужно
 		if(is_array($raw)){
 			$keep = array_flip($raw);
@@ -175,7 +170,7 @@ class CategoryAdmin extends Simpla
 				}
 			}
 		}
-		
+
 		//тут поменяем порядок изображений
 		for($i = 0, $c = count($keep); $i < $c; $i++){
 			$this->image->update('categories', $raw[$i], array('item_id' => $cid, 'pos'=> $i) );
@@ -191,7 +186,7 @@ class CategoryAdmin extends Simpla
 			return false;
 		}
 		foreach($raw['name'] as $k=>$name){
-			
+
 			if(empty_($raw['name'][$k])){ //если имя не задано, просто пропускаем
 				continue;
 			} elseif($raw['error'][$k] !== 0){ //если статус ошибки не 0, значит есть проблема
@@ -201,13 +196,13 @@ class CategoryAdmin extends Simpla
 				);
 				continue;
 			}
-			
-			
+
+
 			if ($img = $this->image->upload('categories', $cid, $raw['tmp_name'][$k], $raw['name'][$k]))
 			{
 				dtimer::log(__METHOD__ . " image uploaded ".$img['basename']);
 				continue;
-			} 
+			}
 			//если пришли сюда, значит изображение добавить не удалось
 			$this->status[] = array(
 				'status' => 2,
