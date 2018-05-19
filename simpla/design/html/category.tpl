@@ -129,15 +129,41 @@
 <!-- Основная форма -->
 <form method="post" class="product" enctype="multipart/form-data">
     <input type=hidden name="session_id" value="{$smarty.session.id}">
-    <div id="name">
-        <label>Название</label><input class="name" name='save[category][name]' type="text" value="{$category['name']|escape}"/>
-        <label>Название в ед. числе</label><input class="name" name='save[category][name_singular]' type="text" value="{$category['name_singular']|escape}"/>
-        <input name='save[category][id]' type="hidden" value="{$category['id']|escape}"/>
-        <div class="checkbox">
-            <input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox"
-                   {if $category['visible']}checked{/if}/> <label for="active_checkbox">Активна</label>
+
+    <div class="columns is-variable is-1">
+        <div class="column is-10">
+            <div class="name">
+                <label>Название</label>
+                <input class="name" name='save[category][name]' type="text"
+                                              value="{$category['name']|escape}"/>
+            </div>
+        </div>
+        <div class="column">
+            <div class="checkbox">
+                <input name='save[category][enabled]' value='0' type="hidden">
+                <input name='save[category][enabled]' value='1' type="checkbox" id="active_checkbox"
+                       {if $category['enabled']}checked{/if}/> <label for="active_checkbox">Включена</label>
+            </div>
         </div>
     </div>
+
+    <div class="columns is-variable is-1">
+        <div class="column is-10">
+            <label>Название в ед. числе</label><input class="name" name='save[category][name_singular]' type="text"
+                                                      value="{$category['name_singular']|escape}"/>
+            <input name='save[category][id]' type="hidden" value="{$category['id']|escape}"/>
+        </div>
+        <div class="column">
+            <div class="checkbox">
+                <input name='save[category][visible]' value='0' type="hidden">
+                <input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/>
+                <label for="active_checkbox">Видимость</label>
+            </div>
+        </div>
+
+    </div>
+
+
     <label class=property>Родительская категория</label>
     <div сlass="product_categories">
         <select name="save[category][parent_id]">
@@ -167,23 +193,28 @@
             <ul>
                 <li><label class=property>Адрес</label>
                     <div class="page_url">/catalog/</div>
-                    <input name="save[category][trans]" class="page_url" type="text" value="{$category['trans']|escape}"/>
+                    <input name="save[category][trans]" class="page_url" type="text"
+                           value="{$category['trans']|escape}"/>
                 </li>
                 <li><label class=property>Адрес2</label>
                     <div class="page_url">/catalog/</div>
-                    <input name="save[category][trans2]" class="page_url" type="text" value="{$category['trans2']|escape}"/></li>
+                    <input name="save[category][trans2]" class="page_url" type="text"
+                           value="{$category['trans2']|escape}"/></li>
 
                 <li>
                     <label class=property>Title</label>
-                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text" value="{$category['meta_title']|escape}"></textarea>
+                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text"
+                              value="{$category['meta_title']|escape}"></textarea>
                 </li>
                 <li>
                     <label class=property>meta keywords</label>
-                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text" value="{$category['meta_keywords']|escape}"></textarea>
+                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text"
+                              value="{$category['meta_keywords']|escape}"></textarea>
                 </li>
                 <li>
                     <label class=property>meta description</label>
-                    <textarea name="save[category][meta_description]" class="simpla_inp">{$category['meta_description']|escape}</textarea>
+                    <textarea name="save[category][meta_description]"
+                              class="simpla_inp">{$category['meta_description']|escape}</textarea>
                 </li>
             </ul>
         </div>
@@ -204,10 +235,12 @@
                     <textarea name="save[category][auto_meta_title]">{$category['auto_meta_title']|escape}</textarea>
                 <li>
                     <label class="property">auto meta keywords</label>
-                    <textarea name="save[category][auto_meta_keywords]">{$category['auto_meta_keywords']|escape}</textarea>
+                    <textarea
+                            name="save[category][auto_meta_keywords]">{$category['auto_meta_keywords']|escape}</textarea>
                 <li>
                     <label class="property">auto meta description</label>
-                    <textarea name="save[category][auto_meta_description]">{$category['auto_meta_description']|escape}</textarea>
+                    <textarea
+                            name="save[category][auto_meta_description]">{$category['auto_meta_description']|escape}</textarea>
                 <li>
                     <label class="property">auto annotation</label>
                     <textarea name="save[category][auto_annotation]">{$category['auto_annotation']|escape}</textarea>
@@ -270,7 +303,6 @@
 
     </div>
     <!-- Правая колонка (The End)-->
-
 
 
     <!-- Короткое описание -->

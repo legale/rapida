@@ -39,11 +39,11 @@ class ProductsView extends View
             $cat = $this->categories->get_category($this->filter['category_url']);
         }
         //Остановимя если категории не существует или категория невидимая, а сессия не админская
-        if (isset($cat) && empty($cat)) {
-            dtimer::log(__METHOD__ . __LINE__ . " empty category ", 2);
+        if (!isset($cat)) {
+            dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
             return false;
-        } else if (isset($cat['visible']) && !$cat['visible'] && empty($_SESSION['admin'])) {
-            dtimer::log(__METHOD__ . __LINE__ . " invisible category ");
+        } else if (!$cat['enabled'] && empty($_SESSION['admin'])) {
+            dtimer::log(__METHOD__ . __LINE__ . " disabled category. available only for admin session. ", 2);
             return false;
         }
 
