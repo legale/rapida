@@ -203,13 +203,11 @@
 
                 <li>
                     <label class=property>Title</label>
-                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text"
-                              value="{$category['meta_title']|escape}"></textarea>
+                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text">{$category['meta_title']|escape}</textarea>
                 </li>
                 <li>
                     <label class=property>meta keywords</label>
-                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text"
-                              value="{$category['meta_keywords']|escape}"></textarea>
+                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text">{$category['meta_keywords']|escape}</textarea>
                 </li>
                 <li>
                     <label class=property>meta description</label>

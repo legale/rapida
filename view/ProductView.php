@@ -202,11 +202,13 @@ class ProductView extends View
         $description = $cat['auto_description'] ? $cat['auto_description'] : $product['description'];
 
         //производим замену
-        $meta_title = strtr($meta_title, $pairs);
-        $meta_keywords = strtr($meta_keywords, $pairs);
-        $meta_description = strtr($meta_description, $pairs);
-        $annotation = strtr($annotation, $pairs);
-        $description = strtr($description, $pairs);
+
+        $pat = '/\{\$.+\}/u';//шаблон для удаление неиспользованных переменных
+        $meta_title = preg_replace($pat, '',  strtr($meta_title, $pairs));
+        $meta_keywords = preg_replace($pat, '',  strtr($meta_keywords, $pairs));
+        $meta_description = preg_replace($pat, '',  strtr($meta_description, $pairs));
+        $annotation = preg_replace($pat, '',  strtr($annotation, $pairs));
+        $description = preg_replace($pat, '',  strtr($description, $pairs));
 
 
         $this->design->assign('meta_title', $meta_title);
