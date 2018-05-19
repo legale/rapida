@@ -66,7 +66,7 @@ class Bender
 		$srchash = $this->check_recombine( $output_array, $scripts ) ;
 		$this->srchash = $srchash ;
 		if( $this->recombine === false ){
-			return;
+			return true;
 		}
 
 		$root = $this->root_dir;
@@ -108,7 +108,9 @@ class Bender
 				}
 				break;
 		}
+
 		file_put_contents( $outputfile , $packed );
+		return true;
 	}
 
 	// Get extension in lowercase
@@ -173,7 +175,7 @@ class Bender
 		$filename = $output_array['filename'];
 		$dirname = $output_array['dirname'];
 		$ext = $output_array['extension'];
-		$srchash = hash("md4", implode('', $files) );
+		$srchash = md5(implode('', $files) );
 		
 		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext";
 		//if outputfile is not exists set $outfile_mtime = 0
@@ -191,6 +193,7 @@ class Bender
 			//~ print "mtime bundle " . $outputfile_mtime . " mtime src " . filemtime( $root.$file ) . $root.$file;
 			if ( $outputfile_mtime < filemtime( $file ) ){
 				$this->recombine = true;
+				break;
 			}
 		}
 		return $srchash; 

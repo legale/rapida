@@ -24,6 +24,7 @@ body, html{
 	margin-right: auto;
 	margin-left: auto;
 	height: 90px;
+	box-sizing: content-box;
 }
 #main_menu li {
 	float: left;
@@ -68,7 +69,7 @@ border-radius:10px;
 	margin-left: auto;
 	padding-right: 2px;
 	font-size: 17px;
-	height: 36px;
+	height: 39px;
 	border-bottom: 1px solid #ffffff;
 }
 #tab_menu a {
@@ -79,7 +80,7 @@ border-radius:10px;
 	float: left;
 }
 #tab_menu li a {
-	height: 28px;
+	height: 38px;
 	padding-right: 20px;
 	padding-left: 20px;
 	padding-top: 7px;
@@ -115,7 +116,6 @@ border-radius:10px;
 	border-right: 1px solid #ffffff;
 	border-left: 1px solid #ffffff;
 	border-bottom:1px solid #f7f7f7;
-	height: 28px;
 	text-shadow: 0px 1px 0px #fff;
 	background-position: 0  -101px;
 	background-color: #f4f4f4; 
@@ -129,7 +129,6 @@ border-radius:10px;
 
 /* Центральная часть страницы */
 #middle {
-	width: 940px;
 	min-height: 300px;
 	padding: 30px;
 	background-color: #f7f7f7;
