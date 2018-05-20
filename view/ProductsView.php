@@ -141,7 +141,13 @@ class ProductsView extends View
         $cat['brands'] = $brands;
         //Если выбран только 1 бренд, запилим его в шаблон
         if (isset($this->filter['brand_id']) && count($this->filter['brand_id']) === 1) {
-            $cat['brand'] = $brands[reset($this->filter['brand_id'])];
+            $bid = reset($this->filter['brand_id']);
+            if(isset($brands[$bid])) {
+                $cat['brand'] = $brands[$bid];
+            }else{
+                dtimer::log(__METHOD__. ' brand_id $bid not found for this category ', 1);
+                return false;
+            }
         }
 //        print_r($cat['brand']);
 
