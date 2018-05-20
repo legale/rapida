@@ -42,7 +42,7 @@ class ProductsView extends View
         if (isset($cat) && !empty($cat)) {
             dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
             return false;
-        } else if (!$cat['enabled'] && empty($_SESSION['admin'])) {
+        } else if (isset($cat) && !$cat['enabled'] && empty($_SESSION['admin'])) {
             dtimer::log(__METHOD__ . __LINE__ . " disabled category. available only for admin session. ", 2);
             return false;
         }
