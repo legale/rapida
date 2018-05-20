@@ -37,15 +37,18 @@ class ProductsView extends View
         if (isset($this->filter['category_url'])) {
             dtimer::log(__METHOD__ . __LINE__ . " " . $this->filter['category_url']);
             $cat = $this->categories->get_category($this->filter['category_url']);
+
+            //Остановимя если категории не существует или категория невидимая, а сессия не админская
+            if (!isset($cat)) {
+                dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
+                return false;
+            }else if (!$cat['enabled'] && !isset($_SESSION['admin'])) {
+                dtimer::log(__METHOD__ . __LINE__ . " disabled category. available only for admin session. ", 2);
+                return false;
+            }
         }
-        //Остановимя если категории не существует или категория невидимая, а сессия не админская
-        if (isset($cat) && !empty($cat)) {
-            dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
-            return false;
-        } else if (isset($cat) && !$cat['enabled'] && empty($_SESSION['admin'])) {
-            dtimer::log(__METHOD__ . __LINE__ . " disabled category. available only for admin session. ", 2);
-            return false;
-        }
+
+
 
         //REDIRECT
         //проверяем альтернативное имя
@@ -83,7 +86,7 @@ class ProductsView extends View
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
-        }else if($this->filter['page'] < 1 || (isset($this->root->uri_arr['path']['page']) && $this->root->uri_arr['path']['page'] == 1) ){
+        } else if ($this->filter['page'] < 1 || (isset($this->root->uri_arr['path']['page']) && $this->root->uri_arr['path']['page'] == 1)) {
             $this->filter['page'] = 1;
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
@@ -190,15 +193,15 @@ class ProductsView extends View
         //~ // Свойства товаров END
 
         //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
-        if($this->filter['page'] !== 1){
+        if ($this->filter['page'] !== 1) {
             $filter = $this->filter;
             $filter['page'] = 1;
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter);
             $canonical = $uri;
             header("Link: <$uri>; rel=\"canonical\"", TRUE);
-        }else if (isset($this->filter['keyword'])){
+        } else if (isset($this->filter['keyword'])) {
             $canonical = $this->config->root_url;
-        }else{
+        } else {
             $canonical = null;
         }
         $this->design->assign('canonical', $canonical);
@@ -243,9 +246,9 @@ class ProductsView extends View
 
             $pat = '/\{\$.+\}/u';//шаблон для удаление неиспользованных переменных
 
-            $auto_meta_title = preg_replace($pat, '',  strtr($auto_meta_title, $pairs));
-            $auto_meta_keywords = preg_replace($pat, '',  strtr($auto_meta_keywords, $pairs));
-            $auto_meta_description = preg_replace($pat, '',  strtr($auto_meta_description, $pairs));
+            $auto_meta_title = preg_replace($pat, '', strtr($auto_meta_title, $pairs));
+            $auto_meta_keywords = preg_replace($pat, '', strtr($auto_meta_keywords, $pairs));
+            $auto_meta_description = preg_replace($pat, '', strtr($auto_meta_description, $pairs));
 
             // добавим слова страница № для страниц с пагинацией
             if ($this->filter['page'] > 1) {
@@ -390,7 +393,7 @@ class ProductsView extends View
             //тут проверим количество переданных значений опций и количество полученных из базы,
             //если не совпадает - return false
             if ($ids === false || count($ids) !== count($vals)) {
-                dtimer::log(__METHOD__ . ' given names and founded ids not equal. return false ' . var_export($ids,true) . var_export($vals,true), 2);
+                dtimer::log(__METHOD__ . ' given names and founded ids not equal. return false ' . var_export($ids, true) . var_export($vals, true), 2);
                 //запускаем снова, если это был первый запуск
                 return $flag ? false : $this->uri_to_ids_filter($uri_features, $filter, true);
             } else {
