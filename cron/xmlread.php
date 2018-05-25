@@ -564,9 +564,11 @@ function update_tables()
 					ELSE x.price
 					END";
     $q_nf = "SELECT COUNT(*) as cnt FROM t_update_help h WHERE offer_id is null";
+    $q_new = "SELECT COUNT(*) as cnt FROM t_xml x LEFT JOIN t_update_help h on x.offer_id = h.offer_id WHERE h.offer_id is NULL";
     $res['stock'] = $si->db->query($q_stock) ? $si->db->affected_rows() : false;
     $res['price'] = $si->db->query($q_price) ? $si->db->affected_rows() : false;
     $res['not found'] = $si->db->query($q_nf) ? $si->db->result_array('cnt') : false;
+    $res['new products'] = $si->db->query($q_new) ? $si->db->result_array('cnt') : false;
 
     return $res;
 }
