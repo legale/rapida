@@ -11,7 +11,7 @@ $dst = realpath(dirname(__FILE__) . '/../sandbox/xmlfile.xml');
 
 $src = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : null;
 
-if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(strtolower($src), 0, 8) === 'https://' ) ) {
+if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(strtolower($src), 0, 8) === 'https://')) {
 
 
     if (!copy($src, $dst . '_')) {
@@ -19,7 +19,7 @@ if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(str
         exit();
     }
 
-    if(file_exists($dst)){
+    if (file_exists($dst)) {
         unlink($dst);
         rename($dst . '_', $dst);
     }
@@ -105,12 +105,14 @@ print "\n";
  */
 function get_string_type($str)
 {
-    if (strval((int)$str) === $str) {
-        return 1;
+    if (strlen($str) == 1 && strval((int)$str) === $str) {
+        return 0;
+    } else if (in_array(strtolower($str), array('true', 'false'))) {
+        return 0;
     } else if (strval((float)$str) === $str) {
         return 2;
-    } else if ($str === 'true' || $str === 'false' || $str === 'TRUE' || $str === 'FALSE') {
-        return 0;
+    } else if (strval((int)$str) === $str) {
+        return 1;
     } else {
         return 3;
     }
@@ -301,6 +303,28 @@ function load_data($name, $csvrealpath)
     return $res;
 }
 
+function fputcsv_by_type_escape($handle, $fields, $delim, $types)
+{
+    $pairs = array(
+        '0' => false,
+        'false' => false,
+        0 => false,
+        '1' => true,
+        'true' => true,
+        1 => true
+    );
+
+    foreach ($types as $k => $type) {
+        switch ($type) {
+            case 0:
+                $fields[$k] = (bool)strtr(strtolower($fields[$k], $pairs));
+                break;
+            default:
+        }
+    }
+    return fputcsv_escape($handle, $fields, $delim);
+}
+
 /**
  * @param $handle
  * @param $fields
@@ -312,7 +336,7 @@ function fputcsv_escape($handle, $fields, $delim = ',')
     $row = array();
     foreach ($fields as $k => $col) {
         if (is_iterable($col)) {
-            print " column $k is iterable!Must be string, int, float or bool ";
+            print " column $k is iterable! Must be string, int, float or bool ";
             return false;
         }
         if ($col === null) {
@@ -366,7 +390,7 @@ function loop_tmp_file($ar)
         if ($s) {
             $row = json_decode($s, true);
             $csv_row = array_merge($tpl, $row);
-            fputcsv_escape($fwrite, $csv_row);
+            fputcsv_by_type_escape($fwrite, $csv_row, ',', $types);
         } else {
             break;
         }
