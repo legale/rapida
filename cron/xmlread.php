@@ -337,7 +337,7 @@ function fputcsv_escape($handle, $fields, $delim = ',')
             return false;
         }
         if ($col === null) {
-            $row[] = '"NULL"';
+            $row[] = 'NULL';
         } else if (is_string($col)) {
             $row[] = '"' . str_replace(array("\n", "\r", "\t", $delim), array('\n', '\r', '\t', "\\" . $delim), $col) . '"';
         } else {
