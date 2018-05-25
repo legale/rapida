@@ -36,6 +36,8 @@
 ## =================
 
 ## bugs:
+### b18
+- Изменения в view/ProductView.php. Теперь в массиве $product['images], удаляется основное изображение, которое уже есть в $product['image']
 ### b17
 - Место хранение кеша config.ini изменено c ./img/cache на ./cache
 ### b16

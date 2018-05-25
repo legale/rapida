@@ -42,6 +42,7 @@ class ProductView extends View
 
         //картинки
         $product['images'] = $this->image->get('products', array('item_id' => $product['id']));
+        array_shift($product['images']);
 
         //варианты
         $product['variants'] = $this->variants->get_variants(array('product_id' => $product['id'], 'in_stock' => true));
