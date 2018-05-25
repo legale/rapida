@@ -293,7 +293,7 @@ function load_data($name, $csvrealpath)
     $csvrealpath = str_replace('\\', '/', $csvrealpath);
 
     // формируем запрос
-    $query = "LOAD DATA INFILE '$csvrealpath' 
+    $query = "LOAD DATA LOCAL INFILE '$csvrealpath' 
 				INTO TABLE `$name`
 				FIELDS TERMINATED BY ',' ESCAPED BY '\\\\' ENCLOSED BY '\"'
 				LINES TERMINATED BY '\\r\\n'
