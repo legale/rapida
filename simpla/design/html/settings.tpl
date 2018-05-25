@@ -71,8 +71,10 @@
     <div class="block layer">
         <h2>Коды счетчиков</h2>
         <ul>
-            <li><label class=property>Яндекс метрика</label><input name="yandex_metric" class="simpla_inp" type="text"
-                                                                   value="{$settings->yandex_metric|escape}"/></li>
+            <li><label class=property>Яндекс метрика</label>
+                <textarea name="yandex_metric" class="simpla_inp">
+                {$settings->yandex_metric|escape}
+                </textarea>
             </li>
         </ul>
     </div>
