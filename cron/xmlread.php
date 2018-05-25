@@ -91,10 +91,10 @@ if ($res === false) {
 }
 
 $res = update_tables();
-print "\n     stock updated: " . $res['stock'];
-print "\n     price updated: " . $res['price'];
-print "\n product not found: " . $res['not found'];
 print "\n";
+foreach($res as $name=>$val){
+    print "$name:            $val\n";
+}
 
 
 //dtimer::show();
