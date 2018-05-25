@@ -386,7 +386,7 @@ function loop_tmp_file($ar)
         $s = fgets($fopen);
         if ($s) {
             $row = json_decode($s, true);
-            $csv_row = array_merge($tpl, $row);
+            $csv_row = array_values(array_merge($tpl, $row));
             fputcsv_by_type_escape($fwrite, $csv_row, ',', $types);
         } else {
             break;
