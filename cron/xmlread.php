@@ -109,10 +109,10 @@ function get_string_type($str)
         return 0;
     } else if (in_array(strtolower($str), array('true', 'false'))) {
         return 0;
-    } else if (strval((float)$str) === $str) {
-        return 2;
     } else if (strval((int)$str) === $str) {
         return 1;
+    } else if (strval((float)$str) === $str) {
+        return 2;
     } else {
         return 3;
     }
@@ -315,7 +315,7 @@ function fputcsv_by_type_escape($handle, $fields, $delim, $types)
     foreach ($types as $k => $type) {
         switch ((int)$type) {
             case 0:
-                $fields[$k] = (bool)strtr(strtolower($fields[$k]), $pairs);
+                $fields[$k] = (int)strtr(strtolower($fields[$k]), $pairs);
                 break;
         }
     }
