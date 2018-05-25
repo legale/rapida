@@ -315,7 +315,7 @@ function fputcsv_by_type_escape($handle, $fields, $delim, $types)
     );
 
     foreach ($types as $k => $type) {
-        switch ($type) {
+        switch ((int)$type) {
             case 0:
                 $fields[$k] = (bool)strtr(strtolower($fields[$k], $pairs));
                 break;
