@@ -93,7 +93,7 @@ if ($res === false) {
 $res = update_tables();
 print "\n";
 foreach($res as $name=>$val){
-    print "$name:            $val\n";
+    print "$name: $val\n";
 }
 
 
