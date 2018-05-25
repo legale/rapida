@@ -308,18 +308,15 @@ function fputcsv_by_type_escape($handle, $fields, $delim, $types)
     $pairs = array(
         '0' => false,
         'false' => false,
-        0 => false,
         '1' => true,
-        'true' => true,
-        1 => true
+        'true' => true
     );
 
     foreach ($types as $k => $type) {
         switch ((int)$type) {
             case 0:
-                $fields[$k] = (bool)strtr(strtolower($fields[$k], $pairs));
+                $fields[$k] = (bool)strtr(strtolower($fields[$k]), $pairs);
                 break;
-            default:
         }
     }
     return fputcsv_escape($handle, $fields, $delim);
