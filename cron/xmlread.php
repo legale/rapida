@@ -257,7 +257,7 @@ function create_table($name, $fields, $drop = true)
     $tail = "ENGINE = InnoDB DEFAULT CHARSET = utf8";
     $q = "CREATE TABLE `$name` ($body) $tail";
 
-    if ($simpla->db->query($q)) {
+    if (!$simpla->db->query($q)) {
         print "\n" . $q . "\n";
     }
 
