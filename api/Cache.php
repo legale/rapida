@@ -11,6 +11,7 @@ class Cache extends Simpla
     private $tmp = array();
     public static $config = array();
     public static $enabled = false;
+    private static $shmop_enabled;
 
 
     // Конструктор
@@ -33,8 +34,45 @@ class Cache extends Simpla
 
         //меняем систему счисления, чтобы chmod и mkdir правильно обрабатывали права, заданные в виде строки
         self::$config['default_chmod'] = octdec((int)self::$config['default_chmod']);
+
+        //check if shmop enabled
+        self::$shmop_enabled = function_exists('shmop_open') ? true : false;
     }
 
+    /**
+     * @param $key
+     * @param $data
+     */
+    public function shmop_set($key, $data)
+    {
+        dtimer::log(__METHOD__ . " start key: $key");
+        if (!self::$shmop_enabled) {
+            dtimer::log(__METHOD__ . " shmop_open function not found. Please install shmop first. Abort.");
+            return false;
+        }
+        if (empty($data)) {
+            dtimer::log(__METHOD__ . " data is empty!. Abort.");
+            return false;
+        }
+        $size = strlen($data);
+        $shmid = shmop_open($key, 'c', 0775, $size);
+        $res = shmop_write($shmid, $data, 0);
+        shmop_close($shmid);
+        return $res;
+    }
+
+    public function shmop_get($key)
+    {
+        dtimer::log(__METHOD__ . " start key: $key");
+        if (!self::$shmop_enabled) {
+            dtimer::log(__METHOD__ . " shmop_open function not found. Please install shmop first. Abort.");
+            return false;
+        }
+        $shmid = shmop_open($key, 'a', 0, 0);
+        $res = shmop_read($shmid, 0, 0);
+        shmop_close($shmid);
+        return $res;
+    }
 
     /**
      * @param $filename
@@ -202,7 +240,7 @@ allow from 127.0.0.1";
             }
         }
 
-        $file_path = $path . "/" . $filename ;
+        $file_path = $path . "/" . $filename;
         return $file_path;
     }
 
