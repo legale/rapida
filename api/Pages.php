@@ -13,6 +13,12 @@ require_once ('Simpla.php');
 
 class Pages extends Simpla
 {
+    private $tokeep = array(
+        'force_no_cache',
+        'visible',
+        'menu_id',
+    );
+
 
 	/*
 	 *
@@ -45,9 +51,47 @@ class Pages extends Simpla
 	public function get_pages($filter = array())
 	{
         dtimer::log(__METHOD__." start ");
+
+
+        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        $filter_ = $filter;
+        if (isset($filter_['force_no_cache'])) {
+            $force_no_cache = true;
+            unset($filter_['force_no_cache']);
+        }
+
+        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+        ksort($filter_);
+        $filter_string = var_export($filter_, true);
+        $keyhash = md5(__METHOD__ . $filter_string);
+
+        //если запуск был не из очереди - пробуем получить из кеша
+        if (!isset($force_no_cache)) {
+            dtimer::log("get_pages normal run keyhash: $keyhash");
+            $res = $this->cache->get_cache_nosql($keyhash);
+
+
+            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+            //функция выполнялась полностью
+            $filter_['force_no_cache'] = true;
+            $filter_string = var_export($filter_, true);
+            dtimer::log("get_pages add task force_no_cache keyhash: $keyhash");
+
+            $task = '$this->pages->get_pages(';
+            $task .= $filter_string;
+            $task .= ');';
+            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+        }
+
+
+
 		$menu_filter = '';
 		$visible_filter = '';
 		$pages = array();
+
 
 		if (isset($filter['menu_id']))
 			$menu_filter = $this->db->placehold('AND menu_id in (?@)', (array)$filter['menu_id']);
@@ -58,8 +102,13 @@ class Pages extends Simpla
 
 		$this->db->query($q);
 
-		$pages = $this->db->results_array(null, 'id');
-		return $pages;
+        if ($res = $this->db->results_array(null, 'id')) {
+            dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
+            $this->cache->set_cache_nosql($keyhash, $res);
+            return $res;
+        } else {
+            return false;
+        }
 	}
 
 	/*
