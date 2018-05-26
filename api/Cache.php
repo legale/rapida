@@ -202,7 +202,7 @@ allow from 127.0.0.1";
             }
         }
 
-        $file_path = $path . "/" . $filename . ".txt";
+        $file_path = $path . "/" . $filename ;
         return $file_path;
     }
 
@@ -376,7 +376,7 @@ allow from 127.0.0.1";
                 }
             } catch (Exception $e) {
                 // miss cache
-                dtimer::log("write FALSE error: " . print_r($e), 2);
+                dtimer::log("write FALSE error: " . var_export($e, true), 2);
                 $written = false;
             }
         }
