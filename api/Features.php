@@ -782,7 +782,9 @@ class Features extends Simpla
                 unset($filter_['features'][$fid]);
 
                 $raw = $this->get_options_raw($filter_);
-                $res['filter'][$fid] = $raw[$fid];
+                if(isset($raw[$fid])) {
+                    $res['filter'][$fid] = $raw[$fid];
+                }
             }
 
             //это полный результат, поэтому убираем все фильтры

@@ -36,6 +36,8 @@
 ## =================
 
 ## bugs:
+### b19
+- Ошибка в api/Features.php приводила к ошибке notice.
 ### b18
 - Изменения в view/ProductView.php. Теперь в массиве $product['images], удаляется основное изображение, которое уже есть в $product['image']
 ### b17
