@@ -13,7 +13,11 @@
 {/if}
 
 {* Подключаем Tiny MCE *}
-{include file='tinymce_init.tpl'}
+{*include file='tinymce_init.tpl'*}
+
+{* Подключаем codemirror *}
+{include file='codemirror.tpl'}
+
 
 {* On document load *}
 {literal}
@@ -22,81 +26,6 @@
 
 
 <script>
-$(function() {
-
-	// Автозаполнение мета-тегов
-	menu_item_name_touched = true;
-	meta_title_touched = true;
-	meta_keywords_touched = true;
-	meta_description_touched = true;
-	url_touched = true;
-	
-	if($('input[name="menu_item_name"]').val() == generate_menu_item_name() || $('input[name="name"]').val() == '')
-		menu_item_name_touched = false;
-	if($('input[name="meta_title"]').val() == generate_meta_title() || $('input[name="meta_title"]').val() == '')
-		meta_title_touched = false;
-	if($('input[name="meta_keywords"]').val() == generate_meta_keywords() || $('input[name="meta_keywords"]').val() == '')
-		meta_keywords_touched = false;
-	if($('textarea[name="meta_description"]').val() == generate_meta_description() || $('textarea[name="meta_description"]').val() == '')
-		meta_description_touched = false;
-
-
-	$('input[name="name"]').change(function() { menu_item_name_touched = true; });
-	$('input[name="meta_title"]').change(function() { meta_title_touched = true; });
-	$('input[name="meta_keywords"]').change(function() { meta_keywords_touched = true; });
-	$('textarea[name="meta_description"]').change(function() { meta_description_touched = true; });
-	$('input[name="url"]').change(function() { url_touched = true; });
-	
-	$('input[name="header"]').keyup(function() { set_meta(); });
-});
-
-function set_meta()
-{
-	if(!menu_item_name_touched)
-		$('input[name="name"]').val(generate_menu_item_name());
-	if(!meta_title_touched)
-		$('input[name="meta_title"]').val(generate_meta_title());
-	if(!meta_keywords_touched)
-		$('input[name="meta_keywords"]').val(generate_meta_keywords());
-	if(!meta_description_touched)
-	{
-		descr = $('textarea[name="meta_description"]');
-		descr.val(generate_meta_description());
-		descr.scrollTop(descr.outerHeight());
-	}
-	if(!url_touched)
-		$('input[name="url"]').val(generate_url());
-}
-
-function generate_menu_item_name()
-{
-	name = $('input[name="header"]').val();
-	return name;
-}
-
-function generate_meta_title()
-{
-	name = $('input[name="header"]').val();
-	return name;
-}
-
-function generate_meta_keywords()
-{
-	name = $('input[name="header"]').val();
-	return name;
-}
-
-function generate_meta_description()
-{
-	if(typeof(tinyMCE.get("body")) =='object')
-	{
-		description = tinyMCE.get("body").getContent().replace(/(<([^>]+)>)/ig," ").replace(/(\&nbsp;)/ig," ").replace(/^\s+|\s+$/g, '').substr(0, 512);
-		return description;
-	}
-	else
-		return $('textarea[name=body]').val().replace(/(<([^>]+)>)/ig," ").replace(/(\&nbsp;)/ig," ").replace(/^\s+|\s+$/g, '').substr(0, 512);
-}
-
 
 
 </script>
