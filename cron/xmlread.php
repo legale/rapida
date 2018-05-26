@@ -48,26 +48,26 @@ $pre_res = loop_xml_file($xml);
 //die;
 
 if (!$pre_res) {
-    print "\n unable to loop xml file $realpath ";
+    print "\nunable to loop xml file $realpath ";
     die;
 } else {
-    print "\n offers  parsed: " . $pre_res['count'];
+    print "\noffers  parsed: " . $pre_res['count'];
 }
 $res = loop_tmp_file($pre_res);
 
 $name = 't_xml';
 if (!$res) {
-    print "\n unable to loop tmp file $name ";
+    print "\nunable to loop tmp file $name ";
     die;
 }
 
 if (create_table($name, $pre_res['fields']) === false) {
-    print "\n unable to create table $name ";
+    print "\nunable to create table $name ";
     die;
 }
 
 if (load_data($name, $res) === false) {
-    print "\n unable to load data to the table $name ";
+    print "\nunable to load data to the table $name ";
     die;
 }
 
@@ -78,16 +78,16 @@ if (isset($argv[2], $argv[3])) {
     $res = create_update_help();
 }
 if ($res !== true) {
-    print "\n unable to create update help table $name. return: $res ";
+    print "\nunable to create update help table $name. return: $res ";
     die;
 }
 
 $res = prepare_update_help();
 if ($res === false) {
-    print "\n unable to prepare update help table $name. return: $res ";
+    print "\nunable to prepare update help table $name. return: $res ";
     die;
 } else {
-    print "\n products found: $res ";
+    print "\nproducts found: $res ";
 }
 
 $res = update_tables();
@@ -417,7 +417,7 @@ function loop_xml_file($xml)
     $cnt = 0;
     do {//крутим, пока у нас есть offer
 //        $cycle = microtime(true);
-//        print " \n 1 point $cnt: ".(microtime(true) - $start);
+//        print " \n1 point $cnt: ".(microtime(true) - $start);
         $cnt++;
         $offer = yml_get_offer($xml->read_raw()); //получаем содержимое каждого блока offer в виде массива
 //        print " 2 point: ".(microtime(true) - $cycle);
@@ -447,7 +447,7 @@ function loop_xml_file($xml)
     } while (1);
     ksort($fields);
 
-//    print "\n count: '$cnt' time:" . (microtime(true) - $start);
+//    print "\ncount: '$cnt' time:" . (microtime(true) - $start);
     return array('count' => $cnt, 'temppath' => $temppath, 'fields' => $fields);//возвращаем результат работы
 }
 
