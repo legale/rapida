@@ -202,7 +202,9 @@ class ProductsView extends View
         if ($this->filter['page'] !== 1) {
             $filter = $this->filter;
             $filter['page'] = 1;
-            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter);
+            $filter_ = $filter;
+            unset($filter_['price']);
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter_);
             $canonical = $uri;
             header("Link: <$uri>; rel=\"canonical\"", TRUE);
         } else if (isset($this->filter['keyword'])) {

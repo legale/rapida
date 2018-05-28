@@ -33,6 +33,7 @@ class Design extends Simpla
 
         $this->smarty->cache_dir = 'cache';
 
+        $this->smarty->registerPlugin('modifier', 'mo', array($this, 'morpher_modifer'));
         $this->smarty->registerPlugin('modifier', 'resize', array($this, 'resize_modifier'));
         $this->smarty->registerPlugin('modifier', 'token', array($this, 'token_modifier'));
         $this->smarty->registerPlugin('modifier', 'plural', array($this, 'plural_modifier'));
@@ -122,6 +123,28 @@ class Design extends Simpla
     public function token_modifier($text)
     {
         return $this->config->token($text);
+    }
+
+
+    public function morpher_modifier($text, $form, $plural = false)
+    {
+        if(!function_exists('morpher_inflect')){
+            return $text;
+        }elseif(empty($text) && $text != 0){
+            return '';
+        }
+
+        $pairs = array(
+                'i'=> 'im',
+                'r'=> 'rod',
+                'd'=> 'dat',
+                'v'=> 'vin',
+                't'=> 'tvor',
+                'p'=> 'predl',
+        );
+        $arg = $plural ? $pairs[$form]. ' mn' : $pairs[$form];
+        $res = morpher_inflect($text, $arg);
+        return $res;
     }
 
     public function url_modifier($params)
