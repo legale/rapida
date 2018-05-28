@@ -42,12 +42,11 @@ class ProductsView extends View
             if (!isset($cat)) {
                 dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
                 return false;
-            }else if (!$cat['enabled'] && !isset($_SESSION['admin'])) {
+            } else if (!$cat['enabled'] && !isset($_SESSION['admin'])) {
                 dtimer::log(__METHOD__ . __LINE__ . " disabled category. available only for admin session. ", 2);
                 return false;
             }
         }
-
 
 
         //REDIRECT
@@ -142,10 +141,10 @@ class ProductsView extends View
         //Если выбран только 1 бренд, запилим его в шаблон
         if (isset($this->filter['brand_id']) && count($this->filter['brand_id']) === 1) {
             $bid = reset($this->filter['brand_id']);
-            if(isset($brands[$bid])) {
+            if (isset($brands[$bid])) {
                 $cat['brand'] = $brands[$bid];
-            }else{
-                dtimer::log(__METHOD__. ' brand_id $bid not found for this category ', 1);
+            } else {
+                dtimer::log(__METHOD__ . ' brand_id $bid not found for this category ', 1);
                 return false;
             }
         }
@@ -187,7 +186,7 @@ class ProductsView extends View
                         continue;
                     }
                     $vals_string = implode(', ', $vals_text);
-                    $meta_filter[] = $features[$fid]['name'] . " " . $vals_string;
+                    $meta_filter[] = $this->design->morpher_modifier($features[$fid]['name'] . " " . $vals_string, 'r', true);
                 }
             }
         }
