@@ -144,7 +144,8 @@ class Design extends Simpla
         );
         $arg = $plural ? $pairs[$form]. ' mn' : $pairs[$form];
         $res = morpher_inflect($text, $arg);
-        return $res;
+
+        return  mb_substr($title, 0, 1) === '#' ? $text : $res;
     }
 
     public function url_modifier($params)
