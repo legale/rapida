@@ -33,7 +33,7 @@ class Design extends Simpla
 
         $this->smarty->cache_dir = 'cache';
 
-        $this->smarty->registerPlugin('modifier', 'mo', array($this, 'morpher_modifer'));
+        $this->smarty->registerPlugin('modifier', 'mo', array($this, 'morpher_modifier'));
         $this->smarty->registerPlugin('modifier', 'resize', array($this, 'resize_modifier'));
         $this->smarty->registerPlugin('modifier', 'token', array($this, 'token_modifier'));
         $this->smarty->registerPlugin('modifier', 'plural', array($this, 'plural_modifier'));
