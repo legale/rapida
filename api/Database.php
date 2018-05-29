@@ -169,8 +169,8 @@ class Database extends Simpla
     {
         $args = func_get_args();
 
-        //берем 1 аргумент и обрезаем пробелы по краям
-        $tpl = trim(array_shift($args));
+        //берем первый аргумент и удаляем все двойные пробелы и переносы строк
+        $tpl =trim(preg_replace("/\s+/u", ' ', array_shift($args)));
 
 
         // Заменяем все __ на префикс, но только необрамленные кавычками
