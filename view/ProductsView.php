@@ -180,6 +180,9 @@ class ProductsView extends View
         //теперь свойства
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
+                if(!isset($canonical) && count($vids) > 1){
+                    $canonical = true;
+                }
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
                     if (empty($vals_text)) {
@@ -198,12 +201,19 @@ class ProductsView extends View
         //~ // Свойства товаров END
 
         //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
-        if ($this->filter['page'] !== 1) {
+        if (isset($canonical) || $this->filter['page'] !== 1) {
             $filter = $this->filter;
-            $filter['page'] = 1;
-            $filter_ = $filter;
-            unset($filter_['price']);
-            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter_);
+            $filter['page'] = 1; //ставим страницу 1
+            unset($filter['price']); //удаляем фильтр цены
+            if(isset($filter['features'])){
+                foreach($filter['features'] as $fid => $vids){
+                    if(count($vids) > 1){
+                        unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
+                    }
+                }
+            }
+
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter);
             $canonical = $uri;
             header("Link: <$uri>; rel=\"canonical\"", TRUE);
         } else if (isset($this->filter['keyword'])) {
