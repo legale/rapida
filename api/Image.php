@@ -308,11 +308,28 @@ class Image extends Simpla
         $dst = $dirname_dst . '/' . $filename . '.' . strtolower($ext);
         $dst_absolute = $root . $dst;
 
-//        return false;
+        $params = array(
+            'src' => $src_absolute,
+            'dst' => $dst_absolute,
+            'w' => $w,
+            'h' => $h,
+            'sharpness' => $this->settings->images_sharpness,
+        );
+
+        //overlay
+        if ($this->config->overlay) {
+            $params['overlay_file'] = realpath($this->config->overlay_file);
+            $params['overlay_offset_x'] = $this->settings->overlay_offset_x;
+            $params['overlay_offset_y'] = $this->settings->overlay_offset_y;
+            $params['overlay_ratio'] = $this->settings->overlay_ratio;
+            $params['overlay_opacity'] = $this->settings->overlay_opacity;
+        }
+
+        //return false;
         if (class_exists('Imagick') && $this->config->use_imagick) {
-            $res = $this->image_constrain_imagick($src_absolute, $dst_absolute, $w, $h);
+            $res = $this->image_constrain_imagick($params);
         } else {
-            $res = $this->image_constrain_gd($src_absolute, $dst_absolute, $w, $h);
+            $res = $this->image_constrain_gd($params);
         }
 //        print $dst_absolute;
 //        return false;
@@ -384,8 +401,27 @@ class Image extends Simpla
      * @param $src_file исходный файл
      * @return bool
      */
-    private function image_constrain_imagick($src_file, $dst_file, $max_w, $max_h, $watermark = null, $watermark_offet_x = 0, $watermark_offet_y = 0, $watermark_opacity = 1, $sharpen = 0.2)
+    private function image_constrain_imagick($params)
     {
+        dtimer::log(__METHOD__ . " start " . var_export($params, true));
+
+        if (isset($params['src'], $params['dst'], $params['w'], $params['h'])) {
+            $src_file = $params['src'];
+            $dst_file = $params['dst'];
+            $max_w = $params['w'];
+            $max_h = $params['h'];
+        } else {
+            dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
+            return false;
+        }
+
+        $overlay = $params['overlay_file'] ? $params['overlay_file'] : null;
+        $overlay_offet_x = $params['overlay_offset_x'] ? $params['overlay_offset_x'] : 0;
+        $overlay_offet_y = $params['overlay_offset_y'] ? $params['overlay_offset_y'] : 0;
+        $overlay_opacity = $params['overlay_opacity'] ? $params['overlay_opacity'] / 100 : 1;
+        $overlay_ratio = $params['overlay_ratio'] ? $params['overlay_ratio'] : 100;
+        $sharpness = $params['image_sharpnress'] ? $params['image_sharpnress'] : 0.2;
+
         $thumb = new Imagick();
 
         // Читаем изображение
@@ -397,7 +433,7 @@ class Image extends Simpla
         $src_h = $thumb->getImageHeight();
 
         // Нужно ли обрезать?
-        if (!$watermark && ($src_w <= $max_w) && ($src_h <= $max_h)) {
+        if (!$overlay && ($src_w <= $max_w) && ($src_h <= $max_h)) {
             // Нет - просто скопируем файл
             if (!copy($src_file, $dst_file))
                 return false;
@@ -411,18 +447,23 @@ class Image extends Simpla
         $thumb->thumbnailImage($dst_w, $dst_h);
 
         // Устанавливаем водяной знак
-        if ($watermark && is_readable($watermark)) {
-            $overlay = new Imagick($watermark);
-            //$overlay->setImageOpacity($watermark_opacity);
-            //$overlay_compose = $overlay->getImageCompose();
-            $overlay->evaluateImage(Imagick::EVALUATE_MULTIPLY, $watermark_opacity, Imagick::CHANNEL_ALPHA);
-
+        if ($overlay && is_readable($overlay)) {
+            $overlay = new Imagick($overlay);
             // Get the size of overlay
             $owidth = $overlay->getImageWidth();
             $oheight = $overlay->getImageHeight();
+            //calculate ratio
+            $ratio = $overlay_ratio / 100 * $dst_w / $owidth;
+            $owidth = $owidth * $ratio;
+            $oheight = $oheight * $ratio;
 
-            $watermark_x = min(($dst_w - $owidth) * $watermark_offet_x / 100, $dst_w);
-            $watermark_y = min(($dst_h - $oheight) * $watermark_offet_y / 100, $dst_h);
+            $overlay->scaleImage($owidth, $oheight);
+            //$overlay->setImageOpacity($overlay_opacity);
+            //$overlay_compose = $overlay->getImageCompose();
+            $overlay->evaluateImage(Imagick::EVALUATE_MULTIPLY, $overlay_opacity, Imagick::CHANNEL_ALPHA);
+
+            $overlay_x = min(($dst_w - $owidth) * $overlay_offet_x / 100, $dst_w);
+            $overlay_y = min(($dst_h - $oheight) * $overlay_offet_y / 100, $dst_h);
 
         }
 
@@ -436,12 +477,11 @@ class Image extends Simpla
             $frame->setImagePage($dst_w, $dst_h, 0, 0);
 
             // Наводим резкость
-            if ($sharpen > 0)
-                $thumb->adaptiveSharpenImage($sharpen, $sharpen);
+            if ($sharpness > 0)
+                $thumb->adaptiveSharpenImage($sharpness, $sharpness);
 
             if (isset($overlay) && is_object($overlay)) {
-                // $frame->compositeImage($overlay, $overlay_compose, $watermark_x, $watermark_y, imagick::COLOR_ALPHA);
-                $frame->compositeImage($overlay, imagick::COMPOSITE_OVER, $watermark_x, $watermark_y, imagick::COLOR_ALPHA);
+                $frame->compositeImage($overlay, imagick::COMPOSITE_OVER, $overlay_x, $overlay_y, imagick::COLOR_ALPHA);
             }
 
         }
@@ -463,51 +503,31 @@ class Image extends Simpla
         return true;
     }
 
-    /**
-     * Вычисляет размеры изображения, до которых нужно его пропорционально уменьшить, чтобы вписать в квадрат $max_w x $max_h
-     * @param src_w ширина исходного изображения
-     * @param src_h высота исходного изображения
-     * @param max_w максимальная ширина
-     * @param max_h максимальная высота
-     * @return array(w, h)
-     */
-    function calc_contrain_size($src_w, $src_h, $max_w = 0, $max_h = 0)
-    {
-        dtimer::log(__METHOD__ . " start");
 
-        if ($src_w == 0 || $src_h == 0) {
+    /**
+     * create image gd method
+     */
+    private function image_constrain_gd($params)
+    {
+        dtimer::log(__METHOD__ . " start " . var_export($params, true));
+
+        if (isset($params['src'], $params['dst'], $params['w'], $params['h'])) {
+            $src_file = $params['src'];
+            $dst_file = $params['dst'];
+            $max_w = $params['w'];
+            $max_h = $params['h'];
+        } else {
+            dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
         }
 
-        $dst_w = $src_w;
-        $dst_h = $src_h;
+        $overlay = $params['overlay_file'] ? $params['overlay_file'] : null;
+        $overlay_offet_x = $params['overlay_offset_x'] ? $params['overlay_offset_x'] : 0;
+        $overlay_offet_y = $params['overlay_offset_y'] ? $params['overlay_offset_y'] : 0;
+        $overlay_opacity = $params['overlay_opacity'] ? $params['overlay_opacity'] / 100 : 1;
+        $overlay_ratio = $params['overlay_ratio'] ? $params['overlay_ratio'] : 100;
+        $sharpness = $params['image_sharpnress'] ? $params['image_sharpnress'] : 0.2;
 
-        if ($src_w > $max_w && $max_w > 0) {
-            $dst_h = $src_h * ($max_w / $src_w);
-            $dst_w = $max_w;
-        }
-        if ($dst_h > $max_h && $max_h > 0) {
-            $dst_w = $dst_w * ($max_h / $dst_h);
-            $dst_h = $max_h;
-        }
-        return array((int)$dst_w, (int)$dst_h);
-    }
-
-    /**
-     * Создание превью средствами gd
-     * @param $src_file
-     * @param $dst_file
-     * @param $max_w
-     * @param $max_h
-     * @param null $watermark
-     * @param int $watermark_offet_x
-     * @param int $watermark_offet_y
-     * @param int $watermark_opacity
-     * @return bool
-     */
-    private function image_constrain_gd($src_file, $dst_file, $max_w, $max_h, $watermark = null, $watermark_offet_x = 0, $watermark_offet_y = 0, $watermark_opacity = 1)
-    {
-        dtimer::log(__METHOD__ . " start $src_file");
         $quality = 90;
         if (!file_exists($src_file)) {
             dtimer::log(__METHOD__ . " file not found: $src_file", 1);
@@ -530,7 +550,7 @@ class Image extends Simpla
         }
 
         // Нужно ли обрезать?
-        if (!$watermark && ($src_w <= $max_w) && ($src_h <= $max_h)) {
+        if (!$overlay && ($src_w <= $max_w) && ($src_h <= $max_h)) {
             // Нет - просто скопируем файл
             if (!copy($src_file, $dst_file)) {
                 return false;
@@ -562,53 +582,40 @@ class Image extends Simpla
         $src_colors = imagecolorstotal($src_img);
 
         // create destination image (indexed, if possible)
-        if ($src_colors > 0 && $src_colors <= 256)
+        if ($src_colors > 0 && $src_colors <= 256) {
             $dst_img = imagecreate($dst_w, $dst_h);
-        else
+        } else {
             $dst_img = imagecreatetruecolor($dst_w, $dst_h);
+        }
 
         if (empty($dst_img))
             return false;
-
-        $transparent_index = imagecolortransparent($src_img);
-        if ($transparent_index >= 0 && $transparent_index <= 128) {
-            $t_c = imagecolorsforindex($src_img, $transparent_index);
-            $transparent_index = imagecolorallocate($dst_img, $t_c['red'], $t_c['green'], $t_c['blue']);
-            if ($transparent_index === false)
-                return false;
-            if (!imagefill($dst_img, 0, 0, $transparent_index))
-                return false;
-            imagecolortransparent($dst_img, $transparent_index);
-        } // or preserve alpha transparency for png
-        elseif ($src_type === 'image/png') {
-            if (!imagealphablending($dst_img, false))
-                return false;
-            $transparency = imagecolorallocatealpha($dst_img, 0, 0, 0, 127);
-            if (false === $transparency)
-                return false;
-            if (!imagefill($dst_img, 0, 0, $transparency))
-                return false;
-            if (!imagesavealpha($dst_img, true))
-                return false;
-        }
 
         // resample the image with new sizes
         if (!imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $dst_w, $dst_h, $src_w, $src_h))
             return false;
 
         // Watermark
-        if (!empty($watermark) && is_readable($watermark)) {
-            $overlay = imagecreatefrompng($watermark);
+        if (!empty($overlay) && is_readable($overlay)) {
+            $overlay = imagecreatefrompng($overlay);
 
             // Get the size of overlay
             $owidth = imagesx($overlay);
             $oheight = imagesy($overlay);
+            //calculate ratio
+            $ratio = $overlay_ratio / 100 * $dst_w / $owidth;
+            $owidth = $owidth * $ratio;
+            $oheight = $oheight * $ratio;
+            $overlay = imagescale($overlay, $owidth, $oheight);
 
-            $watermark_x = min(($dst_w - $owidth) * $watermark_offet_x / 100, $dst_w);
-            $watermark_y = min(($dst_h - $oheight) * $watermark_offet_y / 100, $dst_h);
 
-            imagecopy($dst_img, $overlay, $watermark_x, $watermark_y, 0, 0, $owidth, $oheight);
-            //imagecopymerge($dst_img, $overlay, $watermark_x, $watermark_y, 0, 0, $owidth, $oheight, $watermark_opacity*100);
+            $overlay_x = min(($dst_w - $owidth) * $overlay_offet_x / 100, $dst_w);
+            $overlay_y = min(($dst_h - $oheight) * $overlay_offet_y / 100, $dst_h);
+
+            $this->filter_opacity($overlay, $overlay_opacity);
+
+            imagecopy($dst_img, $overlay, $overlay_x, $overlay_y, 0, 0, $owidth, $oheight);
+            //imagecopymerge($dst_img, $overlay, $overlay_x, $overlay_y, 0, 0, $owidth, $oheight, $overlay_opacity);
 
         }
 
@@ -637,64 +644,76 @@ class Image extends Simpla
         }
     }
 
-    /**
-     * @param $type
-     * @param $item_id
-     * @param $url
-     * @return bool|string
-     */
-    public function download_new($type, $item_id, $url)
+    function filter_opacity(&$img, $opacity) //params: image resource id, opacity (eg. 0.8)
     {
-        dtimer::log(__METHOD__ . " 'type: $type item_id: $item_id url: $url");
-        //check args types
-        if (!is_int($item_id) || $item_id < 0 || !in_array($type, $this->allowed_types)) {
-            dtimer::log(__METHOD__ . " args error");
-            return false;
-        }
-        //item_id existence check
-        if (!$this->item_exists($type, $item_id)) {
+        if (!isset($opacity)) {
             return false;
         }
 
-        // Имя оригинального файла
-        if (!isset($url)) {
-            return false;
-        }
-        $pi = pathinfo($url);
-        dtimer::log(__METHOD__ . "pathinfo url: " . var_export($pi, true));
-        if (isset($pi['extension'])) {
-            $ext = $pi['extension'];
-        } else {
-            dtimer::log(__METHOD__ . " extension not found", 2);
-            return false;
-        }
+        //get image width and height
+        $w = imagesx($img);
+        $h = imagesy($img);
 
+        //turn alpha blending off
+        imagealphablending($img, false);
 
-        if (!$tmp = $this->curl->download($url)) {
-            dtimer::log(__METHOD__ . " download failed");
-            return false;
-        }
+        //find the most opaque pixel in the image (the one with the smallest alpha value)
+        $minalpha = 127;
+        for ($x = 0; $x < $w; $x++)
+            for ($y = 0; $y < $h; $y++) {
+                $alpha = (imagecolorat($img, $x, $y) >> 24) & 0xFF;
+                if ($alpha < $minalpha) {
+                    $minalpha = $alpha;
+                }
+            }
 
-        $dir = $this->gen_original_dirname($type);
-        $new_basename = md5_file($tmp) . '.' . $ext;
-        $root = $this->config->root_dir;
-        dtimer::log(__METHOD__ . " basename: $new_basename");
-        $filepath = $dir . $new_basename;
-        $filepath_absolute = $root . $filepath;
-
-        if (!file_exists($root . $dir . $new_basename)) {
-            if (!rename($tmp, $filepath_absolute)) {
-                dtimer::log(__METHOD__ . " rename failed $filepath_absolute", 1);
+        //loop through image pixels and modify alpha for each
+        for ($x = 0; $x < $w; $x++) {
+            for ($y = 0; $y < $h; $y++) {
+                //get current alpha value (represents the TANSPARENCY!)
+                $colorxy = imagecolorat($img, $x, $y);
+                $alpha = ($colorxy >> 24) & 0xFF;
+                //calculate new alpha
+                if ($minalpha !== 127) {
+                    $alpha = 127 + 127 * $opacity * ($alpha - 127) / (127 - $minalpha);
+                } else {
+                    $alpha += 127 * $opacity;
+                }
+                //get the color index with new alpha
+                $alphacolorxy = imagecolorallocatealpha($img, ($colorxy >> 16) & 0xFF, ($colorxy >> 8) & 0xFF, $colorxy & 0xFF, $alpha);
+                //set pixel with the new color + opacity
+                if (!imagesetpixel($img, $x, $y, $alphacolorxy)) {
+                    return false;
+                }
             }
         }
+        return true;
+    }
 
-        if (file_exists($filepath_absolute)) {
-            if (false !== ($id = $this->add($type, $item_id, $new_basename))) {
-                return array('id' => $id, 'item_id' => $item_id, 'filepath_absolute' => $filepath_absolute, 'filepath' => $filepath, 'basename' => $new_basename);
-            }
-            @unlink($filepath_absolute);
+
+    /**
+     * Вычисляет размеры изображения, до которых нужно его пропорционально уменьшить, чтобы вписать в квадрат $max_w x $max_h
+     */
+    function calc_contrain_size($src_w, $src_h, $max_w = 0, $max_h = 0)
+    {
+        dtimer::log(__METHOD__ . " start");
+
+        if ($src_w == 0 || $src_h == 0) {
+            return false;
         }
-        return false;
+
+        $dst_w = $src_w;
+        $dst_h = $src_h;
+
+        if ($src_w > $max_w && $max_w > 0) {
+            $dst_h = $src_h * ($max_w / $src_w);
+            $dst_w = $max_w;
+        }
+        if ($dst_h > $max_h && $max_h > 0) {
+            $dst_w = $dst_w * ($max_h / $dst_h);
+            $dst_h = $max_h;
+        }
+        return array((int)$dst_w, (int)$dst_h);
     }
 
     /**
@@ -960,8 +979,8 @@ class Image extends Simpla
     public function is_url($url)
     {
         dtimer::log(__METHOD__ . " start url: '$url'");
-        $url = strtolower(substr($url, 0 , 8));
-        if( $url === 'https://' || substr($url, 0 , -1) === 'http://'){
+        $url = strtolower(substr($url, 0, 8));
+        if ($url === 'https://' || substr($url, 0, -1) === 'http://') {
             return true;
         }
         dtimer::log(__METHOD__ . " false");

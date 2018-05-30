@@ -27,7 +27,7 @@
 {if $message_error}
     <!-- Системное сообщение -->
     <div class="message message_error">
-        <span class="text">{if $message_error == 'watermark_is_not_writable'}Установите права на запись для файла {$config->watermark_file}{/if}</span>
+        <span class="text">{if $message_error == 'overlay_is_not_writable'}Установите права на запись для файла {$config->overlay_file}{/if}</span>
         <a class="button" href="">Вернуться</a>
     </div>
     <!-- Системное сообщение (The End)-->
@@ -173,30 +173,36 @@
 
         <ul>
             <li><label class=property>Водяной знак</label>
-                <input name="watermark_file" class="simpla_inp" type="file"/>
+                <input name="overlay_file" class="simpla_inp" type="file"/>
 
                 <img style='display:block; border:1px solid #d0d0d0; margin:10px 0 10px 0;'
-                     src="{$config->root_url}/{$config->watermark_file}?{math equation='rand(10,10000)'}">
+                     src="{$config->root_url}/{$config->overlay_file}?{math equation='rand(10,10000)'}">
             </li>
-            <li><label class=property>Горизонтальное положение водяного знака</label><input name="watermark_offset_x"
+            <li><label class=property>Ширина водяного знака в % от ширины итогового изображения</label><input name="overlay_ratio"
                                                                                             class="simpla_inp"
                                                                                             type="text"
-                                                                                            value="{$settings->watermark_offset_x|escape}"/>
+                                                                                            value="{$settings->overlay_ratio}"/>
                 %
             </li>
-            <li><label class=property>Вертикальное положение водяного знака</label><input name="watermark_offset_y"
+            <li><label class=property>Горизонтальное положение водяного знака</label><input name="overlay_offset_x"
+                                                                                            class="simpla_inp"
+                                                                                            type="text"
+                                                                                            value="{$settings->overlay_offset_x}"/>
+                %
+            </li>
+            <li><label class=property>Вертикальное положение водяного знака</label><input name="overlay_offset_y"
                                                                                           class="simpla_inp" type="text"
-                                                                                          value="{$settings->watermark_offset_y|escape}"/>
+                                                                                          value="{$settings->overlay_offset_y}"/>
                 %
             </li>
-            <li><label class=property>Прозрачность знака (больше &mdash; прозрачней)</label><input
-                        name="watermark_transparency" class="simpla_inp" type="text"
-                        value="{$settings->watermark_transparency|escape}"/> %
+            <li><label class=property>Видимость(прозрачность) знака (меньше &mdash; прозрачнее)</label><input
+                        name="overlay_opacity" class="simpla_inp" type="text"
+                        value="{$settings->overlay_opacity|escape}"/> %
             </li>
-            <li><label class=property>Резкость изображений (рекомендуется 20%)</label><input name="images_sharpen"
+            <li><label class=property>Резкость изображений (рекомендуется 20%)</label><input name="images_sharpness"
                                                                                              class="simpla_inp"
                                                                                              type="text"
-                                                                                             value="{$settings->images_sharpen|escape}"/>
+                                                                                             value="{$settings->images_sharpness}"/>
                 %
             </li>
         </ul>

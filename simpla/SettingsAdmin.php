@@ -47,28 +47,32 @@ class SettingsAdmin extends Simpla
 
             // Водяной знак
             $clear_image_cache = false;
-            $watermark = $this->request->files('watermark_file', 'tmp_name');
-            if (!empty($watermark) && in_array(pathinfo($this->request->files('watermark_file', 'name'), PATHINFO_EXTENSION), $this->allowed_image_extentions)) {
-                if (@move_uploaded_file($watermark, $this->config->root_dir . $this->config->watermark_file))
+            $overlay = $this->request->files('overlay_file', 'tmp_name');
+            if (!empty($overlay) && in_array(pathinfo($this->request->files('overlay_file', 'name'), PATHINFO_EXTENSION), $this->allowed_image_extentions)) {
+                if (@move_uploaded_file($overlay, $this->config->root_dir . $this->config->overlay_file))
                     $clear_image_cache = true;
                 else
-                    $this->design->assign('message_error', 'watermark_is_not_writable');
+                    $this->design->assign('message_error', 'overlay_is_not_writable');
             }
 
-            if ($this->settings->watermark_offset_x != $this->request->post('watermark_offset_x')) {
-                $this->settings->watermark_offset_x = $this->request->post('watermark_offset_x');
+            if ($this->settings->overlay_ratio != $this->request->post('overlay_ratio')) {
+                $this->settings->overlay_ratio = $this->request->post('overlay_ratio');
                 $clear_image_cache = true;
             }
-            if ($this->settings->watermark_offset_y != $this->request->post('watermark_offset_y')) {
-                $this->settings->watermark_offset_y = $this->request->post('watermark_offset_y');
+            if ($this->settings->overlay_offset_x != $this->request->post('overlay_offset_x')) {
+                $this->settings->overlay_offset_x = $this->request->post('overlay_offset_x');
                 $clear_image_cache = true;
             }
-            if ($this->settings->watermark_transparency != $this->request->post('watermark_transparency')) {
-                $this->settings->watermark_transparency = $this->request->post('watermark_transparency');
+            if ($this->settings->overlay_offset_y != $this->request->post('overlay_offset_y')) {
+                $this->settings->overlay_offset_y = $this->request->post('overlay_offset_y');
                 $clear_image_cache = true;
             }
-            if ($this->settings->images_sharpen != $this->request->post('images_sharpen')) {
-                $this->settings->images_sharpen = $this->request->post('images_sharpen');
+            if ($this->settings->overlay_opacity != $this->request->post('overlay_opacity')) {
+                $this->settings->overlay_opacity = $this->request->post('overlay_opacity');
+                $clear_image_cache = true;
+            }
+            if ($this->settings->images_sharpness != $this->request->post('images_sharpness')) {
+                $this->settings->images_sharpness = $this->request->post('images_sharpness');
                 $clear_image_cache = true;
             }
 

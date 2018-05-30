@@ -1,126 +1,126 @@
 <?php
 
-function is_url( $text )  
-{  
-	//273 - FILTER_VALIDATE_URL 131072 - FILTER_FLAG_HOST_REQUIRED
-    return filter_var( $text, 273, 131072) !== false;  
+function is_url( $text )
+{
+    //273 - FILTER_VALIDATE_URL 131072 - FILTER_FLAG_HOST_REQUIRED
+    return filter_var( $text, 273, 131072) !== false;
 }
 
 
 
 function url_exists($url){
-    $ch = curl_init($url);    
+    $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_NOBODY, true);
     curl_exec($ch);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	
-	$code = (int)substr($code, 0, 1);
 
-	
+    $code = (int)substr($code, 0, 1);
+
+
     if(in_array($code, array(2,3))){
-       $status = true;
+        $status = true;
     }else{
-      $status = false;
+        $status = false;
     }
     curl_close($ch);
-   return $status;
+    return $status;
 }
 
 
 function LoadImg($src, $logo, $text = null)
 {
-	if( !file_exists($logo) ){
-		header('HTTP/1.0 404 Not Found');
-		return false;
-	}
+    if( !file_exists($logo) ){
+        header('HTTP/1.0 404 Not Found');
+        return false;
+    }
 
-	$src = trim($src,'/');		
-	if(!is_url($src) && !file_exists($src) ){
-		$src = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $src;
-		if(url_exists($src)){
-			$tmp = tempnam( sys_get_temp_dir() , 'tmp_');
-			copy($src, $tmp);
-			$src = $tmp;
-		}else{
-			header('HTTP/1.0 404 Not Found');
-			return false;	
-		}
-	}
-
-	
-	// ëîãîòèï
-	$logo = imagecreatefrompng($logo);
-	// øèðèíà ëîãîòèïà
-	$logo_width = imagesx($logo);
-
-	// âûñîòà ëîãîòèïà
-	$logo_height = imagesy($logo);
-
-	// èçì. ðàçìåðà â ïðîöåíòàõ
-	$percent = '';
-	// òèï èòîãîâîãî èçîáðàæåíèÿ
-	$res_type = 'png';
-
-	if(!list($w, $h) = getimagesize($src)) return "Unsupported picture type!";
-
-	// ïîëó÷àåì èçîáðàæåíèå èç èñõîäíîãî ôàéëà â çàâèñèìîñòè îò òèïà ôàéëà
-	$type = image_type_to_mime_type(exif_imagetype($src));
-
-	switch($type){
-		case 'image/bmp': $image = imagecreatefromwbmp($src); break;
-		case 'image/gif': $image = imagecreatefromgif($src); break;
-		case 'image/jpeg': $image = imagecreatefromjpeg($src); break;
-		case 'image/png': $image = imagecreatefrompng($src); break;
-		default : return "Unsupported picture type!";
-	}
-
-	// òèï ñîäåðæèìîãî
-	header("Content-Type: image/".$res_type);
-	// ïîëó÷åíèå íîâûõ ðàçìåðîâ
-	list($width, $height) = getimagesize($src);
-
-	$percent = 1;
+    $src = trim($src,'/');
+    if(!is_url($src) && !file_exists($src) ){
+        $src = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $src;
+        if(url_exists($src)){
+            $tmp = tempnam( sys_get_temp_dir() , 'tmp_');
+            copy($src, $tmp);
+            $src = $tmp;
+        }else{
+            header('HTTP/1.0 404 Not Found');
+            return false;
+        }
+    }
 
 
-	$new_width = $width * $percent;
-	$new_height = $height * $percent;
+    // Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿
+    $logo = imagecreatefrompng($logo);
+    // ÑˆÐ¸Ñ€Ð¸Ð½Ð° Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿Ð°
+    $logo_width = imagesx($logo);
 
-	$dst_x = ($new_width - $width) / 2 ;
-	$dst_y = ($new_height - $height) / 2 ;
+    // Ð²Ñ‹ÑÐ¾Ñ‚Ð° Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿Ð°
+    $logo_height = imagesy($logo);
 
-	// ñîçäàåì ÷åðíûé êâàäðàò
-	$square = imagecreatetruecolor($new_width, $new_height);
-	//óñòàíàâëèâàåì öâåò RGB
-	$color = imagecolorallocate($square, 255, 90, 35);
-	// ñîçäàåì èòîãîâûé êâàäðàò ñ çàäàííûì öâåòîì
-	imagefilledrectangle($square, 0, 0, $new_width, $new_height, $color);
+    // Ð¸Ð·Ð¼. Ñ€Ð°Ð·Ð¼ÐµÑ€Ð° Ð² Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚Ð°Ñ…
+    $percent = '';
+    // Ñ‚Ð¸Ð¿ Ð¸Ñ‚Ð¾Ð³Ð¾Ð²Ð¾Ð³Ð¾ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ
+    $res_type = 'png';
+
+    if(!list($w, $h) = getimagesize($src)) return "Unsupported picture type!";
+
+    // Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· Ð¸ÑÑ…Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð° Ð² Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ð¾ÑÑ‚Ð¸ Ð¾Ñ‚ Ñ‚Ð¸Ð¿Ð° Ñ„Ð°Ð¹Ð»Ð°
+    $type = image_type_to_mime_type(exif_imagetype($src));
+
+    switch($type){
+        case 'image/bmp': $image = imagecreatefromwbmp($src); break;
+        case 'image/gif': $image = imagecreatefromgif($src); break;
+        case 'image/jpeg': $image = imagecreatefromjpeg($src); break;
+        case 'image/png': $image = imagecreatefrompng($src); break;
+        default : return "Unsupported picture type!";
+    }
+
+    // Ñ‚Ð¸Ð¿ ÑÐ¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ð³Ð¾
+    header("Content-Type: image/".$res_type);
+    // Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ð½Ð¾Ð²Ñ‹Ñ… Ñ€Ð°Ð·Ð¼ÐµÑ€Ð¾Ð²
+    list($width, $height) = getimagesize($src);
+
+    $percent = 1;
 
 
-	// ðåñýìïëèðîâàíèå imagecopyresampled(èòîãîâîå èçîáðàæåíèå, íàêëàäûâàåìîå èçîáðàæåíèå, êîîðä. òî÷êè íà èòîã. èçîáð.,
-	// êîîðä. òî÷êè íà íàêë. èçîáð, øèð. è âûñ. íà èòîã. èçîáð., øèð. è âûñ. èñõ. èçîáð)
-	imagecopyresampled($square, $image, $dst_x, $dst_y, 0, 0, $width, $height, $width, $height);
+    $new_width = $width * $percent;
+    $new_height = $height * $percent;
 
-	//íàêëàäûâàåì èçîáðàæåíèå ëîãîòèïà íà èçîáðàæåíèå
-	$newlogo_width = $width * 0.3;
-	$ratio = $logo_width / $newlogo_width;
-	$newlogo_height = $logo_height / $ratio;
+    $dst_x = ($new_width - $width) / 2 ;
+    $dst_y = ($new_height - $height) / 2 ;
 
-	imagecopyresampled($square, $logo, $width -  ($width * 0.02 + $newlogo_width), $height - ($height * 0.02 + $newlogo_height), 0, 0, $newlogo_width, $newlogo_height, $logo_width, $logo_height);
-	
-	if(isset($text)) {
-		$white = imagecolorallocate ($square, 255, 255, 255);
-		imagettftext ($square, 60, 0, $width * 0.02, $height - $height * 0.03, $white, "captcha/verdana.ttf", $text);
-	}
-	
-	
-	// âûâîä
-switch($res_type){
-    case 'bmp': return imagewbmp($square, null, 100); break;
-    case 'gif': return imagegif($square, null, 100); break;
-    case 'jpg': return imagejpeg($square, null, 100); break;
-    case 'png': return imagepng($square, null, 9, PNG_NO_FILTER); break;
-    default : return "Unsupported picture type!";
-	}
+    // ÑÐ¾Ð·Ð´Ð°ÐµÐ¼ Ñ‡ÐµÑ€Ð½Ñ‹Ð¹ ÐºÐ²Ð°Ð´Ñ€Ð°Ñ‚
+    $square = imagecreatetruecolor($new_width, $new_height);
+    //ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ†Ð²ÐµÑ‚ RGB
+    $color = imagecolorallocate($square, 255, 90, 35);
+    // ÑÐ¾Ð·Ð´Ð°ÐµÐ¼ Ð¸Ñ‚Ð¾Ð³Ð¾Ð²Ñ‹Ð¹ ÐºÐ²Ð°Ð´Ñ€Ð°Ñ‚ Ñ Ð·Ð°Ð´Ð°Ð½Ð½Ñ‹Ð¼ Ñ†Ð²ÐµÑ‚Ð¾Ð¼
+    imagefilledrectangle($square, 0, 0, $new_width, $new_height, $color);
+
+
+    // Ñ€ÐµÑÑÐ¼Ð¿Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ imagecopyresampled(Ð¸Ñ‚Ð¾Ð³Ð¾Ð²Ð¾Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ, Ð½Ð°ÐºÐ»Ð°Ð´Ñ‹Ð²Ð°ÐµÐ¼Ð¾Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ, ÐºÐ¾Ð¾Ñ€Ð´. Ñ‚Ð¾Ñ‡ÐºÐ¸ Ð½Ð° Ð¸Ñ‚Ð¾Ð³. Ð¸Ð·Ð¾Ð±Ñ€.,
+    // ÐºÐ¾Ð¾Ñ€Ð´. Ñ‚Ð¾Ñ‡ÐºÐ¸ Ð½Ð° Ð½Ð°ÐºÐ». Ð¸Ð·Ð¾Ð±Ñ€, ÑˆÐ¸Ñ€. Ð¸ Ð²Ñ‹Ñ. Ð½Ð° Ð¸Ñ‚Ð¾Ð³. Ð¸Ð·Ð¾Ð±Ñ€., ÑˆÐ¸Ñ€. Ð¸ Ð²Ñ‹Ñ. Ð¸ÑÑ…. Ð¸Ð·Ð¾Ð±Ñ€)
+    imagecopyresampled($square, $image, $dst_x, $dst_y, 0, 0, $width, $height, $width, $height);
+
+    //Ð½Ð°ÐºÐ»Ð°Ð´Ñ‹Ð²Ð°ÐµÐ¼ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿Ð° Ð½Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ
+    $newlogo_width = $width * 0.5;
+    $ratio = $logo_width / $newlogo_width;
+    $newlogo_height = $logo_height / $ratio;
+
+    imagecopyresampled($square, $logo, $width -  ($width * 0.02 + $newlogo_width), $height - ($height * 0.815 + $newlogo_height), 0, 0, $newlogo_width, $newlogo_height, $logo_width, $logo_height);
+
+    if(isset($text)) {
+        $white = imagecolorallocate ($square, 255, 255, 255);
+        imagettftext ($square, 60, 0, $width * 0.02, $height - $height * 0.03, $white, "captcha/verdana.ttf", $text);
+    }
+
+
+    // Ð²Ñ‹Ð²Ð¾Ð´
+    switch($res_type){
+        case 'bmp': return imagewbmp($square, null, 100); break;
+        case 'gif': return imagegif($square, null, 100); break;
+        case 'jpg': return imagejpeg($square, null, 100); break;
+        case 'png': return imagepng($square, null, 9, PNG_NO_FILTER); break;
+        default : return "Unsupported picture type!";
+    }
 
 }
 
