@@ -104,8 +104,8 @@ class Image extends Simpla
             return true;
         }
     }
-
     /**
+     * Универсальный метод для получения изображения по id или item_id
      * @param $type
      * @param $filter
      * @return bool
@@ -282,11 +282,13 @@ class Image extends Simpla
         }
     }
 
+
     /**
      * @param $src
      * @param $w
      * @param $h
      * @return bool|string
+     * @throws ImagickException
      */
     public function resize($src, $w, $h)
     {
@@ -325,14 +327,11 @@ class Image extends Simpla
             $params['overlay_opacity'] = $this->settings->overlay_opacity;
         }
 
-        //return false;
         if (class_exists('Imagick') && $this->config->use_imagick) {
             $res = $this->image_constrain_imagick($params);
         } else {
             $res = $this->image_constrain_gd($params);
         }
-//        print $dst_absolute;
-//        return false;
         return $res ? $dst : false;
     }
 
@@ -392,14 +391,12 @@ class Image extends Simpla
 
     }
 
-    /*
-     * Принимает на входе путь к директории оригинала изображения и его размеры, а отдает путь для ресайза
-     */
 
     /**
      * Создание превью средствами imagick
-     * @param $src_file исходный файл
+     * @param $params
      * @return bool
+     * @throws ImagickException
      */
     private function image_constrain_imagick($params)
     {
@@ -503,9 +500,10 @@ class Image extends Simpla
         return true;
     }
 
-
     /**
      * create image gd method
+     * @param $params
+     * @return bool
      */
     private function image_constrain_gd($params)
     {
@@ -644,7 +642,12 @@ class Image extends Simpla
         }
     }
 
-    function filter_opacity(&$img, $opacity) //params: image resource id, opacity (eg. 0.8)
+    /**
+     * @param $img
+     * @param $opacity
+     * @return bool
+     */
+    private function filter_opacity(&$img, $opacity) //params: image resource id, opacity (eg. 0.8)
     {
         if (!isset($opacity)) {
             return false;
@@ -690,9 +693,13 @@ class Image extends Simpla
         return true;
     }
 
-
     /**
      * Вычисляет размеры изображения, до которых нужно его пропорционально уменьшить, чтобы вписать в квадрат $max_w x $max_h
+     * @param $src_w
+     * @param $src_h
+     * @param int $max_w
+     * @param int $max_h
+     * @return array|bool
      */
     function calc_contrain_size($src_w, $src_h, $max_w = 0, $max_h = 0)
     {
@@ -755,6 +762,8 @@ class Image extends Simpla
      * @param $type
      * @param $item_id
      * @param $basename
+     * @param bool $skip_item_check
+     * @param bool $skip_table_check
      * @return bool
      */
     public function add($type, $item_id, $basename, $skip_item_check = false, $skip_table_check = false)
@@ -815,7 +824,6 @@ class Image extends Simpla
     }
 
     /**
-     * Универсальный метод для получения изображения по id или item_id
      * @param $type
      * @return bool
      */
@@ -841,8 +849,7 @@ class Image extends Simpla
 
     /**
      * @param $type
-     * @param $item_id
-     * @param $url
+     * @param $id
      * @return bool|string
      */
     public function download($type, $id)
@@ -923,7 +930,9 @@ class Image extends Simpla
     /**
      * @param $type
      * @param $item_id
-     * @param $url
+     * @param $tmp_name
+     * @param $basename
+     * @return array|bool
      */
     public function upload($type, $item_id, $tmp_name, $basename)
     {

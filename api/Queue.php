@@ -53,28 +53,18 @@ class Queue extends Simpla
 
 	public function count_tasks()
 	{
-
-
-		$query = "
-		SELECT COUNT(*) as count
-		from __queue
-		;";
+		$query = "show table status like 's_queue'";
 		$this->db->query($query);
-		$return = $this->db->result_array('count');
+		$return = $this->db->result_array('Rows');
 		return $return;
 	}
 
 	public function count_tasks_full()
 	{
-
-
-		$query = "
-		SELECT COUNT(*) as count
-		from __queue_full
-		;";
-		$this->db->query($query);
-		$res = $this->db->result_array('count');
-		return $res;
+        $query = "show table status like 's_queue_full'";
+        $this->db->query($query);
+        $return = $this->db->result_array('Rows');
+        return $return;
 	}
 
 	public function getlasttask()
