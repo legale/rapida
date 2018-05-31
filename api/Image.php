@@ -320,7 +320,7 @@ class Image extends Simpla
 
         //overlay
         if ($this->config->overlay) {
-            $params['overlay_file'] = realpath($this->config->overlay_file);
+            $params['overlay_file'] = $this->config->root_dir . $this->config->overlay_file;
             $params['overlay_offset_x'] = $this->settings->overlay_offset_x;
             $params['overlay_offset_y'] = $this->settings->overlay_offset_y;
             $params['overlay_ratio'] = $this->settings->overlay_ratio;
@@ -412,12 +412,12 @@ class Image extends Simpla
             return false;
         }
 
-        $overlay = $params['overlay_file'] ? $params['overlay_file'] : null;
-        $overlay_offet_x = $params['overlay_offset_x'] ? $params['overlay_offset_x'] : 0;
-        $overlay_offet_y = $params['overlay_offset_y'] ? $params['overlay_offset_y'] : 0;
-        $overlay_opacity = $params['overlay_opacity'] ? $params['overlay_opacity'] / 100 : 1;
-        $overlay_ratio = $params['overlay_ratio'] ? $params['overlay_ratio'] : 100;
-        $sharpness = $params['image_sharpnress'] ? $params['image_sharpnress'] : 0.2;
+        $overlay = isset($params['overlay_file']) ? $params['overlay_file'] : null;
+        $overlay_offet_x = isset($params['overlay_offset_x']) ? $params['overlay_offset_x'] : 0;
+        $overlay_offet_y = isset($params['overlay_offset_y']) ? $params['overlay_offset_y'] : 0;
+        $overlay_opacity = isset($params['overlay_opacity']) ? $params['overlay_opacity'] / 100 : 1;
+        $overlay_ratio = isset($params['overlay_ratio']) ? $params['overlay_ratio'] : 10;
+        $sharpness = isset($params['image_sharpnress']) ? $params['image_sharpnress'] : 0.2;
 
         $thumb = new Imagick();
 
@@ -519,12 +519,12 @@ class Image extends Simpla
             return false;
         }
 
-        $overlay = $params['overlay_file'] ? $params['overlay_file'] : null;
-        $overlay_offet_x = $params['overlay_offset_x'] ? $params['overlay_offset_x'] : 0;
-        $overlay_offet_y = $params['overlay_offset_y'] ? $params['overlay_offset_y'] : 0;
-        $overlay_opacity = $params['overlay_opacity'] ? $params['overlay_opacity'] / 100 : 1;
-        $overlay_ratio = $params['overlay_ratio'] ? $params['overlay_ratio'] : 100;
-        $sharpness = $params['image_sharpnress'] ? $params['image_sharpnress'] : 0.2;
+        $overlay = isset($params['overlay_file']) ? $params['overlay_file'] : null;
+        $overlay_offet_x = isset($params['overlay_offset_x']) ? $params['overlay_offset_x'] : 0;
+        $overlay_offet_y = isset($params['overlay_offset_y']) ? $params['overlay_offset_y'] : 0;
+        $overlay_opacity = isset($params['overlay_opacity']) ? $params['overlay_opacity'] / 100 : 1;
+        $overlay_ratio = isset($params['overlay_ratio']) ? $params['overlay_ratio'] : 10;
+        $sharpness = isset($params['image_sharpnress']) ? $params['image_sharpnress'] : 0.2;
 
         $quality = 90;
         if (!file_exists($src_file)) {
