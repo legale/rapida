@@ -249,7 +249,7 @@ allow from 127.0.0.1";
     {
         //это позволит сохранить объект, а не только массив
         //$data = str_replace('stdClass::__set_state', '(object)', $val);
-        $res = var_export($data, true) . ";";
+        $res = var_export($data, true);
         return $res;
     }
 
@@ -402,7 +402,7 @@ allow from 127.0.0.1";
                 break;
         }
 
-        if (!empty(self::$config['codepage'])) {
+        if ($method !== 'msgpack' && !empty(self::$config['codepage'])) {
             $data = @iconv("utf-8", self::$config['codepage'] . "//IGNORE", $data);
         }
 
@@ -470,7 +470,7 @@ allow from 127.0.0.1";
 
 
         $value = file_get_contents($file_path);
-        if (!empty(self::$config['codepage'])) {
+        if ($method !== 'msgpack' && !empty(self::$config['codepage'])) {
             $codepage = self::$config['codepage'];
             dtimer::log(__METHOD__ . " converting codepage $codepage to utf-8 ");
             $value = @iconv($codepage, "utf-8", $value);
@@ -486,7 +486,7 @@ allow from 127.0.0.1";
                 break;
 
             case 'var_export':
-                @eval('$data = ' . $value);
+                @eval('$data = ' . $value . ';');
                 break;
 
             case 'msgpack':
