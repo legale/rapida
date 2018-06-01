@@ -365,7 +365,7 @@ allow from 127.0.0.1";
         $tmp_path = $file_path . ".tmp";
 
         dtimer::log(__METHOD__ . ' trying to open and lock tmp file ');
-        $f = fopen($tmp_path, "c");
+        $f = @fopen($tmp_path, "c");
 
         if (!$f) {
             dtimer::log(__METHOD__ . " unable to open file: $tmp_path ", 1);
