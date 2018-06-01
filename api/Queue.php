@@ -178,11 +178,7 @@ class Queue extends Simpla
 			return false;
 		}
 
-		$query = "
-		DELETE t
-		FROM __queue t
-		WHERE id = '$id'
-		;";
+		$query = "DELETE t FROM __queue t WHERE id = '$id'";
 
 		$this->db->query($query);
 		if ($this->db->affected_rows() > 0) {

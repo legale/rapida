@@ -25,7 +25,7 @@ class Cache extends Simpla
             "path" => "auto", // cache root path
             "JSON_UNESCAPED_UNICODE" => true, //parameter to json_encode cache->encode method
             "codepage" => "cp1251", //codepage to store cache data on disk
-            "method" => "var_export", //method to save data (json, serialize, var_export)
+            "method" => "serialize", //method to save data (json, serialize, var_export)
         );
 
         $ini_config = $this->config->vars_sections['cache'];
@@ -350,7 +350,6 @@ allow from 127.0.0.1";
 
     public function set_cache_nosql($keyword, $value = '', $method = null)
     {
-
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
             return false;
@@ -362,64 +361,78 @@ allow from 127.0.0.1";
             return false;
         }
 
+        $file_path = $this->getFilePath($keyword);
+        $tmp_path = $file_path . ".tmp";
+
+        dtimer::log(__METHOD__ . ' trying to open and lock tmp file ');
+        $f = fopen($tmp_path, "c");
+
+        if (!$f) {
+            dtimer::log(__METHOD__ . " unable to open file: $tmp_path ", 1);
+            return false;
+        }
+        if (!flock($f, LOCK_EX)) {
+            dtimer::log(__METHOD__ . " unable to lock file: $tmp_path ", 1);
+            fclose($f);
+            return false;
+        }
+
 
         //если способ сохранения не задан, берем настройку из конфига
         if (!isset($method)) {
             $method = self::$config['method'];
         }
-
-
-        dtimer::log(__METHOD__ . ' driver_set start ');
-        $file_path = $this->getFilePath($keyword);
-        $tmp_path = $file_path . ".tmp";
+        dtimer::log(__METHOD__ . " selected serialization method: $method");
         switch ($method) {
             case 'json':
                 $data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
                 break;
 
             case 'serialize':
+            default:
                 $data = $this->serialize($value);
                 break;
 
             case 'var_export':
-            default:
                 $data = $this->var_export($value, true);
+                break;
+
+            case 'msgpack':
+                $data = msgpack_pack($value);
+                break;
         }
 
-        $toWrite = true;
-
-        dtimer::log(__METHOD__ . ' write if condition ');
-        dtimer::log(__METHOD__ . ' $tmp_path ' . $tmp_path);
-        dtimer::log(__METHOD__ . ' $file_path ' . $file_path);
-        if ($toWrite == true) {
-            try {
-                dtimer::log(__METHOD__ . ' write to tmp ' . $tmp_path);
-                $f = @fopen($tmp_path, "w");
-                if (!empty(self::$config['codepage']) && $method === 'json') {
-                    $data = @iconv("utf-8", self::$config['codepage'] . "//IGNORE", $data);
-                }
-
-                if (@fwrite($f, $data)) {
-                    $written = true;
-                } else {
-                    $written = false;
-                }
-                @fclose($f);
-                // delete cache if exists
-                @unlink($file_path);
-                // rename tmp tp cache
-                dtimer::log(__METHOD__ . ' rename: ' . $tmp_path . ' to: ' . $file_path);
-                if (file_exists($tmp_path)) {
-                    rename($tmp_path, $file_path);
-                }
-            } catch (Exception $e) {
-                // miss cache
-                dtimer::log("write FALSE error: " . var_export($e, true), 2);
-                $written = false;
-            }
+        if (!empty(self::$config['codepage'])) {
+            $data = @iconv("utf-8", self::$config['codepage'] . "//IGNORE", $data);
         }
-        dtimer::log("written " . $file_path);
-        return $written;
+
+        if (!ftruncate($f, 0)) {
+            dtimer::log(__METHOD__ . " unable to clear file: $tmp_path ", 1);
+            fclose($f);
+            return false;
+        }
+
+        dtimer::log(__METHOD__ . ' write to tmp ' . $tmp_path);
+        $written = fwrite($f, $data);
+        fclose($f);
+
+        if ($written) {
+            dtimer::log("written");
+        } else {
+            dtimer::log(" unable to write", 1);
+            return false;
+        }
+
+        // delete cache if exists
+        @unlink($file_path);
+
+        // rename tmp tp cache
+        dtimer::log(__METHOD__ . ' rename: ' . $tmp_path . ' to: ' . $file_path);
+        if (file_exists($tmp_path)) {
+            rename($tmp_path, $file_path);
+        }
+
+        return true;
     }
 
     /**
@@ -457,28 +470,28 @@ allow from 127.0.0.1";
 
 
         $value = file_get_contents($file_path);
-
+        if (!empty(self::$config['codepage'])) {
+            $codepage = self::$config['codepage'];
+            dtimer::log(__METHOD__ . " converting codepage $codepage to utf-8 ");
+            $value = @iconv($codepage, "utf-8", $value);
+        }
         switch ($method) {
             case 'json':
-                dtimer::log(__METHOD__ . " method json ");
-                dtimer::log(__METHOD__ . " before iconv $file_path ");
-                // check if codepage isset transcode from codepage to utf8
-                if (!empty(self::$config['codepage'])) {
-                    $value = @iconv(self::$config['codepage'], "utf-8", $value);
-                }
-                dtimer::log(__METHOD__ . " after iconv $file_path ");
                 $data = $this->decode($value);
                 break;
 
             case 'serialize':
-                dtimer::log(__METHOD__ . " method serialize ");
+            default:
                 $data = $this->unserialize($value);
                 break;
 
             case 'var_export':
-            default:
-                dtimer::log(__METHOD__ . " method var_export ");
                 @eval('$data = ' . $value);
+                break;
+
+            case 'msgpack':
+                $data = msgpack_unpack($value);
+                break;
         }
 
 
