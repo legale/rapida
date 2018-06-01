@@ -38,7 +38,9 @@ function precheck($p_event, &$p_header){
 	$exclude = array(
 		'/\/[\.][^\/]*/i', //файлы начинающиеся с точки
 		'/^[\.].*/i', //каталоги с точки
-		'/^sandbox\.php$/i',
+		'/^sandbox\/.*$/i',
+		'/^tmp\/.*$/i',
+		'/^tests\/.*$/i',
 		'/^create_distro\.php$/i',
 		'/^install\.php$/i',
 		'/rapida.*?\.zip$/i',

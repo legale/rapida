@@ -110,7 +110,7 @@ class Database extends Simpla
         $cnt = count($args);
         if ($cnt < 1 || !is_string($args[0])) {
             $this->error_msg = " Error - empty query";
-            dtimer::log(__METHOD__." Error - empty query",1);
+            dtimer::log(__METHOD__ . " Error - empty query", 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
         } elseif ($cnt > 1) {
@@ -170,7 +170,7 @@ class Database extends Simpla
         $args = func_get_args();
 
         //берем первый аргумент и удаляем все двойные пробелы и переносы строк
-        $tpl =trim(preg_replace("/\s+/u", ' ', array_shift($args)));
+        $tpl = trim(preg_replace("/\s+/u", ' ', array_shift($args)));
 
 
         // Заменяем все __ на префикс, но только необрамленные кавычками
@@ -658,7 +658,7 @@ class Database extends Simpla
     {
         dtimer::log(__METHOD__ . " start");
         $h = fopen($filename, 'w');
-        $q = $this->placehold("SHOW FULL TABLES LIKE '__%';");
+        $q = $this->placehold("SHOW FULL TABLES LIKE 's_%';");
         $result = $this->mysqli->query($q);
         while ($row = $result->fetch_row()) {
             if ($row[1] == 'BASE TABLE') {
