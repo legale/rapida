@@ -11,12 +11,12 @@ if (defined("PHP7")) {
  * benchmark function for scoring function perfomance by cycling it given times
  * @return bool|mixed
  */
-function bmark(){
-    $start = microtime(true);
+function bmark()
+{
     $args = func_get_args();
     $len = count($args);
 
-    if($len < 3){
+    if ($len < 3) {
         trigger_error("At least 3 args expected. Only $len given.", 256);
         return false;
     }
@@ -24,15 +24,14 @@ function bmark(){
     $cnt = array_shift($args);
     $fun = array_shift($args);
 
-
+    $start = microtime(true);
     $i = 0;
-    while($i < $cnt){
+    while ($i < $cnt) {
         $i++;
         $res = call_user_func_array($fun, $args);
     }
-    $end = $start - microtime(true);
-    print "\n$fun ($cnt): $end\n";
-    return $res;
+    $end = microtime(true) - $start;
+    return $end;
 }
 
 

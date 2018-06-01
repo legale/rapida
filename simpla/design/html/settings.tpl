@@ -55,6 +55,7 @@
                 <option value="json" {if $config->method === 'json'}selected{/if}>json</option>
                 <option value="serialize" {if $config->method === 'serialize'}selected{/if}>serialize</option>
                 <option value="var_export" {if $config->method === 'var_export'}selected{/if}>var_export</option>
+                <option value="msgpack_pack" {if $config->method === 'msgpack_pack'}selected{/if}>msgpack_pack</option>
             </select>
         </div>
 
