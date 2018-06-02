@@ -313,7 +313,6 @@ DROP TABLE IF EXISTS `s_options`;
 /* Create table s_options */
 CREATE TABLE `s_options` (
   `product_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `1` mediumint(9) DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `19` (`product_id`),
   KEY `21` (`product_id`),
@@ -321,7 +320,7 @@ CREATE TABLE `s_options` (
   KEY `13` (`product_id`),
   KEY `14` (`product_id`),
   KEY `6` (`product_id`),
-  KEY `1` (`1`,`product_id`),
+  KEY `1` (`product_id`),
   KEY `2` (`product_id`),
   KEY `3` (`product_id`),
   KEY `4` (`product_id`),

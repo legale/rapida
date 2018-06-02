@@ -55,7 +55,7 @@ class BackupAdmin extends Simpla
 						}
 						elseif (!is_readable($dir . 'rapida.sql'))
 							{
-							trigger_error('Не могу прочитать файл /temp/rapida.sql');
+							trigger_error("Не могу прочитать файл ".$dir."rapida.sql");
 						}
 						else
 							{

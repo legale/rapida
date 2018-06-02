@@ -662,9 +662,9 @@ class Database extends Simpla
         $result = $this->mysqli->query($q);
         while ($row = $result->fetch_row()) {
             if ($row[1] == 'BASE TABLE') {
-                $skipdata = in_array($row[0], array(
-                    's_queue', 's_queue_full', 's_cache_integer')) ? true : false;
-                $this->dump_table($row[0], $h, $skip_create, $skipdata);
+                $skipdata = in_array($row[0], array('s_queue', 's_queue_full', 's_cache_integer')) ? true : false;
+                $skip_create_ = $skip_create && !in_array($row[0], array('s_options')) ? true : false;
+                $this->dump_table($row[0], $h, $skip_create_, $skipdata);
             }
         }
         fclose($h);
