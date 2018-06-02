@@ -253,32 +253,6 @@ allow from 127.0.0.1";
         return $res;
     }
 
-    /**
-     * Encode data to JSON format
-     * @param $data
-     * @return string
-     */
-    private function serialize($data)
-    {
-        dtimer::log(__METHOD__ . " start");
-        if (empty_($data)) {
-            dtimer::log(__METHOD__ . " empty value! skip encode", 2);
-            return false;
-        }
-
-        if (is_object($data) || is_array($data)) {
-        } else {
-            dtimer::log(__METHOD__ . ' wrong argument type ' . gettype($data), 1);
-            return false;
-        }
-
-        if ($res = serialize($data)) {
-            return $res;
-        } else {
-            dtimer::log(__METHOD__ . " serialize error", 1);
-            return false;
-        }
-    }
 
 
     private function encode($data, $unescaped = true)
@@ -329,26 +303,9 @@ allow from 127.0.0.1";
         }
     }
 
-    private function unserialize($value)
-    {
-        dtimer::log(__METHOD__ . " start");
-
-        if (empty_($value)) {
-            dtimer::log(__METHOD__ . " empty value! skip decode", 2);
-            return false;
-        }
-
-        $x = @unserialize($value);
-        if ($x === false) {
-            dtimer::log(__METHOD__ . " unserialize error", 1);
-            return false;
-        } else {
-            return $x;
-        }
-    }
 
 
-    public function set_cache_nosql($keyword, $value = '', $method = null)
+    public function set_cache_nosql($keyword, $value, $method = null)
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
@@ -390,7 +347,7 @@ allow from 127.0.0.1";
 
             case 'serialize':
             default:
-                $data = $this->serialize($value);
+                $data = serialize($value);
                 break;
 
             case 'var_export':
@@ -419,7 +376,7 @@ allow from 127.0.0.1";
         if ($written) {
             dtimer::log("written");
         } else {
-            dtimer::log(" unable to write", 1);
+            dtimer::log(" unable to write data: " . var_export($data, true), 1);
             return false;
         }
 
@@ -482,7 +439,7 @@ allow from 127.0.0.1";
 
             case 'serialize':
             default:
-                $data = $this->unserialize($value);
+                $data = unserialize($value);
                 break;
 
             case 'var_export':
