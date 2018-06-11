@@ -6,7 +6,7 @@
 {/capture}
 
 {if $style_file}
-{$meta_title = "Стиль $style_file" scope=parent}
+{$meta_title = "Стиль $style_file" scope=root}
 {/if}
 
 {* Подключаем редактор кода *}

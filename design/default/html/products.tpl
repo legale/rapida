@@ -3,19 +3,19 @@
 {* Канонический адрес страницы *}
 {if isset($category, $brand) && $category && $brand}
 {$condition = 1}
-{$canonical="/catalog/{$category['trans']}/{$brand['trans']}" scope=parent}
+{$canonical="/catalog/{$category['trans']}/{$brand['trans']}" scope=root}
 {elseif isset($category) && $category}
 {$condition = 2}
-{$canonical="/catalog/{$category['trans']}" scope=parent}
+{$canonical="/catalog/{$category['trans']}" scope=root}
 {elseif isset($brand) && $brand}
 {$condition = 3}
-{$canonical="/brands/{$brand['trans']}" scope=parent}
+{$canonical="/brands/{$brand['trans']}" scope=root}
 {elseif isset($keyword) && $keyword}
 {$condition = 4}
-{$canonical="/products?keyword={$keyword|escape}" scope=parent}
+{$canonical="/products?keyword={$keyword|escape}" scope=root}
 {else}
 {$condition = 5}
-{$canonical="/products" scope=parent}
+{$canonical="/products" scope=root}
 {/if}
 
 <!-- Хлебные крошки /-->

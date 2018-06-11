@@ -11,7 +11,7 @@
     {/if}
 {/capture}
 
-{$meta_title = "Настройки" scope=parent}
+{$meta_title = "Настройки" scope=root}
 
 {if $message_success}
     <!-- Системное сообщение -->

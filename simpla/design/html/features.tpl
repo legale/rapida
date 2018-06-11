@@ -7,7 +7,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Свойства' scope=parent}
+{$meta_title='Свойства' scope=root}
 
 
 {if isset($message_error)}

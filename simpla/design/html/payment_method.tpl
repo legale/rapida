@@ -8,9 +8,9 @@
 {/capture}
 
 {if $payment_method['id']}
-{$meta_title = $payment_method['name'] scope=parent}
+{$meta_title = $payment_method['name'] scope=root}
 {else}
-{$meta_title = 'Новый способ оплаты' scope=parent}
+{$meta_title = 'Новый способ оплаты' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

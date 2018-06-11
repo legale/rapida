@@ -3,9 +3,9 @@
 {/capture}
 
 {if $post['id']}
-{$meta_title = $post['name'] scope=parent}
+{$meta_title = $post['name'] scope=root}
 {else}
-{$meta_title = 'Новая запись в блоге' scope=parent}
+{$meta_title = 'Новая запись в блоге' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

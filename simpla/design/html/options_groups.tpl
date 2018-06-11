@@ -9,7 +9,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title = {$ogroup['name']} scope=parent}
+{$meta_title = {$ogroup['name']} scope=root}
 
 {* Заголовок *}
 <div id="header">

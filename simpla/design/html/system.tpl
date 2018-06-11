@@ -8,7 +8,7 @@
 	{if isset($userperm['export'])}<li class="active"><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
 {/capture}
 {* Title *}
-{$meta_title = {$menu['name']} scope=parent}
+{$meta_title = {$menu['name']} scope=root}
 
 {* Заголовок *}
 <div id="header">

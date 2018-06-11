@@ -13,9 +13,9 @@
 {/capture}
 
 {if $category['id']}
-    {$meta_title = $category['name'] scope=parent}
+    {$meta_title = $category['name'] scope=root}
 {else}
-    {$meta_title = 'Новая категория' scope=parent}
+    {$meta_title = 'Новая категория' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

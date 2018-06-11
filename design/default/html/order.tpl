@@ -1,6 +1,6 @@
 {* Страница заказа *}
 
-{$meta_title = "Ваш заказ №`$order['id']`" scope=parent}
+{$meta_title = "Ваш заказ №`$order['id']`" scope=root}
 
 <h1>Ваш заказ №{$order['id']} 
 {if $order['status'] == 0}принят{/if}

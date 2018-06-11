@@ -1,6 +1,6 @@
 {* Шаблон корзины *}
 
-{$meta_title = "Корзина" scope=parent}
+{$meta_title = "Корзина" scope=root}
 
 <h1>
 {if $cart['purchases']}В корзине {$cart['total_products']} {$cart['total_products']|plural:'товар':'товаров':'товара'}

@@ -6,7 +6,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Покупатели' scope=parent}
+{$meta_title='Покупатели' scope=root}
 
 {* Поиск *}
 {if isset($users) || isset($keyword)}

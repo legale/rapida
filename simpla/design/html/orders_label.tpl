@@ -13,9 +13,9 @@
 {/capture}
 
 {if $label['id']}
-{$meta_title = $label['name'] scope=parent}
+{$meta_title = $label['name'] scope=root}
 {else}
-{$meta_title = 'Новая метка' scope=parent}
+{$meta_title = 'Новая метка' scope=root}
 {/if}
 
 {* On document load *}

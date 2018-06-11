@@ -16,9 +16,9 @@
 
 {* Title *}
 {if isset($category)}
-    {$meta_title=$category['name'] scope=parent}
+    {$meta_title=$category['name'] scope=root}
 {else}
-    {$meta_title='Товары' scope=parent}
+    {$meta_title='Товары' scope=root}
 {/if}
 
 {* Поиск *}

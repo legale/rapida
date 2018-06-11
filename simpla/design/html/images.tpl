@@ -5,7 +5,7 @@
 	<li class="active"><a href="?module=ImagesAdmin">Изображения</a></li>		
 {/capture}
 
-{$meta_title = "Изображения" scope=parent}
+{$meta_title = "Изображения" scope=root}
 
 {* On document load *}
 {literal}

@@ -5,7 +5,7 @@
 	{if isset($userperm['payment'])}<li><a href="?module=PaymentMethodsAdmin">Оплата</a></li>{/if}
 {/capture}
 
-{$meta_title = 'Валюты' scope=parent}
+{$meta_title = 'Валюты' scope=root}
 
 {* On document load *}
 {literal}

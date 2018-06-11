@@ -6,7 +6,7 @@
 {/capture}
 
 {if $theme->name}
-{$meta_title = "Тема {$theme->name}" scope=parent}
+{$meta_title = "Тема {$theme->name}" scope=root}
 {/if}
 
 <script>

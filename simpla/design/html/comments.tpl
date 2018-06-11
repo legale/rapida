@@ -6,7 +6,7 @@
 
 
 {* Title *}
-{$meta_title='Комментарии' scope=parent}
+{$meta_title='Комментарии' scope=root}
 
 {* Поиск *}
 {if isset($comments) || isset($keyword)}

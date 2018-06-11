@@ -5,7 +5,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Обратная связь' scope=parent}
+{$meta_title='Обратная связь' scope=root}
 
 
 {* Поиск *}

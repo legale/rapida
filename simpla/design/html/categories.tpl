@@ -7,7 +7,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Категории' scope=parent}
+{$meta_title='Категории' scope=root}
 
 {* Заголовок *}
 <div id="header">

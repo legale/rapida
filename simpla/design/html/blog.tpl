@@ -4,7 +4,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Блог' scope=parent}
+{$meta_title='Блог' scope=root}
 
 {* Поиск *}
 {if isset($posts) || isset($keyword)}

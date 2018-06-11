@@ -2,10 +2,10 @@
 
 {* Для того чтобы обернуть центральный блок в шаблон, отличный от index.tpl *}
 {* Укажите нужный шаблон строкой ниже. Это работает и для других модулей *}
-{$wrapper = 'index.tpl' scope=parent}
+{$wrapper = 'index.tpl' scope=root}
 
 {* Канонический адрес страницы *}
-{$canonical="" scope=parent}
+{$canonical="" scope=root}
 
 {* Заголовок страницы *}
 <h1>{$page['header']}</h1>

@@ -6,7 +6,7 @@
 {/capture}
 
 {if $user['id']}
-{$meta_title = $user['name']|escape scope=parent}
+{$meta_title = $user['name']|escape scope=root}
 {/if}
 
 {if isset($message_success)}

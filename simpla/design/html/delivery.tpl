@@ -7,9 +7,9 @@
 {/capture}
 
 {if $delivery['id']}
-{$meta_title = $delivery['name'] scope=parent}
+{$meta_title = $delivery['name'] scope=root}
 {else}
-{$meta_title = 'Новый способ доставки' scope=parent}
+{$meta_title = 'Новый способ доставки' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

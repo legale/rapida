@@ -1,9 +1,9 @@
 
 
 {if $feature['id']}
-{$meta_title = $feature['name']|escape scope=parent}
+{$meta_title = $feature['name']|escape scope=root}
 {else}
-{$meta_title = 'Новое свойство' scope=parent}
+{$meta_title = 'Новое свойство' scope=root}
 {/if}
 
 {* On document load *}

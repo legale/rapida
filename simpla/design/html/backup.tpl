@@ -9,7 +9,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Бекап БД' scope=parent}
+{$meta_title='Бекап БД' scope=root}
 
 {* Заголовок *}
 <div id="header">

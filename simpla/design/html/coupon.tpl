@@ -10,9 +10,9 @@
 {/capture}
 
 {if $coupon['code']}
-    {$meta_title = $coupon['code'] scope=parent}
+    {$meta_title = $coupon['code'] scope=root}
 {else}
-    {$meta_title = 'Новый купон' scope=parent}
+    {$meta_title = 'Новый купон' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

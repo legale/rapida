@@ -2,7 +2,7 @@
 {*
 	Печать заказа
 *}
-{$wrapper='' scope=parent}
+{$wrapper='' scope=root}
 <html>
 <head>
 	<base href="{$config->root_url}/"/>

@@ -1,7 +1,7 @@
 {capture name=tabs}
 		<li class="active"><a href="{url module=StatsAdmin}">Статистика</a></li>
 {/capture}
-{$meta_title='Статистика' scope=parent}
+{$meta_title='Статистика' scope=root}
 
 {* On document load *}
 {literal}

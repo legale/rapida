@@ -1683,7 +1683,7 @@
 - bugfix {include ... inline} within {block}...{/block} did fail
 
 16/06/2011
-- bugfix do not overwrite '$smarty' template variable when {include ... scope=parent} is called
+- bugfix do not overwrite '$smarty' template variable when {include ... scope=root} is called
 - bugfix complete empty inline subtemplates did fail
 
 15/06/2011

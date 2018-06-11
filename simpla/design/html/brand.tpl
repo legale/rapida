@@ -7,9 +7,9 @@
 {/capture}
 
 {if $brand['id']}
-{$meta_title = $brand['name'] scope=parent}
+{$meta_title = $brand['name'] scope=root}
 {else}
-{$meta_title = 'Новый бренд' scope=parent}
+{$meta_title = 'Новый бренд' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

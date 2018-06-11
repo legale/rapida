@@ -6,7 +6,7 @@
 {/capture}
 
 {if $template_file}
-{$meta_title = "Шаблон $template_file" scope=parent}
+{$meta_title = "Шаблон $template_file" scope=root}
 {/if}
 
 {* Подключаем редактор кода *}

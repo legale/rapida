@@ -7,7 +7,7 @@
 {/capture}
 
 {* Title *}
-{$meta_title='Способы оплаты' scope=parent}
+{$meta_title='Способы оплаты' scope=root}
 
 {* Заголовок *}
 <div id="header">

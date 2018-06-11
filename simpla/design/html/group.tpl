@@ -6,9 +6,9 @@
 {/capture}
 
 {if $group['id']}
-{$meta_title = $group['name'] scope=parent}
+{$meta_title = $group['name'] scope=root}
 {else}
-{$meta_title = 'Новая группа' scope=parent}
+{$meta_title = 'Новая группа' scope=root}
 {/if}
 
 {if isset($message_success)}

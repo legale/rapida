@@ -1,7 +1,7 @@
 {* Список записей блога *}
 
 {* Канонический адрес страницы *}
-{$canonical="/blog" scope=parent}
+{$canonical="/blog" scope=root}
 
 <!-- Заголовок /-->
 <h1>{$page['name']}</h1>

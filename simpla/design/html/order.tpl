@@ -16,9 +16,9 @@
 
 
 {if $order['id']}
-{$meta_title = "Заказ №`$order['id']`" scope=parent}
+{$meta_title = "Заказ №`$order['id']`" scope=root}
 {else}
-{$meta_title = 'Новый заказ' scope=parent}
+{$meta_title = 'Новый заказ' scope=root}
 {/if}
 
 <!-- Основная форма -->

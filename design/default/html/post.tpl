@@ -1,7 +1,7 @@
 {* Страница отдельной записи блога *}
 
 {* Канонический адрес страницы *}
-{$canonical="/blog/{$post['trans']}" scope=parent}
+{$canonical="/blog/{$post['trans']}" scope=root}
 
 <!-- Заголовок /-->
 <h1 data-post="{$post['id']}">{$post['name']|escape}</h1>

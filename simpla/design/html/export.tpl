@@ -7,7 +7,7 @@
 	{if isset($userperm['backup'])}<li><a href="?module=BackupAdmin">Бекап</a></li>{/if}
 	{if isset($userperm['export'])}<li><a href="?module=SystemAdmin">Обслуживание системы</a></li>{/if}
 {/capture}
-{$meta_title='Экспорт товаров' scope=parent}
+{$meta_title='Экспорт товаров' scope=root}
 
 <script src="{$config->root_url}/simpla/design/js/piecon/piecon.js"></script>
 <script>

@@ -7,9 +7,9 @@
 {/capture}
 
 {if $page['id']}
-{$meta_title = $page['name'] scope=parent}
+{$meta_title = $page['name'] scope=root}
 {else}
-{$meta_title = 'Новая страница' scope=parent}
+{$meta_title = 'Новая страница' scope=root}
 {/if}
 
 {* Подключаем Tiny MCE *}

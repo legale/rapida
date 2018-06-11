@@ -1,7 +1,7 @@
 {* Страница с формой обратной связи *}
 
 {* Канонический адрес страницы *}
-{$canonical="/{$page['trans']}" scope=parent}
+{$canonical="/{$page['trans']}" scope=root}
 
 <h1>{$page['name']|escape}</h1>
 

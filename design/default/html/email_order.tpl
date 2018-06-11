@@ -1,6 +1,6 @@
 {* Шаблон письма пользователю о заказе *}
 
-{$subject = "Заказ №`$order['id']`" scope=parent}
+{$subject = "Заказ №`$order['id']`" scope=root}
 <h1 style="font-weight:normal;font-family:arial;">
 	<a href="{$config->root_url}/order/{$order['trans']}">Ваш заказ №{$order['id']}</a>
 	на сумму {$order['total_price']|convert:$currency['id']}&nbsp;{$currency['sign']}
