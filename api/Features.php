@@ -307,8 +307,15 @@ class Features extends Simpla
         if (!$this->db->query("SELECT `$id` FROM __options LIMIT 1")) {
             $this->db->query("ALTER TABLE __options ADD `$id` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0'");
             //делаем индекс, только если это свойство будет в фильтре
+
             if (isset($feature['in_filter']) && (bool)$feature['in_filter'] === true) {
                 $this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`)");
+                $this->db->query("ALTER TABLE __options DROP INDEX `only`");
+                $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
+                $index = $this->db->results_array('id');
+                if(!empty($index)) {
+                    $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
+                }
             }
         }
         return $id;
@@ -342,9 +349,21 @@ class Features extends Simpla
         $this->db->query("UPDATE __features SET ?% WHERE id = ?", $feature, $id);
         if (isset($feature['in_filter'])) {
             if ((bool)$feature['in_filter'] === true) {
-                $this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`, `product_id`)");
+                $this->db->query("ALTER TABLE __options ADD INDEX `$id` (`$id`)");
+                $this->db->query("ALTER TABLE __options DROP INDEX `only`");
+                $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
+                $index = $this->db->results_array('id');
+                if(!empty($index)) {
+                    $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
+                }
             } else {
                 $this->db->query("ALTER TABLE __options DROP INDEX `$id` ");
+                $this->db->query("ALTER TABLE __options DROP INDEX `only`");
+                $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
+                $index = $this->db->results_array('id');
+                if(!empty($index)) {
+                    $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
+                }
             }
         }
         return $id;
