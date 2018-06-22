@@ -18,6 +18,15 @@
  * В этом классе собраны все функции js, которые используются для работы
  */
 window.ra = {
+    renameAttribute: function(el, oldname, newname){
+        if(ra.getType(el) !== 'element'){
+            console.log('arg 1 is not an element');
+            return false;
+        }
+        el.setAttribute(newname, el.getAttribute(oldname));
+        el.removeAttribute(oldname);
+    },
+
     walk: function (obj, cb) {
         if (typeof obj !== 'object') {
             return false;
