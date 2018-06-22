@@ -36,7 +36,7 @@
   ),
   'cache' => 
   array (
-    'enabled' => 'true',
+    'enabled' => true,
     'method' => 'msgpack',
     'default_chmod' => '775',
     'securityKey' => 'mysite',
@@ -49,5 +49,5 @@
   'root_dir' => 'D:\\OSPanel\\domains\\rapida-dev/',
   'root_url' => 'http://rapida-dev',
   'max_upload_filesize' => 419430400,
-  'debug' => 'true',
+  'debug' => true,
 );

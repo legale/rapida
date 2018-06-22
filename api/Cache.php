@@ -402,8 +402,10 @@ allow from 127.0.0.1";
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
+            dtimer::log(__METHOD__. " disabled: ".var_export(self::$enabled, true));
             return false;
         }
+        dtimer::log(__METHOD__. ": $keyword");
 
         //проверка типов аргументов
         if (is_string($keyword)) {

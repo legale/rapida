@@ -378,6 +378,7 @@ class Simpla
         /** @var cache $enabled */
         $cache_class = $this->cache;
         $cache_class::$enabled = $this->config->cache['enabled'];
+        dtimer::log(__METHOD__ . " cache enabled: " . $cache_class::$enabled);
 
 
     }
