@@ -31,25 +31,16 @@ class Queue extends Simpla
 		$this->db->query($query);
 		dtimer::log('queue inserted id: ' . $this->db->insert_id());
 
-		if ($this->db->affected_rows() < 0) {
+		$switch = $this->db->affected_rows();
+		if ($switch < 0) {
 			dtimer::log('addtask error insert entry code: ' . var_export($this->db->affected_rows(), true));
 			return false;
 		}
-		elseif ($this->db->affected_rows() === 0) {
+		elseif ($switch === 0) {
 			dtimer::log('addtask insert duplicate entry');
 			return false;
 		}
-		else {
-			$this->db->query($query2);
-			if ($this->db->affected_rows() < 0) {
-				dtimer::log('addtask error insert entry code: ' . var_export($this->db->affected_rows(), true));
-				return false;
-			}
-			elseif ($this->db->affected_rows() === 0) {
-				dtimer::log('addtask insert duplicate query2');
-				return false;
-			}
-		}
+
 		
 		return true;
 	}
