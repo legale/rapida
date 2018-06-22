@@ -26,7 +26,7 @@ window.ra = {
 
         let val = el.getAttribute(oldname);
         if(val !== null){
-            el.setAttribute(newname, el.getAttribute(oldname));
+            el.setAttribute(newname, val);
             el.removeAttribute(oldname);
         }else{
             return false;
