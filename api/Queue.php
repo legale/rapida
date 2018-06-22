@@ -24,7 +24,7 @@ class Queue extends Simpla
 		}
 
 		$query = $this->db->placehold("INSERT IGNORE __queue SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'");
-		if(!$this->skip_queue_full) {
+		if(!self::$skip_queue_full) {
             $query2 = "INSERT IGNORE __queue_full SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'";
         }
 		dtimer::log(__METHOD__ . ' addtask query: ' . $query);

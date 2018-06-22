@@ -383,7 +383,7 @@ class Simpla
         //настраиваем очередь заданий. Из таблицы заданий queue_full задания не удаляются. Для отладки может быть полезно
         if ($this->config->cache['skip_queue_full'] === true) {
             $queue_class = &$this->queue;
-            $queue_class::$skip_queue_full = $this->config->cache['skip_queue_full'];
+            $queue_class::$skip_queue_full = true;
         }
 
     }
