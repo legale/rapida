@@ -56,7 +56,7 @@ class CartView extends View
                 $this->design->assign('error', 'empty_name');
             } elseif (empty($order['email'])) {
                 $this->design->assign('error', 'empty_email');
-            } if ($config->captcha && $_SESSION['captcha_code'] != $captcha_code || empty($captcha_code)) {
+            } if ($this->config->captcha && $_SESSION['captcha_code'] != $captcha_code || empty($captcha_code)) {
                 $this->design->assign('error', 'captcha');
             } else {
 
