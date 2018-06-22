@@ -1,4 +1,4 @@
-<?php return array (
+return array (
   'http_headers' => 'Access-Control-Allow-Origin: *',
   'user_agent' => 'Mozilla/5.0 (Windows NT 10.0, Win64, x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
   'host' => 'rapida-dev',
@@ -45,6 +45,5 @@
     'JSON_UNESCAPED_UNICODE' => true,
     'codepage' => 'cp1251',
   ),
-  'max_upload_filesize' => 419430400,
   'debug' => true,
 );

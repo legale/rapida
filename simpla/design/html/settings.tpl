@@ -27,7 +27,7 @@
 {if $message_error}
     <!-- Системное сообщение -->
     <div class="message message_error">
-        <span class="text">{if $message_error == 'overlay_is_not_writable'}Установите права на запись для файла {$config->overlay_file}{/if}</span>
+        <span class="text">{if $message_error == 'overlay_is_not_writable'}Установите права на запись для файла {$config->images['overlay_file']}{/if}</span>
         <a class="button" href="">Вернуться</a>
     </div>
     <!-- Системное сообщение (The End)-->
@@ -52,7 +52,7 @@
         <div class="switcher">
             <label class="property">Способ сохранения кеша на диск</label>
             <select name="method">
-                <option value="json" {if $config->c === 'json'}selected{/if}>json</option>
+                <option value="json" {if $config->cache['method'] === 'json'}selected{/if}>json</option>
                 <option value="serialize" {if $config->cache['method'] === 'serialize'}selected{/if}>serialize</option>
                 <option value="var_export" {if $config->cache['method'] === 'var_export'}selected{/if}>var_export</option>
                 <option value="msgpack" {if $config->cache['method'] === 'msgpack'}selected{/if}>msgpack</option>
@@ -177,7 +177,7 @@
                 <input name="overlay_file" class="simpla_inp" type="file"/>
 
                 <img style='display:block; border:1px solid #d0d0d0; margin:10px 0 10px 0;'
-                     src="{$config->root_url}/{$config->overlay_file}?{math equation='rand(10,10000)'}">
+                     src="{$config->root_url}/{$config->images['overlay_file']}?{math equation='rand(10,10000)'}">
             </li>
             <li><label class=property>Ширина водяного знака в % от ширины итогового изображения</label><input name="overlay_ratio"
                                                                                             class="simpla_inp"

@@ -29,8 +29,15 @@ class Config
 
     // Файл для хранения настроек
     private $config_filename = 'config.php';
-    protected $config_path;
-    protected $vars = array();
+    private $config_path;
+    private $config_length;
+    private $vars = array();
+
+    public function __destruct()
+    {
+        // сохраним конфиг
+        $this->save();
+    }
 
     public function __construct()
     {
@@ -41,7 +48,10 @@ class Config
 
         $this->config_path = dirname(dirname(__FILE__)) . '/config/' . $this->config_filename;
         // Читаем настройки из дефолтного файла
-        $this->vars = include($this->config_path);
+        $config_content = file_get_contents($this->config_path);
+        $this->config_length = strlen($config_content);
+        $this->vars = eval($config_content);
+        unset($config_content);
 
 
         // Определяем адрес (требуется для отправки почтовых уведомлений)
@@ -80,7 +90,7 @@ class Config
     {
         dtimer::log(__METHOD__ . "get $name");
         if (!array_key_exists($name, $this->vars)) {
-            $this->vars[$name] = null;
+            $this->vars[$name] = '';
         }
         return $this->vars[$name];
     }
@@ -88,29 +98,23 @@ class Config
     // Магическим методов задаём нужную переменную
     public function __set($name, $value)
     {
-        dtimer::log(__METHOD__ . "set $name $value");
-
         // Запишем конфиги
         $this->vars[$name] = $value;
-        // сохраним
-        $this->save("$name - $value");
     }
 
-    private function save($param = null)
+    private function save()
     {
-        dtimer::log(__METHOD__ . "saving config... $param");
+        dtimer::log(__METHOD__ . " start");
+        $content = 'return ' . var_export($this->vars, true) . ';';
 
-        $content = '<?php return ' . var_export($this->vars, true) . ';';
-        $h = fopen($this->config_path, 'w');
-        if (flock($h, LOCK_EX)) {
-            error_log("saving config... $param");
-            fwrite($h, $content);
-            return fclose($h);
-        } else {
-            error_log("unable to save $param");
-            dtimer::log("unable to save config $param", 1);
-            return false;
+        if ($this->config_length === strlen($content)) {
+            dtimer::log(__METHOD__ . " generated config equals saved. Nothing to save.");
+            return true;
         }
+
+
+        error_log("saving config...");
+        return file_put_contents($this->config_path, $content);
     }
 
 }
