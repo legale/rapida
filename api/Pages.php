@@ -148,7 +148,7 @@ class Pages extends Simpla
 	 */
 	public function update_page($id, $page)
 	{
-	    if(!empty($page['name']) && empty($page['trans'])){
+	    if(!empty($page['name']) && !isset($page['trans'])){
 	        $page['trans'] = translit_ya($page['name']);
         }
 		$query = $this->db->placehold('UPDATE __pages SET ?% WHERE id in (?@)', $page, (array)$id);

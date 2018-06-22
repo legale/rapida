@@ -10,12 +10,14 @@ class MainView extends View
 	{
 		$this->design->assign('slider', $this->slider->get());
 		$this->design->assign('brands', $this->brands->get_brands());
-		
-		if($this->page)
+
+		$this->db->query("SELECT * FROM __pages WHERE trans = ''");
+		$page = $this->db->result_array();
+		if($page)
 		{
-			$this->design->assign('meta_title', $this->page['meta_title']);
-			$this->design->assign('meta_keywords', $this->page['meta_keywords']);
-			$this->design->assign('meta_description', $this->page['meta_description']);
+			$this->design->assign('meta_title', $page['meta_title']);
+			$this->design->assign('meta_keywords', $page['meta_keywords']);
+			$this->design->assign('meta_description', $page['meta_description']);
 		}
 
 		return $this->design->fetch('main.tpl');
