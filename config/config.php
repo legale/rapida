@@ -45,9 +45,6 @@
     'JSON_UNESCAPED_UNICODE' => true,
     'codepage' => 'cp1251',
   ),
-  'cli' => false,
-  'root_dir' => 'D:\\OSPanel\\domains\\rapida-dev/',
-  'root_url' => 'http://rapida-dev',
   'max_upload_filesize' => 419430400,
   'debug' => true,
 );

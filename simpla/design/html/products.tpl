@@ -170,7 +170,9 @@
 				{function name=category_select level=0}
                     {foreach $categories as $category}
                         <option value='{$category['id']}'>{section sp $level}&nbsp;&nbsp;&nbsp;&nbsp;{/section}{$category['name']|escape}</option>
+                        {if isset($subcategories)}
                         {category_select categories=$category['subcategories'] selected_id=$selected_id level=$level+1}
+                        {/if}
                     {/foreach}
                 {/function}
                 {category_select categories=$categories}
