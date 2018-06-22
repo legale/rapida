@@ -23,8 +23,14 @@ window.ra = {
             console.log('arg 1 is not an element');
             return false;
         }
-        el.setAttribute(newname, el.getAttribute(oldname));
-        el.removeAttribute(oldname);
+
+        let val = el.getAttribute(oldname);
+        if(val !== null){
+            el.setAttribute(newname, el.getAttribute(oldname));
+            el.removeAttribute(oldname);
+        }else{
+            return false;
+        }
     },
 
     walk: function (obj, cb) {
