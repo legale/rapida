@@ -44,6 +44,7 @@ return array (
     'path' => './cache',
     'JSON_UNESCAPED_UNICODE' => true,
     'codepage' => 'cp1251',
+    'skip_queue_full' => true,
   ),
   'debug' => true,
   'captcha' => false,

@@ -14,7 +14,7 @@ require_once('Simpla.php');
 /**
  * Class Config
  */
-class Config
+class Config extends Simpla
 {
 
 

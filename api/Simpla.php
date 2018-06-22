@@ -376,10 +376,15 @@ class Simpla
         setlocale(LC_ALL, $this->config->php['locale']);
         //кеш включается через статичекую переменную класса
         /** @var cache $enabled */
-        $cache_class = $this->cache;
+        $cache_class = &$this->cache;
         $cache_class::$enabled = $this->config->cache['enabled'];
         dtimer::log(__METHOD__ . " cache enabled: " . $cache_class::$enabled);
 
+        //настраиваем очередь заданий. Из таблицы заданий queue_full задания не удаляются. Для отладки может быть полезно
+        if ($this->config->cache['skip_queue_full'] === true) {
+            $queue_class = &$this->queue;
+            $queue_class::$skip_queue_full = $this->config->cache['skip_queue_full'];
+        }
 
     }
 

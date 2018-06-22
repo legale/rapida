@@ -37,6 +37,8 @@ class SettingsAdmin extends Simpla
             $this->settings->max_order_amount = $this->request->post('max_order_amount');
             $this->settings->units = $this->request->post('units');
 
+            //пропускать добавление во вторую таблицу из которой задания не удаляются (включать для отладки)
+            $this->config->cache['skip_queue_full'] = (bool)$this->request->post('skip_queue_full');
             //кеш
             $this->config->cache['enabled'] = (bool)$this->request->post('cache');
             //Способ сохранения кеша на диск

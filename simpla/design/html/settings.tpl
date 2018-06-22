@@ -41,12 +41,14 @@
         <h2>Настройки системы</h2>
 
         <div class="switcher">
+            <label class="property">Пропускать создание заданий в таблице queue_full</label>
+            <input class="switcher__input" value="true" type="checkbox" name="skip_queue_full" id="skip_queue_full_switch"
+                   {if $config->cache['skip_queue_full']}checked{/if}>
+        </div>
+        <div class="switcher">
             <label class="property">Кеширование запросов к БД</label>
             <input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch"
                    {if $config->cache['enabled']}checked{/if}>
-            <label class="switcher__label" for="cache_switch">
-                <span class="switcher__text">Вкл.</span>
-            </label>
         </div>
 
         <div class="switcher">

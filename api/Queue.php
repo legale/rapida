@@ -4,6 +4,7 @@ require_once ('Simpla.php');
 class Queue extends Simpla
 {
 
+    public static $skip_queue_full = true;
 	public function addtask($keyhash, $method, $task)
 	{
 
@@ -23,7 +24,9 @@ class Queue extends Simpla
 		}
 
 		$query = $this->db->placehold("INSERT IGNORE __queue SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'");
-		$query2 = "INSERT IGNORE __queue_full SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'";
+		if(!$this->skip_queue_full) {
+            $query2 = "INSERT IGNORE __queue_full SET `keyhash` = 0x$keyhash , `method` = '$method', `task` = '$task'";
+        }
 		dtimer::log(__METHOD__ . ' addtask query: ' . $query);
 		$this->db->query($query);
 		dtimer::log('queue inserted id: ' . $this->db->insert_id());
