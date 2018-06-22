@@ -98,7 +98,7 @@ class Pages extends Simpla
 
 		if (isset($filter['visible']))
 			$visible_filter = $this->db->placehold('AND visible = ?', intval($filter['visible']));
-		$q = "SELECT *  FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
+		$q = "SELECT * FROM __pages WHERE 1 $menu_filter $visible_filter ORDER BY pos";
 
 		$this->db->query($q);
 

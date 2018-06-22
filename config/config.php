@@ -46,4 +46,5 @@ return array (
     'codepage' => 'cp1251',
   ),
   'debug' => true,
+  'captcha' => false,
 );

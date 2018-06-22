@@ -38,12 +38,13 @@ class SettingsAdmin extends Simpla
             $this->settings->units = $this->request->post('units');
 
             //кеш
-
             $this->config->cache['enabled'] = (bool)$this->request->post('cache');
             //Способ сохранения кеша на диск
             $this->config->cache['method'] = $this->request->post('method');
             //отладчик
             $this->config->debug = (bool)$this->request->post('debug');
+            //капча
+            $this->config->captcha = (bool)$this->request->post('captcha');
 
 
             // Водяной знак

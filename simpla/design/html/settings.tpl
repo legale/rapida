@@ -63,9 +63,11 @@
             <label class="property">Отладчик работы системы (Появляется в конце каждой страницы)</label>
             <input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch"
                    {if $config->debug}checked{/if}>
-            <label class="switcher__label" for="debug_switch">
-                <span class="switcher__text">Вкл.</span>
-            </label>
+        </div>
+        <div class="switcher">
+            <label class="property">Капча</label>
+            <input class="switcher__input" value="true" type="checkbox" name="captcha" id="captcha_switch"
+                   {if $config->captcha}checked{/if}>
         </div>
     </div>
     <!-- Счетчики -->
