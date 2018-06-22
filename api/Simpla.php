@@ -40,72 +40,72 @@ function parse_url_($url)
     $res = array();
 
     //scheme
-    $pos = stripos($url,'://');
-    if(!$pos){
+    $pos = stripos($url, '://');
+    if (!$pos) {
         return false;
     }
     $res['scheme'] = substr($url, 0, $pos);
-    $url = substr($url, $pos+3);
-    if($url === ''){
+    $url = substr($url, $pos + 3);
+    if ($url === '') {
         return false;
     }
-    $pos = stripos($url,'@');
+    $pos = stripos($url, '@');
 
     //auth
-    if($pos){
+    if ($pos) {
         $auth = substr($url, 0, $pos);
-        $url = substr($url, $pos+1);
+        $url = substr($url, $pos + 1);
 
-        $pos = stripos($auth,':');
-        if($pos){
-            $res['user'] = substr($auth,0, $pos);
-            $res['pass'] = substr($auth, $pos+1);
-        }else{
+        $pos = stripos($auth, ':');
+        if ($pos) {
+            $res['user'] = substr($auth, 0, $pos);
+            $res['pass'] = substr($auth, $pos + 1);
+        } else {
             $res['user'] = $auth;
         }
     }
-    if($url === ''){
+    if ($url === '') {
         return false;
     }
 
     //fragment
-    $pos = stripos($url,'#');
-    if($pos){
-        $res['fragment'] = substr($url, $pos+1);
-        $url = substr($url,0, $pos);
+    $pos = stripos($url, '#');
+    if ($pos) {
+        $res['fragment'] = substr($url, $pos + 1);
+        $url = substr($url, 0, $pos);
         //return $url;
     }
-    if($url === ''){
+    if ($url === '') {
         return false;
     }
     //query
-    $pos = stripos($url,'?');
-    if($pos){
-        $res['query'] = substr($url, $pos+1);
-        $url = substr($url,0, $pos);
+    $pos = stripos($url, '?');
+    if ($pos) {
+        $res['query'] = substr($url, $pos + 1);
+        $url = substr($url, 0, $pos);
         //return $url;
     }
-    if($url === ''){
+    if ($url === '') {
         return false;
     }
     //host
-    $pos = stripos($url,'/');
-    if($pos){
+    $pos = stripos($url, '/');
+    if ($pos) {
         $res['host'] = substr($url, 0, $pos);
         $url = substr($url, $pos);
         //return $url;
         //port
-        $pos = stripos($res['host'],':');
-        if($pos){
-            $res['port'] = substr($res['host'], $pos+1);
-            $res['host'] = substr($res['host'],0, $pos);
+        $pos = stripos($res['host'], ':');
+        if ($pos) {
+            $res['port'] = substr($res['host'], $pos + 1);
+            $res['host'] = substr($res['host'], 0, $pos);
         }
-    }else{
+    } else {
         return false;
     }
 
     //path
-    if($url !== ''){
+    if ($url !== '') {
         $res['path'] = $url;
     }
 
@@ -188,28 +188,33 @@ function empty_($var)
 }
 
 //удаляем неразрывный пробел
-function filter_spaces($str){
+function filter_spaces($str)
+{
     return trim(preg_replace("/\s+/u", ' ', $str));
 }
 
 //меняем местами пробелы и подчеркивания
-function convert_spaces($str, $reverse = false ){
+function convert_spaces($str, $reverse = false)
+{
     $pairs = $reverse ? array_flip(array(' ' => '_', '_' => ' ')) : array(' ' => '_', '_' => ' ');
     return strtr($str, $pairs);
 }
 
 //фильтруем все непечатаемые символы
-function filter_ascii($str){
+function filter_ascii($str)
+{
     return preg_replace('/[^[:ascii:]а-яА-ЯёЁ]/u', '', $str);
 }
 
 //заменяет в строке дефисы на волну поскольку они используется системой в качестве разделителей
-function encode_param($str){
+function encode_param($str)
+{
     return strtr($str, array('-' => '~', '~' => ''));
 }
 
 //меняет обратно волну на дефис
-function decode_param($str){
+function decode_param($str)
+{
     return strtr($str, array('~' => '-'));
 }
 
@@ -345,33 +350,35 @@ class Simpla
      */
     public function __construct()
     {
-        if (self::$virgin === true) {
-
-            //убираем флаг, чтобы код ниже заводился только 1 раз
-            self::$virgin = false;
-
-            //запустим сессию, если запуск не из командной строки
-            if (session_status() === PHP_SESSION_NONE && !$this->config->cli) {
-                session_start();
-            }
-
-            //log ошибок
-            ini_set('error_log', ROOT_DIR . $this->config->logfile);
-            //user-agent
-            ini_set('user_agent', $this->config->user_agent);
-            //уровень отображения ошибок
-            error_reporting($this->config->error_reporting);
-            dtimer::log("error_reporting config.ini: " . $this->config->error_reporting . " error_reporting() says: " . error_reporting());
-            //выключатель отладчика
-            dtimer::log(__METHOD__ . " debuger");
-            dtimer::$enabled = isset($_SESSION['admin']) && $this->config->debug ? true : false;
-            //локаль
-            setlocale(LC_ALL, $this->config->locale);
-            //кеш включается через статичекую переменную класса
-            /** @var cache $enabled */
-            $cache_class = $this->cache;
-            $cache_class::$enabled = $this->config->cache;
+        if (self::$virgin !== true) {
+            return null;
         }
+
+        //убираем флаг, чтобы код ниже заводился только 1 раз
+        self::$virgin = false;
+
+        //запустим сессию, если запуск не из командной строки
+        if (session_status() === PHP_SESSION_NONE && !$this->config->cli) {
+            session_start();
+        }
+
+        //log ошибок
+        ini_set('error_log', ROOT_DIR . $this->config->php['logfile']);
+        //user-agent
+        ini_set('user_agent', $this->config->user_agent);
+        //уровень отображения ошибок
+        error_reporting($this->config->php['error_reporting']);
+        dtimer::log("error_reporting config.ini: " . $this->config->php['error_reporting'] . " error_reporting() says: " . error_reporting());
+        //выключатель отладчика
+        dtimer::log(__METHOD__ . " debuger");
+        dtimer::$enabled = isset($_SESSION['admin']) && $this->config->debug ? true : false;
+        //локаль
+        setlocale(LC_ALL, $this->config->php['locale']);
+        //кеш включается через статичекую переменную класса
+        /** @var cache $enabled */
+        $cache_class = $this->cache;
+        $cache_class::$enabled = $this->config->cache['enabled'];
+
 
     }
 

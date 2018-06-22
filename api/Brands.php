@@ -10,6 +10,9 @@ require_once('Simpla.php');
  */
 class Brands extends Simpla
 {
+    /**
+     * @var array
+     */
     private $tokeep = array(
         'force_no_cache',
         'visible',
@@ -19,15 +22,14 @@ class Brands extends Simpla
 
     );
 
+    /**
+     * @var
+     */
     public $brands;
 
-    /*
+    /**
      *
      * Функция возвращает массив названий брендов с ключами в виде id этих брендов
-     * @param $ids array
-     *
-     */
-    /**
      * @param array $filter
      * @return bool
      */
@@ -73,13 +75,9 @@ class Brands extends Simpla
         return $res;
     }
 
-    /*
+    /**
      *
      * Функция возвращает массив брендов, удовлетворяющих фильтру
-     * @param $filter
-     *
-     */
-    /**
      * @param array $filter
      * @return mixed
      */
@@ -99,7 +97,7 @@ class Brands extends Simpla
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
         $filter_string = var_export($filter_, true);
-        $keyhash = md5( __METHOD__ . $filter_string);
+        $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
@@ -164,14 +162,10 @@ class Brands extends Simpla
     }
 
 
-    /*
+    /**
      *
      * Функция возвращает бренд по его id или trans
      * (в зависимости от типа аргумента, int - id, string - trans)
-     * @param $id id или trans поста
-     *
-     */
-    /**
      * @param $id
      * @return bool
      */
@@ -196,13 +190,9 @@ class Brands extends Simpla
         }
     }
 
-    /*
+    /**
      *
      * Добавление бренда
-     * @param $brand
-     *
-     */
-    /**
      * @param $brand
      * @return bool
      */
@@ -248,13 +238,8 @@ class Brands extends Simpla
         return $res;
     }
 
-    /*
-     *
-     * Обновление бренда(ов)
-     * @param $brand
-     *
-     */
     /**
+     * Обновление бренда(ов)
      * @param $id
      * @param $brand
      * @return mixed
@@ -284,7 +269,7 @@ class Brands extends Simpla
         return $id;
     }
 
-    /*
+    /**
      * Удаление бренда
      * @param $id
      */
@@ -296,35 +281,6 @@ class Brands extends Simpla
             $this->db->query($query);
             $query = $this->db->placehold("UPDATE __products SET brand_id=NULL WHERE brand_id=?", $id);
             $this->db->query($query);
-        }
-    }
-
-    /*
-     *
-     * Удаление изображения бренда
-     * @param $id
-     *
-     */
-    /**
-     * @param $brand_id
-     */
-    public function delete_image($brand_id)
-    {
-        $query = $this->db->placehold("SELECT image FROM __brands WHERE id=?", intval($brand_id));
-        $this->db->query($query);
-        $filename = $this->db->result_array('image');
-        if (!empty($filename)) {
-            $query = $this->db->placehold("UPDATE __brands SET image=NULL WHERE id=?", $brand_id);
-            $this->db->query($query);
-            $query = $this->db->placehold("SELECT count(*) as count FROM __brands WHERE image=? LIMIT 1", $filename);
-            $this->db->query($query);
-            $count = $this->db->result_array('count');
-            if ($count == 0) {
-                $to_unlink = $this->config->root_dir . $this->config->brands_images_dir . $filename;
-                if (file_exists($to_unlink)) {
-                    unlink($to_unlink);
-                }
-            }
         }
     }
 

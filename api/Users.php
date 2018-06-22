@@ -182,7 +182,7 @@ class Users extends Simpla
 			}
 		}
 		if (isset($user['password']))
-			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user['password']));
+			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user->password));
 
 		$query = $this->db->placehold("SELECT count(*) as count FROM __users WHERE email=?", $user['email']);
 		$this->db->query($query);
@@ -229,7 +229,7 @@ class Users extends Simpla
 		}
 		
 		if (isset($user['password'])){
-			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user['password']));
+			$user['password'] = md5($this->config->salt_word . $user['password'] . md5($user->password));
 		}
 		$query = $this->db->placehold("UPDATE __users SET $last_login ?% WHERE id=? LIMIT 1", $user, intval($id));
 		

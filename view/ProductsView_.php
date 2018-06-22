@@ -176,7 +176,7 @@ class ProductsView extends View
 		if(!empty($keyword) && $products_count == 1){
 			$p = (array)$products;
 			$p = reset($p);
-			header('Location: '.$this->config->root_url.'/products/'.$p['trans']);
+			header('Location: '.$this->config->root_url.'/products/'.$p->trans);
 		}
 		
 		if( !empty($products) )

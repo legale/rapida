@@ -38,7 +38,7 @@ class Image extends Simpla
             return false;
         }
 
-        $table = $this->config->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
 
         //id existence check
         $this->db->query("SELECT * FROM $table WHERE `id` = $id");
@@ -68,7 +68,7 @@ class Image extends Simpla
 
         //check if image has pos == 0
         if ((int)$pos === 0) {
-            $item_table = $this->config->db_prefix . $type;
+            $item_table = $this->config->db['db_prefix'] . $type;
             dtimer::log(__METHOD__ . " pos 0 image detected!");
             $image2 = $this->get($type, array('item_id' => $item_id));
             dtimer::log(__METHOD__ . " image array: " . var_export($image2, true));
@@ -117,7 +117,7 @@ class Image extends Simpla
         if (!$this->type_check($type)) {
             return false;
         }
-        $table = $this->config->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
 
         $res = $this->db->query("SELECT * FROM `$table` WHERE ?& ORDER BY `pos` ASC", $filter);
         if ($res) {
@@ -154,7 +154,7 @@ class Image extends Simpla
             }
         }
 
-        $table = $this->config->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
 
 
         //update image
@@ -203,7 +203,7 @@ class Image extends Simpla
             return false;
         }
 
-        $table = $this->config->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
         $this->db->query("SELECT count(*) as count FROM $table WHERE `basename`=? LIMIT 1", $basename);
         $count = $this->db->result_array('count');
         if ($count > 0) {
@@ -319,15 +319,15 @@ class Image extends Simpla
         );
 
         //overlay
-        if ($this->config->overlay) {
-            $params['overlay_file'] = $this->config->root_dir . $this->config->overlay_file;
+        if ($this->config->images['overlay']) {
+            $params['overlay_file'] = $this->config->root_dir . $this->config->images['overlay_file'];
             $params['overlay_offset_x'] = $this->settings->overlay_offset_x;
             $params['overlay_offset_y'] = $this->settings->overlay_offset_y;
             $params['overlay_ratio'] = $this->settings->overlay_ratio;
             $params['overlay_opacity'] = $this->settings->overlay_opacity;
         }
 
-        if (class_exists('Imagick') && $this->config->use_imagick) {
+        if (class_exists('Imagick') && $this->config->images['use_imagick']) {
             $res = $this->image_constrain_imagick($params);
         } else {
             $res = $this->image_constrain_gd($params);
@@ -382,7 +382,7 @@ class Image extends Simpla
         dtimer::log(__METHOD__ . " $path is not exists! trying to mkdir");
         //octdec() because the function mkdir() takes second parameter in decimal format
         //so chmod 755 octal needs to be converted in decimal first
-        if (mkdir($path, octdec((int)$this->config->resize_chmod), true)) {
+        if (mkdir($path, octdec((int)$this->config->images['resize_chmod']), true)) {
             dtimer::log(__METHOD__ . " created: $path ");
         } else {
             dtimer::log(__METHOD__ . " failed to create: $path ", 1);
@@ -782,7 +782,7 @@ class Image extends Simpla
             dtimer::log(__METHOD__ . " item_id check skipped");
         }
 
-        $table = $this->config->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
 
         //table existence check
         dtimer::log(__METHOD__ . " table $table existence check");

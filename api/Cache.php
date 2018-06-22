@@ -28,7 +28,7 @@ class Cache extends Simpla
             "method" => "serialize", //method to save data (json, serialize, var_export)
         );
 
-        $ini_config = $this->config->vars_sections['cache'];
+        $ini_config = (array)$this->config->cache;
 
         self::$config = array_merge($config, $ini_config);
 

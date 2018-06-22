@@ -14,11 +14,11 @@ class Design extends Simpla
 
         // Создаем и настраиваем Смарти
         $this->smarty = new Smarty();
-        $this->smarty->compile_check = $this->config->smarty_compile_check;
-        $this->smarty->caching = $this->config->smarty_caching;
-        $this->smarty->cache_lifetime = $this->config->smarty_cache_lifetime;
-        $this->smarty->debugging = $this->config->smarty_debugging;
-        //$this->smarty->error_reporting = E_ALL & ~E_NOTICE;
+        $this->smarty->compile_check = $this->config->smarty['smarty_compile_check'];
+        $this->smarty->caching = $this->config->smarty['smarty_caching'];
+        $this->smarty->cache_lifetime = $this->config->smarty['smarty_cache_lifetime'];
+        $this->smarty->debugging = $this->config->smarty['smarty_debugging'];
+        $this->smarty->error_reporting = $this->config->php['error_reporting'];
 
         // Берем тему из настроек
         $theme = $this->settings->theme;
@@ -57,7 +57,7 @@ class Design extends Simpla
         $this->smarty->registerPlugin("function", "bender", array($this, 'bender_plugin'));
 
 
-        if ($this->config->smarty_html_minify) {
+        if ($this->config->smarty['smarty_html_minify']) {
             $this->smarty->loadFilter('output', 'trimwhitespace');
         }
     }

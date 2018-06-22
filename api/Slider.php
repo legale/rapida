@@ -73,29 +73,6 @@ class Slider extends Simpla
 			$this->db->query($query);		
 		}
 	}
-	
-	/*
-	*
-	* Удаление изображения слайда
-	*
-	*/
-	public function delete_image($slide_id)
-	{
-		$query = $this->db->placehold("SELECT image FROM __slides WHERE id=?", intval($slide_id));
-		$this->db->query($query);
-		$filename = $this->db->result_array('image');
-		if(!empty($filename))
-		{
-			$query = $this->db->placehold("UPDATE __slides SET image=NULL WHERE id=?", $slide_id);
-			$this->db->query($query);
-			$query = $this->db->placehold("SELECT count(*) as count FROM __slides WHERE image=? LIMIT 1", $filename);
-			$this->db->query($query);
-			$count = $this->db->result_array('count');
-			if($count == 0)
-			{			
-				@unlink($this->config->root_dir.$filename);
-			}
-		}
-	}
+
 
 }

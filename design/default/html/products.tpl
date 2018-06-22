@@ -60,7 +60,7 @@
 	<a href="{chpu_url params=[brand=>[], page=> null ]}" {if !$brand['id']}class="selected"{/if}>Все бренды</a>
 	{foreach $category['brands'] as $b}
 		{if $b['image']}
-		<a data-brand="{$b['id']}" href="{chpu_url params=['page' => null, 'brand'=>$b['trans']]}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
+		<a data-brand="{$b['id']}" href="{chpu_url params=['page' => null, 'brand'=>$b['trans']]}"><img src="" alt="{$b['name']|escape}"></a>
 		{else}
 		<a data-brand="{$b['id']}" href="{chpu_url params=['page' => null, 'brand'=>$b['trans']]}" {if $b['id'] == $brand['id']}class="selected"{/if}>{$b['name']|escape}</a>
 		{/if}

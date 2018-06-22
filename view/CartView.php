@@ -96,7 +96,7 @@ class CartView extends View
                     $this->cart->empty_cart();
 
                     // Перенаправляем на страницу заказа
-                    header('Location: ' . $this->config->root_url . '/order/' . $order['trans']);
+                    header('Location: ' . $this->config->root_url . '/order/' . $order->trans);
                 } else {
                     dtimer::log(__METHOD__ . " unable to get_order ");
                 }

@@ -255,7 +255,7 @@ class Curl extends Simpla
         $opt = array(
             CURLOPT_URL => $src,
             CURLOPT_REFERER => $src,
-            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36', //User-Agent: header
+            CURLOPT_USERAGENT => $this->config->user_agent, //User-Agent: header
             CURLOPT_PIPEWAIT => 1, //1 to wait for pipelining/multiplexing
             CURLOPT_FOLLOWLOCATION => 0, //redirect to location header
             CURLOPT_MAXREDIRS => 10, //max redirects

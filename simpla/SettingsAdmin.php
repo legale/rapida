@@ -38,9 +38,10 @@ class SettingsAdmin extends Simpla
             $this->settings->units = $this->request->post('units');
 
             //кеш
-            $this->config->cache = $this->request->post('cache');
+
+            $this->config->cache['enabled'] = $this->request->post('cache');
             //Способ сохранения кеша на диск
-            $this->config->method = $this->request->post('method');
+            $this->config->cache['method'] = $this->request->post('method');
             //отладчик
             $this->config->debug = $this->request->post('debug');
 
@@ -49,7 +50,7 @@ class SettingsAdmin extends Simpla
             $clear_image_cache = false;
             $overlay = $this->request->files('overlay_file', 'tmp_name');
             if (!empty($overlay) && in_array(pathinfo($this->request->files('overlay_file', 'name'), PATHINFO_EXTENSION), $this->allowed_image_extentions)) {
-                if (@move_uploaded_file($overlay, $this->config->root_dir . $this->config->overlay_file))
+                if (@move_uploaded_file($overlay, $this->config->root_dir . $this->config->images['overlay_file']))
                     $clear_image_cache = true;
                 else
                     $this->design->assign('message_error', 'overlay_is_not_writable');
@@ -79,7 +80,7 @@ class SettingsAdmin extends Simpla
 
             // Удаление заресайзеных изображений
             if ($clear_image_cache) {
-                $dir = $this->config->resized_images_dir;
+                $dir = $this->config->images['resized_images_dir'];
                 if ($handle = opendir($dir)) {
                     while (false !== ($file = readdir($handle))) {
                         if ($file != "." && $file != "..") {

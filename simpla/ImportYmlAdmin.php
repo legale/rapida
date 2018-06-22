@@ -86,9 +86,9 @@ class ImportYmlAdmin extends Simpla
         }
 
         // Проверяем локаль
-        if (setlocale(LC_ALL, 0) != $this->config->locale) {
+        if (setlocale(LC_ALL, 0) != $this->config->php['locale']) {
             $this->design->assign('message_error', 'locale_error');
-            $this->design->assign('locale', $this->config->locale);
+            $this->design->assign('locale', $this->config->php['locale']);
         }
 
 

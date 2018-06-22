@@ -43,8 +43,9 @@ class BrandAdmin extends Simpla
                 // Загрузка изображения
                 $image = $this->request->files('image');
                 if (!empty($image['name']) && in_array(strtolower(pathinfo($image['name'], PATHINFO_EXTENSION)), $this->allowed_image_extentions)) {
-                    $this->brands->delete_image($brand['id']);
-                    move_uploaded_file($image['tmp_name'], $this->root_dir . $this->config->brands_images_dir . $image['name']);
+                    //Надо переписать по новой схеме работы с изображениями
+                    //$this->brands->delete_image($brand['id']);
+                    //move_uploaded_file($image['tmp_name'], $this->root_dir . $this->config->brands_images_dir . $image->name);
                     $this->brands->update_brand($brand['id'], array('image' => $image['name']));
                 }
                 $brand = $this->brands->get_brand($brand['id']);

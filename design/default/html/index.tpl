@@ -163,7 +163,7 @@
 				{* Показываем только видимые категории *}
 				{if $c['visible']}
 					<li>
-						{if $c['image']}<img src="{$config->categories_images_dir}{$c['image']}" alt="{$c['name']|escape}">{/if}
+						{if $c['image']}<img src="" alt="{$c['name']|escape}">{/if}
 						<a {if isset($category) && $category['id'] == $c['id']}class="selected"{/if} href="catalog/{$c['trans']}" data-category="{$c['id']}">{$c['name']|escape}</a>
 						{if isset($c['subcategories'])}{categories_tree categories=$c['subcategories']}{/if}
 					</li>
@@ -185,7 +185,7 @@
 				<h2>Все бренды:</h2>
 				{foreach $all_brands as $b}	
 					{if $b['image']}
-					<a href="brands/{$b['trans']}"><img src="{$config->brands_images_dir}{$b['image']}" alt="{$b['name']|escape}"></a>
+					<a href="brands/{$b['trans']}"><img src="" alt="{$b['name']|escape}"></a>
 					{else}
 					<a href="brands/{$b['trans']}">{$b['name']}</a>
 					{/if}

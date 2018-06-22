@@ -119,7 +119,7 @@ $(function() {
 			<ul>
 				<li>
 					<a href='#' class="delete"><img src='design/images/cross-circle-frame.png'></a>
-					<img src="../{$config->brands_images_dir}{$brand['image']}" alt="" />
+					<img src="" alt="" />
 				</li>
 			</ul>
 			{/if}

@@ -43,7 +43,7 @@
         <div class="switcher">
             <label class="property">Кеширование запросов к БД</label>
             <input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch"
-                   {if $config->cache}checked{/if}>
+                   {if $config->cache['enabled']}checked{/if}>
             <label class="switcher__label" for="cache_switch">
                 <span class="switcher__text">Вкл.</span>
             </label>
@@ -52,10 +52,10 @@
         <div class="switcher">
             <label class="property">Способ сохранения кеша на диск</label>
             <select name="method">
-                <option value="json" {if $config->method === 'json'}selected{/if}>json</option>
-                <option value="serialize" {if $config->method === 'serialize'}selected{/if}>serialize</option>
-                <option value="var_export" {if $config->method === 'var_export'}selected{/if}>var_export</option>
-                <option value="msgpack" {if $config->method === 'msgpack'}selected{/if}>msgpack</option>
+                <option value="json" {if $config->c === 'json'}selected{/if}>json</option>
+                <option value="serialize" {if $config->cache['method'] === 'serialize'}selected{/if}>serialize</option>
+                <option value="var_export" {if $config->cache['method'] === 'var_export'}selected{/if}>var_export</option>
+                <option value="msgpack" {if $config->cache['method'] === 'msgpack'}selected{/if}>msgpack</option>
             </select>
         </div>
 

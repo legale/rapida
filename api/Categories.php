@@ -193,31 +193,6 @@ class Categories extends Simpla
         return $this->db->query($query);
     }
 
-    // Удалить изображение категории
-    public function delete_image($categories_ids)
-    {
-        $categories_ids = (array)$categories_ids;
-        $query = $this->db->placehold("SELECT image FROM __categories WHERE id in(?@)", $categories_ids);
-        $this->db->query($query);
-        $filenames = $this->db->results_array('image');
-        if (!empty_($filenames)) {
-            $query = $this->db->placehold("UPDATE __categories SET image=NULL WHERE id in(?@)", $categories_ids);
-            $this->db->query($query);
-            foreach ($filenames as $filename) {
-                if (!empty_($filename)) {
-                    $query = $this->db->placehold("SELECT count(*) as count FROM __categories WHERE image=?", $filename);
-                    $this->db->query($query);
-                    $count = $this->db->result_array('count');
-                    if ($count == 0) {
-                        @unlink($this->config->root_dir . $this->config->categories_images_dir . $filename);
-                    }
-                }
-            }
-            unset($this->categories_tree);
-            unset($this->all_categories);
-        }
-    }
-
 
     // Инициализация категорий, после которой категории будем выбирать из локальной переменной
     private function init_categories($reinit = false)
@@ -298,7 +273,6 @@ class Categories extends Simpla
         }
         unset($pointers[0]);
         unset($ids);
-
 
         $this->categories_tree = $tree['subcategories'];
         $this->all_categories = $pointers;

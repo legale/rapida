@@ -112,33 +112,6 @@ class OrderView extends View
 		return $this->body = $this->design->fetch('order.tpl');
 	}
 	
-	private function download()
-	{
-		$file = $this->request->get('file');
-		
-		if(!$url = $this->request->get('url', 'string'))
-			return false;
-			
-		$order = $this->orders->get_order((string)$url);
-		if(!$order)
-			return false;
-			
-		if(!$order['paid'])
-			return false;
-						
-		// Проверяем, есть ли такой файл в покупках	
-		$query = $this->db->placehold("SELECT p.id FROM __purchases p, __variants v WHERE p.variant_id=v.id AND p.order_id=? AND v.attachment=?", $order['id'], $file);		$this->db->query($query);
-		if($this->db->num_rows()==0)
-			return false;
-		
-		header("Content-type: application/force-download");
-		header("Content-Disposition: attachment; filename=\"$file\"");
-		header("Content-Length: ".filesize($this->config->root_dir.$this->config->downloads_dir.$file));
-		readfile($this->config->root_dir.$this->config->downloads_dir.$file);
-		
-		exit();
-	}
-	
 	public function checkout_form($params, $smarty)
 	{
 		if(!isset($params['module'])){

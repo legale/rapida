@@ -1,6 +1,6 @@
 <?php
-if(defined('PHP7')) {
-     eval("declare(strict_types=1);");
+if (defined('PHP7')) {
+    eval("declare(strict_types=1);");
 }
 
 if (!function_exists('convert')) {
@@ -102,7 +102,7 @@ class dtimer
 
         self::$points[] = array('message' => $message,
             'type' => $type, 'ram' => convert(memory_get_usage(true)), 'time' => microtime(true) - self::$startTime);
-    return true;
+        return true;
     }
 
     /**
@@ -142,7 +142,7 @@ class dtimer
 
             $type = $item['type'];
             $color_type = self::$color_array[$item['type']];
-            $message = $item['message'];
+            $message = htmlspecialchars( $item['message']);
             $ram = $item['ram'];
             //время из последней записи
             $total = $last['time'];

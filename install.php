@@ -187,7 +187,6 @@ function myPostExtractCallBack($p_event, &$p_header)
 //
 function dbconfig()
 {
-    $configfile = 'config/db.ini';
 
     $dbhost = 'localhost';
     $dbname = '';
@@ -195,96 +194,56 @@ function dbconfig()
     $dbpassword = '';
     $error = '';
 
-    if (isset($_POST['dbhost']))
+    if(isset($_POST['dbhost']))
         $dbhost = $_POST['dbhost'];
-    if (isset($_POST['dbname']))
+    if(isset($_POST['dbname']))
         $dbname = $_POST['dbname'];
-    if (isset($_POST['dbuser']))
+    if(isset($_POST['dbuser']))
         $dbuser = $_POST['dbuser'];
-    if (isset($_POST['dbpassword']))
+    if(isset($_POST['dbpassword']))
         $dbpassword = $_POST['dbpassword'];
 
-    if (!empty($dbname) && !empty($dbuser)) {
+    if(!empty($dbname) && !empty($dbuser))
+    {
         @$mysqli = new mysqli($dbhost, $dbuser, $dbpassword);
 
-        if ($mysqli->connect_error) {
-            $error = 'Не могу соединиться с базой. Проверьте логин и пароль connect_error ' . $mysqli->connect_error;
-        }
-        if (!$mysqli->select_db($dbname)) {
-            if (!$mysqli->query("CREATE DATABASE `$dbname`") || !$mysqli->select_db($dbname)) {
-                $error = "Базы данных $dbname не существует. Создать не удалось!";
-            }
-        }
-        $q = 'SET NAMES utf8';
-        if (!$mysqli->query($q))
-            $error = "query error $q";
+        if(@$mysqli->connect_error)
+            $error = 'Не могу соединиться с базой. Проверьте логин и пароль '. $mysqli->connect_error;
+        if(!@$mysqli->select_db($dbname))
+            if(!@$mysqli->query("CREATE DATABASE $dbname") || !@$mysqli->select_db($dbname))
+                $error = "Не удалось создать базу $dbname";
+        if(!@$mysqli->query('SET NAMES utf8'))
+            $error = 'Не могу соединиться с базой. Проверьте логин и пароль';
 
-        if (!is_readable('rapida.sql'))
-            $error = 'Файл rapida.sql не найден';
+        if(!is_readable('simpla.sql'))
+            $error = 'Файл simpla.sql не найден';
 
-        //создадим файл, если его нет
-        if (!file_exists($configfile)) {
-            file_put_contents($configfile, '');
-        }
-        if (!is_writable($configfile))
-            $error = "Поставьте права на запись для файла $configfile";
+        if(!is_writable('config/config.php'))
+            $error = 'Поставьте права на запись для файла config/config.php';
 
-        if (empty($error)) {
-            mysqlrestore($mysqli, 'rapida.sql');
+        if(empty($error))
+        {
+            mysqlrestore($mysqli, 'simpla.sql');
+
+
+            $conf = include('config/db.php');
             # Запишем конфиги с базой
-            $conf = file_get_contents($configfile);
-            if (!preg_match("/\[db\]/i", $conf)) {
-                $conf .= "\n[db]\n";
-            }
-            $count = '';
-            $conf = preg_replace("/^db_name.*;/i", 'db_name = "' . $dbname . '";', $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database name\ndb_name = \"$dbname\";\r\n";
-            }
+            $dbconf = array(
+                'db_server' => $dbhost,
+                'db_name' => $dbname,
+                'db_user' => $dbuser,
+                'db_password' => $dbpassword,
+            );
 
-            $conf = preg_replace("/db_server.*;/i", 'db_server = "' . $dbhost . '";', $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database server\ndb_server = \"$dbhost\";\r\n";
-            }
+            $conf = '<?php return ' . var_export(array_merge($conf, $dbconf), true) . ';';
 
-            $conf = preg_replace("/db_user.*;/i", 'db_user = "' . $dbuser . '";', $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;ndatabase user\ndb_user = \"$dbuser\";\r\n";
-            }
-
-            $conf = preg_replace("/db_password.*;/i", 'db_password = "' . $dbpassword . '";', $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database password\ndb_password = \"$dbpassword\";\r\n";
-            }
-
-            $conf = preg_replace("/db_prefix.*;/i", "db_prefix = \"s_\";", $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database tables names prefix\ndb_prefix = \"s_\";\r\n";
-            }
-
-            $conf = preg_replace("/db_charset.*;/i", "db_charset = \"UTF8\";", $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database codepage\ndb_charset = \"UTF8\";\r\n";
-            }
-
-            $conf = preg_replace("/db_timezone.*;/i", "db_timezone = \"+02:00\";", $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database timezone\ndb_timezone  = \"+02:00\";\r\n";
-            }
-
-            $conf = preg_replace("/db_sql_mode.*;/i", "db_sql_mode = \"\";", $conf, -1, $count);
-            if ($count == 0) {
-                $conf .= "\n;database SQL MODE parameter\ndb_sql_mode = \"\";\r\n";
-            }
-
-
-            $cf = fopen($configfile, 'w');
+            $cf = fopen('config/db.php', 'w');
             fwrite($cf, $conf);
             fclose($cf);
 
             print "<p>База данных успешно настроена</p>";
             print "<p><form method=get><input type='hidden' name='step' value='admin'><input type='submit' value='продолжить →'></form></p>";
-            return;
+            exit();
 
         }
 
