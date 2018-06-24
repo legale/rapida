@@ -58,7 +58,7 @@ class ControllerResize extends Simpla
         $this->type = isset($this->uri['path']['dir'])
             ? $this->uri['path']['dir'] : null;
 
-        $this->type = isset($this->uri['path']['id'])
+        $this->id = isset($this->uri['path']['id'])
             ? $this->uri['path']['dir'] : null;
 
         $this->w = isset($this->uri['path']['size'][0])

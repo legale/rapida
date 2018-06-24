@@ -26,13 +26,14 @@ return array (
   ),
   'images' => 
   array (
-    'use_imagick' => true,
+    'imagick' => true,
     'resize_chmod' => '775',
     'overlay' => true,
     'original_images_dir' => 'files/originals/',
     'categories_images_dir' => 'files/categories/',
     'brands_images_dir' => 'files/brands/',
     'overlay_file' => 'simpla/files/watermark/watermark.png',
+    'crop' => true,
   ),
   'cache' => 
   array (
@@ -46,6 +47,6 @@ return array (
     'codepage' => 'cp1251',
     'skip_queue_full' => true,
   ),
-  'debug' => true,
+  'debug' => false,
   'captcha' => false,
 );

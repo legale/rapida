@@ -309,6 +309,8 @@ class ControllerMaster extends Simpla
                 list($res['dir'], $res['id']) = explode('_', array_shift($a), 2);
                 $res['size'] = explode('x', array_shift($a), 2);
                 $res['basename'] = array_shift($a);
+//                var_dump($res);
+//                die;
                 break;
 
             case 'products':

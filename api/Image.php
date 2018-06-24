@@ -104,6 +104,7 @@ class Image extends Simpla
             return true;
         }
     }
+
     /**
      * Универсальный метод для получения изображения по id или item_id
      * @param $type
@@ -316,6 +317,7 @@ class Image extends Simpla
             'w' => $w,
             'h' => $h,
             'sharpness' => $this->settings->images_sharpness,
+            'crop' => $this->config->images['crop'],
         );
 
         //overlay
@@ -327,7 +329,7 @@ class Image extends Simpla
             $params['overlay_opacity'] = $this->settings->overlay_opacity;
         }
 
-        if (class_exists('Imagick') && $this->config->images['use_imagick']) {
+        if (class_exists('Imagick') && $this->config->images['imagick']) {
             $res = $this->image_constrain_imagick($params);
         } else {
             $res = $this->image_constrain_gd($params);
@@ -407,6 +409,7 @@ class Image extends Simpla
             $dst_file = $params['dst'];
             $max_w = $params['w'];
             $max_h = $params['h'];
+            $crop = $params['crop'];
         } else {
             dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
@@ -437,11 +440,27 @@ class Image extends Simpla
             return true;
         }
 
-        // Размеры превью при пропорциональном уменьшении
-        list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
+        if($crop){
+            //обрезаем
+            $dst_w = $max_w;
+            $dst_h = $max_h;
+            $thumb->cropthumbnailimage($dst_w, $dst_h);
 
-        // Уменьшаем
-        $thumb->thumbnailImage($dst_w, $dst_h);
+        }else {
+            // Размеры превью при пропорциональном уменьшении
+            list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
+
+            // Уменьшаем
+            $thumb->scaleImage($dst_w, $dst_h, true);
+        }
+
+        $bo_w = ($max_w - $dst_w) / 2;
+        $bo_h = ($max_h - $dst_h) / 2;
+        $bg_color = new ImagickPixel();
+        $bg_color->setColor('rgb(250,130,0)'); //orange color
+        //$bg_color->setColor('transparent'); //transparent
+        $thumb->borderImage($bg_color, $bo_w, $bo_h);
+
 
         // Устанавливаем водяной знак
         if ($overlay && is_readable($overlay)) {
@@ -455,8 +474,6 @@ class Image extends Simpla
             $oheight = $oheight * $ratio;
 
             $overlay->scaleImage($owidth, $oheight);
-            //$overlay->setImageOpacity($overlay_opacity);
-            //$overlay_compose = $overlay->getImageCompose();
             $overlay->evaluateImage(Imagick::EVALUATE_MULTIPLY, $overlay_opacity, Imagick::CHANNEL_ALPHA);
 
             $overlay_x = min(($dst_w - $owidth) * $overlay_offet_x / 100, $dst_w);
@@ -465,23 +482,10 @@ class Image extends Simpla
         }
 
 
-        // Анимированные gif требуют прохода по фреймам
-        foreach ($thumb as $frame) {
-            // Уменьшаем
-            $frame->thumbnailImage($dst_w, $dst_h);
-
-            /* Set the virtual canvas to correct size */
-            $frame->setImagePage($dst_w, $dst_h, 0, 0);
-
-            // Наводим резкость
-            if ($sharpness > 0)
-                $thumb->adaptiveSharpenImage($sharpness, $sharpness);
-
-            if (isset($overlay) && is_object($overlay)) {
-                $frame->compositeImage($overlay, imagick::COMPOSITE_OVER, $overlay_x, $overlay_y, imagick::COLOR_ALPHA);
-            }
-
+        if (isset($overlay) && is_object($overlay)) {
+            $thumb->compositeImage($overlay, imagick::COMPOSITE_OVER, $overlay_x, $overlay_y, imagick::COLOR_ALPHA);
         }
+
 
         // Убираем комменты и т.п. из картинки
         $thumb->stripImage();
@@ -514,6 +518,7 @@ class Image extends Simpla
             $dst_file = $params['dst'];
             $max_w = $params['w'];
             $max_h = $params['h'];
+            $crop = $params['crop'];
         } else {
             dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
@@ -547,16 +552,14 @@ class Image extends Simpla
             return false;
         }
 
-        // Нужно ли обрезать?
-        if (!$overlay && ($src_w <= $max_w) && ($src_h <= $max_h)) {
-            // Нет - просто скопируем файл
-            if (!copy($src_file, $dst_file)) {
-                return false;
-            }
-            return true;
+        if($crop){
+            $dst_w = $max_w;
+            $dst_h = $max_h;
+        }else{
+            // Размеры превью при пропорциональном уменьшении
+            @list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
         }
-        // Размеры превью при пропорциональном уменьшении
-        @list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
+
 
         // Читаем изображение
         switch ($src_type) {
@@ -581,16 +584,18 @@ class Image extends Simpla
 
         // create destination image (indexed, if possible)
         if ($src_colors > 0 && $src_colors <= 256) {
-            $dst_img = imagecreate($dst_w, $dst_h);
+            $dst_img = imagecreate($max_w, $max_h);
         } else {
-            $dst_img = imagecreatetruecolor($dst_w, $dst_h);
+            $dst_img = imagecreatetruecolor($max_w, $max_h);
         }
+        $bg_color = imagecolorallocate($dst_img, 250, 130, 0);
+        imagefill($dst_img, 0, 0, $bg_color);
 
         if (empty($dst_img))
             return false;
 
         // resample the image with new sizes
-        if (!imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $dst_w, $dst_h, $src_w, $src_h))
+        if (!imagecopyresampled($dst_img, $src_img, ($max_w - $dst_w) / 2, ($max_h - $dst_h) / 2, 0, 0, $dst_w, $dst_h, $src_w, $src_h))
             return false;
 
         // Watermark
@@ -782,7 +787,7 @@ class Image extends Simpla
             dtimer::log(__METHOD__ . " item_id check skipped");
         }
 
-        $table = $this->config->db['db_prefix'] . 'img_' . $type;
+        $table = $this->config->db->db_prefix . 'img_' . $type;
 
         //table existence check
         dtimer::log(__METHOD__ . " table $table existence check");

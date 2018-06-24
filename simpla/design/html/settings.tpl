@@ -39,38 +39,43 @@
     <input type=hidden name="session_id" value="{$smarty.session.id}">
     <div class="block">
         <h2>Настройки системы</h2>
+        <ul>
 
-        <div class="switcher">
-            <label class="property">Пропускать создание заданий в таблице queue_full</label>
-            <input class="switcher__input" value="true" type="checkbox" name="skip_queue_full" id="skip_queue_full_switch"
-                   {if $config->cache['skip_queue_full']}checked{/if}>
-        </div>
-        <div class="switcher">
-            <label class="property">Кеширование запросов к БД</label>
-            <input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch"
-                   {if $config->cache['enabled']}checked{/if}>
-        </div>
+            <li>
+                <label class="property">Пропускать создание заданий в таблице queue_full</label>
+                <input class="switcher__input" value="true" type="checkbox" name="skip_queue_full"
+                       id="skip_queue_full_switch"
+                       {if $config->cache['skip_queue_full']}checked{/if}>
+            </li>
+            <li>
+                <label class="property">Кеширование запросов к БД</label>
+                <input class="switcher__input" value="true" type="checkbox" name="cache" id="cache_switch"
+                       {if $config->cache['enabled']}checked{/if}>
+            </li>
 
-        <div class="switcher">
-            <label class="property">Способ сохранения кеша на диск</label>
-            <select name="method">
-                <option value="json" {if $config->cache['method'] === 'json'}selected{/if}>json</option>
-                <option value="serialize" {if $config->cache['method'] === 'serialize'}selected{/if}>serialize</option>
-                <option value="var_export" {if $config->cache['method'] === 'var_export'}selected{/if}>var_export</option>
-                <option value="msgpack" {if $config->cache['method'] === 'msgpack'}selected{/if}>msgpack</option>
-            </select>
-        </div>
+            <li>
+                <label class="property">Способ сохранения кеша на диск</label>
+                <select name="method">
+                    <option value="json" {if $config->cache['method'] === 'json'}selected{/if}>json</option>
+                    <option value="serialize" {if $config->cache['method'] === 'serialize'}selected{/if}>serialize
+                    </option>
+                    <option value="var_export" {if $config->cache['method'] === 'var_export'}selected{/if}>var_export
+                    </option>
+                    <option value="msgpack" {if $config->cache['method'] === 'msgpack'}selected{/if}>msgpack</option>
+                </select>
+            </li>
 
-        <div class="switcher">
-            <label class="property">Отладчик работы системы (Появляется в конце каждой страницы)</label>
-            <input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch"
-                   {if $config->debug}checked{/if}>
-        </div>
-        <div class="switcher">
-            <label class="property">Капча</label>
-            <input class="switcher__input" value="true" type="checkbox" name="captcha" id="captcha_switch"
-                   {if $config->captcha}checked{/if}>
-        </div>
+            <li>
+                <label class="property">Отладчик работы системы (Появляется в конце каждой страницы)</label>
+                <input class="switcher__input" value="true" type="checkbox" name="debug" id="debug_switch"
+                       {if $config->debug}checked{/if}>
+            </li>
+            <li>
+                <label class="property">Капча</label>
+                <input class="switcher__input" value="true" type="checkbox" name="captcha" id="captcha_switch"
+                       {if $config->captcha}checked{/if}>
+            </li>
+        </ul>
     </div>
     <!-- Счетчики -->
     <div class="block layer">
@@ -181,10 +186,11 @@
                 <img style='display:block; border:1px solid #d0d0d0; margin:10px 0 10px 0;'
                      src="{$config->root_url}/{$config->images['overlay_file']}?{math equation='rand(10,10000)'}">
             </li>
-            <li><label class=property>Ширина водяного знака в % от ширины итогового изображения</label><input name="overlay_ratio"
-                                                                                            class="simpla_inp"
-                                                                                            type="text"
-                                                                                            value="{$settings->overlay_ratio}"/>
+            <li><label class=property>Ширина водяного знака в % от ширины итогового изображения</label><input
+                        name="overlay_ratio"
+                        class="simpla_inp"
+                        type="text"
+                        value="{$settings->overlay_ratio}"/>
                 %
             </li>
             <li><label class=property>Горизонтальное положение водяного знака</label><input name="overlay_offset_x"
@@ -198,15 +204,23 @@
                                                                                           value="{$settings->overlay_offset_y}"/>
                 %
             </li>
-            <li><label class=property>Видимость(прозрачность) знака (меньше &mdash; прозрачнее)</label><input
+            <li><label class=property>Видимость(прозрачность) знака (меньше &mdash; прозрачнее) %</label><input
                         name="overlay_opacity" class="simpla_inp" type="text"
-                        value="{$settings->overlay_opacity|escape}"/> %
+                        value="{$settings->overlay_opacity|escape}"/>
             </li>
-            <li><label class=property>Резкость изображений (рекомендуется 20%)</label><input name="images_sharpness"
-                                                                                             class="simpla_inp"
-                                                                                             type="text"
-                                                                                             value="{$settings->images_sharpness}"/>
-                %
+            <li>
+                <label class=property>Резкость изображений (рекомендуется 20%) %</label>
+                <input name="images_sharpness" class="simpla_inp" type="text" value="{$settings->images_sharpness}"/>
+            </li>
+            <li>
+                <label class=property>Обрезать изображения по длинному краю</label>
+                <input name="crop" class="simpla_inp" type="checkbox"
+                       {if $config->images['crop']}checked{/if} value="1"/>
+            </li>
+            <li>
+                <label class=property>Пытаться использовать Imagick вместо GD</label>
+                <input name="imagick" class="simpla_inp" type="checkbox" {if $config->images['imagick']}checked{/if}
+                       value="1"/>
             </li>
         </ul>
     </div>

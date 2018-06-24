@@ -79,20 +79,28 @@ class SettingsAdmin extends Simpla
                 $this->settings->images_sharpness = $this->request->post('images_sharpness');
                 $clear_image_cache = true;
             }
-
-
-            // Удаление заресайзеных изображений
-            if ($clear_image_cache) {
-                $dir = $this->config->images['resized_images_dir'];
-                if ($handle = opendir($dir)) {
-                    while (false !== ($file = readdir($handle))) {
-                        if ($file != "." && $file != "..") {
-                            @unlink($dir . "/" . $file);
-                        }
-                    }
-                    closedir($handle);
-                }
+            if ($this->config->images['crop'] != $this->request->post('crop')) {
+                $this->config->images['crop'] = (bool)$this->request->post('crop');
+                $clear_image_cache = true;
             }
+            if ($this->config->images['imagick'] != $this->request->post('imagick')) {
+                $this->config->images['imagick'] = (bool)$this->request->post('imagick');
+                $clear_image_cache = true;
+            }
+
+
+//            // Удаление заресайзеных изображений
+//            if ($clear_image_cache) {
+//                $dir = $this->config->images['resized_images_dir'];
+//                if ($handle = opendir($dir)) {
+//                    while (false !== ($file = readdir($handle))) {
+//                        if ($file != "." && $file != "..") {
+//                            @unlink($dir . "/" . $file);
+//                        }
+//                    }
+//                    closedir($handle);
+//                }
+//            }
             $this->design->assign('message_success', 'saved');
         }
         return $this->design->fetch('settings.tpl');

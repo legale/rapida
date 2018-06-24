@@ -427,7 +427,9 @@ input[type="image"]{
 	padding: initial;
 	border: initial;
 }
-
+input[type="checkbox"]{
+	width: initial;
+}
 
 .product div.images  span.upload_image, .product div.images  span.add_image_url{
 	margin-top: 5px;
