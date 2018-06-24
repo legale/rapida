@@ -180,7 +180,7 @@ class ProductsView extends View
         //теперь свойства
         if (isset($this->filter['features'])) {
             foreach ($this->filter['features'] as $fid => $vids) {
-                if(!isset($canonical) && count($vids) > 1){
+                if (!isset($canonical) && count($vids) > 1) {
                     $canonical = true;
                 }
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
@@ -189,7 +189,7 @@ class ProductsView extends View
                         continue;
                     }
                     $vals_string = implode(', ', $vals_text);
-                    $meta_filter[] = $vals_string . ' ' . $features[$fid]['name'];
+                    $meta_filter[] = $features[$fid]['name'] . ' ' . $vals_string;
                 }
             }
         }
@@ -205,9 +205,9 @@ class ProductsView extends View
             $filter = $this->filter;
             $filter['page'] = 1; //ставим страницу 1
             unset($filter['price']); //удаляем фильтр цены
-            if(isset($filter['features'])){
-                foreach($filter['features'] as $fid => $vids){
-                    if(count($vids) > 1){
+            if (isset($filter['features'])) {
+                foreach ($filter['features'] as $fid => $vids) {
+                    if (count($vids) > 1) {
                         unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
                     }
                 }
