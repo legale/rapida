@@ -189,7 +189,7 @@ class ProductsView extends View
                         continue;
                     }
                     $vals_string = implode(', ', $vals_text);
-                    $meta_filter[] = $this->design->morpher_modifier($vals_string . ' ' . $features[$fid]['name'], 'r');
+                    $meta_filter[] = $vals_string . ' ' . $features[$fid]['name'];
                 }
             }
         }
