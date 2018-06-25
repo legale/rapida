@@ -462,6 +462,8 @@ class Image extends Simpla
         $bg_color->setColor($rgb); //orange color
         //$bg_color->setColor('transparent'); //transparent
         $thumb->borderImage($bg_color, $bo_w, $bo_h);
+        $dst_w = $thumb->getImageWidth();
+        $dst_h = $thumb->getImageHeight();
 
 
         // Устанавливаем водяной знак
@@ -601,6 +603,9 @@ class Image extends Simpla
         // resample the image with new sizes
         if (!imagecopyresampled($dst_img, $src_img, ($max_w - $dst_w) / 2, ($max_h - $dst_h) / 2, 0, 0, $dst_w, $dst_h, $src_w, $src_h))
             return false;
+
+        $dst_w = $max_w;
+            $dst_h = $max_h;
 
         // Watermark
         if (!empty($overlay) && is_readable($overlay)) {
