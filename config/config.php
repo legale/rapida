@@ -26,15 +26,15 @@ return array (
   ),
   'images' => 
   array (
-    'imagick' => true,
+    'imagick' => false,
     'resize_chmod' => '775',
     'overlay' => true,
     'original_images_dir' => 'files/originals/',
     'categories_images_dir' => 'files/categories/',
     'brands_images_dir' => 'files/brands/',
     'overlay_file' => 'simpla/files/watermark/watermark.png',
-    'crop' => true,
-    'bg_color' => '250,130,0',
+    'crop' => false,
+    'bg_color' => '255,255,255',
   ),
   'cache' => 
   array (

@@ -440,13 +440,13 @@ class Image extends Simpla
             return true;
         }
 
-        if($crop){
+        if ($crop) {
             //обрезаем
             $dst_w = $max_w;
             $dst_h = $max_h;
             $thumb->cropthumbnailimage($dst_w, $dst_h);
 
-        }else {
+        } else {
             // Размеры превью при пропорциональном уменьшении
             list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
 
@@ -457,8 +457,9 @@ class Image extends Simpla
         $bo_w = ($max_w - $dst_w) / 2;
         $bo_h = ($max_h - $dst_h) / 2;
         $bg_color = new ImagickPixel();
-        $rbg = $this->config->images['bg_color'];
-        $bg_color->setColor("rgb($rgb)"); //orange color
+        $rbg = 'rgb(' . $this->config->images['bg_color'] . ')';
+
+        $bg_color->setColor($rgb); //orange color
         //$bg_color->setColor('transparent'); //transparent
         $thumb->borderImage($bg_color, $bo_w, $bo_h);
 
@@ -553,10 +554,10 @@ class Image extends Simpla
             return false;
         }
 
-        if($crop){
+        if ($crop) {
             $dst_w = $max_w;
             $dst_h = $max_h;
-        }else{
+        } else {
             // Размеры превью при пропорциональном уменьшении
             @list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
         }
@@ -589,7 +590,8 @@ class Image extends Simpla
         } else {
             $dst_img = imagecreatetruecolor($max_w, $max_h);
         }
-        $rbg = explode(',' , $this->config->images['bg_color']);
+        $rgb = explode(',', $this->config->images['bg_color']);
+
         $bg_color = imagecolorallocate($dst_img, $rgb[0], $rgb[1], $rgb[2]);
         imagefill($dst_img, 0, 0, $bg_color);
 
