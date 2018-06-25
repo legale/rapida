@@ -83,6 +83,10 @@ class SettingsAdmin extends Simpla
                 $this->config->images['crop'] = (bool)$this->request->post('crop');
                 $clear_image_cache = true;
             }
+            if ($this->config->images['bg_color'] != $this->request->post('bg_color')) {
+                $this->config->images['bg_color'] = $this->request->post('bg_color');
+                $clear_image_cache = true;
+            }
             if ($this->config->images['imagick'] != $this->request->post('imagick')) {
                 $this->config->images['imagick'] = (bool)$this->request->post('imagick');
                 $clear_image_cache = true;

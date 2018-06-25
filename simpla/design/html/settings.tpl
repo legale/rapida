@@ -218,6 +218,10 @@
                        {if $config->images['crop']}checked{/if} value="1"/>
             </li>
             <li>
+                <label class=property>Цвет заливки краев изображения в формате RGB через запятую</label>
+                <input name="bg_color" class="simpla_inp" type="text" value="{$config->images['bg_color']}"/>
+            </li>
+            <li>
                 <label class=property>Пытаться использовать Imagick вместо GD</label>
                 <input name="imagick" class="simpla_inp" type="checkbox" {if $config->images['imagick']}checked{/if}
                        value="1"/>

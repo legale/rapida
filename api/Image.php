@@ -457,7 +457,8 @@ class Image extends Simpla
         $bo_w = ($max_w - $dst_w) / 2;
         $bo_h = ($max_h - $dst_h) / 2;
         $bg_color = new ImagickPixel();
-        $bg_color->setColor('rgb(250,130,0)'); //orange color
+        $rbg = $this->config->images['bg_color'];
+        $bg_color->setColor("rgb($rgb)"); //orange color
         //$bg_color->setColor('transparent'); //transparent
         $thumb->borderImage($bg_color, $bo_w, $bo_h);
 
@@ -588,7 +589,8 @@ class Image extends Simpla
         } else {
             $dst_img = imagecreatetruecolor($max_w, $max_h);
         }
-        $bg_color = imagecolorallocate($dst_img, 250, 130, 0);
+        $rbg = explode(',' , $this->config->images['bg_color']);
+        $bg_color = imagecolorallocate($dst_img, $rgb[0], $rgb[1], $rgb[2]);
         imagefill($dst_img, 0, 0, $bg_color);
 
         if (empty($dst_img))

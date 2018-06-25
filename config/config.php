@@ -34,6 +34,7 @@ return array (
     'brands_images_dir' => 'files/brands/',
     'overlay_file' => 'simpla/files/watermark/watermark.png',
     'crop' => true,
+    'bg_color' => '250,130,0',
   ),
   'cache' => 
   array (
