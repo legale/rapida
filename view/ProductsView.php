@@ -39,7 +39,7 @@ class ProductsView extends View
             $cat = $this->categories->get_category($this->filter['category_url']);
 
             //Остановимя если категории не существует или категория невидимая, а сессия не админская
-            if (!isset($cat)) {
+            if (!$cat) {
                 dtimer::log(__METHOD__ . __LINE__ . " category is not exists ", 2);
                 return false;
             } else if (!$cat['enabled'] && !isset($_SESSION['admin'])) {
@@ -63,6 +63,11 @@ class ProductsView extends View
         $this->filter = $this->uri_to_api_filter($this->root->uri_arr, $this->filter);
         if (!$this->filter) {
             return false;
+        }
+
+        if (isset($this->filter['redirect'])){
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+            header("Location: $uri", TRUE, 301);
         }
 
 
