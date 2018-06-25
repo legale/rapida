@@ -65,10 +65,6 @@ class ProductsView extends View
             return false;
         }
 
-        if (isset($this->filter['redirect'])){
-            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
-            header("Location: $uri", TRUE, 301);
-        }
 
 
         //добавляем в фильтр все дочерние категории
@@ -86,7 +82,10 @@ class ProductsView extends View
 
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
 
-        if ($this->filter['page'] > $this->filter['pages']) {
+        if(isset($this->filter['redirect'])) {
+            $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
+            header("Location: $uri", TRUE, 301);
+        }else if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
