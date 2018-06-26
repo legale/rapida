@@ -459,9 +459,7 @@ class Image extends Simpla
 
 
         $thumb->cropthumbnailimage($dst_w, $dst_h);
-        if($dst_w !== $max_w || $dst_h !== $max_h) {
-            $thumb->cropthumbnailimage($max_w, $max_h);
-        }
+
 
         $bo_w = $max_w > $dst_w ? ($max_w - $dst_w) / 2 : 0;
         $bo_h = $max_h > $dst_h ? ($max_h - $dst_h) / 2 : 0;
