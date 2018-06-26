@@ -403,8 +403,8 @@ class Image extends Simpla
      */
     function calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor = 1)
     {
-        if ($src_w > $src_h) {
-            $dst_w = $max_w ;
+        if ($src_w > $src_h || $max_w < $max_h) {
+            $dst_w = $max_w;
             $dst_h = $src_h * ($max_w / $src_w) * $crop_factor ;
         } else {
             $dst_h = $max_h ;
