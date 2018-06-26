@@ -458,7 +458,7 @@ class Image extends Simpla
 
 
 
-        $thumb->scaleImage($dst_w, $dst_h);
+        $thumb->cropthumbnailimage($dst_w, $dst_h);
 
         $bo_w = $max_w > $dst_w ? ($max_w - $dst_w) / 2 : 0;
         $bo_h = $max_h > $dst_h ? ($max_h - $dst_h) / 2 : 0;
