@@ -186,36 +186,38 @@
                 <img style='display:block; border:1px solid #d0d0d0; margin:10px 0 10px 0;'
                      src="{$config->root_url}/{$config->images['overlay_file']}?{math equation='rand(10,10000)'}">
             </li>
-            <li><label class=property>Ширина водяного знака в % от ширины итогового изображения</label><input
+            <li><label class=property>Ширина водяного знака от ширины итогового изображения в %</label><input
                         name="overlay_ratio"
                         class="simpla_inp"
                         type="text"
                         value="{$settings->overlay_ratio}"/>
-                %
+
             </li>
-            <li><label class=property>Горизонтальное положение водяного знака</label><input name="overlay_offset_x"
-                                                                                            class="simpla_inp"
-                                                                                            type="text"
-                                                                                            value="{$settings->overlay_offset_x}"/>
-                %
+            <li><label class=property>Горизонтальное положение водяного знака в %</label>
+                <input name="overlay_offset_x"
+                       class="simpla_inp"
+                       type="text"
+                       value="{$settings->overlay_offset_x}"/>
+
             </li>
-            <li><label class=property>Вертикальное положение водяного знака</label><input name="overlay_offset_y"
-                                                                                          class="simpla_inp" type="text"
-                                                                                          value="{$settings->overlay_offset_y}"/>
-                %
+            <li><label class=property>Вертикальное положение водяного знака в %</label>
+                <input name="overlay_offset_y"
+                       class="simpla_inp"
+                       type="text"
+                       value="{$settings->overlay_offset_y}"/>
+
             </li>
             <li><label class=property>Видимость(прозрачность) знака (меньше &mdash; прозрачнее) %</label><input
                         name="overlay_opacity" class="simpla_inp" type="text"
                         value="{$settings->overlay_opacity|escape}"/>
             </li>
             <li>
-                <label class=property>Резкость изображений (рекомендуется 20%) %</label>
+                <label class=property>Резкость изображений в % (рекомендуется 20%)</label>
                 <input name="images_sharpness" class="simpla_inp" type="text" value="{$settings->images_sharpness}"/>
             </li>
             <li>
-                <label class=property>Обрезать изображения по длинному краю</label>
-                <input name="crop" class="simpla_inp" type="checkbox"
-                       {if $config->images['crop']}checked{/if} value="1"/>
+                <label class=property>Коэффициент обрезания изображения 1 - не обрезать, 1.25 - обрезать на 25%</label>
+                <input name="crop_factor" class="simpla_inp" type="text" value="{$config->images['crop_factor']}"/>
             </li>
             <li>
                 <label class=property>Цвет заливки краев изображения в формате RGB через запятую</label>

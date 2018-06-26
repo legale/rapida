@@ -317,7 +317,7 @@ class Image extends Simpla
             'w' => $w,
             'h' => $h,
             'sharpness' => $this->settings->images_sharpness,
-            'crop' => $this->config->images['crop'],
+            'crop_factor' => $this->config->images['crop_factor'],
         );
 
         //overlay
@@ -393,6 +393,25 @@ class Image extends Simpla
 
     }
 
+    /**
+     * Вычисляет размеры изображения, до которых нужно его пропорционально уменьшить, чтобы вписать в квадрат $max_w x $max_h
+     * @param $src_w
+     * @param $src_h
+     * @param int $max_w
+     * @param int $max_h
+     * @return array|bool
+     */
+    function calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor = 1)
+    {
+        if ($src_w > $src_h) {
+            $dst_w = $max_w ;
+            $dst_h = $src_h * ($max_w / $src_w) * $crop_factor ;
+        } else {
+            $dst_h = $max_h ;
+            $dst_w = $src_w * ($max_h / $src_h) * $crop_factor;
+        }
+        return array((int)$dst_w, (int)$dst_h);
+    }
 
     /**
      * Создание превью средствами imagick
@@ -409,7 +428,7 @@ class Image extends Simpla
             $dst_file = $params['dst'];
             $max_w = $params['w'];
             $max_h = $params['h'];
-            $crop = $params['crop'];
+            $crop_factor = $params['crop_factor'];
         } else {
             dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
@@ -440,30 +459,23 @@ class Image extends Simpla
             return true;
         }
 
+        // Размеры превью при пропорциональном уменьшении
+        list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor);
+
+
         if ($crop) {
-            //обрезаем
-            $dst_w = $max_w;
-            $dst_h = $max_h;
+            //уменьшаем и сразу обрезаем
             $thumb->cropthumbnailimage($dst_w, $dst_h);
-
-        } else {
-            // Размеры превью при пропорциональном уменьшении
-            list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
-
-            // Уменьшаем
-            $thumb->scaleImage($dst_w, $dst_h, true);
         }
 
         $bo_w = ($max_w - $dst_w) / 2;
         $bo_h = ($max_h - $dst_h) / 2;
         $bg_color = new ImagickPixel();
-        $rbg = 'rgb(' . $this->config->images['bg_color'] . ')';
+        $rgb = 'rgb(' . $this->config->images['bg_color'] . ')';
 
         $bg_color->setColor($rgb); //orange color
         //$bg_color->setColor('transparent'); //transparent
         $thumb->borderImage($bg_color, $bo_w, $bo_h);
-        $dst_w = $thumb->getImageWidth();
-        $dst_h = $thumb->getImageHeight();
 
 
         // Устанавливаем водяной знак
@@ -523,6 +535,7 @@ class Image extends Simpla
             $max_w = $params['w'];
             $max_h = $params['h'];
             $crop = $params['crop'];
+            $crop_factor = $params['crop_factor'];
         } else {
             dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
@@ -556,13 +569,11 @@ class Image extends Simpla
             return false;
         }
 
-        if ($crop) {
-            $dst_w = $max_w;
-            $dst_h = $max_h;
-        } else {
-            // Размеры превью при пропорциональном уменьшении
-            @list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h);
-        }
+
+
+        // Размеры превью при пропорциональном уменьшении
+        @list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor);
+
 
 
         // Читаем изображение
@@ -603,9 +614,6 @@ class Image extends Simpla
         // resample the image with new sizes
         if (!imagecopyresampled($dst_img, $src_img, ($max_w - $dst_w) / 2, ($max_h - $dst_h) / 2, 0, 0, $dst_w, $dst_h, $src_w, $src_h))
             return false;
-
-        $dst_w = $max_w;
-            $dst_h = $max_h;
 
         // Watermark
         if (!empty($overlay) && is_readable($overlay)) {
@@ -707,35 +715,8 @@ class Image extends Simpla
         return true;
     }
 
-    /**
-     * Вычисляет размеры изображения, до которых нужно его пропорционально уменьшить, чтобы вписать в квадрат $max_w x $max_h
-     * @param $src_w
-     * @param $src_h
-     * @param int $max_w
-     * @param int $max_h
-     * @return array|bool
-     */
-    function calc_contrain_size($src_w, $src_h, $max_w = 0, $max_h = 0)
-    {
-        dtimer::log(__METHOD__ . " start");
 
-        if ($src_w == 0 || $src_h == 0) {
-            return false;
-        }
 
-        $dst_w = $src_w;
-        $dst_h = $src_h;
-
-        if ($src_w > $max_w && $max_w > 0) {
-            $dst_h = $src_h * ($max_w / $src_w);
-            $dst_w = $max_w;
-        }
-        if ($dst_h > $max_h && $max_h > 0) {
-            $dst_w = $dst_w * ($max_h / $dst_h);
-            $dst_h = $max_h;
-        }
-        return array((int)$dst_w, (int)$dst_h);
-    }
 
     /**
      * @param $type

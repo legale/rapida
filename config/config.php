@@ -1,7 +1,7 @@
 return array (
   'http_headers' => 'Access-Control-Allow-Origin: *',
   'user_agent' => 'Mozilla/5.0 (Windows NT 10.0, Win64, x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
-  'host' => 'rapida-dev',
+  'host' => 'localhost',
   'db' => 
   array (
     'db_prefix' => 's_',
@@ -26,15 +26,15 @@ return array (
   ),
   'images' => 
   array (
-    'imagick' => false,
+    'imagick' => true,
     'resize_chmod' => '775',
     'overlay' => true,
     'original_images_dir' => 'files/originals/',
     'categories_images_dir' => 'files/categories/',
     'brands_images_dir' => 'files/brands/',
     'overlay_file' => 'simpla/files/watermark/watermark.png',
-    'crop' => false,
     'bg_color' => '255,255,255',
+    'crop_factor' => 1,
   ),
   'cache' => 
   array (
