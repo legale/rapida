@@ -34,7 +34,7 @@ class Options_groupsAdmin extends Simpla
 				case 'delete' :
 					{
 						foreach ($ids as $id){
-							$this->features->delete_option_group($id);
+							$this->features->delete_feature($id);
 						}
 						break;
 					}

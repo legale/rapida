@@ -79,8 +79,9 @@ class SettingsAdmin extends Simpla
                 $this->settings->images_sharpness = $this->request->post('images_sharpness');
                 $clear_image_cache = true;
             }
+
             if ($this->config->images['crop_factor'] != $this->request->post('crop_factor')) {
-                $this->config->images['crop_factor'] = (float)$this->request->post('crop_factor');
+                $this->config->images['crop_factor'] = $this->request->post('crop_factor');
                 $clear_image_cache = true;
             }
             if ($this->config->images['bg_color'] != $this->request->post('bg_color')) {

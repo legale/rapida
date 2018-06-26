@@ -405,10 +405,10 @@ class Image extends Simpla
     {
         if ($src_w > $src_h || $max_w < $max_h) {
             $dst_w = $max_w;
-            $dst_h = $src_h * ($max_w / $src_w) * $crop_factor ;
+            $dst_h = min ($max_h, $src_h * ($max_w / $src_w) * $crop_factor) ;
         } else {
             $dst_h = $max_h ;
-            $dst_w = $src_w * ($max_h / $src_h) * $crop_factor;
+            $dst_w = min ($max_w,$src_w * ($max_h / $src_h) * $crop_factor);
         }
         return array((int)$dst_w, (int)$dst_h);
     }
@@ -456,12 +456,8 @@ class Image extends Simpla
         // Размеры превью при пропорциональном уменьшении
         list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor);
 
-
-        if($crop_factor == 1){
-            $thumb->scaleImage($max_w, $max_h);
-        } else{
-            $thumb->cropThumbnailImage($dst_w, $dst_h);
-        }
+        //обрезаем и уменьшаем
+        $thumb->cropThumbnailImage($dst_w, $dst_h);
 
         $bo_w = $max_w > $dst_w ? ($max_w - $dst_w) / 2 : 0;
         $bo_h = $max_h > $dst_h ? ($max_h - $dst_h) / 2 : 0;
@@ -773,7 +769,7 @@ class Image extends Simpla
             dtimer::log(__METHOD__ . " item_id check skipped");
         }
 
-        $table = $this->config->db->db_prefix . 'img_' . $type;
+        $table = $this->config->db['db_prefix'] . 'img_' . $type;
 
         //table existence check
         dtimer::log(__METHOD__ . " table $table existence check");

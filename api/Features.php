@@ -378,6 +378,7 @@ class Features extends Simpla
     {
         $this->db->query("DELETE FROM __features WHERE id=? LIMIT 1", intval($id));
         $this->db->query("ALTER TABLE __options DROP ?!", (int)$id);
+        $this->db->query("ALTER TABLE __options DROP INDEX ?!", (int)$id);
         $this->db->query("DELETE FROM __categories_features WHERE feature_id=?", (int)$id);
     }
 

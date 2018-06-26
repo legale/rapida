@@ -453,31 +453,14 @@
 
             <div class="block">
 
-                <!-- dropzone для перетаскивания изображений -->
-                {if isset($product['id'])}
-                    <div id="holder" type="products" product_id="{$product['id']}">
-                        <div class="holder__text">Тяни файл сюда</div>
-                    </div>
-                    <p id="upload" class="hidden"><label>Drag & drop not supported, but you can still upload via this
-                            input field:<br><input type="file"></label></p>
-                    <p id="filereader">File API & FileReader API not supported</p>
-                    <p id="formdata">XHR2's FormData is not supported</p>
-                    <p id="progress">XHR2's upload progress isn't supported</p>
-                    <p>Upload progress:
-                        <progress id="uploadprogress" max="100" value="0">0</progress>
-                    </p>
-                {/if}
-                <!-- dropzone для перетаскивания изображений (The End) -->
 
                 <span class=upload_image><i add_link="true" link_id="upload_image" class="dash_link" id="upload_image">Добавить изображение</i></span>
                 или
                 <span class=add_image_url><i class="dash_link" add_link="true" link_id="image_url_upload">загрузить из интернета</i></span>
 
                 <!-- Шаблон для кнопки загрузки нового изображения -->
-                <div container="true" container_id="upload_image" style="display: none;">
-                    <input name=new_images[] type=file multiple accept='image/jpeg,image/png,image/gif'>
+                    <input name="new_images[]" type="file" value="">
                     <a delete_link="true" class="delete"></a>
-                </div>
                 <!-- Шаблон для кнопки загрузки нового изображения (The end) -->
             </div>
         </div>
