@@ -458,7 +458,7 @@ class Image extends Simpla
 
 
         if($crop_factor == 1){
-            $thumb->scaleImage($dst_w, $dst_h);
+            $thumb->scaleImage($max_w, $max_h);
         } else{
             $thumb->cropThumbnailImage($dst_w, $dst_h);
         }
