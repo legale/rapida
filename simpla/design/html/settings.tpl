@@ -186,7 +186,7 @@
                 <img style='display:block; border:1px solid #d0d0d0; margin:10px 0 10px 0;'
                      src="{$config->root_url}/{$config->images['overlay_file']}?{math equation='rand(10,10000)'}">
             </li>
-            <li><label class=property>Ширина водяного знака от ширины итогового изображения в %</label><input
+            <li><label class=property>Размер водяного знака от итогового изображения в %</label><input
                         name="overlay_ratio"
                         class="simpla_inp"
                         type="text"

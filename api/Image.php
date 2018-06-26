@@ -451,22 +451,15 @@ class Image extends Simpla
         $src_w = $thumb->getImageWidth();
         $src_h = $thumb->getImageHeight();
 
-        // Нужно ли обрезать?
-        if (!$overlay && ($src_w <= $max_w) && ($src_h <= $max_h)) {
-            // Нет - просто скопируем файл
-            if (!copy($src_file, $dst_file))
-                return false;
-            return true;
-        }
+
 
         // Размеры превью при пропорциональном уменьшении
         list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor);
 
 
-        if ($crop) {
-            //уменьшаем и сразу обрезаем
-            $thumb->cropthumbnailimage($dst_w, $dst_h);
-        }
+
+        $thumb->cropthumbnailimage($dst_w, $dst_h);
+
 
         $bo_w = ($max_w - $dst_w) / 2;
         $bo_h = ($max_h - $dst_h) / 2;
@@ -485,15 +478,15 @@ class Image extends Simpla
             $owidth = $overlay->getImageWidth();
             $oheight = $overlay->getImageHeight();
             //calculate ratio
-            $ratio = $overlay_ratio / 100 * $dst_w / $owidth;
+            $ratio = min($overlay_ratio / 100 * $max_w / $owidth, $overlay_ratio / 100 * $max_h / $oheight);
             $owidth = $owidth * $ratio;
             $oheight = $oheight * $ratio;
 
             $overlay->scaleImage($owidth, $oheight);
             $overlay->evaluateImage(Imagick::EVALUATE_MULTIPLY, $overlay_opacity, Imagick::CHANNEL_ALPHA);
 
-            $overlay_x = min(($dst_w - $owidth) * $overlay_offet_x / 100, $dst_w);
-            $overlay_y = min(($dst_h - $oheight) * $overlay_offet_y / 100, $dst_h);
+            $overlay_x = min(($max_w - $owidth) * $overlay_offet_x / 100, $max_w);
+            $overlay_y = min(($max_h - $oheight) * $overlay_offet_y / 100, $max_h);
 
         }
 
@@ -629,8 +622,8 @@ class Image extends Simpla
             $overlay = imagescale($overlay, $owidth, $oheight);
 
 
-            $overlay_x = min(($dst_w - $owidth) * $overlay_offet_x / 100, $dst_w);
-            $overlay_y = min(($dst_h - $oheight) * $overlay_offet_y / 100, $dst_h);
+            $overlay_x = min(($max_w - $owidth) * $overlay_offet_x / 100, $max_w);
+            $overlay_y = min(($max_h - $oheight) * $overlay_offet_y / 100, $max_h);
 
             $this->filter_opacity($overlay, $overlay_opacity);
 
