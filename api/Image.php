@@ -426,9 +426,9 @@ class Image extends Simpla
         if (isset($params['src'], $params['dst'], $params['w'], $params['h'])) {
             $src_file = $params['src'];
             $dst_file = $params['dst'];
-            $max_w = $params['w'];
-            $max_h = $params['h'];
-            $crop_factor = $params['crop_factor'];
+            $max_w = (int)$params['w'];
+            $max_h = (int)$params['h'];
+            $crop_factor = (float)$params['crop_factor'];
         } else {
             dtimer::log(__METHOD__ . " required arguments is not set. abort", 1);
             return false;
@@ -459,7 +459,9 @@ class Image extends Simpla
 
 
         $thumb->cropthumbnailimage($dst_w, $dst_h);
-
+        if($dst_w !== $max_w || $dst_h !== $max_h) {
+            $thumb->cropthumbnailimage($max_w, $max_h);
+        }
 
         $bo_w = $max_w > $dst_w ? ($max_w - $dst_w) / 2 : 0;
         $bo_h = $max_h > $dst_h ? ($max_h - $dst_h) / 2 : 0;
