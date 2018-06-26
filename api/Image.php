@@ -457,9 +457,11 @@ class Image extends Simpla
         list($dst_w, $dst_h) = $this->calc_contrain_size($src_w, $src_h, $max_w, $max_h, $crop_factor);
 
 
-
-        $thumb->cropthumbnailimage($dst_w, $dst_h);
-
+        if($crop_factor !== 1){
+            $thumb->cropThumbnailImage($dst_w, $dst_h);
+        }else {
+            $thumb->scaleImage($dst_w, $dst_h);
+        }
         $bo_w = $max_w > $dst_w ? ($max_w - $dst_w) / 2 : 0;
         $bo_h = $max_h > $dst_h ? ($max_h - $dst_h) / 2 : 0;
 
