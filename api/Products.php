@@ -462,6 +462,17 @@ class Products extends Simpla
         foreach ($product as $k => $e) {
             $product[$k] = trim($e);
         }
+        if($product['views'] === ''){
+			$product['views'] = 0;
+		}
+        if($product['rating'] === ''){
+			$product['rating'] = 0;
+		}
+        if($product['votes'] === ''){
+			$product['votes'] = 0;
+		}		
+        
+        
         //если имя не задано - останавливаемся
         if (!isset($product['name'])) {
             dtimer::log(__METHOD__ . " name is not set! abort. ", 1);

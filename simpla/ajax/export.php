@@ -73,11 +73,13 @@ class ExportAjax extends Simpla
 		}
 		
 		if(!$options = $this->features->get_options_ids($filter)){
+			print "get_options_ids failed!";
 			return false;
 		}	
 	
 		//получим бренды
 		if(!$brands = $this->brands->get_brands_ids()){
+			print "get_brands_ids failed!";
 			return false;
 		}	
 		// Страница, которую экспортируем

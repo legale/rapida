@@ -27,8 +27,7 @@ class ImportAdmin extends Simpla
 		}
 
 
-		if ($this->request->method('post') && ($this->request->files("file")))
-			{
+		if ($this->request->method('post') && ($this->request->files("file"))){
 			$uploaded_name = $this->request->files("file", "tmp_name");
 			$temp = tempnam($this->import_files_dir, 'temp_');
 			if (!move_uploaded_file($uploaded_name, $temp)){
@@ -50,10 +49,11 @@ class ImportAdmin extends Simpla
 				unlink($temp2);
 			}
 			
-			if (!$this->convert_file($temp, $this->import_files_dir . $this->import_file))
+			if (!$this->convert_file($temp, $this->import_files_dir . $this->import_file)){
 				$this->design->assign('message_error', 'convert_error');
-			else
+			}else{
 				$this->design->assign('filename', $this->request->files("file", "name"));
+			}
 			
 			
 			
@@ -81,9 +81,7 @@ class ImportAdmin extends Simpla
 		{
 			// Просто копируем файл
 			return copy($source, $dest);
-		}
-		else
-			{
+		}else{
 			// Конвертируем в UFT8
 			if (!$src = fopen($source, "r"))
 				return false;

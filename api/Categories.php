@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Simpla CMS
- *
- * @copyright    2011 Denis Pikusov
- * @link        http://simplacms.ru
- * @author        Denis Pikusov
- *
- */
 
 require_once('Simpla.php');
 
@@ -200,8 +192,8 @@ class Categories extends Simpla
         dtimer::log(__METHOD__ . " start reinit flag: " . var_export($reinit, true));
         if ($reinit === false && function_exists('apcu_fetch')) {
             dtimer::log(__METHOD__ . " ACPU CACHE CATEGORIES READ ");
-            $this->categories_tree = apcu_exists('categories_tree') ? apcu_fetch('categories_tree') : null;
-            $this->all_categories = apcu_exists('categories_tree') ? apcu_fetch('all_categories') : null;
+            $this->categories_tree = apcu_exists($this->config->host.'categories_tree') ? apcu_fetch($this->config->host.'categories_tree') : null;
+            $this->all_categories = apcu_exists($this->config->host.'categories_tree') ? apcu_fetch($this->config->host.'all_categories') : null;
             if ($this->categories_tree && $this->all_categories) {
                 return;
             }
@@ -279,8 +271,8 @@ class Categories extends Simpla
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
-            apcu_store('categories_tree', $tree['subcategories'], 7200);
-            apcu_store('all_categories', $pointers, 7200);
+            apcu_store($this->config->host.'categories_tree', $tree['subcategories'], 7200);
+            apcu_store($this->config->host.'all_categories', $pointers, 7200);
         }
     }
 }

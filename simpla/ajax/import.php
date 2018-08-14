@@ -7,12 +7,12 @@ class ImportAjax extends Simpla
 {
 
     // Соответствие полей в базе и имён колонок в файле
-    const DELIM = '|';
+    const DELIM = '|'; //разделитель внутри ячейки
 
     // Соответствие имени колонки и поля в базе
-    const SUBDELIM = '/';
-    const COL_DELIM = ';'; // Временная папка
-    const COL_ENCLOSURE = '"';           // Временный файл
+    const SUBDELIM = '/'; //разделитель категорий
+    const COL_DELIM = ';'; 		// разделитель столбцов
+    const COL_ENCLOSURE = '"';   // значения обрамлены
     private $columns_names = array(
         'name' => array('product', 'name', 'товар', 'название', 'наименование'),
         'url' => array('url', 'адрес'),
@@ -23,7 +23,7 @@ class ImportAjax extends Simpla
         'variant' => array('variant', 'вариант'),
         'price' => array('price', 'цена'),
         'old_price' => array('compare price', 'старая цена'),
-        'sku' => array('sku'),
+        'sku' => array('sku','артикул'),
         'stock' => array('stock', 'склад'),
         'meta_title' => array('meta title', 'заголовок страницы'),
         'meta_keywords' => array('meta keywords', 'ключевые слова'),
@@ -49,6 +49,7 @@ class ImportAjax extends Simpla
     public function import()
     {
         if (!$this->users->check_access('import')) {
+			print "import is not allowed to this user!";
             return false;
         }
 
@@ -83,6 +84,10 @@ class ImportAjax extends Simpla
         // Определяем колонки из первой строки файла
         $f = fopen($this->import_files_dir . $this->import_file, 'r');
         $this->columns = fgetcsv($f, null, self::COL_DELIM, self::COL_ENCLOSURE);
+		if(count($this->columns) < 2){
+			print "wrong csv file delimiter!\n";
+			return false;
+		}
 
         // Заменяем имена колонок из файла на внутренние имена колонок
         foreach ($this->columns as &$column) {
@@ -94,6 +99,7 @@ class ImportAjax extends Simpla
 
         // Если нет названия товара - не будем импортировать
         if (!in_array('name', $this->columns) && !in_array('sku', $this->columns)) {
+            print("error! name is empty!\n");
             return false;
         }
 
@@ -153,6 +159,7 @@ class ImportAjax extends Simpla
 
     private function internal_column_name($name)
     {
+		$name = strtolower($name);
         $name = str_replace('/', '', $name);
         $name = str_replace('\/', '', $name);
         foreach ($this->columns_names as $i => $names) {
@@ -442,7 +449,7 @@ $import_ajax = new ImportAjax();
 $json = json_encode($import_ajax->import());
 
 
-if($_GET['debug']) {
+if(isset($_GET['debug'])) {
     dtimer::show();
     die;
 }

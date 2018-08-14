@@ -286,14 +286,14 @@ class ProductAdmin extends Simpla
                     );
                 }
             }
-        }else{
-
         }
-
-        //тут поменяем порядок изображений
-        for ($i = 0, $c = count($raw); $i < $c; $i++) {
-            $this->image->update('products', $raw[$i], array('item_id' => $pid, 'pos' => $i));
-        }
+        
+        if(is_array($raw)){
+			//тут поменяем порядок изображений
+			for ($i = 0, $c = count($raw); $i < $c; $i++) {
+				$this->image->update('products', $raw[$i], array('item_id' => $pid, 'pos' => $i));
+			}
+		}
     }
 
 
