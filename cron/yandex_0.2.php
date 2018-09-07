@@ -247,8 +247,7 @@ fwrite($fopen, $string);
 fwrite($fopen, $string);
 
 	
-	$string =  "
-	<manufacturer_warranty>". 'true'  ."</manufacturer_warranty>
+	$string =  "<manufacturer_warranty>". 'true'  ."</manufacturer_warranty>
 	<seller_warranty>". 'true' ."</seller_warranty>
 			";
 fwrite($fopen, $string);
