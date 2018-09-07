@@ -15,7 +15,7 @@ dtimer::$enabled = true; //debugger
 
 
 // переменные
-$file_tmp = dirname(__FILE__) . '/../yandex_full.xml_';
+$file_tmp = dirname(__FILE__) . '/../_yandex_full.xml';
 $file = dirname(__FILE__) . '/../yandex_full.xml.gz';
 
 // удаляем временный файл, если он есть

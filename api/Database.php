@@ -139,6 +139,7 @@ class Database extends Simpla
         $this->res = $this->mysqli->query($q);
         if ($this->res === false) {
             dtimer::log(__METHOD__ . " Error: $q ", 1);
+            
             dtimer::log($this->mysqli->error, 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
