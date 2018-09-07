@@ -7,7 +7,7 @@ header("Content-type: application/xml; charset=UTF-8");
 $site = 'https://sevenlight.ru';
 
 //лимит количества товаров
-$limit = 1000000;
+$limit = 5;
 
 require_once( dirname(__FILE__) . '/../api/Simpla.php');
 $rapida = new Simpla();
@@ -27,6 +27,10 @@ $fopen = fopen($file_tmp, 'a');
 
 // Названия свойств
 $features = $rapida->features->get_features();
+foreach($features as &$f){
+	$f['name'] = htmlspecialchars($f['name']);
+}
+unset($f);
 
 $rapida->db->query("SELECT MAX(id) as size FROM s_options_uniq");
 $size = (int)$rapida->db->result_array('size');
@@ -34,7 +38,7 @@ $options_uniq = new SplFixedArray($size+1); //делаем размер масс
 $rapida->db->query("SELECT id, val FROM s_options_uniq");
 
 while ($row = $rapida->db->res->fetch_assoc()) {
-	$options_uniq[$row['id']] = $row['val'];
+	$options_uniq[$row['id']] = htmlspecialchars($row['val']);
 }
 
 
