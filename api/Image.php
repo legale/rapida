@@ -111,7 +111,7 @@ class Image extends Simpla
      * @param $filter
      * @return bool
      */
-    public function get($type, $filter)
+    public function get($type, $filter = array())
     {
         dtimer::log(__METHOD__ . " start type: $type var_export filter " . var_export($filter, true));
         //check if type is allowed
@@ -119,8 +119,8 @@ class Image extends Simpla
             return false;
         }
         $table = $this->config->db['db_prefix'] . 'img_' . $type;
-
-        $res = $this->db->query("SELECT * FROM `$table` WHERE ?& ORDER BY `pos` ASC", $filter);
+		$where = !empty($filter) ? $this->db->placehold("AND ?&", $filter) : '';
+        $res = $this->db->query("SELECT * FROM `$table` WHERE 1 $where ORDER BY `pos` ASC", $filter);
         if ($res) {
             return $this->db->results_array(null, 'id');
         } else {

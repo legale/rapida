@@ -27,10 +27,6 @@ class Database extends Simpla
      * @var
      */
     private $started;
-    /**
-     * @var
-     */
-    private $error_msg;
 
     /**
      * В конструкторе подключаем базу
@@ -115,7 +111,6 @@ class Database extends Simpla
         //считаем аргументы и проверяем тип 1 аргумента (должна быть строка)
         $cnt = count($args);
         if ($cnt < 1 || !is_string($args[0])) {
-            $this->error_msg = " Error - empty query";
             dtimer::log(__METHOD__ . " Error - empty query", 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
@@ -143,7 +138,8 @@ class Database extends Simpla
         $this->started = time();
         $this->res = $this->mysqli->query($q);
         if ($this->res === false) {
-            dtimer::log(__METHOD__ . var_export($this->res, true) . " Error: $q ", 1);
+            dtimer::log(__METHOD__ . " Error: $q ", 1);
+            dtimer::log($this->mysqli->error, 1);
             $this->debug_backtrace(debug_backtrace());
             return false;
         } else {
@@ -477,9 +473,7 @@ class Database extends Simpla
             return false;
         }
 
-        if (!is_object($this->res)) {
-            $this->error_msg = "exec query first!";
-        }
+
 
         $results = new stdClass();
 
@@ -529,9 +523,7 @@ class Database extends Simpla
 
             return false;
         }
-        if (!is_object($this->res)) {
-            $this->error_msg = "exec query first!";
-        }
+
 
         while ($row = $this->res->fetch_assoc()) {
             $results[$row[$field]][] = $row;
@@ -557,9 +549,7 @@ class Database extends Simpla
             return false;
         }
 
-        if (!is_object($this->res)) {
-            $this->error_msg = "exec query first!";
-        }
+
 
         $results = array();
 

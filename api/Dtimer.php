@@ -184,7 +184,7 @@ class dtimer
      * @param int $width
      * @return bool
      */
-    public static function show_console($width = 100)
+    public static function show_console($width = 100, $exclude = null)
     {
         require_once(dirname(__FILE__) . '/Table2ascii.php');
         $table = new Table2ascii($width);
@@ -199,8 +199,11 @@ class dtimer
         //reset(self::$points);
         $res = array();
         foreach (self::$points as $item) {
+            $type = (int)$item['type'];
+			if($exclude !== null && $exclude === $type){
+				continue;
+			}
 
-            $type = $item['type'];
             $message = $item['message'];
             $ram = $item['ram'];
             //время из последней записи
