@@ -116,9 +116,9 @@ class dtimer
     /**
      * @return bool
      */
-    public static function show()
+    public static function show($exclude = null)
     {
-        if (self::$enabled !== true) {
+		if (self::$enabled !== true) {
             return false;
         }
 
@@ -139,8 +139,10 @@ class dtimer
         //reset(self::$points);
 
         foreach (self::$points as $item) {
-
-            $type = $item['type'];
+            $type = (int)$item['type'];
+			if($exclude !== null && $exclude === $type){
+				continue;
+			}
             $color_type = self::$color_array[$item['type']];
             $message = htmlspecialchars( $item['message']);
             $ram = $item['ram'];
@@ -186,11 +188,12 @@ class dtimer
      */
     public static function show_console($width = 100, $exclude = null)
     {
-        require_once(dirname(__FILE__) . '/Table2ascii.php');
-        $table = new Table2ascii($width);
-        if (self::$enabled !== true) {
+		if (self::$enabled !== true) {
             return false;
         }
+        
+        require_once(dirname(__FILE__) . '/Table2ascii.php');
+        $table = new Table2ascii($width);
 
         $oldtime = 0;
 
@@ -236,8 +239,8 @@ class dtimer
             );
 
         };
-        //print_r($res);
-        print $table->draw($res);
+        
+        empty($res) ? null : print $table->draw($res);
         self::$points = array();
         return true;
     }
