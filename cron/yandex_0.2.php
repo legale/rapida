@@ -3,11 +3,12 @@ header("Content-type: application/xml; charset=UTF-8");
 //это BOM символ (не используем, остался на память) 
 //$string =  (pack('CCC', 0xef, 0xbb, 0xbf));
 
+
 //название сайта
 $site = 'https://sevenlight.ru';
 
 //лимит количества товаров
-$limit = 5;
+$limit = "0, 9999999999 ";
 
 require_once( dirname(__FILE__) . '/../api/Simpla.php');
 $rapida = new Simpla();
@@ -117,7 +118,7 @@ $brand_filter = '';
 
 // Товары
 $rapida->db2->query("SET SQL_BIG_SELECTS=1");
-$rapida->db2->query("SELECT 
+$query = "SELECT 
 		b.name as vendor, 
 		v.stock, 
 		v.old_price, 
@@ -138,19 +139,20 @@ $rapida->db2->query("SELECT
 		1
 		$stock_filter
 		$brand_filter
-	LIMIT $limit");
-	
+	LIMIT $limit";
+$rapida->db2->query($query);
+
 $string =  "<offers>
 ";
 
 fwrite($fopen, $string);
 
-$res = $rapida->db2->result_array();
+
 
 $currency_code = reset($currencies)['code'];
 $prev_product_id = null;
 while($p = $rapida->db2->result_array()){
-//echo $p['product_id'] . "\n";
+
 //отрезаем от массива хвост с опциями
 $options = array_slice($p, 13, null, true);
 array_splice($p, 13);
@@ -244,9 +246,9 @@ fwrite($fopen, $string);
 
 	$discount = '';
 	$discount = min( 100, round( $price * 0.08 , 0) );
-	$string =  "<model>".htmlspecialchars($p['product_name']).($p['variant_name']?' '.htmlspecialchars($p['variant_name']):'')."</model>
-	<description>" . $p['description'] . "</description>
-	<sales_notes>" . $p['annotation'] . "</sales_notes>
+	$string =  "<model>". htmlspecialchars($p['product_name']) . "</model>
+	<description>" . htmlspecialchars($p['description']) . "</description>
+	<sales_notes>" . htmlspecialchars($p['annotation']) . "</sales_notes>
 	";
 fwrite($fopen, $string);
 

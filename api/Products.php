@@ -462,13 +462,13 @@ class Products extends Simpla
         foreach ($product as $k => $e) {
             $product[$k] = trim($e);
         }
-        if($product['views'] === ''){
+        if(empty($product['views'])){
 			$product['views'] = 0;
 		}
-        if($product['rating'] === ''){
+        if(empty($product['rating'])){
 			$product['rating'] = 0;
 		}
-        if($product['votes'] === ''){
+        if(empty($product['votes'])){
 			$product['votes'] = 0;
 		}		
         

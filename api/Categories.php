@@ -97,6 +97,33 @@ class Categories extends Simpla
                 unset($cat[$k]);
             }
         }
+        if (!isset($cat['auto_meta_title'])) {
+            $cat['auto_meta_title'] = '';
+        }
+        if (!isset($cat['auto_annotation'])) {
+            $cat['auto_annotation'] = '';
+        }
+        if (!isset($cat['auto_description'])) {
+            $cat['auto_description'] = '';
+        }
+        if (!isset($cat['auto_meta_keywords'])) {
+            $cat['auto_meta_keywords'] = '';
+        }
+        if (!isset($cat['auto_meta_description'])) {
+            $cat['auto_meta_description'] = '';
+        }
+        if (!isset($cat['enabled'])) {
+            $cat['enabled'] = true;
+        }
+
+        if (!isset($cat['annotation'])) {
+            $cat['annotation'] = '';
+        }
+        if (!isset($cat['description'])) {
+            $cat['description'] = '';
+        }
+
+        
         //удалим id, если он сюда закрался, при создании id быть не должно
         if (isset($cat['id'])) {
             unset($cat['id']);

@@ -218,6 +218,12 @@ class Brands extends Simpla
         if (isset($brand['id'])) {
             unset($brand['id']);
         }
+        if (!isset($brand['annotation'])) {
+            $brand['annotation'] = '';
+        }
+        if (!isset($brand['description'])) {
+            $brand['description'] = '';
+        }
 
         $brand['trans'] = encode_param(translit_ya($brand['name']));
 
