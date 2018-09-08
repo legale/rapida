@@ -185,7 +185,7 @@ class ProductsView extends View
         }
         //теперь свойства
         if (isset($this->filter['features'])) {
-            if (!$nofollow && count($features) > 2) {
+            if (!$nofollow && count($this->filter['features']) > 2) {
                 $nofollow = true;
             }
             foreach ($this->filter['features'] as $fid => $vids) {
