@@ -18,8 +18,10 @@ class ProductsView extends View
 
 
     //метод для получения страницы
-    public function fetch()
-    {
+    public function fetch(){
+        $canonical = false;
+        $nofollow = false;
+
         //url категории
         if (isset($this->root->uri_arr['path']['url'])) {
             $this->filter['category_url'] = $this->root->uri_arr['path']['url'];
@@ -183,10 +185,15 @@ class ProductsView extends View
         }
         //теперь свойства
         if (isset($this->filter['features'])) {
+            if (!isset($nofollow) && count($features) > 2) {
+                $nofollow = true;
+            }
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (!isset($canonical) && count($vids) > 1) {
+                    $nofollow = true;
                     $canonical = true;
                 }
+
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
                     if (empty($vals_text)) {
@@ -217,14 +224,15 @@ class ProductsView extends View
                 }
             }
 
+
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $filter);
             $canonical = $uri;
             header("Link: <$uri>; rel=\"canonical\"", TRUE);
         } else if (isset($this->filter['keyword'])) {
             $canonical = $this->config->root_url;
-        } else {
-            $canonical = null;
         }
+
+        $this->design->assign('nofollow', $nofollow);
         $this->design->assign('canonical', $canonical);
 
 

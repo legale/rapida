@@ -18,7 +18,7 @@ class Config extends Simpla
 {
 
 
-    public $version = '0.0.13b2';
+    public $version = '0.0.14';
 
     public $root_dir;
     public $root_url;
@@ -88,7 +88,7 @@ class Config extends Simpla
     // Магическим методов возвращаем нужную переменную
     public function &__get($name)
     {
-        dtimer::log(__METHOD__ . "get $name");
+        //dtimer::log(__METHOD__ . "get $name");
         if (!array_key_exists($name, $this->vars)) {
             $this->vars[$name] = '';
         }

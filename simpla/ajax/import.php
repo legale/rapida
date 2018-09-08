@@ -35,7 +35,7 @@ class ImportAjax extends Simpla
     private $internal_columns_names = array();                    // Разделитель подкаегорий в файле
     private $import_files_dir = '../files/import/';                   //Разделитель колонок
     private $import_file = 'import.csv';                   //Контейнер колонки
-    private $products_count = 250;
+    private $products_count = 10;
     private $columns = array();
     private $cats = array();
 
