@@ -212,7 +212,7 @@ class ProductsView extends View
         //~ // Свойства товаров END
 
         //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
-        if (isset($canonical) || $this->filter['page'] !== 1) {
+        if ($canonical || $this->filter['page'] !== 1) {
             $filter = $this->filter;
             $filter['page'] = 1; //ставим страницу 1
             unset($filter['price']); //удаляем фильтр цены
