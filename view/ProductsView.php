@@ -18,7 +18,8 @@ class ProductsView extends View
 
 
     //метод для получения страницы
-    public function fetch(){
+    public function fetch()
+    {
         $canonical = false;
         $nofollow = false;
 
@@ -68,7 +69,6 @@ class ProductsView extends View
         }
 
 
-
         //добавляем в фильтр все дочерние категории
         if (isset($cat)) {
             $this->filter['category_id'] = $cat['children'];
@@ -84,10 +84,10 @@ class ProductsView extends View
 
         $this->filter['page'] = isset($this->root->uri_arr['path']['page']) ? $this->root->uri_arr['path']['page'] : 1;
 
-        if(isset($this->filter['redirect'])) {
+        if (isset($this->filter['redirect'])) {
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
-        }else if ($this->filter['page'] > $this->filter['pages']) {
+        } else if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
@@ -185,17 +185,16 @@ class ProductsView extends View
         }
         //теперь свойства
         if (isset($this->filter['features'])) {
-            if (!$nofollow && count($this->filter['features']) > 4){
+            if (!$nofollow && count($this->filter['features']) > 4) {
                 $nofollow = true;
             }
-            
+
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (!$canonical && count($vids) > 1) {
-                        $nofollow = true;
-                        $canonical = true;
-                    }
+                    $nofollow = true;
+                    $canonical = true;
                 }
-
+                
 
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
