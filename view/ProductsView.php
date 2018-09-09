@@ -190,7 +190,6 @@ class ProductsView extends View
             }
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (!$canonical && count($vids) > 1) {
-                    $nofollow = true;
                     $canonical = true;
                 }
 
