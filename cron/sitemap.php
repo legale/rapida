@@ -51,7 +51,7 @@ function gzconvert(string $src):? string
 
 function &open_close(array &$params): array
 {
-    //~echo $params['counter'] . "\n";
+    echo $params['counter'] . "\n";
     if ($params['counter'] % 50000 === 0) {
         ++$params['names']; //increment names
         if (is_resource($params['fopen'])) {
