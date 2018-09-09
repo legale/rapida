@@ -51,7 +51,7 @@ function gzconvert(string $src):? string
 
 function &open_close(array &$params): array
 {
-    //echo $params['counter'] . "\n";
+    //~echo $params['counter'] . "\n";
     if ($params['counter'] % 50000 === 0) {
         ++$params['names']; //increment names
         if (is_resource($params['fopen'])) {
@@ -329,11 +329,8 @@ function &sitemap_gen(array &$params){
     return $params;
 }
 
-if($params['fopen'] === null){
-	open_close($params, 0);
- }
 
-main_page_gen($params, $rapida);
+//main_page_gen($params, $rapida);
 pages_gen($params, $rapida);
 brands_gen($params, $rapida);
 categories_gen($params, $rapida);
