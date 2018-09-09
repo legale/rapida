@@ -185,7 +185,7 @@ class ProductsView extends View
         }
         //теперь свойства
         if (isset($this->filter['features'])) {
-            if (!$nofollow && count($this->filter['features']) > 4) {
+            if (!$nofollow && count($this->filter['features']) > 3) {
                 $nofollow = true;
             }
 
@@ -194,7 +194,7 @@ class ProductsView extends View
                     $nofollow = true;
                     $canonical = true;
                 }
-                
+
 
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
                     $vals_text = array_intersect_key($options['full'][$fid]['vals'], $vids);
