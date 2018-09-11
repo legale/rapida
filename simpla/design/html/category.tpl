@@ -163,23 +163,31 @@
 
     </div>
 
+	{function name=category_select level=0}
+		{foreach $cats as $cat}
+			{if $category['id'] == $cat['id']}{continue}{/if}
+				<option value="{$cat['id']}"
+				{if $selected == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;{/section}{$cat['name']}</option>
+				{if isset($cat['subcategories'])}
+					{category_select cats=$cat['subcategories'] level=$level+1}
+				{/if}
+		{/foreach}
+	{/function}
+
 
     <label class=property>Родительская категория</label>
     <div сlass="product_categories">
         <select name="save[category][parent_id]">
             <option value='0'>Корневая категория</option>
-            {function name=category_select level=0}
-                {foreach $cats as $cat}
-                    {if $category['id'] != $cat['id']}
-                        <option value="{$cat['id']}"
-                                {if $category['parent_id'] == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;{/section}{$cat['name']}</option>
-                        {if isset($cat['subcategories'])}
-                            {category_select cats=$cat['subcategories'] level=$level+1}
-                        {/if}
-                    {/if}
-                {/foreach}
-            {/function}
-            {category_select cats=$cats}
+            {category_select selected=$category['parent_id'] cats=$cats}
+        </select>
+    </div>
+
+    <label class=property>Виртуальная родительская категория</label>
+    <div сlass="product_categories">
+        <select name="save[category][vparent_id]">
+            <option value='0'>Корневая категория</option>
+            {category_select selected=$category['vparent_id'] cats=$cats}
         </select>
     </div>
 
