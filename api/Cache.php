@@ -7,6 +7,7 @@ require_once('Simpla.php');
 class Cache extends Simpla
 {
 
+    private static $redis = null;
 
     private $tmp = array();
     public static $config = array();
@@ -38,6 +39,114 @@ class Cache extends Simpla
         //check if shmop enabled
         self::$shmop_enabled = function_exists('shmop_open') ? true : false;
     }
+
+    public function redis_init()
+    {
+        dtimer::log(__METHOD__." start");
+        if (self::$redis === null) {
+            self::$redis = new Redis();
+            $path = "/var/run/redis/redis.sock";
+            if (!file_exists($path)) {
+                dtimer::log("redis server unix socket $path not found! Server is started?", 1);
+                return false;
+            }
+            if (!is_writable($path)) {
+                dtimer::log("redis server unix socket $path is not writable! Check permissions!", 1);
+                return false;
+            }
+
+            self::$redis->pconnect($path);
+            self::$redis->select(0);
+        }
+        return self::$redis;
+    }
+
+
+    public function redis_set(string $key, string $data, int $ttl = 0): ?bool
+    {
+        dtimer::log(__METHOD__." start: $key");
+        if (!class_exists('Redis')) {
+            dtimer::log("Redis support is not installed, abort", 1);
+            return false;
+        }
+        $redis = cache::redis_init();
+        return $redis->setex($key, $ttl, $data);
+    }
+
+    public function redis_get(string $key): ?string
+    {
+        dtimer::log(__METHOD__." start $key");
+        if (!class_exists('Redis')) {
+            dtimer::log("Redis support is not installed, abort", 1);
+            return false;
+        }
+        $redis = cache::redis_init();
+        return $redis->get($key);
+    }
+
+
+    public function redis_set_serial(string $key, $value, int $ttl = 0): ?bool
+    {
+        dtimer::log(__METHOD__." start: $key");
+        if (!class_exists('Redis')) {
+            dtimer::log("Redis support is not installed, abort", 1);
+            return false;
+        }
+        $redis = cache::redis_init();
+        switch (self::$config['method']) {
+            case 'json':
+                $data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
+                break;
+
+            case 'serialize':
+            default:
+                $data = serialize($value);
+                break;
+
+            case 'var_export':
+                $data = $this->var_export($value, true);
+                break;
+
+            case 'msgpack':
+                $data = msgpack_pack($value);
+                break;
+        }
+
+
+        return $redis->setex($key, $ttl, $data);
+    }
+
+    public function redis_get_serial(string $key)
+    {
+        dtimer::log(__METHOD__." start $key");
+        if (!class_exists('Redis')) {
+            dtimer::log("Redis support is not installed, abort", 1);
+            return false;
+        }
+        $redis = cache::redis_init();
+        $value = $redis->get($key);
+
+        switch (self::$config['method']) {
+            case 'json':
+                $data = $this->decode($value);
+                break;
+
+            case 'serialize':
+            default:
+                $data = unserialize($value);
+                break;
+
+            case 'var_export':
+                @eval('$data = ' . $value . ';');
+                break;
+
+            case 'msgpack':
+                $data = msgpack_unpack($value);
+                break;
+        }
+        return $data;
+    }
+
 
     /**
      * @param $key
@@ -254,7 +363,6 @@ allow from 127.0.0.1";
     }
 
 
-
     private function encode($data, $unescaped = true)
     {
         dtimer::log(__METHOD__ . " start");
@@ -302,7 +410,6 @@ allow from 127.0.0.1";
             return $x;
         }
     }
-
 
 
     public function set_cache_nosql($keyword, $value, $method = null)
@@ -402,10 +509,10 @@ allow from 127.0.0.1";
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
-            dtimer::log(__METHOD__. " disabled: ".var_export(self::$enabled, true));
+            dtimer::log(__METHOD__ . " disabled: " . var_export(self::$enabled, true));
             return false;
         }
-        dtimer::log(__METHOD__. ": $keyword");
+        dtimer::log(__METHOD__ . ": $keyword");
 
         //проверка типов аргументов
         if (is_string($keyword)) {

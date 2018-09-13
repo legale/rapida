@@ -638,7 +638,7 @@ class Features extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
             //Если у нас был запуск без параметров, сохраним результат в переменную класса.
             if (!isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
@@ -655,7 +655,7 @@ class Features extends Simpla
             $task = '$this->features->get_options_ids(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -698,8 +698,8 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " save res to class variable");
             $this->options[$key . "_" . $col] = $res;
         }
-        dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-        $this->cache->set_cache_nosql($keyhash, $res);
+        dtimer::log(__METHOD__ . " redis set key: $keyhash");
+        $this->cache->redis_set_serial($keyhash, $res, 2592000);
 
         dtimer::log(__METHOD__ . " return db ");
         return $res;
@@ -737,7 +737,7 @@ class Features extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -749,7 +749,7 @@ class Features extends Simpla
             $task = '$this->features->get_options_mix(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -821,8 +821,8 @@ class Features extends Simpla
             }
         }
 
-        dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-        $this->cache->set_cache_nosql($keyhash, $res);
+        dtimer::log(__METHOD__ . " redis set key: $keyhash");
+        $this->cache->redis_set_serial($keyhash, $res, 2592000); // 2592000 is a 1 month in seconds
         dtimer::log(__METHOD__ . " end");
         return $res;
 
@@ -862,7 +862,7 @@ class Features extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -874,7 +874,7 @@ class Features extends Simpla
             $task = '$this->features->get_options_raw(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -984,8 +984,8 @@ class Features extends Simpla
         }
 
 
-        dtimer::log("set_cache_nosql key: $keyhash");
-        $this->cache->set_cache_nosql($keyhash, $res);
+        dtimer::log("redis set key: $keyhash");
+        $this->cache->redis_set_serial($keyhash, $res , 2592000); //2592000 is a 1 month
         dtimer::log(__METHOD__ . ' return db');
         return $res;
     }

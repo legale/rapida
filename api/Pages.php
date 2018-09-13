@@ -71,7 +71,7 @@ class Pages extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log("get_pages normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -83,7 +83,7 @@ class Pages extends Simpla
             $task = '$this->pages->get_pages(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
 
@@ -103,8 +103,9 @@ class Pages extends Simpla
 		$this->db->query($q);
 
         if ($res = $this->db->results_array(null, 'id')) {
-            dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-            $this->cache->set_cache_nosql($keyhash, $res);
+            $ttl = 7200;
+            dtimer::log(__METHOD__ . " redis set key: $keyhash ttl: $ttl");
+            $this->cache->redis_set_serial($keyhash, $res, $ttl);
             return $res;
         } else {
             return false;

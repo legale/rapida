@@ -5,6 +5,28 @@ class Queue extends Simpla
 {
 
     public static $skip_queue_full = true;
+
+    public function redis_adddask(string $keyhash, string $method, string $task):? bool
+    {
+        $redis = $this->cache->redis_init();
+        return $redis->rPush($this->config->host . "task_queue", msgpack_pack([$method, $task]));
+    }
+
+    public function redis_execlast():? bool
+    {
+        $redis = $this->cache->redis_init();
+        list($method, $task) = msgpack_unpack($redis->lPop($this->config->host . "task_queue"));
+        eval($task);
+        return true;
+    }
+
+    public function redis_count():? int
+    {
+        $redis = $this->cache->redis_init();
+        return $redis->lSize($this->config->host . "task_queue");
+    }
+
+
 	public function addtask($keyhash, $method, $task)
 	{
 
@@ -141,7 +163,7 @@ class Queue extends Simpla
 		//dtimer::log(__METHOD__.' query '.$query);
 
 		$this->db->query($query);
-		$res = $this->db->result_array('task');
+		$task = $this->db->result_array('task');
 		return eval($task);
 
 	}

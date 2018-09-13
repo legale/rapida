@@ -109,7 +109,7 @@ class Products extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log("get_products normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -121,7 +121,7 @@ class Products extends Simpla
             $task = '$this->products->get_products(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -247,8 +247,8 @@ class Products extends Simpla
         $this->db->query($query);
 
         if ($res = $this->db->results_array(null, 'id')) {
-            dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-            $this->cache->set_cache_nosql($keyhash, $res);
+            dtimer::log(__METHOD__ . " redis set key: $keyhash");
+            $this->cache->redis_set_serial($keyhash, $res, 2592000); // ttl is 1 month
             return $res;
         } else {
             return false;
@@ -284,7 +284,7 @@ class Products extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log("count_products normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_integer($keyhash);
+            $res = $this->cache->redis_get($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -297,7 +297,7 @@ class Products extends Simpla
             $task .= $filter_string;
             $task .= ');';
             //~ dtimer::log("count_products add task: $keyhash " . $filter['method']);
-            $this->queue->addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -394,7 +394,7 @@ class Products extends Simpla
         $this->db->query($query);
         $res = $this->db->result_array('count');
         dtimer::log("set_cache_integer key: $keyhash");
-        $this->cache->set_cache_integer($keyhash, $res);
+        $this->cache->redis_set($keyhash, $res, 2592000); //2592000 - is 1 month in seconds
         return $res;
 
     }
