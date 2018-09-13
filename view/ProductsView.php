@@ -21,7 +21,7 @@ class ProductsView extends View
     public function fetch()
     {
         $canonical = false;
-        $nofollow = false;
+        $noindex = false;
 
         //url категории
         if (isset($this->root->uri_arr['path']['url'])) {
@@ -154,6 +154,8 @@ class ProductsView extends View
                 return false;
             }
         }
+
+
 //        print_r($cat['brand']);
 
         // Свойства товаров
@@ -175,23 +177,28 @@ class ProductsView extends View
 
         //тут записываем выбранные фильтры в отдельную переменную
         $meta_filter = array();
+        $selected_count = 0;
         //Сначала бренды
         if (isset($this->filter['brand_id'])) {
+            $selected_count += count($this->filter['brand_id']);
+            if($selected_count > 1){//если выбрано больше 1 бренда
+                $noindex = true;
+                $canonical = true;
+            }
             foreach ($this->filter['brand_id'] as $bid) {
                 if (isset($brands[$bid]['name'])) {
                     $meta_filter[] = $brands[$bid]['name'];
                 }
             }
         }
+
         //теперь свойства
         if (isset($this->filter['features'])) {
-            if (!$nofollow && count($this->filter['features']) > 3) {
-                $nofollow = true;
-            }
+            $selected_count += count($this->filter['features']);
 
             foreach ($this->filter['features'] as $fid => $vids) {
                 if (!$canonical && count($vids) > 1) {
-                    $nofollow = true;
+                    $noindex = true;
                     $canonical = true;
                 }
 
@@ -206,7 +213,15 @@ class ProductsView extends View
                 }
             }
         }
+
         $meta_filter = implode(' - ', $meta_filter);
+
+        //посчитаем выбранные в фильтре параметры и сделаем nofollow, если нужно
+        if (!$noindex && $selected_count > 3) {
+            $noindex = true;
+            $canonical = true;
+        }
+
 
         //кладем meta_filter в обычный фильтр, чтобы можно было видеть его из браузера.
         $this->filter['meta_filter'] = $meta_filter;
@@ -218,7 +233,13 @@ class ProductsView extends View
             $filter = $this->filter;
             $filter['page'] = 1; //ставим страницу 1
             unset($filter['price']); //удаляем фильтр цены
+            if(isset($filter['brand_id']) && count($filter['brand_id']) > 1){ //удаляем если больше 1 бренда
+                unset($filter['brand_id']);
+            }
             if (isset($filter['features'])) {
+                if(count($filter['features']) > 3){
+                    unset($filter['features']);
+                }
                 foreach ($filter['features'] as $fid => $vids) {
                     if (count($vids) > 1) {
                         unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
@@ -234,7 +255,7 @@ class ProductsView extends View
             $canonical = $this->config->root_url;
         }
 
-        $this->design->assign('nofollow', $nofollow);
+        $this->design->assign('noindex', $noindex);
         $this->design->assign('canonical', $canonical);
 
 
