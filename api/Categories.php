@@ -205,7 +205,7 @@ class Categories extends Simpla
 
 
     // Инициализация категорий, после которой категории будем выбирать из локальной переменной
-    private function init_categories($reinit = false)
+    public function init_categories($reinit = false)
     {
         dtimer::log(__METHOD__ . " start reinit flag: " . var_export($reinit, true));
         if ($reinit === false && function_exists('apcu_fetch')) {
@@ -253,11 +253,23 @@ class Categories extends Simpla
             $cats[$cat['parent_id']]['children'][] = $cid;
             $cats[$cat['vparent_id']]['vchildren'][] = $cid;
 
+
             $cats[$cat['id']]['path'] = array_merge($cats[$cat['parent_id']]['path'], array(&$cats[$cid]));
 
             // Уровень вложенности категории
             $cats[$cat['id']]['level'] = ++$cats[$cat['parent_id']]['level'];
         }
+
+        foreach($cats as $cid => &$cat) {
+            if ($cid === 0) {
+                continue; //skip root element with index 0
+            }
+            if (!empty($cat['children'])) {
+                $cats[$cat['parent_id']]['children'] = array_merge($cats[$cat['parent_id']]['children'], $cat['children']);
+            }
+        }
+
+
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
