@@ -20,8 +20,10 @@ class ProductsView extends View
     //метод для получения страницы
     public function fetch()
     {
-        $canonical = false;
-        $noindex = false;
+        $canonical = null;
+        $noindex = null;
+        $nofollow = null;
+        $robots = null;
 
         //url категории
         if (isset($this->root->uri_arr['path']['url'])) {
@@ -227,9 +229,12 @@ class ProductsView extends View
         $this->filter['meta_filter'] = $meta_filter;
 
         //~ // Свойства товаров END
-
+        if($this->filter['page'] !== 1){
+            $noindex = true;
+        }
+        
         //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
-        if ($canonical || $this->filter['page'] !== 1) {
+        if ($canonical) {
             $filter = $this->filter;
             $filter['page'] = 1; //ставим страницу 1
             unset($filter['price']); //удаляем фильтр цены
@@ -255,7 +260,23 @@ class ProductsView extends View
             $canonical = $this->config->root_url;
         }
 
-        $this->design->assign('noindex', $noindex);
+        if($noindex || $nofollow) {
+            $sum = $noindex ? 1 : 0;
+            $sum += $nofollow ? 2 : 0;
+            switch($sum) {
+                case 3:
+                    $robots = 'noindex, nofollow';
+                    break;
+                case 2:
+                    $robots = 'index, nofollow';
+                    break;
+                case 1:
+                    $robots = 'noindex, follow';
+                    break;
+            }
+        }
+
+        $this->design->assign('robots', $robots);
         $this->design->assign('canonical', $canonical);
 
 

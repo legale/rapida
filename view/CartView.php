@@ -16,8 +16,7 @@ class CartView extends View
     public function __construct()
     {
         parent::__construct();
-        //передаем в шаблон canonical со ссылкой на главную страницу
-        $this->design->assign('canonical', $this->config->root_url);
+
 
         //выводим пустой coupon_error, чтобы в шаблоне не было ошибки
         $this->design->assign('coupon_error', '');
@@ -71,7 +70,7 @@ class CartView extends View
 
                 // Если использовали купон, увеличим количество его использований
                 if (isset($cart['coupon'])) {
-                    $this->coupons->update_coupon($cart['coupon']->id, array('usages' => $usages));
+                    $this->coupons->update_coupon($cart['coupon']->id, array('usages' => 'usages + 1'));
                 }
                 // Добавляем товары к заказу
                 foreach ($_SESSION['shopping_cart'] as $variant_id => $amount) {
@@ -147,7 +146,6 @@ class CartView extends View
     function fetch()
     {
 
-
         // Способы доставки
         $deliveries = $this->delivery->get_deliveries(array('enabled' => 1));
         $this->design->assign('deliveries', $deliveries);
@@ -175,6 +173,12 @@ class CartView extends View
         } else {
             $this->design->assign('coupon_request', false);
         }
+
+        //передаем текст для мета тега robots
+        $this->design->assign('robots', "noindex, nofollow");
+
+        //передаем в шаблон canonical со ссылкой на главную страницу
+        $this->design->assign('canonical', "/");
 
         // Выводим корзину
         return $this->design->fetch('cart.tpl');
