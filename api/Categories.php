@@ -12,7 +12,7 @@ class Categories extends Simpla
 
     public function __construct()
     {
-        $this->init_categories(true);
+        $this->init_categories(false);
     }
 
     // Функция возвращает массив категорий
