@@ -223,7 +223,6 @@ class Categories extends Simpla
         $tree['subcategories'] = [];
         $tree['path'] = [];
         $tree['level'] = 0;
-        $tree['visible_count'] = 0;
 
 
         // Выбираем все категории
@@ -242,7 +241,6 @@ class Categories extends Simpla
                 continue; //skip root element with index 0
             }
             $cat['level'] = 0;
-            $cat['visible_count'] = 0;
             $cat['children'] = [];
             $cat['vchildren'] = [];
             $cat['path'] = [];
@@ -259,10 +257,7 @@ class Categories extends Simpla
             if ($cid === 0) {
                 continue; //skip root element with index 0
             }
-            //подсчет видимых категорий
-            if ($cat['visible']) {
-                $cat['visible_count'] = ++$cats[$cat['parent_id']]['visible_count'];
-            }
+
 
             //часть пути из родительского
             $cat['path'] = $cats[$cat['parent_id']]['path'];
