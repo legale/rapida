@@ -811,12 +811,13 @@ class Features extends Simpla
             $filter_ = $filter;
             unset($filter_['features']);
             $res['full'] = $this->get_options_raw($filter_);
-
-            foreach ($res['full'] as $fid => $ids) {
-                $res['full'][$fid] = array(
-                    'vals' => array_intersect_key($vals, $res['full'][$fid]),
-                    'trans' => array_intersect_key($trans, $res['full'][$fid])
-                );
+            if(is_array($res['full'])) {
+                foreach ($res['full'] as $fid => $ids) {
+                    $res['full'][$fid] = array(
+                        'vals' => array_intersect_key($vals, $res['full'][$fid]),
+                        'trans' => array_intersect_key($trans, $res['full'][$fid])
+                    );
+                }
             }
         }
 
