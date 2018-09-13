@@ -42,7 +42,9 @@ class CategoriesAdmin extends Simpla
 
 		}
 
-		$categories = $this->categories->get_categories_tree(true); //do reinitialize categories tree
+        $this->categories->init_categories(true); //reinit cats
+		$categories = $this->categories->categories_tree; //do reinitialize categories tree
+        //print_r($categories);
 
 		$this->design->assign('categories', $categories);
 		return $this->design->fetch('categories.tpl');

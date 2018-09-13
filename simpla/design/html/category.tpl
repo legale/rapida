@@ -175,25 +175,18 @@
 	{/function}
 
 
-    <label class=property>Родительская категория</label>
-    <div сlass="product_categories">
-        <select name="save[category][parent_id]">
-            <option value='0'>Корневая категория</option>
-            {category_select selected=$category['parent_id'] cats=$cats}
-        </select>
-    </div>
 
-    <label class=property>Виртуальная родительская категория</label>
-    <div сlass="product_categories">
-        <select name="save[category][vparent_id]">
-            <option value='0'>Корневая категория</option>
-            {category_select selected=$category['vparent_id'] cats=$cats}
-        </select>
-    </div>
 
 
     <!-- Левая колонка -->
     <div class="column_left">
+
+        <label>Дочерние виртуальные категории</label>
+        {if !empty($category['vchildren'])}
+        <ol style="list-style: decimal">
+            {foreach $category['vchildren'] as $cid}<li cid="{$cid}">{$cats[$cid]['name']}</li>{/foreach}
+        </ol>
+        {/if}
 
         <!-- Параметры страницы -->
         <div class="block layer">
@@ -231,6 +224,24 @@
 
     <!-- Правая колонка -->
     <div class="column_right">
+
+
+
+        <label class=property>Родительская категория</label>
+        <div сlass="product_categories">
+            <select name="save[category][parent_id]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['parent_id'] cats=$cats}
+            </select>
+        </div>
+
+        <label class=property>Виртуальная родительская категория</label>
+        <div сlass="product_categories">
+            <select name="save[category][vparent_id]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['vparent_id'] cats=$cats}
+            </select>
+        </div>
 
         <!-- Авто теги для товаров данной категории -->
         <div class="block layer">

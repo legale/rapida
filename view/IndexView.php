@@ -30,7 +30,8 @@ class IndexView extends View
         'wishlist' => 'WishlistView',
     );
 
-    public $modules_dir = 'view/';
+    private $modules_dir = 'view/';
+    private $cats = [];
 
     public function __construct()
     {
@@ -53,7 +54,7 @@ class IndexView extends View
         $this->design->assign('cart', $this->cart->get());
 
         // Категории товаров
-        $this->design->assign('categories', $this->categories->get_categories_tree());
+        $this->design->assign('categories',  $this->categories->categories_tree);
 
         // Страницы
         $pages = $this->pages->get_pages(array('visible' => 1));

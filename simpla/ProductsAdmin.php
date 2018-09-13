@@ -16,7 +16,7 @@ class ProductsAdmin extends Simpla
         $filter['limit'] = $this->settings->products_num_admin;
 
         // Категории
-        $categories = $this->categories->get_categories_tree();
+        $categories = $this->categories->categories_tree;
         $this->design->assign('categories', $categories);
 
         // Текущая категория

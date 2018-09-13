@@ -70,7 +70,7 @@ class FeaturesAdmin extends Simpla
 
 		}
 
-		$categories = $this->categories->get_categories_tree();
+		$categories = $this->categories->categories_tree;
 		$category = null;
 
 		$filter = array();

@@ -6,18 +6,22 @@ require_once('Simpla.php');
 class Categories extends Simpla
 {
     // Список указателей на категории в дереве категорий (ключ = id категории)
-    private $all_categories;
+    public $all_categories;
     // Дерево категорий
-    private $categories_tree;
+    public $categories_tree;
+
+    public function __construct()
+    {
+        $this->init_categories(true);
+    }
 
     // Функция возвращает массив категорий
     public function get_categories($filter = array())
     {
-        $reinit = isset($filter['reinit']) ? true : false;
-
-        if (!isset($this->categories_tree)) {
-            $this->init_categories($reinit);
+        if ($this->all_categories && isset($filter['reinit'])) {
+            $this->init_categories(true);
         }
+
 
         if (!empty($filter['product_id'])) {
             $query = $this->db->placehold("SELECT category_id FROM __products_categories WHERE product_id in(?@) ", (array)$filter['product_id']);
@@ -52,15 +56,6 @@ class Categories extends Simpla
         return $res;
     }
 
-    // Функция возвращает дерево категорий
-    public function get_categories_tree($reinit = false)
-    {
-        dtimer::log(__METHOD__ . " start reinit: " . var_export($reinit, true));
-        if (!isset($this->categories_tree))
-            $this->init_categories($reinit);
-
-        return $this->categories_tree;
-    }
 
     // Функция возвращает заданную категорию
     public function get_category($id)
@@ -72,9 +67,6 @@ class Categories extends Simpla
             $id = $id;
         }
 
-        if (!isset($this->all_categories)) {
-            $this->init_categories();
-        }
         if (is_int($id) && array_key_exists($id, $this->all_categories))
             return $category = $this->all_categories[$id];
         else if (is_string($id)) {
@@ -123,7 +115,7 @@ class Categories extends Simpla
             $cat['description'] = '';
         }
 
-        
+
         //удалим id, если он сюда закрался, при создании id быть не должно
         if (isset($cat['id'])) {
             unset($cat['id']);
@@ -192,8 +184,7 @@ class Categories extends Simpla
                 $this->db->query($query);
             }
         }
-        unset($this->categories_tree);
-        unset($this->all_categories);
+        $this->init_categories(true);
         return $id;
     }
 
@@ -219,87 +210,65 @@ class Categories extends Simpla
         dtimer::log(__METHOD__ . " start reinit flag: " . var_export($reinit, true));
         if ($reinit === false && function_exists('apcu_fetch')) {
             dtimer::log(__METHOD__ . " ACPU CACHE CATEGORIES READ ");
-            $this->categories_tree = apcu_exists($this->config->host.'categories_tree') ? apcu_fetch($this->config->host.'categories_tree') : null;
-            $this->all_categories = apcu_exists($this->config->host.'categories_tree') ? apcu_fetch($this->config->host.'all_categories') : null;
-            if ($this->categories_tree && $this->all_categories) {
+            $this->all_categories = apcu_exists($this->config->host . 'all_categories') ? apcu_fetch($this->config->host . 'all_categories') : null;
+            $this->categories_tree = &$this->all_categories[0]['subcategories'];
+            unset($this->all_categories[0]); //remove root element
+            if ($this->all_categories) {
                 return;
             }
         }
 
         // Дерево категорий
-        $tree = array();
-        $tree['subcategories'] = array();
+        $tree = [];
+        $tree['subcategories'] = [];
+        $tree['path'] = [];
+        $tree['level'] = 0;
+        $tree['visible_count'] = 0;
 
-        // Указатели на узлы дерева
-        $pointers = array();
-        $pointers[0] = &$tree;
-        $pointers[0]['path'] = array();
-        $pointers[0]['level'] = 0;
-        $pointers[0]['visible_count'] = 0;
 
         // Выбираем все категории
-        $query = $this->db->placehold("SELECT * FROM __categories c ORDER BY c.parent_id, c.pos");
+        $query = $this->db->placehold("SELECT * FROM __categories");
 
         $this->db->query($query);
-        $categories = $this->db->results_array(null, 'id');
+        $cats = $this->db->results_array(null, 'id');
 
-        $finish = false;
-        // Не кончаем, пока не кончатся категории, или пока ни одну из оставшихся некуда приткнуть
-        while (!empty($categories) && !$finish) {
-            $flag = false;
-            // Проходим все выбранные категории
-            foreach ($categories as $k => $category) {
-                if (isset($pointers[$category['parent_id']])) {
-                    // В дерево категорий (через указатель) добавляем текущую категорию
-                    $pointers[$category['id']] = $category;
-                    $pointers[$category['id']]['visible_count'] = 0;
-                    $pointers[$category['parent_id']]['subcategories'][] = &$pointers[$category['id']];
-                    //~ print_r($pointers);
-                    // Путь к текущей категории
-                    $curr = &$pointers[$category['id']];
-                    $pointers[$category['id']]['path'] = array_merge($pointers[$category['parent_id']]['path'], array(&$curr));
+        // Указатели на узлы дерева
+        $cats[0] = &$tree;
 
-                    // Уровень вложенности категории
-                    $pointers[$category['id']]['level'] = 1 + $pointers[$category['parent_id']]['level'];
 
-                    // Убираем использованную категорию из массива категорий
-                    unset($categories[$k]);
-                    $flag = true;
-                }
+        // Проходим все выбранные категории
+        foreach ($cats as $cid => &$cat) {
+            if ($cid === 0) {
+                continue; //skip root element with index 0
             }
-            if (!$flag) {
-                $finish = true;
+            $cat['visible_count'] = 0;
+            $cat['children'] = [];
+            $cat['vchildren'] = [];
+
+            if ($cat['visible']) {
+                ++$cats[$cat['parent_id']]['visible_count'];
             }
+
+            $cats[$cat['parent_id']]['subcategories'][] = &$cat;
+            $cats[$cat['parent_id']]['children'][] = $cid;
+            $cats[$cat['vparent_id']]['vchildren'][] = $cid;
+
+            $cats[$cat['id']]['path'] = array_merge($cats[$cat['parent_id']]['path'], array(&$cats[$cid]));
+
+            // Уровень вложенности категории
+            $cats[$cat['id']]['level'] = ++$cats[$cat['parent_id']]['level'];
         }
-        //~ print_r($pointers);
-
-        // Для каждой категории id всех ее деток узнаем
-        $ids = array_reverse(array_keys($pointers));
-        foreach ($ids as $id) {
-            if (!empty($pointers[$id]['visible'])) {
-                $pointers[$pointers[$id]['parent_id']]['visible_count']++;
-            }
-
-            if ($id > 0) {
-                $pointers[$id]['children'][] = $id;
-
-                if (isset($pointers[$pointers[$id]['parent_id']]['children'])) {
-                    $pointers[$pointers[$id]['parent_id']]['children'] = array_merge($pointers[$id]['children'], $pointers[$pointers[$id]['parent_id']]['children']);
-                } else {
-                    $pointers[$pointers[$id]['parent_id']]['children'] = $pointers[$id]['children'];
-                }
-            }
-        }
-        unset($pointers[0]);
-        unset($ids);
-
-        $this->categories_tree = $tree['subcategories'];
-        $this->all_categories = $pointers;
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
-            apcu_store($this->config->host.'categories_tree', $tree['subcategories'], 7200);
-            apcu_store($this->config->host.'all_categories', $pointers, 7200);
+            apcu_store($this->config->host . 'all_categories', $cats, 7200);
         }
+        unset($cat, $cats[0]); //unset root element
+
+        $this->all_categories = &$cats;
+        $this->categories_tree = &$tree['subcategories'];
+
     }
+
+
 }

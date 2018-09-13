@@ -43,7 +43,7 @@ class FeatureAdmin extends Simpla
 		$ogroups = $this->features->get_options_groups();
 
 
-		$categories = $this->categories->get_categories_tree();
+		$categories = $this->categories->categories_tree;
 		$this->design->assign('categories', $categories);
 		$this->design->assign('ogroups', $ogroups);
 		$this->design->assign('feature', $feature);

@@ -259,6 +259,57 @@ function &categories_features_gen(array &$params, &$rapida): array
     return open_close($params, $counter);
 }
 
+//  Категории + brand + свойства
+function &categories_brands_features_gen(array &$params, &$rapida): array
+{
+    open_close($params);
+    $counter = $params['counter'] % 50000;
+
+    $filter = ['visible' => 1, 'in_filter' => 1];
+
+    if (!$categories = $rapida->categories->get_categories($filter)) {
+        return $params;
+    }
+    foreach ($categories as &$c) {
+        $filter['category_id'] = $c['children'];
+        if (!$features = $rapida->features->get_features($filter)) {
+            continue;
+
+        }
+
+        $filter['feature_id'] = array_keys($features);
+
+        $options = $rapida->features->get_options_mix($filter);
+        if (empty($options['filter'])) {
+            continue;
+        }
+
+
+        foreach ($options['filter'] as $fid => &$vids) {
+
+
+            foreach ($options['full'][$fid]['trans'] as $vid => &$opt) {
+                $filter['features'][$fid] = $vid;
+                $p_count = $rapida->products->count_products($filter);
+                unset($filter['features'][$fid]);
+                $pages = (int)ceil($p_count / ITEMS);
+
+                if ($pages > 0) {
+                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $opt;
+                    fwrite($params['fopen'], gen_url_string($url));
+                    ++$params['counter'];
+                    if (++$counter === 50000) {
+                        $params = open_close($params);
+                        $counter = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return open_close($params, $counter);
+}
+
 
 //товары
 

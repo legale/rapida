@@ -296,12 +296,12 @@ class ProductsView extends View
         //передаем данные в шаблоны
         if (isset($cat['id'])) {
             $this->design->assign('category', $cat);
+            $this->design->assign('all_cats', $this->categories->all_categories);
             $this->design->assign('meta_filter', $meta_filter);
             $this->design->assign('meta_title', $auto_meta_title);
             $this->design->assign('meta_keywords', $auto_meta_keywords);
             $this->design->assign('meta_description', $auto_meta_description);
         }
-
 
         $this->body = $this->design->fetch('products.tpl');
         dtimer::log(__METHOD__ . " return ");
