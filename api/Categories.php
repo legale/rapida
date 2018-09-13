@@ -247,9 +247,7 @@ class Categories extends Simpla
             $cat['vchildren'] = [];
             $cat['path'] = [];
 
-            if ($cat['visible']) {
-                ++$cats[$cat['parent_id']]['visible_count'];
-            }
+
 
             $cats[$cat['parent_id']]['subcategories'][] = &$cat;
             $cats[$cat['parent_id']]['children'][] = $cid;
@@ -260,6 +258,10 @@ class Categories extends Simpla
         foreach($cats as $cid => &$cat) {
             if ($cid === 0) {
                 continue; //skip root element with index 0
+            }
+            //подсчет видимых категорий
+            if ($cat['visible']) {
+                $cat['visible_count'] = ++$cats[$cat['parent_id']]['visible_count'];
             }
 
             //часть пути из родительского
