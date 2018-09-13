@@ -241,9 +241,11 @@ class Categories extends Simpla
             if ($cid === 0) {
                 continue; //skip root element with index 0
             }
+            $cat['level'] = 0;
             $cat['visible_count'] = 0;
             $cat['children'] = [];
             $cat['vchildren'] = [];
+            $cat['path'] = [];
 
             if ($cat['visible']) {
                 ++$cats[$cat['parent_id']]['visible_count'];
@@ -253,17 +255,23 @@ class Categories extends Simpla
             $cats[$cat['parent_id']]['children'][] = $cid;
             $cats[$cat['vparent_id']]['vchildren'][] = $cid;
 
-
-            $cats[$cat['id']]['path'] = array_merge($cats[$cat['parent_id']]['path'], array(&$cats[$cid]));
-
-            // Уровень вложенности категории
-            $cats[$cat['id']]['level'] = ++$cats[$cat['parent_id']]['level'];
         }
 
         foreach($cats as $cid => &$cat) {
             if ($cid === 0) {
                 continue; //skip root element with index 0
             }
+
+            //часть пути из родительского
+            $cat['path'] = $cats[$cat['parent_id']]['path'];
+
+            //последняя часть пути
+            $cat['path'][] = &$cat;
+
+            // Уровень вложенности категории
+            $cats[$cat['id']]['level'] = ++$cats[$cat['parent_id']]['level'];
+
+
             if (!empty($cat['children'])) {
                 $cats[$cat['parent_id']]['children'] = array_merge($cats[$cat['parent_id']]['children'], $cat['children']);
             }

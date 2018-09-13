@@ -232,7 +232,7 @@ class ProductsView extends View
         if($this->filter['page'] !== 1){
             $noindex = true;
         }
-        
+
         //ставим flag canonical <link rel="canonical" href="http://site.com/canonical-link.html"/>
         if ($canonical) {
             $filter = $this->filter;

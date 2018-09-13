@@ -21,7 +21,7 @@ $filter_plus = array(2, 3, 4, 9, 10, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 
 
 //params structure array
-$params = ['path' => null, 'fopen' => null, 'counter' => 0, 'name_tpl' => 'sitemap', 'names' => 0];
+$params = ['path' => null, 'fopen' => null, 'counter' => 0, 'name_tpl' => 'sm', 'names' => 0];
 
 
 function gzconvert(string $src):? string
