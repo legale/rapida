@@ -309,7 +309,7 @@ class ProductsView extends View
                         continue;
                     }
                     $pairs['{$' . $f['trans'] . '}'] = " " . $f['name'];
-                    $pairs['{$' . $f['trans'] . '_list}'] = array();
+                    $pairs['{$' . $f['trans'] . '_list}'] = '';
                     //$cycler = 0;
                     if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
                         $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));

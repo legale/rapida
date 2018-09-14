@@ -102,7 +102,7 @@ class Brands extends Simpla
         //если запуск был не из очереди - пробуем получить из кеша
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->get_cache_nosql($keyhash);
+            $res = $this->cache->redis_get_serial($keyhash);
 
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -155,8 +155,8 @@ class Brands extends Simpla
         $this->db->query($query);
 
         $res = $this->db->results_array(null, 'id');
-        dtimer::log(__METHOD__ . " set_cache_nosql key: $keyhash");
-        $this->cache->set_cache_nosql($keyhash, $res);
+        dtimer::log(__METHOD__ . " redis set key: $keyhash");
+        $this->cache->redis_set_serial($keyhash, $res, 252900); // 1 month
         dtimer::log(__METHOD__ . " end");
         return $res;
     }
