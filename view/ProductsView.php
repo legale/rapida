@@ -81,6 +81,7 @@ class ProductsView extends View
 
         // Вычисляем количество страниц
         if($this->filter['products_count'] = $this->products->count_products($this->filter)){
+            dtimer::log("Страница не найдена 404", 2);
             return false;
         }
 
