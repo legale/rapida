@@ -392,7 +392,7 @@ class Products extends Simpla
 
         dtimer::log(__METHOD__ . " query: $query");
         $this->db->query($query);
-        $res = $this->db->result_array('count');
+        $res = (int)$this->db->result_array('count');
         dtimer::log("set_cache_integer key: $keyhash");
         $this->cache->redis_set($keyhash, $res, 2592000); //2592000 - is 1 month in seconds
         return $res;
