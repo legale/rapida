@@ -9,21 +9,26 @@ class Queue extends Simpla
     public function redis_adddask(string $keyhash, string $method, string $task):? bool
     {
         $redis = $this->cache->redis_init();
-        return $redis->rPush($this->config->host . "task_queue", msgpack_pack([$method, $task]));
+        if(!$redis->hexists($this->config->host . "_queue_hashtable", $keyhash)){
+            $redis->hset($this->config->host . "_queue_hashtable", $keyhash, null);
+            return $redis->rPush($this->config->host . "_queue", msgpack_pack([$keyhash, $method, $task]));
+        }else{
+            return false;
+        }
     }
 
     public function redis_execlast():? bool
     {
         $redis = $this->cache->redis_init();
-        list($method, $task) = msgpack_unpack($redis->lPop($this->config->host . "task_queue"));
+        list($keyhash, $method, $task) = msgpack_unpack($redis->lPop($this->config->host . "_queue"));
         eval($task);
-        return true;
+        return $redis->hdel($this->config->host . "_queue_hashtable", $keyhash);
     }
 
     public function redis_count():? int
     {
         $redis = $this->cache->redis_init();
-        return $redis->lSize($this->config->host . "task_queue");
+        return $redis->lSize($this->config->host . "_queue");
     }
 
 

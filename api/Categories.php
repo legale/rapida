@@ -222,6 +222,7 @@ class Categories extends Simpla
 
         // Выбираем все категории
         $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY id, parent_id");
+        $ids = array_keys($cats);
 
         // Дерево категорий
         $tree = [];
@@ -235,10 +236,8 @@ class Categories extends Simpla
 
 
         // Проходим все выбранные категории
-        foreach ($cats as $cid => &$cat) {
-            if ($cid === 0) {
-                continue; //skip root element
-            }
+        foreach ($ids as $cid) {
+            $cat = &$cats[$cid];
             $cat['id'] = (int)$cat['id'];
             $cat['parent_id'] = (int)$cat['parent_id'];
             $cat['vparent_id'] = (int)$cat['vparent_id'];
@@ -250,16 +249,15 @@ class Categories extends Simpla
             $cats[$cat['parent_id']]['subcategories'][] = &$cat;
         }
 
-        //порядок важен чтобы матрешка собралась правильно
-        foreach ($cats as $cid => &$cat) {
-            if ($cid === 0) {
-                continue; //skip root element
-            }
+        //обратный порядок важен чтобы матрешка собралась правильно
+        $ids = array_reverse($ids);
+        foreach ($ids as $cid) {
+            $cat = &$cats[$cid];
             $cat['path'] = $cats[$cat['parent_id']]['path'];
             $cat['path'][] = &$cat;
 
             //добавим виртуальные разделы к его родителю
-            $cats[$cat['parent_id']]['vchildren'][] = $cid;
+            $cats[$cat['vparent_id']]['vchildren'][] = $cid;
 
             //сначала добавим саму себя
             $cat['children'] = array_merge([$cid], $cat['children']);
