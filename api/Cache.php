@@ -42,6 +42,7 @@ class Cache extends Simpla
 
     public function redis_init()
     {
+
         dtimer::log(__METHOD__." start");
         if (self::$redis === null) {
             self::$redis = new Redis();
@@ -64,6 +65,10 @@ class Cache extends Simpla
 
     public function redis_set(string $key, string $data, int $ttl = 0): ?bool
     {
+        //Если кеш отключен - останавливаем
+        if (self::$enabled !== true) {
+            return false;
+        }
         dtimer::log(__METHOD__." start: $key");
         if (!class_exists('Redis')) {
             dtimer::log("Redis support is not installed, abort", 1);
@@ -75,6 +80,10 @@ class Cache extends Simpla
 
     public function redis_get(string $key): ?string
     {
+        //Если кеш отключен - останавливаем
+        if (self::$enabled !== true) {
+            return false;
+        }
         dtimer::log(__METHOD__." start $key");
         if (!class_exists('Redis')) {
             dtimer::log("Redis support is not installed, abort", 1);
@@ -87,6 +96,10 @@ class Cache extends Simpla
 
     public function redis_set_serial(string $key, $value, int $ttl = 0): ?bool
     {
+        //Если кеш отключен - останавливаем
+        if (self::$enabled !== true) {
+            return false;
+        }
         dtimer::log(__METHOD__." start: $key");
         if (!class_exists('Redis')) {
             dtimer::log("Redis support is not installed, abort", 1);
@@ -118,6 +131,10 @@ class Cache extends Simpla
 
     public function redis_get_serial(string $key)
     {
+        //Если кеш отключен - останавливаем
+        if (self::$enabled !== true) {
+            return false;
+        }
         dtimer::log(__METHOD__." start $key");
         if (!class_exists('Redis')) {
             dtimer::log("Redis support is not installed, abort", 1);

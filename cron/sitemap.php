@@ -148,7 +148,7 @@ function &categories_gen(array &$params, &$rapida): array
     $counter = $params['counter'] % 50000;
 
 
-    $categories = $rapida->categories->get_categories(['visible' => 1]);
+    $categories = $rapida->categories->get_categories(['enabled' => 1]);
     if (!$categories) {
         return $params;
     }
@@ -178,7 +178,7 @@ function &categories_brands_gen(array &$params, &$rapida): array
     $counter = $params['counter'] % 50000;
 
 
-    $categories = $rapida->categories->get_categories(['visible' => 1]);
+    $categories = $rapida->categories->get_categories(['enabled' => 1]);
     if (!$categories) {
         return $params;
     }
@@ -216,7 +216,7 @@ function &categories_features_gen(array &$params, &$rapida): array
 
     $filter = ['visible' => 1, 'in_filter' => 1];
 
-    if (!$categories = $rapida->categories->get_categories($filter)) {
+    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
     foreach ($categories as &$c) {
@@ -267,7 +267,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
     $filter = ['visible' => 1, 'in_filter' => 1];
 
-    if (!$categories = $rapida->categories->get_categories($filter)) {
+    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
     foreach ($categories as &$c) {

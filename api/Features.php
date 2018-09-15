@@ -313,7 +313,7 @@ class Features extends Simpla
                 $this->db->query("ALTER TABLE __options DROP INDEX `only`");
                 $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
                 $index = $this->db->results_array('id');
-                if(!empty($index)) {
+                if (!empty($index)) {
                     $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
                 }
             }
@@ -353,7 +353,7 @@ class Features extends Simpla
                 $this->db->query("ALTER TABLE __options DROP INDEX `only`");
                 $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
                 $index = $this->db->results_array('id');
-                if(!empty($index)) {
+                if (!empty($index)) {
                     $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
                 }
             } else {
@@ -361,7 +361,7 @@ class Features extends Simpla
                 $this->db->query("ALTER TABLE __options DROP INDEX `only`");
                 $this->db->query("SELECT id FROM __features WHERE in_filter = 1");
                 $index = $this->db->results_array('id');
-                if(!empty($index)) {
+                if (!empty($index)) {
                     $this->db->query("ALTER TABLE __options ADD INDEX `only` (`product_id`, ?^)", $index);
                 }
             }
@@ -706,6 +706,7 @@ class Features extends Simpla
 
     }
 
+
     /*
      * Этот метод предоставляет комбинированные данные опций, в т.ч. все возможные опции без учета уже выбранных,
      * доступные для выбора опции с учетом уже выбранных. Т.е. если выбрана страна, например, Россия, другие
@@ -715,8 +716,7 @@ class Features extends Simpla
      * @param array $filter
      * @return array|bool
      */
-    public
-    function get_options_mix($filter = array())
+    public function get_options_mix($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
@@ -769,14 +769,18 @@ class Features extends Simpla
         //массив id=>значение транслитом
         $trans = $this->get_options_ids(array('return' => array('col' => 'trans', 'key' => 'id')));
 
-        //Самый простой вариант - если не заданы фильтры по свойствам
-        if (!isset($filter['features'])) {
-            $res['filter'] = $this->get_options_raw($filter);
-            if ($res['filter'] !== false) {
-                foreach ($res['filter'] as $fid => $ids) {
-                    $res['full'][$fid] = array(
-                        'vals' => array_intersect_key($vals, $res['filter'][$fid]),
-                        'trans' => array_intersect_key($trans, $res['filter'][$fid])
+        //Самый простой вариант - если не заданы фильтры по свойствам и брендам
+        if (!isset($filter['features']) && !isset($filter['brand_id'])) {
+            $filter['brand_id'] = [];
+            $tmp = $this->get_options_raw($filter);
+            if ($tmp !== false) {
+                $res['filter'] = $tmp;
+                unset($tmp['brand_id']);
+                $res['full']['brand_id'] = &$res['filter']['brand_id'];
+                foreach ($tmp as $fid => $ids) {
+                    $res['full'][$fid] =  array(
+                        'vals' => array_intersect_key($vals, $tmp[$fid]),
+                        'trans' => array_intersect_key($trans, $tmp[$fid])
                     );
                 }
             } else {
@@ -792,30 +796,43 @@ class Features extends Simpla
             $filter_ = $filter;
             $res['filter'] = $this->get_options_raw($filter_);
 
-            //тут получим полные результаты для отдельных $fid
-            foreach ($filter['features'] as $fid => $vid) {
-                //копируем фильтр
-                $filter_ = $filter;
-                //оставляем только нужный нам $fid
-                $filter_['feature_id'] = array($fid);
-                //убираем из массива заданных фильтров искомый $fid
-                unset($filter_['features'][$fid]);
+            //получим значения по брендам без указания самого бренда
 
-                $raw = $this->get_options_raw($filter_);
-                if(isset($raw[$fid])) {
-                    $res['filter'][$fid] = $raw[$fid];
+            $filter_['brand_id'] = [];
+            dtimer::log(__METHOD__ . " brand filter");
+            $raw = $this->get_options_raw($filter_);
+            $res['filter']['brand_id'] = $raw['brand_id'];
+
+            if (isset($filter['features'])) {
+                //тут получим полные результаты для отдельных $fid
+                foreach ($filter['features'] as $fid => $vid) {
+                    //копируем фильтр
+                    $filter_ = $filter;
+                    //оставляем только нужный нам $fid
+                    $filter_['feature_id'] = array($fid);
+                    //убираем из массива заданных фильтров искомый $fid
+                    unset($filter_['features'][$fid]);
+
+                    $raw = $this->get_options_raw($filter_);
+                    if (isset($raw[$fid])) {
+                        $res['filter'][$fid] = $raw[$fid];
+                    }
                 }
             }
+
 
             //это полный результат, поэтому убираем все фильтры
             $filter_ = $filter;
             unset($filter_['features']);
-            $res['full'] = $this->get_options_raw($filter_);
-            if(is_array($res['full'])) {
-                foreach ($res['full'] as $fid => $ids) {
+            $filter_['brand_id'] = [];
+            $tmp = $this->get_options_raw($filter_);
+            if (is_array($tmp)) {
+                $res['full'] = ['brand_id' => $tmp['brand_id']];
+                unset($tmp['brand_id']);
+                foreach ($tmp as $fid => $ids) {
                     $res['full'][$fid] = array(
-                        'vals' => array_intersect_key($vals, $res['full'][$fid]),
-                        'trans' => array_intersect_key($trans, $res['full'][$fid])
+                        'vals' => array_intersect_key($vals, $tmp[$fid]),
+                        'trans' => array_intersect_key($trans, $tmp[$fid])
                     );
                 }
             }
@@ -824,6 +841,11 @@ class Features extends Simpla
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
         $this->cache->redis_set_serial($keyhash, $res, 2592000); // 2592000 is a 1 month in seconds
         dtimer::log(__METHOD__ . " end");
+
+
+//        print "<PRE>";
+//        print_r($res);
+//        die;
         return $res;
 
 
@@ -839,8 +861,7 @@ class Features extends Simpla
      * @param array $filter
      * @return array|bool
      */
-    public
-    function get_options_raw($filter = array())
+    public function get_options_raw($filter = array())
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
@@ -903,7 +924,7 @@ class Features extends Simpla
             }
         }
 
-        if (isset($filter['features']) && is_array($filter['features'])) {
+        if (!empty($filter['features']) && is_array($filter['features'])) {
             $features_ids = array_keys($filter['features']);
             //если в фильтрах свойств что-то задано, но этого нет в запрошенных фильтрах, добавляем.
             foreach ($features_ids as $fid) {
@@ -915,24 +936,35 @@ class Features extends Simpla
 
 
         //собираем столбцы, которые нам понадобятся для select
+        if (isset($filter['brand_id'])) {
+            //если задан бренд, то соберем все в 1 массив со свойствами
+            $select_array = $filter['feature_id'];
+            $select_array[] = 'brand_id';
+            //флаг присоединения таблицы товаров
+            $products_join_flag = true;
+        } else {
+            //иначе просто возьмем свойства
+            $select_array = $filter['feature_id'];
+        }
         $select = "SELECT " . implode(', ', array_map(function ($a) {
                 return '`' . $a . '`';
-            }, $filter['feature_id']));
+            }, $select_array));
 
-        if (isset($filter['category_id'])) {
+
+        if (!empty($filter['category_id'])) {
             $category_id_filter = $this->db2->placehold(' AND o.product_id in(SELECT DISTINCT product_id from s_products_categories where category_id in (?@))', (array)$filter['category_id']);
         }
 
-        if (isset($filter['product_id'])) {
+        if (!empty($filter['product_id'])) {
             $product_id_filter = $this->db2->placehold(' AND o.product_id in (?@)', (array)$filter['product_id']);
         }
 
-        if (isset($filter['brand_id'])) {
+        if (!empty($filter['brand_id'])) {
             $products_join_flag = true;
             $brand_id_filter = $this->db2->placehold(' AND p.brand_id in (?@)', (array)$filter['brand_id']);
         }
 
-        if (isset($filter['visible'])) {
+        if (!empty($filter['visible'])) {
             $products_join_flag = true;
             $visible_filter = $this->db2->placehold(' AND p.visible=?', (int)$filter['visible']);
         }
@@ -983,9 +1015,8 @@ class Features extends Simpla
             }
         }
 
-
         dtimer::log("redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res , 2592000); //2592000 is a 1 month
+        $this->cache->redis_set_serial($keyhash, $res, 2592000); //2592000 is a 1 month
         dtimer::log(__METHOD__ . ' return db');
         return $res;
     }
@@ -999,8 +1030,7 @@ class Features extends Simpla
      * @param $product_id
      * @return bool
      */
-    public
-    function get_product_options_direct($product_id)
+    public function get_product_options_direct($product_id)
     {
 
         if (!isset($product_id)) {
