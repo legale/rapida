@@ -267,6 +267,7 @@ function translit_ya($string, $reverse = false)
         'я' => 'ya',
         ' ' => '_',
         '/' => '__',
+        '%' => '_pct_',
     );
     if ($reverse === true) {
         $converter = array_flip($converter);
