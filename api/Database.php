@@ -52,10 +52,10 @@ class Database extends Simpla
             return $this->mysqli;
         // Иначе устанавливаем соединение
         else
-            $this->mysqli = new mysqli('p:' . $this->login['db_server'],
-                $this->login['db_user'],
-                $this->login['db_password'],
-                $this->login['db_name']);
+            $this->mysqli = new mysqli('p:' . $this->login['host'],
+                $this->login['user'],
+                $this->login['pass'],
+                $this->login['db']);
 
         // Выводим сообщение, в случае ошибки
         if ($this->mysqli->connect_error) {

@@ -229,10 +229,10 @@ function dbconfig()
             $conf = include('config/db.php');
             # Запишем конфиги с базой
             $dbconf = array(
-                'db_server' => $dbhost,
-                'db_name' => $dbname,
-                'db_user' => $dbuser,
-                'db_password' => $dbpassword,
+                'host' => $dbhost,
+                'db' => $dbname,
+                'user' => $dbuser,
+                'pass' => $dbpassword,
             );
 
             $conf = '<?php return ' . var_export(array_merge($conf, $dbconf), true) . ';';
@@ -361,15 +361,15 @@ function add_user($user)
     $tbl = $db_prefix . 'users';
 
     //сначала соединимся с базой
-    @$mysqli = new mysqli($config['db_server'], $config['db_user'], $config['db_password']);
+    @$mysqli = new mysqli($config['host'], $config['user'], $config['pass']);
 
     //проверка соединения и выбор БД
     if ($mysqli->connect_error) {
         return "Не могу соединиться с базой. Проверьте логин и пароль connect_error " . $mysqli->connect_error;
     }
 
-    if (!$mysqli->select_db($config['db_name'])) {
-        return "База данных " . $config['db_name'] . " не существует.";
+    if (!$mysqli->select_db($config['db'])) {
+        return "База данных " . $config['db'] . " не существует.";
     }
 
     $q = 'SET NAMES utf8';

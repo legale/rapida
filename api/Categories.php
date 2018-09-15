@@ -204,8 +204,9 @@ class Categories extends Simpla
     }
 
 
+
     // Инициализация категорий, после которой категории будем выбирать из локальной переменной
-    public function init_categories($reinit = false)
+    public function init_categories($reinit = false): void
     {
         dtimer::log(__METHOD__ . " start reinit flag: " . var_export($reinit, true));
         if ($reinit === false && function_exists('apcu_fetch')) {
@@ -218,69 +219,60 @@ class Categories extends Simpla
             }
         }
 
+
+        // Выбираем все категории
+        $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY id, parent_id");
+
         // Дерево категорий
         $tree = [];
         $tree['subcategories'] = [];
-        $tree['path'] = [];
         $tree['level'] = 0;
+        $tree['children'] = [0];
+        $tree['path'] = [];
 
-
-        // Выбираем все категории
-        $query = $this->db->placehold("SELECT * FROM __categories");
-
-        $this->db->query($query);
-        $cats = $this->db->results_array(null, 'id');
-
-        // Указатели на узлы дерева
-        $cats[0] = &$tree;
+        //указатели на узлы дерева
+        $cats[0] = &$tree; //корневой элемент
 
 
         // Проходим все выбранные категории
         foreach ($cats as $cid => &$cat) {
             if ($cid === 0) {
-                continue; //skip root element with index 0
+                continue; //skip root element
             }
+            $cat['id'] = (int)$cat['id'];
+            $cat['parent_id'] = (int)$cat['parent_id'];
+            $cat['vparent_id'] = (int)$cat['vparent_id'];
             $cat['level'] = 0;
-            $cat['children'] = [];
-            $cat['vchildren'] = [];
             $cat['path'] = [];
-
-
-
+            $cat['vchildren'] = [];
+            $cat['children'] = [];
+            $cat['subcategories'] = [];
             $cats[$cat['parent_id']]['subcategories'][] = &$cat;
-            $cats[$cat['parent_id']]['children'][] = $cid;
-            $cats[$cat['vparent_id']]['vchildren'][] = $cid;
-
         }
 
-        foreach($cats as $cid => &$cat) {
+        //порядок важен чтобы матрешка собралась правильно
+        foreach ($cats as $cid => &$cat) {
             if ($cid === 0) {
-                continue; //skip root element with index 0
+                continue; //skip root element
             }
-
-
-            //часть пути из родительского
             $cat['path'] = $cats[$cat['parent_id']]['path'];
-
-            //последняя часть пути
             $cat['path'][] = &$cat;
 
-            // Уровень вложенности категории
-            $cats[$cat['id']]['level'] = ++$cats[$cat['parent_id']]['level'];
+            //добавим виртуальные разделы к его родителю
+            $cats[$cat['parent_id']]['vchildren'][] = $cid;
 
-
-            if (!empty($cat['children'])) {
-                $cats[$cat['parent_id']]['children'] = array_merge($cats[$cat['parent_id']]['children'], $cat['children']);
-            }
+            //сначала добавим саму себя
+            $cat['children'] = array_merge([$cid], $cat['children']);
+            //теперь прибавим к родительскому разделу свои
+            $cats[$cat['parent_id']]['children'] = array_merge($cats[$cat['parent_id']]['children'], $cat['children']);
         }
-
 
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
             apcu_store($this->config->host . 'all_categories', $cats, 7200);
         }
-        unset($cat, $cats[0]); //unset root element
+        unset($cats[0]); //unset root element
 
         $this->all_categories = &$cats;
         $this->categories_tree = &$tree['subcategories'];

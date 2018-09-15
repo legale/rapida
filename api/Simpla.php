@@ -306,6 +306,7 @@ class Simpla
         'request' => 'Request',
         'db' => 'Database',
         'db2' => 'Database',
+        'db3' => 'Db',
         'settings' => 'Settings',
         'design' => 'Design',
         'products' => 'Products',
