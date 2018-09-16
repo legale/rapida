@@ -221,14 +221,17 @@ function &categories_features_gen(array &$params, &$rapida): array
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
-    if (!$features = $rapida->features->get_features()) {
-        return $params;
-    }
-
+    
     foreach ($categories as &$c) {
-        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
+        $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
+        if (!$features = $rapida->features->get_features($init_filter)) {
+            continue;
+        }
+        $init_filter['filter_id'] = array_keys($features);
 
-        $options = $rapida->features->get_options_mix($filter);
+
+        $options = $rapida->features->get_options_mix($init_filter);
+        
 
         if (empty($options['filter'])) {
             continue;
@@ -273,15 +276,17 @@ function &categories_features2_gen(array &$params, &$rapida): array
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
-    if (!$features = $rapida->features->get_features()) {
-        return $params;
-    }
-
-
+    
+    
     foreach ($categories as &$c) {
-        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
+        $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
+        if (!$features = $rapida->features->get_features($init_filter)) {
+            continue;
+        }
+        $init_filter['filter_id'] = array_keys($features);
+        
 
-        $options = $rapida->features->get_options_mix($filter);
+        $options = $rapida->features->get_options_mix($init_filter);
         if (empty($options['filter'])) {
             continue;
         }
@@ -298,7 +303,7 @@ function &categories_features2_gen(array &$params, &$rapida): array
             list($fid, $fid2, $vid, $vid2) = $array;
 
 
-            $_filter = $filter;
+            $_filter = $init_filter;
             $_filter['features'][$fid] = $vid;
             $_filter['features'][$fid2] = $vid2;
             $p_count = $rapida->products->count_products($_filter);
@@ -355,14 +360,16 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         return $params;
     }
     foreach ($categories as &$c) {
-        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
+        $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
 
-        if (!$features = $rapida->features->get_features($filter)) {
+        if (!$features = $rapida->features->get_features($init_filter)) {
             continue;
-
         }
 
-        $options = $rapida->features->get_options_mix($filter);
+        $init_filter['filter_id'] = array_keys($features);
+        
+
+        $options = $rapida->features->get_options_mix($init_filter);
         if (empty($options['filter'])) {
             continue;
         }
@@ -374,7 +381,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
 
         foreach($bids as $bid) {
-            $_filter = $filter;
+            $_filter = $init_filter;
             $_filter['brand_id'] = $bid;
             $part1 = "brand-" . $brands[$bid]['trans'];
             foreach ($options['filter'] as $fid => &$vids) {
@@ -464,15 +471,15 @@ function &sitemap_gen(array &$params)
 }
 
 
-//main_page_gen($params, $rapida);
-//pages_gen($params, $rapida);
-//brands_gen($params, $rapida);
-//categories_gen($params, $rapida);
-//categories_brands_gen($params, $rapida);
-//categories_brands_features_gen($params, $rapida);
-//categories_features_gen($params, $rapida);
+main_page_gen($params, $rapida);
+pages_gen($params, $rapida);
+brands_gen($params, $rapida);
+categories_gen($params, $rapida);
+categories_brands_gen($params, $rapida);
+categories_brands_features_gen($params, $rapida);
+categories_features_gen($params, $rapida);
 categories_features2_gen($params, $rapida);
-//products_gen($params, $rapida);
+products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
