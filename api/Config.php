@@ -18,7 +18,7 @@ class Config extends Simpla
 {
 
 
-    public $version = '0.0.14b5';
+    public $version = '0.0.14b6';
 
     public $root_dir;
     public $root_url;

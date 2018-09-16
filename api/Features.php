@@ -772,19 +772,19 @@ class Features extends Simpla
         //Самый простой вариант - если не заданы фильтры по свойствам и брендам
         if (!isset($filter['features']) && !isset($filter['brand_id'])) {
             $filter['brand_id'] = [];
-            $tmp = $this->get_options_raw($filter);
-            if ($tmp !== false) {
-                $res['filter'] = $tmp;
-                unset($tmp['brand_id']);
-                $res['full']['brand_id'] = &$res['filter']['brand_id'];
-                foreach ($tmp as $fid => $ids) {
-                    $res['full'][$fid] =  array(
-                        'vals' => array_intersect_key($vals, $tmp[$fid]),
-                        'trans' => array_intersect_key($trans, $tmp[$fid])
-                    );
-                }
-            } else {
-                return false;
+            $raw = $this->get_options_raw($filter);
+            $res['filter'] = $raw;
+
+            if (isset($raw['brand_id'])) {
+                $res['full']['brand_id'] = $raw['brand_id'];
+                unset($raw['brand_id']);
+            }
+
+            foreach ($raw as $fid => $ids) {
+                $res['full'][$fid] = array(
+                    'vals' => array_intersect_key($vals, $raw[$fid]),
+                    'trans' => array_intersect_key($trans, $raw[$fid])
+                );
             }
         } else {
             /*
@@ -800,9 +800,11 @@ class Features extends Simpla
 
             $filter_['brand_id'] = [];
             dtimer::log(__METHOD__ . " brand filter");
-            $raw = $this->get_options_raw($filter_);
-            $res['filter']['brand_id'] = $raw['brand_id'];
 
+            $raw = $this->get_options_raw($filter_);
+            if (isset($raw['brand_id'])) {
+                $res['filter']['brand_id'] = $raw['brand_id'];
+            }
             if (isset($filter['features'])) {
                 //тут получим полные результаты для отдельных $fid
                 foreach ($filter['features'] as $fid => $vid) {
@@ -825,27 +827,27 @@ class Features extends Simpla
             $filter_ = $filter;
             unset($filter_['features']);
             $filter_['brand_id'] = [];
-            $tmp = $this->get_options_raw($filter_);
-            if (is_array($tmp)) {
-                $res['full'] = ['brand_id' => $tmp['brand_id']];
-                unset($tmp['brand_id']);
-                foreach ($tmp as $fid => $ids) {
-                    $res['full'][$fid] = array(
-                        'vals' => array_intersect_key($vals, $tmp[$fid]),
-                        'trans' => array_intersect_key($trans, $tmp[$fid])
-                    );
-                }
+            $raw = $this->get_options_raw($filter_);
+            if (isset($raw['brand_id'])) {
+                $res['full']['brand_id'] = $raw['brand_id'];
+                unset($raw['brand_id']);
             }
+
+            foreach ($raw as $fid => $ids) {
+                $res['full'][$fid] = array(
+                    'vals' => array_intersect_key($vals, $raw[$fid]),
+                    'trans' => array_intersect_key($trans, $raw[$fid])
+                );
+            }
+
         }
+
 
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
         $this->cache->redis_set_serial($keyhash, $res, 2592000); // 2592000 is a 1 month in seconds
         dtimer::log(__METHOD__ . " end");
 
 
-//        print "<PRE>";
-//        print_r($res);
-//        die;
         return $res;
 
 
@@ -997,6 +999,9 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " query error: $query", 1);
             return false;
         }
+        if ($this->db2->num_rows() < 1) {
+            dtimer::log(__METHOD__ . " empty result", 2);
+        }
 
 
         //вывод обрабатываем построчно
@@ -1009,7 +1014,9 @@ class Features extends Simpla
             //~ unset($row['pid']);
 
             foreach ($row as $fid => $vid) {
-                if ($vid !== null && !isset($res[$fid][$vid])) {
+                ($fid !== 'brand_id') ? $fid = (int)$fid : null;
+                $vid = (int)$vid;
+                if ($vid !== 0 && !isset($res[$fid][$vid])) {
                     $res[$fid][$vid] = '';
                 }
             }

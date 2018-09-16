@@ -630,11 +630,11 @@ class Database extends Simpla
     /**
      * Возвращает количество выбранных строк
      */
-    public function num_rows()
+    public function num_rows(): int
     {
         //если запрос не прошел - вернем false
         if ($this->mysqli->affected_rows === -1) {
-            return false;
+            return -1;
         }
         return $this->res->num_rows;
     }

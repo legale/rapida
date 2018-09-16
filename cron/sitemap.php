@@ -1,7 +1,7 @@
 <?php
 $time_start = microtime(true);
 
-echo "Rapida sitemap generator v0.0.5 \r\n";
+echo "Rapida sitemap generator v0.0.6 \r\n";
 
 
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
@@ -24,14 +24,14 @@ $filter_plus = array(2, 3, 4, 9, 10, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 $params = ['path' => null, 'fopen' => null, 'counter' => 0, 'name_tpl' => 'sm', 'names' => 0];
 
 
-function gzconvert(string $src):? string
+function gzconvert(string $src): ?string
 {
     if (!file_exists($src)) {
         return false;
     }
 
-    $tmpfile = $src . "_.gz" ;
-    $newfile = $src . ".gz" ;
+    $tmpfile = $src . "_.gz";
+    $newfile = $src . ".gz";
     //пишем все это в сжатом виде
     $input = fopen($src, "r");
     $output = gzopen($tmpfile, "w9");
@@ -183,12 +183,15 @@ function &categories_brands_gen(array &$params, &$rapida): array
         return $params;
     }
     foreach ($categories as $c) {
-        $brands = $rapida->brands->get_brands(['category_id' => $c['children']]);
+        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
+        $brands = $rapida->brands->get_brands($filter);
         if (!$brands) {
             continue;
         }
         foreach ($brands as $b) {
-            $p_count = $rapida->products->count_products(array('visible' => 1, 'category_id' => $c['children'], 'brand_id' => $b['id']));
+            $_filter = $filter;
+            $_filter['brand_id'] = $b['id'];
+            $p_count = $rapida->products->count_products($_filter);
             $pages = (int)ceil($p_count / ITEMS);
             $cat = $c['trans'];
             $brand = $b['trans'];
@@ -214,37 +217,38 @@ function &categories_features_gen(array &$params, &$rapida): array
     open_close($params);
     $counter = $params['counter'] % 50000;
 
-    $filter = ['visible' => 1, 'in_filter' => 1];
 
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
+    if (!$features = $rapida->features->get_features()) {
+        return $params;
+    }
+
     foreach ($categories as &$c) {
-        $filter['category_id'] = $c['children'];
-        if (!$features = $rapida->features->get_features($filter)) {
-            continue;
-
-        }
-
-        $filter['feature_id'] = array_keys($features);
+        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
 
         $options = $rapida->features->get_options_mix($filter);
+
         if (empty($options['filter'])) {
             continue;
         }
 
+        unset($options['filter']['brand_id']);
+        unset($options['full']['brand_id']);
+
+
 
         foreach ($options['filter'] as $fid => &$vids) {
 
-
-            foreach ($options['full'][$fid]['trans'] as $vid => &$opt) {
-                $filter['features'][$fid] = $vid;
-                $p_count = $rapida->products->count_products($filter);
-                unset($filter['features'][$fid]);
+            foreach (array_keys($vids) as $vid) {
+                $_filter = $filter;
+                $_filter['features'][$fid] = $vid;
+                $p_count = $rapida->products->count_products($_filter);
                 $pages = (int)ceil($p_count / ITEMS);
 
                 if ($pages > 0) {
-                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $opt;
+                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                     fwrite($params['fopen'], gen_url_string($url));
                     ++$params['counter'];
                     if (++$counter === 50000) {
@@ -259,48 +263,135 @@ function &categories_features_gen(array &$params, &$rapida): array
     return open_close($params, $counter);
 }
 
-//  Категории + brand + свойства
-function &categories_brands_features_gen(array &$params, &$rapida): array
+
+//  Категории + свойство + свойство
+function &categories_features2_gen(array &$params, &$rapida): array
 {
     open_close($params);
     $counter = $params['counter'] % 50000;
 
-    $filter = ['visible' => 1, 'in_filter' => 1];
-
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
+    if (!$features = $rapida->features->get_features()) {
+        return $params;
+    }
+
+
     foreach ($categories as &$c) {
-        $filter['category_id'] = $c['children'];
-        if (!$features = $rapida->features->get_features($filter)) {
-            continue;
-
-        }
-
-        $filter['feature_id'] = array_keys($features);
+        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
 
         $options = $rapida->features->get_options_mix($filter);
         if (empty($options['filter'])) {
             continue;
         }
 
+        unset($options['filter']['brand_id']);
+        unset($options['full']['brand_id']);
 
-        foreach ($options['filter'] as $fid => &$vids) {
+
+        $fixed = mix_features($options);
 
 
-            foreach ($options['full'][$fid]['trans'] as $vid => &$opt) {
-                $filter['features'][$fid] = $vid;
-                $p_count = $rapida->products->count_products($filter);
-                unset($filter['features'][$fid]);
-                $pages = (int)ceil($p_count / ITEMS);
 
-                if ($pages > 0) {
-                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $opt;
-                    fwrite($params['fopen'], gen_url_string($url));
-                    ++$params['counter'];
-                    if (++$counter === 50000) {
-                        $params = open_close($params);
-                        $counter = 0;
+        foreach ($fixed as $array) {
+            list($fid, $fid2, $vid, $vid2) = $array;
+
+
+            $_filter = $filter;
+            $_filter['features'][$fid] = $vid;
+            $_filter['features'][$fid2] = $vid2;
+            $p_count = $rapida->products->count_products($_filter);
+
+            $pages = (int)ceil($p_count / ITEMS);
+
+            if ($pages > 0) {
+                $part1 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
+                $part2 = $features[$fid2]['trans'] . "-" . $options['full'][$fid2]['trans'][$vid2];
+
+                $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
+                fwrite($params['fopen'], gen_url_string($url));
+                ++$params['counter'];
+                if (++$counter === 50000) {
+                    $params = open_close($params);
+                    $counter = 0;
+                }
+            }
+        }
+    }
+
+    return open_close($params, $counter);
+}
+
+function &mix_features(array &$options): object
+{
+    $res = [];
+    foreach ($options['filter'] as $fid => &$vids) {
+        foreach($vids as $vid => $empty) {
+            foreach ($options['filter'] as $fid2 => &$vids2) {
+                foreach($vids2 as $vid2 => $empty2) {
+                    if ($fid !== $fid2 && $vid !== $vid2) {
+                        $res[] = SplFixedArray::fromArray([$fid, $fid2, $vid, $vid2]);
+                    }
+                }
+            }
+        }
+    }
+    $res = SplFixedArray::fromArray($res);
+    return $res;
+}
+
+//  Категории + brand + свойства
+function &categories_brands_features_gen(array &$params, &$rapida): array
+{
+    open_close($params);
+    $counter = $params['counter'] % 50000;
+
+    if (!$brands = $rapida->brands->get_brands()) {
+        return $params;
+    }
+
+    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
+        return $params;
+    }
+    foreach ($categories as &$c) {
+        $filter = ['category_url' => $c['trans'], 'category_id' => $c['children']];
+
+        if (!$features = $rapida->features->get_features($filter)) {
+            continue;
+
+        }
+
+        $options = $rapida->features->get_options_mix($filter);
+        if (empty($options['filter'])) {
+            continue;
+        }
+
+        $bids = array_keys($options['filter']['brand_id']);
+
+        unset($options['filter']['brand_id']);
+        unset($options['full']['brand_id']);
+
+
+        foreach($bids as $bid) {
+            $_filter = $filter;
+            $_filter['brand_id'] = $bid;
+            $part1 = "brand-" . $brands[$bid]['trans'];
+            foreach ($options['filter'] as $fid => &$vids) {
+                foreach (array_keys($vids) as $vid) {
+                    $_filter['features'][$fid] = $vid;
+                    $p_count = $rapida->products->count_products($_filter);
+                    unset($_filter['features'][$fid]);
+                    $pages = (int)ceil($p_count / ITEMS);
+                    if ($pages > 0) {
+                        $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
+                        $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
+                        fwrite($params['fopen'], gen_url_string($url));
+                        ++$params['counter'];
+                        if (++$counter === 50000) {
+                            $params = open_close($params);
+                            $counter = 0;
+                        }
                     }
                 }
             }
@@ -324,7 +415,7 @@ function &products_gen(array &$params, &$rapida)
     }
 
     foreach ($products as &$p) {
-        fwrite($params['fopen'], gen_url_string(HOSTNAME ."products/" . $p['trans']));
+        fwrite($params['fopen'], gen_url_string(HOSTNAME . "products/" . $p['trans']));
         ++$params['counter'];
         if (++$counter === 50000) {
             $params = open_close($params);
@@ -335,15 +426,16 @@ function &products_gen(array &$params, &$rapida)
 
 }
 
-function &sitemap_gen(array &$params){
+function &sitemap_gen(array &$params)
+{
     fwrite($params["fopen"], '</urlset>' . "\n");
     fclose($params['fopen']);
     gzconvert($params['path']);
     $params['path'] = null;
 
     $last_modify = date("Y-m-d");
-    $dirpath = dirname(__FILE__) . "/../" ;
-    $tmpfullpath_sitemap =  $dirpath . "_" . $params["name_tpl"] . ".xml";
+    $dirpath = dirname(__FILE__) . "/../";
+    $tmpfullpath_sitemap = $dirpath . "_" . $params["name_tpl"] . ".xml";
     $newfullpath_sitemap = $dirpath . $params["name_tpl"] . ".xml";
     $params['fopen'] = fopen($tmpfullpath_sitemap, 'w');
 
@@ -351,10 +443,10 @@ function &sitemap_gen(array &$params){
     fwrite($params['fopen'], '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
 
     for ($i = 1; $i <= $params['names']; ++$i) {
-        $basename = $params['name_tpl'] . "_". $i .".xml.gz";
-        $tmpfullpath = dirname(__FILE__) . "/../_".$basename ;
-        $newfullpath = dirname(__FILE__) . "/../".$basename ;
-        $url = HOSTNAME  . $basename;
+        $basename = $params['name_tpl'] . "_" . $i . ".xml.gz";
+        $tmpfullpath = dirname(__FILE__) . "/../_" . $basename;
+        $newfullpath = dirname(__FILE__) . "/../" . $basename;
+        $url = HOSTNAME . $basename;
 
         if (file_exists($newfullpath)) {
             unlink($newfullpath);
@@ -373,13 +465,15 @@ function &sitemap_gen(array &$params){
 
 
 //main_page_gen($params, $rapida);
-pages_gen($params, $rapida);
-brands_gen($params, $rapida);
-categories_gen($params, $rapida);
-categories_brands_gen($params, $rapida);
-categories_features_gen($params, $rapida);
-products_gen($params, $rapida);
+//pages_gen($params, $rapida);
+//brands_gen($params, $rapida);
+//categories_gen($params, $rapida);
+//categories_brands_gen($params, $rapida);
+//categories_brands_features_gen($params, $rapida);
+//categories_features_gen($params, $rapida);
+categories_features2_gen($params, $rapida);
+//products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
-echo "generated urls: ".$params['counter'];
+echo "generated urls: " . $params['counter'];

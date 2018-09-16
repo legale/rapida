@@ -14,9 +14,7 @@ dtimer::log("start queue");
 $i = 0;
 while ($i < 300000) {
     $i++;
-    if ($rapida->queue->redis_execlast()) {
-        echo "ok\n";
-    } else {
+    if (!$rapida->queue->redis_execlast()) {
         echo "no task to exec\n";
         break;
     }
