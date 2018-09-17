@@ -495,15 +495,15 @@ function &sitemap_gen(array &$params)
 }
 
 
-//main_page_gen($params, $rapida);
-//pages_gen($params, $rapida);
-//brands_gen($params, $rapida);
-//categories_gen($params, $rapida);
-//categories_brands_gen($params, $rapida);
-//categories_brands_features_gen($params, $rapida);
-//categories_features_gen($params, $rapida);
+main_page_gen($params, $rapida);
+pages_gen($params, $rapida);
+brands_gen($params, $rapida);
+categories_gen($params, $rapida);
+categories_brands_gen($params, $rapida);
+categories_brands_features_gen($params, $rapida);
+categories_features_gen($params, $rapida);
 categories_features2_gen($params, $rapida);
-//products_gen($params, $rapida);
+products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
