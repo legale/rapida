@@ -123,10 +123,11 @@ function &brands_gen(array &$params, &$rapida): array
     }
     foreach ($brands as $b) {
         $p_count = $rapida->products->count_products(array('visible' => 1, 'brand_id' => $b['id']));
-        $pages = (int)ceil($p_count / ITEMS);
+        //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
         $brand = $b['trans'];
 
-        if ($pages > 0) {
+        if ($p_count) {
             $url = HOSTNAME . 'catalog/' . $brand;
             fwrite($params['fopen'], gen_url_string($url));
             ++$params['counter'];
@@ -154,10 +155,11 @@ function &categories_gen(array &$params, &$rapida): array
     }
     foreach ($categories as $c) {
         $p_count = $rapida->products->count_products(array('visible' => 1, 'category_id' => $c['children']));
-        $pages = (int)ceil($p_count / ITEMS);
+        //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
         $cat = $c['trans'];
 
-        if ($pages > 0) {
+        if ($p_count) {
             $url = HOSTNAME . 'catalog/' . $cat;
             fwrite($params['fopen'], gen_url_string($url));
             ++$params['counter'];
@@ -192,11 +194,12 @@ function &categories_brands_gen(array &$params, &$rapida): array
             $_filter = $filter;
             $_filter['brand_id'] = $b['id'];
             $p_count = $rapida->products->count_products($_filter);
-            $pages = (int)ceil($p_count / ITEMS);
+            //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
             $cat = $c['trans'];
             $brand = $b['trans'];
 
-            if ($pages > 0) {
+            if ($p_count) {
                 $url = HOSTNAME . 'catalog/' . $cat . '/brand-' . $brand;
                 fwrite($params['fopen'], gen_url_string($url));
                 ++$params['counter'];
@@ -245,12 +248,13 @@ function &categories_features_gen(array &$params, &$rapida): array
         foreach ($options['filter'] as $fid => &$vids) {
 
             foreach (array_keys($vids) as $vid) {
-                $_filter = $filter;
+                $_filter = $init_filter;
                 $_filter['features'][$fid] = $vid;
                 $p_count = $rapida->products->count_products($_filter);
-                $pages = (int)ceil($p_count / ITEMS);
+                //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
 
-                if ($pages > 0) {
+                if ($p_count) {
                     $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                     fwrite($params['fopen'], gen_url_string($url));
                     ++$params['counter'];
@@ -302,15 +306,15 @@ function &categories_features2_gen(array &$params, &$rapida): array
         foreach ($fixed as $array) {
             list($fid, $fid2, $vid, $vid2) = $array;
 
-
             $_filter = $init_filter;
             $_filter['features'][$fid] = $vid;
             $_filter['features'][$fid2] = $vid2;
             $p_count = $rapida->products->count_products($_filter);
 
-            $pages = (int)ceil($p_count / ITEMS);
+            //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
 
-            if ($pages > 0) {
+            if ($p_count) {
                 $part1 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                 $part2 = $features[$fid2]['trans'] . "-" . $options['full'][$fid2]['trans'][$vid2];
 
@@ -389,8 +393,9 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
                     $_filter['features'][$fid] = $vid;
                     $p_count = $rapida->products->count_products($_filter);
                     unset($_filter['features'][$fid]);
-                    $pages = (int)ceil($p_count / ITEMS);
-                    if ($pages > 0) {
+                    //это для подсчета страниц пагинации (не используется сейчас)
+            //$pages = (int)ceil($p_count / ITEMS);
+                    if ($p_count) {
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                         $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
                         fwrite($params['fopen'], gen_url_string($url));
@@ -471,15 +476,15 @@ function &sitemap_gen(array &$params)
 }
 
 
-main_page_gen($params, $rapida);
-pages_gen($params, $rapida);
-brands_gen($params, $rapida);
-categories_gen($params, $rapida);
-categories_brands_gen($params, $rapida);
-categories_brands_features_gen($params, $rapida);
-categories_features_gen($params, $rapida);
+//main_page_gen($params, $rapida);
+//pages_gen($params, $rapida);
+//brands_gen($params, $rapida);
+//categories_gen($params, $rapida);
+//categories_brands_gen($params, $rapida);
+//categories_brands_features_gen($params, $rapida);
+//categories_features_gen($params, $rapida);
 categories_features2_gen($params, $rapida);
-products_gen($params, $rapida);
+//products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
