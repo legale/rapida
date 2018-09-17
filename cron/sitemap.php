@@ -417,7 +417,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
                     //$pages = (int)ceil($p_count / ITEMS);
                     if ($p_count) {
                         if(isset($features[$fid])){
-                            print $fid;
+                            print_r($options['filter']);
                             die;
                         }
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
