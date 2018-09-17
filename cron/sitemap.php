@@ -416,6 +416,10 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
                     //это для подсчета страниц пагинации (не используется сейчас)
                     //$pages = (int)ceil($p_count / ITEMS);
                     if ($p_count) {
+                        if(isset($features[$fid])){
+                            print $fid;
+                            die;
+                        }
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                         $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
                         fwrite($params['fopen'], gen_url_string($url));
