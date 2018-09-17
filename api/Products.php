@@ -268,6 +268,8 @@ class Products extends Simpla
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
         $filter = array_intersect_key($filter, array_flip($this->tokeep2));
+        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+        ksort($filter);
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
         if (isset($filter_['force_no_cache'])) {
@@ -276,8 +278,6 @@ class Products extends Simpla
         }
 
 
-        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
-        ksort($filter_);
         $filter_string = var_export($filter_, true);
         $keyhash = md5(__METHOD__ . $filter_string);
 
@@ -302,7 +302,7 @@ class Products extends Simpla
 
         if (isset($res) && !empty_($res)) {
             dtimer::log("get_cache count_products HIT! value: '$res'");
-            return $res;
+            return (int)$res;
         }
 
         $category_id_filter = '';

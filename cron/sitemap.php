@@ -7,7 +7,7 @@ echo "Rapida sitemap generator v0.0.6 \r\n";
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
 $rapida = new Simpla();
 //отключаем логгер, чтобы экономить память
-dtimer::$enabled = false;
+dtimer::$enabled = true;
 
 //кол-во товаров на странице
 define("ITEMS", $rapida->settings->products_num);
@@ -22,6 +22,16 @@ $filter_plus = array(2, 3, 4, 9, 10, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 
 //params structure array
 $params = ['path' => null, 'fopen' => null, 'counter' => 0, 'name_tpl' => 'sm', 'names' => 0];
+
+
+function time33(string $str, int $len)
+{
+    $hash = 0;
+    for ($i = 0; i < $len; ++$i) {
+        $hash = (($hash << 5) + $hash) + ord($str[i]);
+    }
+    return $hash;
+}
 
 
 function gzconvert(string $src): ?string
@@ -124,7 +134,7 @@ function &brands_gen(array &$params, &$rapida): array
     foreach ($brands as $b) {
         $p_count = $rapida->products->count_products(array('visible' => 1, 'brand_id' => $b['id']));
         //это для подсчета страниц пагинации (не используется сейчас)
-            //$pages = (int)ceil($p_count / ITEMS);
+        //$pages = (int)ceil($p_count / ITEMS);
         $brand = $b['trans'];
 
         if ($p_count) {
@@ -156,7 +166,7 @@ function &categories_gen(array &$params, &$rapida): array
     foreach ($categories as $c) {
         $p_count = $rapida->products->count_products(array('visible' => 1, 'category_id' => $c['children']));
         //это для подсчета страниц пагинации (не используется сейчас)
-            //$pages = (int)ceil($p_count / ITEMS);
+        //$pages = (int)ceil($p_count / ITEMS);
         $cat = $c['trans'];
 
         if ($p_count) {
@@ -224,17 +234,17 @@ function &categories_features_gen(array &$params, &$rapida): array
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
-    
+
     foreach ($categories as &$c) {
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
         if (!$features = $rapida->features->get_features($init_filter)) {
             continue;
         }
-        $init_filter['filter_id'] = array_keys($features);
+        $init_filter['feature_id'] = array_keys($features);
 
 
         $options = $rapida->features->get_options_mix($init_filter);
-        
+
 
         if (empty($options['filter'])) {
             continue;
@@ -244,15 +254,14 @@ function &categories_features_gen(array &$params, &$rapida): array
         unset($options['full']['brand_id']);
 
 
-
         foreach ($options['filter'] as $fid => &$vids) {
 
             foreach (array_keys($vids) as $vid) {
                 $_filter = $init_filter;
-                $_filter['features'][$fid] = $vid;
+                $_filter['features'][$fid] = [$vid => $vid];
                 $p_count = $rapida->products->count_products($_filter);
                 //это для подсчета страниц пагинации (не используется сейчас)
-            //$pages = (int)ceil($p_count / ITEMS);
+                //$pages = (int)ceil($p_count / ITEMS);
 
                 if ($p_count) {
                     $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
@@ -280,15 +289,15 @@ function &categories_features2_gen(array &$params, &$rapida): array
     if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
         return $params;
     }
-    
-    
+
+
     foreach ($categories as &$c) {
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
         if (!$features = $rapida->features->get_features($init_filter)) {
             continue;
         }
-        $init_filter['filter_id'] = array_keys($features);
-        
+        $init_filter['feature_id'] = array_keys($features);
+
 
         $options = $rapida->features->get_options_mix($init_filter);
         if (empty($options['filter'])) {
@@ -302,25 +311,28 @@ function &categories_features2_gen(array &$params, &$rapida): array
         $fixed = mix_features($options);
 
 
-
         foreach ($fixed as $array) {
             list($fid, $fid2, $vid, $vid2) = $array;
 
             $_filter = $init_filter;
-            $_filter['features'][$fid] = $vid;
-            $_filter['features'][$fid2] = $vid2;
+            $_filter['features'][$fid] = [$vid => $vid];
+            $_filter['features'][$fid2] = [$vid2 => $vid2];
             $p_count = $rapida->products->count_products($_filter);
+
+
 
             //это для подсчета страниц пагинации (не используется сейчас)
             //$pages = (int)ceil($p_count / ITEMS);
 
             if ($p_count) {
-                //echo (var_export($_filter, true).PHP_EOL);
-                echo $p_count . PHP_EOL;
                 $part1 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                 $part2 = $features[$fid2]['trans'] . "-" . $options['full'][$fid2]['trans'][$vid2];
-
                 $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
+
+//                echo $url .PHP_EOL;
+//                dtimer::show_console(100);
+//                die;
+
                 fwrite($params['fopen'], gen_url_string($url));
                 ++$params['counter'];
                 if (++$counter === 50000) {
@@ -337,12 +349,17 @@ function &categories_features2_gen(array &$params, &$rapida): array
 function &mix_features(array &$options): object
 {
     $res = [];
+    $htable = [];
     foreach ($options['filter'] as $fid => &$vids) {
-        foreach($vids as $vid => $empty) {
+        foreach ($vids as $vid => $empty) {
             foreach ($options['filter'] as $fid2 => &$vids2) {
-                foreach($vids2 as $vid2 => $empty2) {
+                foreach ($vids2 as $vid2 => $empty2) {
                     if ($fid !== $fid2 && $vid !== $vid2) {
-                        $res[] = SplFixedArray::fromArray([$fid, $fid2, $vid, $vid2]);
+                        $hash = (($fid << 5) + $fid) + (($vid << 5) + $vid) + (($fid2 << 5) + $fid2) + (($vid2 << 5) + $vid2);
+                        if (!array_key_exists($hash, $htable)) {
+                            $htable[$hash] = null;
+                            $res[] = SplFixedArray::fromArray([$fid, $fid2, $vid, $vid2]);
+                        }
                     }
                 }
             }
@@ -372,8 +389,8 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
             continue;
         }
 
-        $init_filter['filter_id'] = array_keys($features);
-        
+        $init_filter['feature_id'] = array_keys($features);
+
 
         $options = $rapida->features->get_options_mix($init_filter);
         if (empty($options['filter'])) {
@@ -386,17 +403,17 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         unset($options['full']['brand_id']);
 
 
-        foreach($bids as $bid) {
+        foreach ($bids as $bid) {
             $_filter = $init_filter;
             $_filter['brand_id'] = $bid;
             $part1 = "brand-" . $brands[$bid]['trans'];
             foreach ($options['filter'] as $fid => &$vids) {
                 foreach (array_keys($vids) as $vid) {
-                    $_filter['features'][$fid] = $vid;
+                    $_filter['features'][$fid] = [$vid => $vid];
                     $p_count = $rapida->products->count_products($_filter);
                     unset($_filter['features'][$fid]);
                     //это для подсчета страниц пагинации (не используется сейчас)
-            //$pages = (int)ceil($p_count / ITEMS);
+                    //$pages = (int)ceil($p_count / ITEMS);
                     if ($p_count) {
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                         $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
@@ -491,3 +508,4 @@ sitemap_gen($params, $rapida);
 
 
 echo "generated urls: " . $params['counter'];
+

@@ -682,16 +682,22 @@ class Features extends Simpla
             $trans2_filter = $this->db->placehold("AND trans2 in (?@)", $filter['trans2']);
         }
 
-        $this->db->query("SELECT id, val, trans FROM __options_uniq
+        $this->db->query("SELECT id, val, trans FROM s_options_uniq
 		WHERE 1 
 		$id_filter
 		$trans_filter
 		$trans2_filter
 		");
 
-
-        $res = $this->db->results_array($col, $key);
-
+        if($col === 'id') {
+            while ($row = $this->db->res->fetch_assoc()) {
+                $res[$row[$key]] = (int)$row[$col];
+            }
+        }else{
+            while ($row = $this->db->res->fetch_assoc()) {
+                $res[$row[$key]] = $row[$col];
+            }
+        }
 
         //Если у нас был запуск без параметров, сохраним результат в переменную класса.
         if (!isset($filter['id']) && !isset($filter['trans'])) {
