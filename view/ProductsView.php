@@ -251,10 +251,11 @@ class ProductsView extends View
             if (isset($filter['features'])) {
                 if(count($filter['features']) > 3){
                     unset($filter['features']);
-                }
-                foreach ($filter['features'] as $fid => $vids) {
-                    if (count($vids) > 1) {
-                        unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
+                }else {
+                    foreach ($filter['features'] as $fid => $vids) {
+                        if (count($vids) > 1) {
+                            unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
+                        }
                     }
                 }
             }
