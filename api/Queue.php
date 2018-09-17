@@ -25,7 +25,8 @@ class Queue extends Simpla
             return false;
         }
         list($keyhash, $method, $task) = msgpack_unpack($val);
-        echo $keyhash . PHP_EOL;
+        //echo $keyhash . PHP_EOL;
+        echo ".";
         eval($task);
         return $redis->hdel($this->config->host . "_queue_hashtable", $keyhash);
     }

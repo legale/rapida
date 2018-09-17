@@ -315,6 +315,8 @@ function &categories_features2_gen(array &$params, &$rapida): array
             //$pages = (int)ceil($p_count / ITEMS);
 
             if ($p_count) {
+                //echo (var_export($_filter, true).PHP_EOL);
+                echo $p_count . PHP_EOL;
                 $part1 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                 $part2 = $features[$fid2]['trans'] . "-" . $options['full'][$fid2]['trans'][$vid2];
 
