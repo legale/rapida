@@ -7,7 +7,7 @@ echo "Rapida sitemap generator v0.0.6 \r\n";
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
 $rapida = new Simpla();
 //отключаем логгер, чтобы экономить память
-dtimer::$enabled = true;
+dtimer::$enabled = false;
 
 //кол-во товаров на странице
 define("ITEMS", $rapida->settings->products_num);
@@ -383,6 +383,8 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         return $params;
     }
     foreach ($categories as &$c) {
+        //echo memory_get_usage().PHP_EOL;
+
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
 
         if (!$features = $rapida->features->get_features($init_filter)) {
@@ -390,7 +392,6 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         }
 
         $init_filter['feature_id'] = array_keys($features);
-
 
         $options = $rapida->features->get_options_mix($init_filter);
         if (empty($options['filter'])) {
@@ -495,15 +496,15 @@ function &sitemap_gen(array &$params)
 }
 
 
-main_page_gen($params, $rapida);
-pages_gen($params, $rapida);
-brands_gen($params, $rapida);
-categories_gen($params, $rapida);
-categories_brands_gen($params, $rapida);
+//main_page_gen($params, $rapida);
+//pages_gen($params, $rapida);
+//brands_gen($params, $rapida);
+//categories_gen($params, $rapida);
+//categories_brands_gen($params, $rapida);
 categories_brands_features_gen($params, $rapida);
-categories_features_gen($params, $rapida);
-categories_features2_gen($params, $rapida);
-products_gen($params, $rapida);
+//categories_features_gen($params, $rapida);
+//categories_features2_gen($params, $rapida);
+//products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
