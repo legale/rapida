@@ -24,9 +24,10 @@ $filter_plus = array(2, 3, 4, 9, 10, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
 $params = ['path' => null, 'fopen' => null, 'counter' => 0, 'name_tpl' => 'sm', 'names' => 0];
 
 
-function time33(string $str, int $len)
+function time33(string $str)
 {
     $hash = 0;
+    $len = strlen($str);
     for ($i = 0; i < $len; ++$i) {
         $hash = (($hash << 5) + $hash) + ord($str[i]);
     }
@@ -59,14 +60,18 @@ function gzconvert(string $src): ?string
 }
 
 
-function &open_close(array &$params): array
+function &open_close(array &$params, string &$buffer = null): array
 {
     echo $params['counter'] . "\n";
+    if (!empty($params["fopen"]) && $buffer !== null) {
+        fwrite($params["fopen"], $buffer);
+    }
     if ($params['counter'] % 50000 === 0) {
         ++$params['names']; //increment names
         if (is_resource($params['fopen'])) {
             fwrite($params["fopen"], '</urlset>' . "\n");
             fclose($params['fopen']);
+            $params['fopen'] = null;
             gzconvert($params['path']);
             $params['path'] = null;
 
@@ -92,16 +97,18 @@ function gen_url_string(string $url): string
 // Главная страница
 function &main_page_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
-    fwrite($params['fopen'], gen_url_string(HOSTNAME));
+    $buffer .= gen_url_string(HOSTNAME);
     ++$params['counter'];
-    return open_close($params);
+    return open_close($params, $buffer);
 }
 
 
 // Страницы
 function &pages_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -111,19 +118,21 @@ function &pages_gen(array &$params, &$rapida): array
         return $params;
     }
     foreach ($pages as $p) {
-        fwrite($params['fopen'], gen_url_string(HOSTNAME . $p['trans']));
+        $buffer .= gen_url_string(HOSTNAME . $p['trans']);
         ++$params['counter'];
         if (++$counter === 50000) {
-            $params = open_close($params);
+            $params = open_close($params, $buffer);
+            $buffer = "";
             $counter = 0;
         }
     }
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 //  Бренды
 function &brands_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -139,22 +148,24 @@ function &brands_gen(array &$params, &$rapida): array
 
         if ($p_count) {
             $url = HOSTNAME . 'catalog/' . $brand;
-            fwrite($params['fopen'], gen_url_string($url));
+            $buffer .= gen_url_string($url);
             ++$params['counter'];
             if (++$counter === 50000) {
-                $params = open_close($params);
+                $params = open_close($params, $buffer);
+                $buffer = "";
                 $counter = 0;
             }
         }
 
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 //  Категории
 function &categories_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -171,21 +182,23 @@ function &categories_gen(array &$params, &$rapida): array
 
         if ($p_count) {
             $url = HOSTNAME . 'catalog/' . $cat;
-            fwrite($params['fopen'], gen_url_string($url));
+            $buffer .= gen_url_string($url);
             ++$params['counter'];
             if (++$counter === 50000) {
-                $params = open_close($params);
+                $params = open_close($params, $buffer);
+                $buffer = "";
                 $counter = 0;
             }
         }
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 //  Категории + бренды
 function &categories_brands_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -211,22 +224,24 @@ function &categories_brands_gen(array &$params, &$rapida): array
 
             if ($p_count) {
                 $url = HOSTNAME . 'catalog/' . $cat . '/brand-' . $brand;
-                fwrite($params['fopen'], gen_url_string($url));
+                $buffer .= gen_url_string($url);
                 ++$params['counter'];
                 if (++$counter === 50000) {
-                    $params = open_close($params);
+                    $params = open_close($params, $buffer);
+                    $buffer = "";
                     $counter = 0;
                 }
             }
         }
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 //  Категории + свойства
 function &categories_features_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -265,10 +280,11 @@ function &categories_features_gen(array &$params, &$rapida): array
 
                 if ($p_count) {
                     $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
-                    fwrite($params['fopen'], gen_url_string($url));
+                    $buffer .= gen_url_string($url);
                     ++$params['counter'];
                     if (++$counter === 50000) {
-                        $params = open_close($params);
+                        $params = open_close($params, $buffer);
+                        $buffer = "";
                         $counter = 0;
                     }
                 }
@@ -276,13 +292,14 @@ function &categories_features_gen(array &$params, &$rapida): array
         }
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 
 //  Категории + свойство + свойство
 function &categories_features2_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -320,7 +337,6 @@ function &categories_features2_gen(array &$params, &$rapida): array
             $p_count = $rapida->products->count_products($_filter);
 
 
-
             //это для подсчета страниц пагинации (не используется сейчас)
             //$pages = (int)ceil($p_count / ITEMS);
 
@@ -330,18 +346,18 @@ function &categories_features2_gen(array &$params, &$rapida): array
                 $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
 
 
-
-                fwrite($params['fopen'], gen_url_string($url));
+                $buffer .= gen_url_string($url);
                 ++$params['counter'];
                 if (++$counter === 50000) {
-                    $params = open_close($params);
+                    $params = open_close($params, $buffer);
+                    $buffer = "";
                     $counter = 0;
                 }
             }
         }
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 }
 
 function &mix_features(array &$options): object
@@ -370,6 +386,7 @@ function &mix_features(array &$options): object
 //  Категории + brand + свойства
 function &categories_brands_features_gen(array &$params, &$rapida): array
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -417,10 +434,11 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                         $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
-                        fwrite($params['fopen'], gen_url_string($url));
+                        $buffer .= gen_url_string($url);
                         ++$params['counter'];
                         if (++$counter === 50000) {
-                            $params = open_close($params);
+                            $params = open_close($params, $buffer);
+                            $buffer = "";
                             $counter = 0;
                         }
                     }
@@ -429,7 +447,8 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         }
     }
 
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
+
 }
 
 
@@ -437,6 +456,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
 function &products_gen(array &$params, &$rapida)
 {
+    $buffer = "";
     open_close($params);
     $counter = $params['counter'] % 50000;
 
@@ -446,14 +466,15 @@ function &products_gen(array &$params, &$rapida)
     }
 
     foreach ($products as &$p) {
-        fwrite($params['fopen'], gen_url_string(HOSTNAME . "products/" . $p['trans']));
+        $buffer .= gen_url_string(HOSTNAME . "products/" . $p['trans']);
         ++$params['counter'];
         if (++$counter === 50000) {
-            $params = open_close($params);
+            $params = open_close($params, $buffer);
+            $buffer = "";
             $counter = 0;
         }
     }
-    return open_close($params, $counter);
+    return open_close($params, $buffer);
 
 }
 
@@ -461,6 +482,7 @@ function &sitemap_gen(array &$params)
 {
     fwrite($params["fopen"], '</urlset>' . "\n");
     fclose($params['fopen']);
+    $params['fopen'] = null;
     gzconvert($params['path']);
     $params['path'] = null;
 
@@ -490,6 +512,7 @@ function &sitemap_gen(array &$params)
     }
     fwrite($params['fopen'], '</sitemapindex>' . "\n");
     fclose($params['fopen']);
+    $params['fopen'] = null;
     rename($tmpfullpath_sitemap, $newfullpath_sitemap);
     return $params;
 }
@@ -507,5 +530,5 @@ products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 
 
-echo "generated urls: " . $params['counter'].PHP_EOL;
+echo "generated urls: " . $params['counter'] . PHP_EOL;
 
