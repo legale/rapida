@@ -71,8 +71,11 @@ class ProductsView extends View
         }
 
 
-        //добавляем в фильтр все дочерние категории
-        if (isset($cat)) {
+        if (isset($this->filter['keyword'])) {
+            $this->design->assign('keyword', $this->filter['keyword']);
+
+        } else if (isset($cat)) {
+            //добавляем в фильтр все дочерние категории
             $this->filter['category_id'] = $cat['children'];
         }
 
@@ -83,7 +86,7 @@ class ProductsView extends View
         dtimer::log(__METHOD__ . " Вычисляем кол-во страниц");
         $this->filter['products_count'] = $this->products->count_products($this->filter);
         dtimer::log("count products result: " . $this->filter['products_count']);
-        if($this->filter['products_count'] === 0){
+        if ($this->filter['products_count'] === 0) {
             dtimer::log("0 products found. return 404", 2);
             return false;
         }
@@ -190,7 +193,7 @@ class ProductsView extends View
         //Сначала бренды
         if (isset($this->filter['brand_id'])) {
             $selected_count += count($this->filter['brand_id']);
-            if($selected_count > 1){//если выбрано больше 1 бренда
+            if ($selected_count > 1) {//если выбрано больше 1 бренда
                 $noindex = true;
                 $canonical = true;
             }
@@ -236,7 +239,7 @@ class ProductsView extends View
         $this->filter['meta_filter'] = $meta_filter;
 
         //~ // Свойства товаров END
-        if($this->filter['page'] !== 1){
+        if ($this->filter['page'] !== 1) {
             $noindex = true;
         }
 
@@ -245,13 +248,13 @@ class ProductsView extends View
             $filter = $this->filter;
             $filter['page'] = 1; //ставим страницу 1
             unset($filter['price']); //удаляем фильтр цены
-            if(isset($filter['brand_id']) && count($filter['brand_id']) > 1){ //удаляем если больше 1 бренда
+            if (isset($filter['brand_id']) && count($filter['brand_id']) > 1) { //удаляем если больше 1 бренда
                 unset($filter['brand_id']);
             }
             if (isset($filter['features'])) {
-                if(count($filter['features']) > 3){
+                if (count($filter['features']) > 3) {
                     unset($filter['features']);
-                }else {
+                } else {
                     foreach ($filter['features'] as $fid => $vids) {
                         if (count($vids) > 1) {
                             unset($filter['features'][$fid]); //убираем все фильтры, где больше 1 элемента
@@ -268,10 +271,10 @@ class ProductsView extends View
             $canonical = $this->config->root_url;
         }
 
-        if($noindex || $nofollow) {
+        if ($noindex || $nofollow) {
             $sum = $noindex ? 1 : 0;
             $sum += $nofollow ? 2 : 0;
-            switch($sum) {
+            switch ($sum) {
                 case 3:
                     $robots = 'noindex, nofollow';
                     break;
