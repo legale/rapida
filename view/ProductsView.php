@@ -72,7 +72,7 @@ class ProductsView extends View
 
 
         if (isset($this->filter['keyword'])) {
-            $this->design->assign('keyword', implode(" ", $this->filter['keyword']));
+            $this->design->assign('keyword', $this->filter['keyword']);
 
         } else if (isset($cat)) {
             //добавляем в фильтр все дочерние категории
@@ -368,7 +368,7 @@ class ProductsView extends View
         // Если задано ключевое слово
         if (isset($uri_arr['query']['keyword'])) {
 
-            $filter['keyword'] = explode('+', $uri_arr['query']['keyword']);
+            $filter['keyword'] = str_replace('+', ' ', $uri_arr['query']['keyword']);
         }
 
         $uri_path = isset($uri_arr['path']) ? $uri_arr['path'] : null;
