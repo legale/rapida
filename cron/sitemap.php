@@ -170,7 +170,7 @@ function &categories_gen(array &$params, &$rapida): array
     $counter = $params['counter'] % 50000;
 
 
-    $categories = $rapida->categories->get_categories(['enabled' => 1]);
+    $categories = $rapida->categories->get_categories();
     if (!$categories) {
         return $params;
     }
@@ -206,7 +206,7 @@ function &categories_brands_gen(array &$params, &$rapida): array
     $counter = $params['counter'] % 50000;
 
 
-    $categories = $rapida->categories->get_categories(['enabled' => 1]);
+    $categories = $rapida->categories->get_categories();
     if (!$categories) {
         return $params;
     }
@@ -249,11 +249,12 @@ function &categories_features_gen(array &$params, &$rapida): array
     $counter = $params['counter'] % 50000;
 
 
-    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
+    if (!$categories = $rapida->categories->get_categories()) {
         return $params;
     }
 
     foreach ($categories as &$c) {
+        if (!$c['enabled']) continue;
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
         if (!$features = $rapida->features->get_features($init_filter)) {
             continue;
@@ -306,12 +307,13 @@ function &categories_features2_gen(array &$params, &$rapida): array
     open_close($params);
     $counter = $params['counter'] % 50000;
 
-    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
+    if (!$categories = $rapida->categories->get_categories()) {
         return $params;
     }
 
 
     foreach ($categories as &$c) {
+        if (!$c['enabled']) continue;
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];
         if (!$features = $rapida->features->get_features($init_filter)) {
             continue;
@@ -397,10 +399,11 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
         return $params;
     }
 
-    if (!$categories = $rapida->categories->get_categories(['enabled' => 1])) {
+    if (!$categories = $rapida->categories->get_categories()) {
         return $params;
     }
     foreach ($categories as &$c) {
+        if (!$c['enabled']) continue;
         //echo memory_get_usage().PHP_EOL;
 
         $init_filter = ['in_filter' => 1, 'category_url' => $c['trans'], 'category_id' => $c['children']];

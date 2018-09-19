@@ -218,7 +218,7 @@ class Categories extends Simpla
 
         //указатели на узлы дерева
         $ptr[0] = &$tree; //корневой элемент
-        
+
         // Не кончаем, пока не кончатся категории, или пока ни одну из оставшихся некуда приткнуть
         $finish = false;
         while(!empty($ids) && !$finish) {
@@ -231,6 +231,8 @@ class Categories extends Simpla
                 $cat['id'] = (int)$cid;
                 $cat['parent_id'] = (int)$cat['parent_id'];
                 $cat['vparent_id'] = (int)$cat['vparent_id'];
+                $cat['enabled'] = (bool)$cat['enabled'];
+                $cat['visible'] = (bool)$cat['visible'];
                 $cat['path'] = [];
                 $cat['vchildren'] = [];
                 $cat['children'] = [];
