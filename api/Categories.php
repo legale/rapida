@@ -38,25 +38,25 @@ class Categories extends Simpla
 
 
     // Функция возвращает заданную категорию
-    public function get_category($id)
+    public function &get_category($id): ?array
     {
         dtimer::log(__METHOD__ . " start: $id");
         if ($id == strval((int)$id)) {
             $id = (int)$id;
         } else {
-            $id = $id;
+            $id = (string)$id;
         }
 
-        if (is_int($id) && array_key_exists($id, $this->all_categories))
-            return $category = $this->all_categories[$id];
-        else if (is_string($id)) {
-            foreach ($this->all_categories as $cat)
+        if (is_int($id) && array_key_exists($id, $this->all_categories)) {
+            return $this->all_categories[$id];
+        }else if (is_string($id)) {
+            foreach ($this->all_categories as &$cat)
                 if ($cat['trans'] == $id || $cat['trans2'] == $id) {
                     return $cat;
                 }
         }
-
-        return false;
+        $null = null;
+        return $null;
     }
 
     // Добавление категории

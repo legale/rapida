@@ -137,7 +137,7 @@ class ControllerMaster extends Simpla
         dtimer::log(__METHOD__ . ' start arr: ' . var_export($arr, true));
         dtimer::log(__METHOD__ . ' start filter: ' . var_export($filter, true));
         //если начальные параметры не заданы просто вернем false
-        if (!isset($arr) || !isset($filter)) {
+        if (!isset($arr)) {
             return false;
         }
 
@@ -192,6 +192,7 @@ class ControllerMaster extends Simpla
         if (isset($arr['url']) && $arr['url'] !== '') {
             $res .= '/' . $arr['url'];
         }
+
 
         //теперь бренды, если они есть
         if (isset($arr['brand']) && is_array($arr['brand']) && count($arr['brand']) > 0) {
