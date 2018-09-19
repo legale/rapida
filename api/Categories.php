@@ -247,6 +247,7 @@ class Categories extends Simpla
             $cat['subcategories'] = [];
             $cats[$cat['parent_id']]['subcategories'][] = &$cat;
             // Уровень вложенности категории
+            echo $cat['parent_id'] . "lev:  ". (1 + $cats[$cat['parent_id']]['level']) . "\n";
             $cat['level'] = 1 + $cats[$cat['parent_id']]['level'];
         }
 
