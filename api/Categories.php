@@ -247,6 +247,8 @@ class Categories extends Simpla
             $cat['children'] = [];
             $cat['subcategories'] = [];
             $cats[$cat['parent_id']]['subcategories'][] = &$cat;
+            // Уровень вложенности категории
+            $cat['level'] = 1 + $cats[$cat['parent_id']]['level'];
         }
 
         //обратный порядок важен чтобы матрешка собралась правильно
