@@ -57,7 +57,7 @@ class ProductsView extends View
         //REDIRECT
         //проверяем альтернативное имя
         //301 moved permanently
-        if (isset($cat) && isset($cat['trans2']) && $cat['trans'] !== $cat['trans2'] && $cat['trans2'] == $this->filter['category_url']) {
+        if (isset($cat) && !empty($cat['trans2']) && $cat['trans2'] !== $cat['trans'] && $cat['trans2'] == $this->filter['category_url']) {
             $arr = $this->root->uri_arr['path'];
             $arr['url'] = $cat['trans'];
             $url = '/' . $this->root->gen_uri($arr);
