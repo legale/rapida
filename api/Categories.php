@@ -9,6 +9,8 @@ class Categories extends Simpla
     public $all_categories;
     // Дерево категорий
     public $categories_tree;
+    //массив для пар имя транслитом - id категории
+    public $categories_uri;
 
     public function __construct()
     {
@@ -47,13 +49,15 @@ class Categories extends Simpla
             $id = (string)$id;
         }
 
+        if (!$this->all_categories) {
+            $this->init_categories();
+        }
+
+
         if (is_int($id) && array_key_exists($id, $this->all_categories)) {
             return $this->all_categories[$id];
-        }else if (is_string($id)) {
-            foreach ($this->all_categories as &$cat)
-                if ($cat['trans'] == $id || $cat['trans2'] == $id) {
-                    return $cat;
-                }
+        }else if (is_string($id) && array_key_exists($id, $this->categories_uri)) {
+            return $this->all_categories[$this->categories_uri[$id]];
         }
         $null = null;
         return $null;
@@ -193,6 +197,7 @@ class Categories extends Simpla
             dtimer::log(__METHOD__ . " ACPU CACHE CATEGORIES READ ");
             $this->all_categories = apcu_exists($this->config->host . 'all_categories') ? apcu_fetch($this->config->host . 'all_categories') : null;
             $this->categories_tree = &$this->all_categories[0]['subcategories'];
+            $this->categories_uri = &$this->all_categories[0]['uri'];
             unset($this->all_categories[0]); //remove root element
             if ($this->all_categories) {
                 return;
@@ -202,19 +207,18 @@ class Categories extends Simpla
 
         // Выбираем все категории
         $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY parent_id, pos ASC");
-
+        $ids = array_keys($cats);
         // Дерево категорий
         $tree = [];
         $tree['subcategories'] = [];
         $tree['level'] = 0;
         $tree['children'] = [0];
         $tree['path'] = [];
+        $tree['uri'] = [];
 
         //указатели на узлы дерева
         $ptr[0] = &$tree; //корневой элемент
-
-
-        $ids = array_keys($cats);
+        
         // Не кончаем, пока не кончатся категории, или пока ни одну из оставшихся некуда приткнуть
         $finish = false;
         while(!empty($ids) && !$finish) {
@@ -263,6 +267,12 @@ class Categories extends Simpla
             $cat['children'][] = $cid;
             //теперь прибавим к родительскому разделу свои
             $ptr[$cat['parent_id']]['children'] = array_merge($ptr[$cat['parent_id']]['children'], $cat['children']);
+
+            //транслит имена добавим в корневой массив
+            $tree['uri'][$cat['trans']] = $cid;
+            if($cat['trans2'] !== '') {
+                $tree['uri'][$cat['trans2']] = $cid;
+            }
         }
 
 
@@ -273,6 +283,7 @@ class Categories extends Simpla
 
         unset($ptr[0]); //unset root element
         $this->all_categories = &$ptr;
+        $this->categories_uri = &$tree['uri'];
         $this->categories_tree = &$tree['subcategories'];
 
     }
