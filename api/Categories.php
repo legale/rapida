@@ -221,7 +221,7 @@ class Categories extends Simpla
 
 
         // Выбираем все категории
-        $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY parent_id, pos");
+        $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY parent_id, pos ASC");
         $ids = array_keys($cats);
 
         // Дерево категорий
@@ -241,7 +241,6 @@ class Categories extends Simpla
             $cat['id'] = (int)$cat['id'];
             $cat['parent_id'] = (int)$cat['parent_id'];
             $cat['vparent_id'] = (int)$cat['vparent_id'];
-            $cat['level'] = 0;
             $cat['path'] = [];
             $cat['vchildren'] = [];
             $cat['children'] = [];
