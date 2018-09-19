@@ -524,9 +524,9 @@ class Products extends Simpla
             }
 
             // Удаляем категории
-            if ($categories = $this->categories->get_categories(array('product_id' => $id))) {
+            if ($categories = $this->categories->get_product_categories($id)) {
                 foreach ($categories as $c) {
-                    $this->categories->delete_product_category($id, $c['id']);
+                    $this->categories->delete_product_category($id, $c['category_id']);
                 }
             }
 

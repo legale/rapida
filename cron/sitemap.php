@@ -179,7 +179,10 @@ function &categories_gen(array &$params, &$rapida): array
         //это для подсчета страниц пагинации (не используется сейчас)
         //$pages = (int)ceil($p_count / ITEMS);
         $cat = $c['trans'];
-
+        if (!isset($c['trans'])) {
+            print_r($c['id']);
+            die;
+        }
         if ($p_count) {
             $url = HOSTNAME . 'catalog/' . $cat;
             $buffer .= gen_url_string($url);

@@ -16,44 +16,24 @@ class Categories extends Simpla
     }
 
     // Функция возвращает массив категорий
-    public function get_categories($filter = array())
+    public function &get_categories()
     {
-        if ($this->all_categories && isset($filter['reinit'])) {
-            $this->init_categories(true);
+        if (!$this->all_categories) {
+            $this->init_categories();
         }
-
-
-        if (!empty($filter['product_id'])) {
-            $query = $this->db->placehold("SELECT category_id FROM __products_categories WHERE product_id in(?@) ", (array)$filter['product_id']);
-            $this->db->query($query);
-            $categories_ids = $this->db->results_array('category_id');
-            $result = array();
-            if (!empty($categories_ids)) {
-                foreach ($categories_ids as $id)
-                    if (isset($this->all_categories[$id]))
-                        $result[$id] = $this->all_categories[$id];
-                return $result;
-            }
-        }
-
         return $this->all_categories;
     }
 
     // Функция возвращает id категорий для заданного товара
     public function get_product_categories($product_id)
     {
-        $query = $this->db->placehold("SELECT * FROM __products_categories WHERE product_id in(?@)", (array)$product_id);
-        $this->db->query($query);
-        return $this->db->results_array(null, 'category_id');
+        return $this->db3->getAll("SELECT * FROM s_products_categories WHERE product_id = ?i", $product_id);
     }
 
     // Функция возвращает id категорий для всех товаров
-    public function get_products_categories()
+    public function get_products_categories(array $pids)
     {
-        $query = $this->db->placehold("SELECT * FROM __products_categories");
-        $this->db->query($query);
-        $res = $this->db->results_array(null, 'category_id');
-        return $res;
+        return $this->db3->getAll("SELECT * FROM s_products_categories WHERE product_id in (?a)", $pids);
     }
 
 
@@ -291,8 +271,7 @@ class Categories extends Simpla
             apcu_store($this->config->host . 'all_categories', $ptr, 7200);
         }
 
-        //unset($ptr[0]); //unset root element
-
+        unset($ptr[0]); //unset root element
         $this->all_categories = &$ptr;
         $this->categories_tree = &$tree['subcategories'];
 

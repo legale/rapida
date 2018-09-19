@@ -57,7 +57,7 @@ class ProductsView extends View
         //REDIRECT
         //проверяем альтернативное имя
         //301 moved permanently
-        if (isset($cat) && isset($cat['trans2']) && $cat['trans'] !== $cat['trans'] && $cat['trans2'] == $this->filter['category_url']) {
+        if (isset($cat) && isset($cat['trans2']) && $cat['trans'] !== $cat['trans2'] && $cat['trans2'] == $this->filter['category_url']) {
             $arr = $this->root->uri_arr['path'];
             $arr['url'] = $cat['trans'];
             $url = '/' . $this->root->gen_uri($arr);
@@ -349,7 +349,6 @@ class ProductsView extends View
         //передаем данные в шаблоны
         if (isset($cat['id'])) {
             $this->design->assign('category', $cat);
-
             $this->design->assign('meta_filter', $meta_filter);
             $this->design->assign('meta_title', $auto_meta_title);
             $this->design->assign('meta_keywords', $auto_meta_keywords);
