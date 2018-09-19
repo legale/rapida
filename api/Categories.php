@@ -222,7 +222,6 @@ class Categories extends Simpla
 
         // Выбираем все категории
         $cats = $this->db3->getInd("id", "SELECT * FROM s_categories ORDER BY parent_id, pos ASC");
-        $ids = array_keys($cats);
 
         // Дерево категорий
         $tree = [];
@@ -232,49 +231,69 @@ class Categories extends Simpla
         $tree['path'] = [];
 
         //указатели на узлы дерева
-        $cats[0] = &$tree; //корневой элемент
+        $ptr[0] = &$tree; //корневой элемент
 
 
-        // Проходим все выбранные категории
-        foreach ($ids as $cid) {
-            $cat = &$cats[$cid];
-            $cat['id'] = (int)$cat['id'];
-            $cat['parent_id'] = (int)$cat['parent_id'];
-            $cat['vparent_id'] = (int)$cat['vparent_id'];
-            $cat['path'] = [];
-            $cat['vchildren'] = [];
-            $cat['children'] = [];
-            $cat['subcategories'] = [];
-            $cats[$cat['parent_id']]['subcategories'][] = &$cat;
-            // Уровень вложенности категории
-            echo $cat['parent_id'] . "lev:  ". (1 + $cats[$cat['parent_id']]['level']) . "\n";
-            $cat['level'] = 1 + $cats[$cat['parent_id']]['level'];
+        $ids = array_keys($cats);
+        // Не кончаем, пока не кончатся категории, или пока ни одну из оставшихся некуда приткнуть
+        $finish = false;
+        while(!empty($ids) && !$finish) {
+            $flag = false;
+            foreach ($ids as $i=>$cid) {
+                if(!isset($ptr[$cats[$cid]['parent_id']])){
+                    continue;
+                }
+                $cat = &$cats[$cid];
+                $cat['id'] = (int)$cid;
+                $cat['parent_id'] = (int)$cat['parent_id'];
+                $cat['vparent_id'] = (int)$cat['vparent_id'];
+                $cat['path'] = [];
+                $cat['vchildren'] = [];
+                $cat['children'] = [];
+                $cat['subcategories'] = [];
+                //сначала часть родительского пути
+                $cat['path'] = $ptr[$cat['parent_id']]['path'];
+                //саму себя в конце
+                $cat['path'][] = &$cat;
+
+                //запишемся в массив указателей
+                $ptr[$cid] = &$cat;
+                //добавимся в дочерние к родительской категории
+                $ptr[$cat['parent_id']]['subcategories'][] = &$ptr[$cid];
+                // Уровень вложенности категории
+                $cat['level'] = 1 + $ptr[$cat['parent_id']]['level'];
+
+                //добавим виртуальные разделы к его родителю
+                $cats[$cat['vparent_id']]['vchildren'][] = $cid;
+
+                unset($ids[$i]);
+                $flag = true;
+            }
+            if(!$flag){
+                $finish = true;
+            }
         }
 
-        //обратный порядок важен чтобы матрешка собралась правильно
-        $ids = array_reverse($ids);
+        $ids = array_keys($ptr);
+        unset($ids[0]); //уберем корневой раздел
+        $ids = array_reverse($ids); //обратный порядок важен чтобы матрешка собралась правильно
         foreach ($ids as $cid) {
-            $cat = &$cats[$cid];
-            $cat['path'] = $cats[$cat['parent_id']]['path'];
-            $cat['path'][] = &$cat;
-
-            //добавим виртуальные разделы к его родителю
-            $cats[$cat['vparent_id']]['vchildren'][] = $cid;
-
+            $cat = &$ptr[$cid];
             //сначала добавим саму себя
-            $cat['children'] = array_merge([$cid], $cat['children']);
+            $cat['children'][] = $cid;
             //теперь прибавим к родительскому разделу свои
-            $cats[$cat['parent_id']]['children'] = array_merge($cats[$cat['parent_id']]['children'], $cat['children']);
+            $ptr[$cat['parent_id']]['children'] = array_merge($ptr[$cat['parent_id']]['children'], $cat['children']);
         }
 
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
-            apcu_store($this->config->host . 'all_categories', $cats, 7200);
+            apcu_store($this->config->host . 'all_categories', $ptr, 7200);
         }
-        unset($cats[0]); //unset root element
 
-        $this->all_categories = &$cats;
+        //unset($ptr[0]); //unset root element
+
+        $this->all_categories = &$ptr;
         $this->categories_tree = &$tree['subcategories'];
 
     }

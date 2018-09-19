@@ -55,6 +55,7 @@ class IndexView extends View
 
         // Категории товаров
         $this->design->assign('categories',  $this->categories->categories_tree);
+        $this->design->assign('all_cats', $this->categories->all_categories);
 
         // Страницы
         $pages = $this->pages->get_pages(array('visible' => 1));
