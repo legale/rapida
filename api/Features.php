@@ -605,6 +605,7 @@ class Features extends Simpla
     {
         dtimer::log(__METHOD__ . " start");
         dtimer::log(__METHOD__ . " filter: " . var_export($filter, true));
+        //print var_export($filter, true).PHP_EOL;
 
         //это вариант по умолчанию id=>val
         $col = isset($filter['return']['col']) ? $filter['return']['col'] : 'val';
@@ -655,7 +656,7 @@ class Features extends Simpla
             $task = '$this->features->get_options_ids(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $var = $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
         }
 
         if (isset($res) && !empty_($res)) {
@@ -687,6 +688,7 @@ class Features extends Simpla
 		$id_filter
 		$trans_filter
 		$trans2_filter
+		ORDER BY LPAD(val, 14,0)
 		");
 
         if($col === 'id') {
@@ -698,6 +700,7 @@ class Features extends Simpla
                 $res[$row[$key]] = $row[$col];
             }
         }
+
 
         //Если у нас был запуск без параметров, сохраним результат в переменную класса.
         if (!isset($filter['id']) && !isset($filter['trans'])) {
@@ -774,6 +777,8 @@ class Features extends Simpla
 
         //массив id=>значение транслитом
         $trans = $this->get_options_ids(array('return' => array('col' => 'trans', 'key' => 'id')));
+
+
 
         //Самый простой вариант - если не заданы фильтры по свойствам и брендам
         if (!isset($filter['features']) && !isset($filter['brand_id'])) {

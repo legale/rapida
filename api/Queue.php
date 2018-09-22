@@ -22,11 +22,13 @@ class Queue extends Simpla
         $redis = $this->cache->redis_init();
         $val = $redis->lPop($this->config->host . "_queue");
         if($val === false){
+            //if linked list is empty we can delete hashtable
+            $redis->del($this->config->host . "_queue_hashtable");
             return false;
         }
         list($keyhash, $method, $task) = msgpack_unpack($val);
-        //echo $keyhash . PHP_EOL;
-        echo ".";
+        echo $keyhash . PHP_EOL;
+        //echo ".";
         eval($task);
         return $redis->hdel($this->config->host . "_queue_hashtable", $keyhash);
     }
@@ -35,6 +37,12 @@ class Queue extends Simpla
     {
         $redis = $this->cache->redis_init();
         return $redis->lSize($this->config->host . "_queue");
+    }
+
+    public function redis_qreset(): bool
+    {
+        $redis = $this->cache->redis_init();
+        return $redis->del($this->config->host . "_queue", $this->config->host . "_queue_hashtable");
     }
 
 
