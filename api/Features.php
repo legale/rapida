@@ -688,7 +688,6 @@ class Features extends Simpla
 		$id_filter
 		$trans_filter
 		$trans2_filter
-		ORDER BY val
 		");
 
         if($col === 'id') {
@@ -791,7 +790,7 @@ class Features extends Simpla
                 unset($raw['brand_id']);
             }
 
-            foreach ($raw as $fid => $ids) {
+            foreach (array_keys($raw) as $fid) {
                 $vals_ = array_intersect_key($vals, $raw[$fid]);
                 asort($vals_);
                 $res['full'][$fid] = array(
@@ -836,6 +835,9 @@ class Features extends Simpla
             }
 
 
+            //для фильтров ползунком
+
+
             //это полный результат, поэтому убираем все фильтры
             $filter_ = $filter;
             unset($filter_['features']);
@@ -846,7 +848,7 @@ class Features extends Simpla
                 unset($raw['brand_id']);
             }
 
-            foreach ($raw as $fid => $ids) {
+            foreach (array_keys($raw) as $fid) {
                 $vals_ = array_intersect_key($vals, $raw[$fid]);
                 asort($vals_);
                 $res['full'][$fid] = array(
