@@ -233,9 +233,10 @@
     {function name=categories_tree}
         {if isset($categories)}
             <ul>
-                {if $categories[0]['parent_id'] == 0}
-                    <li {if !isset($category['id'])}class="selected"{/if}><a
-                                href="{url category_id=null brand_id=null}">Все категории</a></li>
+                {if $categories[0]['parent_id'] === 0}
+                    <li {if !isset($category['id'])}class="selected"{/if}>
+                        <a href="{url category_id=null brand_id=null}">Все категории</a>
+                    </li>
                 {/if}
 
                 {foreach $categories as $c}

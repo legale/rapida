@@ -688,7 +688,7 @@ class Features extends Simpla
 		$id_filter
 		$trans_filter
 		$trans2_filter
-		ORDER BY LPAD(val, 14,0)
+		ORDER BY val
 		");
 
         if($col === 'id') {
@@ -792,8 +792,10 @@ class Features extends Simpla
             }
 
             foreach ($raw as $fid => $ids) {
+                $vals_ = array_intersect_key($vals, $raw[$fid]);
+                asort($vals_);
                 $res['full'][$fid] = array(
-                    'vals' => array_intersect_key($vals, $raw[$fid]),
+                    'vals' => $vals_,
                     'trans' => array_intersect_key($trans, $raw[$fid])
                 );
             }
@@ -845,8 +847,10 @@ class Features extends Simpla
             }
 
             foreach ($raw as $fid => $ids) {
+                $vals_ = array_intersect_key($vals, $raw[$fid]);
+                asort($vals_);
                 $res['full'][$fid] = array(
-                    'vals' => array_intersect_key($vals, $raw[$fid]),
+                    'vals' => $vals_,
                     'trans' => array_intersect_key($trans, $raw[$fid])
                 );
             }
