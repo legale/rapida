@@ -40,20 +40,23 @@ class Cache extends Simpla
         self::$shmop_enabled = function_exists('shmop_open') ? true : false;
     }
 
-    public function redis_init()
+    public function redis_init(): ?object
     {
-
         dtimer::log(__METHOD__." start");
         if (self::$redis === null) {
+            if (!class_exists('Redis')) {
+                dtimer::log("Redis support is not installed, abort", 1);
+                return null;
+            }
             self::$redis = new Redis();
             $path = "/var/run/redis/redis.sock";
             if (!file_exists($path)) {
                 dtimer::log("redis server unix socket $path not found! Server is started?", 1);
-                return false;
+                return null;
             }
             if (!is_writable($path)) {
                 dtimer::log("redis server unix socket $path is not writable! Check permissions!", 1);
-                return false;
+                return null;
             }
 
             self::$redis->pconnect($path);
@@ -70,12 +73,9 @@ class Cache extends Simpla
             return false;
         }
         dtimer::log(__METHOD__." start: $key");
-        if (!class_exists('Redis')) {
-            dtimer::log("Redis support is not installed, abort", 1);
-            return false;
-        }
+
         $redis = cache::redis_init();
-        return $redis->setex($key, $ttl, $data);
+        return $redis ? $redis->setex($key, $ttl, $data) : null;
     }
 
     public function redis_get(string $key): ?string
@@ -85,12 +85,30 @@ class Cache extends Simpla
             return false;
         }
         dtimer::log(__METHOD__." start $key");
-        if (!class_exists('Redis')) {
-            dtimer::log("Redis support is not installed, abort", 1);
+
+        $redis = cache::redis_init();
+        return $redis ? $redis->get($key) : null;
+    }
+
+    public function redis_created(string $key, int $init): ?int
+    {
+        //Если кеш отключен - останавливаем
+        if (self::$enabled !== true) {
             return false;
         }
+        dtimer::log(__METHOD__." start $key");
+
         $redis = cache::redis_init();
-        return $redis->get($key);
+        if(!$redis){
+            return null;
+        }
+        $ttl = $redis->ttl($key); //current ttl
+        if($ttl > -1){
+            $diff = $init - $ttl; //difference is the time passed after key was created
+            return time() - $diff; //this is creation time in seconds since unix epoch
+        } else{
+            return null;
+        }
     }
 
 

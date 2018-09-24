@@ -51,4 +51,5 @@ return array (
   'debug' => true,
   'captcha' => false,
   'max_upload_filesize' => '',
+  'last_import' => '1537806315',
 );

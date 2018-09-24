@@ -640,7 +640,10 @@ class Features extends Simpla
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
-
+            //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
+            if($res !== null && $this->cache->redis_created($keyhash, 2592000) > $this->config->last_import) {
+                return $res;
+            }
             //Если у нас был запуск без параметров, сохраним результат в переменную класса.
             if (!isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
                 $this->options[$key . "_" . $col] = $res;
@@ -746,7 +749,10 @@ class Features extends Simpla
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
-
+            //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
+            if($res !== null && $this->cache->redis_created($keyhash, 2592000) > $this->config->last_import) {
+                return $res;
+            }
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
             //функция выполнялась полностью
@@ -835,9 +841,6 @@ class Features extends Simpla
             }
 
 
-            //для фильтров ползунком
-
-
             //это полный результат, поэтому убираем все фильтры
             $filter_ = $filter;
             unset($filter_['features']);
@@ -870,13 +873,27 @@ class Features extends Simpla
 
     }
 
+    public function get_range_values(int $fid, $min, $max): ?array
+    {
+
+        $options = $this->get_options_ids();
+        $min_vid = array_search($min, $options);
+        $max_vid = array_search($max, $options);
+        $vals = $this->db3->getInd($fid, "SELECT ?n FROM s_options", $fid);
+        $vals = array_intersect_key($options, $vals);
+        asort($vals);
+        $first = array_search(array_search( $min, $vals), array_keys($vals));
+        $last = array_search(array_search( $max, $vals), array_keys($vals));
+
+        $vids = array_slice($vals, $first, $last - $first + 1);
+        print_r($vids);
+        return $vids;
+    }
+
+
     /*
      * Этим методом можно получить необработанные данные из таблицы s_options
      * Используется для получения входных данных для метода get_options_mix()
-     */
-
-
-    /**
      * @param array $filter
      * @return array|bool
      */

@@ -75,6 +75,10 @@
                 <input class="switcher__input" value="true" type="checkbox" name="captcha" id="captcha_switch"
                        {if $config->captcha}checked{/if}>
             </li>
+            <li>
+                <label class="property">Время последнего импорта</label>
+                <textarea disabled name="last_import" class="simpla_inp">{date("d-m-y H:m:s",$config->last_import)}</textarea>
+            </li>
         </ul>
     </div>
     <!-- Счетчики -->

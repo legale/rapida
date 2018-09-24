@@ -9,7 +9,7 @@ class Queue extends Simpla
     public function redis_adddask(string $keyhash, string $method, string $task): ?bool
     {
         $redis = $this->cache->redis_init();
-        if (!$redis->hexists($this->config->host . "_queue_hashtable", $keyhash)) {
+        if ($redis && !$redis->hexists($this->config->host . "_queue_hashtable", $keyhash)) {
             $redis->hset($this->config->host . "_queue_hashtable", $keyhash, null);
             return $redis->rPush($this->config->host . "_queue", msgpack_pack([$keyhash, $method, $task]));
         } else {
@@ -20,6 +20,9 @@ class Queue extends Simpla
     public function redis_execlast(): ?bool
     {
         $redis = $this->cache->redis_init();
+        if(!$redis){
+            return false;
+        }
         $val = $redis->lPop($this->config->host . "_queue");
         if($val === false){
             //if linked list is empty we can delete hashtable
@@ -27,8 +30,8 @@ class Queue extends Simpla
             return false;
         }
         list($keyhash, $method, $task) = msgpack_unpack($val);
-        echo $keyhash . PHP_EOL;
-        //echo ".";
+        //echo $keyhash ." $task" . PHP_EOL;
+        echo ".";
         eval($task);
         return $redis->hdel($this->config->host . "_queue_hashtable", $keyhash);
     }
@@ -36,13 +39,13 @@ class Queue extends Simpla
     public function redis_count(): ?int
     {
         $redis = $this->cache->redis_init();
-        return $redis->lSize($this->config->host . "_queue");
+        return $redis ? $redis->lSize($this->config->host . "_queue") : null;
     }
 
     public function redis_qreset(): bool
     {
         $redis = $this->cache->redis_init();
-        return $redis->del($this->config->host . "_queue", $this->config->host . "_queue_hashtable");
+        return $redis ? $redis->del($this->config->host . "_queue", $this->config->host . "_queue_hashtable") : false;
     }
 
 
