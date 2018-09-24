@@ -710,7 +710,7 @@ class Features extends Simpla
             $this->options[$key . "_" . $col] = $res;
         }
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 2592000);
+        $this->cache->redis_set_serial($keyhash, $res, 25920000);
 
         dtimer::log(__METHOD__ . " return db ");
         return $res;
@@ -750,7 +750,7 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, 2592000) > $this->config->last_import) {
+            if($res !== null && $this->cache->redis_created($keyhash, 252900) > $this->config->last_import) {
                 return $res;
             }
 
@@ -864,7 +864,7 @@ class Features extends Simpla
 
 
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 2592000); // 2592000 is a 1 month in seconds
+        $this->cache->redis_set_serial($keyhash, $res, 25920000); // 2592000 is a 1 month in seconds
         dtimer::log(__METHOD__ . " end");
 
 

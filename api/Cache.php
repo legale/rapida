@@ -105,7 +105,9 @@ class Cache extends Simpla
         $ttl = $redis->ttl($key); //current ttl
         if($ttl > -1){
             $diff = $init - $ttl; //difference is the time passed after key was created
-            return time() - $diff; //this is creation time in seconds since unix epoch
+            $diff = time() - $diff; //this is creation time in seconds since unix epoch
+            dtimer::log(__METHOD__ . " current time: ". date("d-m-y H:m:s",time()) . " key created: ".date("d-m-y H:m:s", $diff));
+            return $diff;
         } else{
             return null;
         }
