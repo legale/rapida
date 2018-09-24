@@ -103,7 +103,10 @@ class Brands extends Simpla
         if (!isset($force_no_cache)) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
-
+            //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
+            if($res !== null && $this->cache->redis_created($keyhash, 2592000) > $this->config->last_import) {
+                return $res;
+            }
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
             //функция выполнялась полностью
