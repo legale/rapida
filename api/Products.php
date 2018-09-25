@@ -122,11 +122,12 @@ class Products extends Simpla
             $task .= $filter_string;
             $task .= ');';
             $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
 
-        if (isset($res) && !empty_($res)) {
-            dtimer::log("get_cache get_products HIT! res count: " . count($res));
-            return $res;
+
+            if (isset($res) && !empty_($res)) {
+                dtimer::log("get_cache get_products HIT! res count: " . count($res));
+                return $res;
+            }
         }
 
         // По умолчанию
@@ -298,11 +299,12 @@ class Products extends Simpla
             $task .= ');';
             //~ dtimer::log("count_products add task: $keyhash " . $filter['method']);
             $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
 
-        if (isset($res) && !empty_($res)) {
-            dtimer::log("get_cache count_products HIT! value: '$res'");
-            return (int)$res;
+
+            if (isset($res) && !empty_($res)) {
+                dtimer::log("get_cache count_products HIT! value: '$res'");
+                return (int)$res;
+            }
         }
 
         $category_id_filter = '';

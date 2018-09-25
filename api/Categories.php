@@ -280,7 +280,7 @@ class Categories extends Simpla
 
         if (function_exists('apcu_store')) {
             dtimer::log(__METHOD__ . " update categories APCU");
-            apcu_store($this->config->host . 'all_categories', $ptr, 7200);
+            apcu_store($this->config->host . 'all_categories', $ptr, 14400);
         }
 
         unset($ptr[0]); //unset root element

@@ -14,12 +14,16 @@ class Features extends Simpla
         'brand_id',
         'product_id',
         'force_no_cache',
-        'visible'
+        'visible',
+        'in_filter'
     );
     //тут будут хранится значения опций
     public $options;
     //тут будут хранится сами опции
     public $features;
+
+    //
+    public $ttl = 2529000; //25209000 = 1 месяц время жизни кеша. по истечении времени, задания на обновления будут добавляться в очередь
 
 
     /**
@@ -58,9 +62,55 @@ class Features extends Simpla
      * @param array $filter
      * @return mixed
      */
-    function get_features($filter = array())
-    {
-        dtimer::log(__METHOD__ . ' start ');
+    function get_features($filter = array()){
+        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
+        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
+        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        $filter_ = $filter;
+        if (!empty($filter_['force_no_cache'])) {
+            $force_no_cache = true;
+            unset($filter_['force_no_cache']);
+        } else{
+            $force_no_cache = false;
+        }
+
+        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
+        ksort($filter_);
+        $filter_string = var_export($filter_, true);
+        $keyhash = md5(__METHOD__ . $filter_string);
+
+        //если запуск был не из очереди - пробуем получить из кеша
+        if (!$force_no_cache) {
+            dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
+            $res = $this->cache->redis_get_serial($keyhash);
+
+            //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
+            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                return $res;
+            }
+
+            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+            //функция выполнялась полностью
+            $filter_['force_no_cache'] = true;
+            $filter_string = var_export($filter_, true);
+            dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+
+            $task = '$this->features->get_features(';
+            $task .= $filter_string;
+            $task .= ');';
+            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+
+
+            if ($res !== null) {
+                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+                return $res;
+            }
+
+        }
+
+
+        //===========================================================================
         $gid_filter = '';
         $category_id_filter = '';
         if (isset($filter['category_id'])) {
@@ -92,7 +142,10 @@ class Features extends Simpla
 			$category_id_filter $in_filter_filter $id_filter $gid_filter $visible_filter ORDER BY f.pos");
         $this->db->query($q);
         $res = $this->db->results_array(null, 'id');
-        dtimer::log(__METHOD__ . ' return');
+
+        dtimer::log(__METHOD__ . " redis set key: $keyhash");
+        $this->cache->redis_set_serial($keyhash, $res, $this->ttl); // 2592000 is a 1 month in seconds
+        dtimer::log(__METHOD__ . " return");
         return $res;
     }
 
@@ -625,7 +678,7 @@ class Features extends Simpla
         $filter_ = $filter;
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
         unset($filter_['method']);
-        if (isset($filter_['force_no_cache'])) {
+        if (!empty($filter_['force_no_cache']))      {
             $force_no_cache = $filter_['force_no_cache'];
             unset($filter_['force_no_cache']);
         }
@@ -641,7 +694,7 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, 2592000) > $this->config->last_import) {
+            if($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                 return $res;
             }
             //Если у нас был запуск без параметров, сохраним результат в переменную класса.
@@ -710,7 +763,7 @@ class Features extends Simpla
             $this->options[$key . "_" . $col] = $res;
         }
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 25920000);
+        $this->cache->redis_set_serial($keyhash, $res, $this->ttl);
 
         dtimer::log(__METHOD__ . " return db ");
         return $res;
@@ -734,9 +787,11 @@ class Features extends Simpla
         $filter = array_intersect_key($filter, array_flip($this->tokeep));
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        if (isset($filter_['force_no_cache'])) {
-            $force_no_cache = $filter_['force_no_cache'];
+        if (!empty($filter_['force_no_cache'])) {
+            $force_no_cache = true;
             unset($filter_['force_no_cache']);
+        } else{
+            $force_no_cache = false;
         }
 
 
@@ -746,11 +801,11 @@ class Features extends Simpla
         $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
+        if (!$force_no_cache) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, 252900) > $this->config->last_import) {
+            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                 return $res;
             }
 
@@ -764,11 +819,13 @@ class Features extends Simpla
             $task .= $filter_string;
             $task .= ');';
             $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
 
-        if (isset($res) && !empty_($res)) {
-            dtimer::log(__METHOD__ . " return cache res count: " . count($res));
-            return $res;
+
+            if (isset($res) && !empty_($res)) {
+                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+                return $res;
+            }
+
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -864,8 +921,8 @@ class Features extends Simpla
 
 
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 25920000); // 2592000 is a 1 month in seconds
-        dtimer::log(__METHOD__ . " end");
+        $this->cache->redis_set_serial($keyhash, $res, $this->ttl); // 2592000 is a 1 month in seconds
+        dtimer::log(__METHOD__ . " return");
 
 
         return $res;
@@ -905,9 +962,11 @@ class Features extends Simpla
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
 
-        if (isset($filter_['force_no_cache'])) {
+        if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
+        } else{
+            $force_no_cache = false;
         }
 
 
@@ -917,7 +976,7 @@ class Features extends Simpla
         $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
+        if (!$force_no_cache) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
 

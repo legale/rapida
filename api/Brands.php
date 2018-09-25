@@ -22,6 +22,9 @@ class Brands extends Simpla
 
     );
 
+    public $ttl = 2529000; //25209000 = 1 месяц время жизни кеша. по истечении времени, задания на обновления будут добавляться в очередь
+
+
     /**
      * @var
      */
@@ -88,9 +91,11 @@ class Brands extends Simpla
         $filter = array_intersect_key($filter, array_flip($this->tokeep));
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        if (isset($filter_['force_no_cache'])) {
-            $force_no_cache = $filter_['force_no_cache'];
+        if (!empty($filter_['force_no_cache'])) {
+            $force_no_cache = true;
             unset($filter_['force_no_cache']);
+        } else{
+            $force_no_cache = false;
         }
 
 
@@ -100,11 +105,11 @@ class Brands extends Simpla
         $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
+        if (!$force_no_cache) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, 25920000) > $this->config->last_import) {
+            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                 return $res;
             }
 
@@ -118,11 +123,12 @@ class Brands extends Simpla
             $task .= $filter_string;
             $task .= ');';
             $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
 
-        if (isset($res) && !empty_($res)) {
-            dtimer::log(__METHOD__ . " return cache res count: " . count($res));
-            return $res;
+
+            if (isset($res) && !empty_($res)) {
+                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+                return $res;
+            }
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -159,7 +165,7 @@ class Brands extends Simpla
 
         $res = $this->db->results_array(null, 'id');
         dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 25920000); // 1 month
+        $this->cache->redis_set_serial($keyhash, $res, $this->ttl); // 1 month
         dtimer::log(__METHOD__ . " end");
         return $res;
     }

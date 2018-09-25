@@ -74,7 +74,7 @@ class Cache extends Simpla
         }
         dtimer::log(__METHOD__." start: $key");
 
-        $redis = cache::redis_init();
+        $redis = self::redis_init();
         return $redis ? $redis->setex($key, $ttl, $data) : null;
     }
 
@@ -86,7 +86,7 @@ class Cache extends Simpla
         }
         dtimer::log(__METHOD__." start $key");
 
-        $redis = cache::redis_init();
+        $redis = self::redis_init();
         return $redis ? $redis->get($key) : null;
     }
 
@@ -98,7 +98,7 @@ class Cache extends Simpla
         }
         dtimer::log(__METHOD__." start $key");
 
-        $redis = cache::redis_init();
+        $redis = self::redis_init();
         if(!$redis){
             return null;
         }
@@ -121,11 +121,11 @@ class Cache extends Simpla
             return false;
         }
         dtimer::log(__METHOD__." start: $key");
-        if (!class_exists('Redis')) {
-            dtimer::log("Redis support is not installed, abort", 1);
-            return false;
+        $redis = self::redis_init();
+        if(!$redis){
+            return null;
         }
-        $redis = cache::redis_init();
+
         switch (self::$config['method']) {
             case 'json':
                 $data = $this->encode($value, self::$config['JSON_UNESCAPED_UNICODE']);
@@ -155,12 +155,11 @@ class Cache extends Simpla
         if (self::$enabled !== true) {
             return false;
         }
-        dtimer::log(__METHOD__." start $key");
-        if (!class_exists('Redis')) {
-            dtimer::log("Redis support is not installed, abort", 1);
-            return false;
+        dtimer::log(__METHOD__." start: $key");
+        $redis = self::redis_init();
+        if(!$redis){
+            return null;
         }
-        $redis = cache::redis_init();
         $value = $redis->get($key);
 
         switch (self::$config['method']) {
