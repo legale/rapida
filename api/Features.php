@@ -680,8 +680,10 @@ class Features extends Simpla
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
         unset($filter_['method']);
         if (!empty($filter_['force_no_cache'])) {
-            $force_no_cache = $filter_['force_no_cache'];
+            $force_no_cache = true;
             unset($filter_['force_no_cache']);
+        }else{
+            $force_no_cache = false;
         }
         $res = [];
 
@@ -691,7 +693,7 @@ class Features extends Simpla
         $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
+        if (!$force_no_cache) {
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление

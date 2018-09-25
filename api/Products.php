@@ -47,6 +47,8 @@ class Products extends Simpla
         'price'
     );
 
+    public $ttl = 2529000; //cache ttl 1 month
+
     /**
      * Функция добавляет просмотр товару
      */
@@ -273,9 +275,11 @@ class Products extends Simpla
         ksort($filter);
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
         $filter_ = $filter;
-        if (isset($filter_['force_no_cache'])) {
+        if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
+        } else {
+            $force_no_cache = false;
         }
 
 
@@ -283,10 +287,12 @@ class Products extends Simpla
         $keyhash = md5(__METHOD__ . $filter_string);
 
         //если запуск был не из очереди - пробуем получить из кеша
-        if (!isset($force_no_cache)) {
+        if (!$force_no_cache) {
             dtimer::log("count_products normal run keyhash: $keyhash");
             $res = $this->cache->redis_get($keyhash);
-
+            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                return $res;
+            }
 
             //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
             //функция выполнялась полностью
@@ -396,7 +402,7 @@ class Products extends Simpla
         $this->db->query($query);
         $res = (int)$this->db->result_array('count');
         dtimer::log("set_cache_integer key: $keyhash");
-        $this->cache->redis_set($keyhash, $res, 2592000); //2592000 - is 1 month in seconds
+        $this->cache->redis_set($keyhash, $res, $this->ttl);
         return $res;
 
     }
