@@ -63,7 +63,8 @@ class Features extends Simpla
      * @param array $filter
      * @return mixed
      */
-    function get_features($filter = array()){
+    function get_features($filter = array())
+    {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
         $filter = array_intersect_key($filter, array_flip($this->tokeep));
@@ -72,7 +73,7 @@ class Features extends Simpla
         if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
-        } else{
+        } else {
             $force_no_cache = false;
         }
 
@@ -654,8 +655,7 @@ class Features extends Simpla
      * @param array $filter
      * @return mixed
      */
-    public
-    function get_options_ids($filter = array())
+    public function get_options_ids($filter = array())
     {
         dtimer::log(__METHOD__ . " start");
         dtimer::log(__METHOD__ . " filter: " . var_export($filter, true));
@@ -679,11 +679,11 @@ class Features extends Simpla
         $filter_ = $filter;
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter_, true));
         unset($filter_['method']);
-        if (!empty($filter_['force_no_cache']))      {
+        if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = $filter_['force_no_cache'];
             unset($filter_['force_no_cache']);
         }
-
+        $res = [];
 
         //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
         ksort($filter_);
@@ -695,7 +695,7 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                 return $res;
             }
             //Если у нас был запуск без параметров, сохраним результат в переменную класса.
@@ -747,11 +747,11 @@ class Features extends Simpla
 		$trans2_filter
 		");
 
-        if($col === 'id') {
+        if ($col === 'id') {
             while ($row = $this->db->res->fetch_assoc()) {
                 $res[$row[$key]] = (int)$row[$col];
             }
-        }else{
+        } else {
             while ($row = $this->db->res->fetch_assoc()) {
                 $res[$row[$key]] = $row[$col];
             }
@@ -791,7 +791,7 @@ class Features extends Simpla
         if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
-        } else{
+        } else {
             $force_no_cache = false;
         }
 
@@ -840,7 +840,6 @@ class Features extends Simpla
 
         //массив id=>значение транслитом
         $trans = $this->get_options_ids(array('return' => array('col' => 'trans', 'key' => 'id')));
-
 
 
         //Самый простой вариант - если не заданы фильтры по свойствам и брендам
@@ -940,8 +939,8 @@ class Features extends Simpla
         $vals = $this->db3->getInd($fid, "SELECT ?n FROM s_options", $fid);
         $vals = array_intersect_key($options, $vals);
         asort($vals);
-        $first = array_search(array_search( $min, $vals), array_keys($vals));
-        $last = array_search(array_search( $max, $vals), array_keys($vals));
+        $first = array_search(array_search($min, $vals), array_keys($vals));
+        $last = array_search(array_search($max, $vals), array_keys($vals));
 
         $vids = array_slice($vals, $first, $last - $first + 1);
         print_r($vids);
@@ -966,7 +965,7 @@ class Features extends Simpla
         if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
-        } else{
+        } else {
             $force_no_cache = false;
         }
 
