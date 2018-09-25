@@ -8,6 +8,7 @@ require_once('Simpla.php');
 class Features extends Simpla
 {
     private $tokeep = array(
+        'id',
         'category_id',
         'feature_id',
         'features',
