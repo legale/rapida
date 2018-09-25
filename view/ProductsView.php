@@ -319,7 +319,7 @@ class ProductsView extends View
                     if ($f['tpl'] == 0) {
                         continue;
                     }
-                    $pairs['{$' . $f['trans'] . '}'] = " " . array_shift($options['full'][$fid]['vals']);
+                    $pairs['{$' . $f['trans'] . '}'] = " " . isset($options['full'][$fid]['vals']) ? array_shift($options['full'][$fid]['vals']) : null;
                     $pairs['{$' . $f['trans'] . '_list}'] = '';
                     $pairs['{$' . $f['trans'] . '_2r}'] = '';
                     //$cycler = 0;
