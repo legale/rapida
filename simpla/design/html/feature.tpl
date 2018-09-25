@@ -89,7 +89,7 @@ $(function() {
 			<ul>
 				<li><input type="text" name="trans" value="{$feature['trans']|escape}"><label>translit для адресной строки</label></li>
 				<li><input type="checkbox" name="in_filter" {if $feature['in_filter']}checked{/if} value="1"><label>Использовать в фильтре</label></li>
-				<li><input type="checkbox" name="tpl" {if $feature['tpl']}checked{/if} value="1"><label>Разрешить переменные &#123;${$feature['trans']}&#125; &#123;${$feature['trans']}_list&#125; для мета тегов</label></li>
+				<li><input type="checkbox" name="tpl" {if $feature['tpl']}checked{/if} value="1"><label>Разрешить переменные &#123;${$feature['trans']}&#125; &#123;${$feature['trans']}_list&#125; &#123;${$feature['trans']}_2r&#125; для мета тегов</label></li>
 				<li><input type="checkbox" name="visible" {if $feature['visible']}checked{/if} value="1"><label>Видимый</label></li>
 				<li><input type="checkbox" name="isrange" {if $feature['isrange']}checked{/if} value="1"><label>диапазонный ползунок</label></li>
 			</ul>
