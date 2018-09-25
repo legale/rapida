@@ -325,7 +325,7 @@ class ProductsView extends View
                         $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));
                         $pairs['{$' . $f['trans'] . '}'] = array_shift($options['full'][$fid]['vals']);
                         if (count($options['full'][$fid]['vals']) > 1) {
-                            $pairs['{$' . $f['trans'] . '_2r}'] = " " . implode(", ", array_rand(array_flip($options['full'][$fid]['vals']), 2));
+                            $pairs['{$' . $f['trans'] . '_2r}'] = " " . implode(", ", array_intersect_keys($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals']), 2)));
                         }
                     }
                 }
