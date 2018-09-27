@@ -652,7 +652,7 @@ class Features extends Simpla
      * @param array $filter
      * @return mixed
      */
-    public function get_options_ids($filter = array())
+    public function get_options_ids($filter = array()): ?array
     {
         dtimer::log(__METHOD__ . " start");
         dtimer::log(__METHOD__ . " filter: " . var_export($filter, true));
