@@ -8,6 +8,7 @@ class Queue extends Simpla
 
     public function redis_adddask(string $keyhash, string $method, string $task): ?bool
     {
+        dtimer::log(__METHOD__. "start keyhash: $keyhash");
         $redis = $this->cache->redis_init();
         if ($redis && !$redis->hexists($this->config->host . "_queue_hashtable", $keyhash)) {
             $redis->hset($this->config->host . "_queue_hashtable", $keyhash, null);
@@ -17,7 +18,7 @@ class Queue extends Simpla
         }
     }
 
-    public function redis_execlast(): ?bool
+    public function redis_execlast(): bool
     {
         $redis = $this->cache->redis_init();
         if(!$redis){
@@ -51,7 +52,7 @@ class Queue extends Simpla
 
     public function addtask($keyhash, $method, $task)
     {
-
+        dtimer::log(__METHOD__. "start keyhash: $keyhash");
         if (empty($task || $keyhash)) {
             return false;
         }

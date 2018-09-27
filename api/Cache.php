@@ -62,11 +62,12 @@ class Cache extends Simpla
             self::$redis->pconnect($path);
             self::$redis->select(0);
         }
+        dtimer::log(__METHOD__." return redis class");
         return self::$redis;
     }
 
 
-    public function redis_set(string $key, string $data, int $ttl = 0): ?bool
+    public function redis_set(string $key, string $data, int $ttl = 0): bool
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
@@ -75,14 +76,14 @@ class Cache extends Simpla
         dtimer::log(__METHOD__." start: $key");
 
         $redis = self::redis_init();
-        return $redis ? $redis->setex($key, $ttl, $data) : null;
+        return $redis ? $redis->setex($key, $ttl, $data) : false;
     }
 
     public function redis_get(string $key): ?string
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
-            return false;
+            return null;
         }
         dtimer::log(__METHOD__." start $key");
 
@@ -114,7 +115,7 @@ class Cache extends Simpla
     }
 
 
-    public function redis_set_serial(string $key, $value, int $ttl = 0): ?bool
+    public function redis_set_serial(string $key, $value, int $ttl = 0): bool
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
@@ -123,7 +124,7 @@ class Cache extends Simpla
         dtimer::log(__METHOD__." start: $key");
         $redis = self::redis_init();
         if(!$redis){
-            return null;
+            return false;
         }
 
         switch (self::$config['method']) {
@@ -153,7 +154,7 @@ class Cache extends Simpla
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
-            return false;
+            return null;
         }
         dtimer::log(__METHOD__." start: $key");
         $redis = self::redis_init();
