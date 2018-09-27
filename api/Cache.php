@@ -79,16 +79,16 @@ class Cache extends Simpla
         return $redis ? $redis->setex($key, $ttl, $data) : false;
     }
 
-    public function redis_get(string $key): ?string
+    public function redis_get(string $key)
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
-            return null;
+            return false;
         }
         dtimer::log(__METHOD__." start $key");
 
         $redis = self::redis_init();
-        return $redis ? $redis->get($key) : null;
+        return $redis ? $redis->get($key) : false;
     }
 
     public function redis_created(string $key, int $init): ?int
@@ -154,12 +154,12 @@ class Cache extends Simpla
     {
         //Если кеш отключен - останавливаем
         if (self::$enabled !== true) {
-            return null;
+            return false;
         }
         dtimer::log(__METHOD__." start: $key");
         $redis = self::redis_init();
         if(!$redis){
-            return null;
+            return false;
         }
         $value = $redis->get($key);
 

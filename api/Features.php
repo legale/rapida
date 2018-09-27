@@ -88,7 +88,7 @@ class Features extends Simpla
             $res = $this->cache->redis_get_serial($keyhash);
 
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null) {
+            if ($res !== false) {
                 if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                     return $res;
                 }
@@ -695,7 +695,7 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null) {
+            if ($res !== false) {
                 if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                     return $res;
                 }
@@ -805,7 +805,7 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null) {
+            if ($res !== false) {
                 if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
                     return $res;
                 }
