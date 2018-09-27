@@ -104,7 +104,6 @@ class Features extends Simpla
                 $task .= ');';
                 $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
-                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
                 return $res;
             }
         }
@@ -715,7 +714,7 @@ class Features extends Simpla
                 $task .= ');';
                 $var = $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
-                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
+
                 return $res;
             }
         }
@@ -820,7 +819,6 @@ class Features extends Simpla
                 $task .= ');';
                 $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
-                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
                 return $res;
             }
         }
@@ -941,180 +939,6 @@ class Features extends Simpla
         $vids = array_slice($vals, $first, $last - $first + 1);
         print_r($vids);
         return $vids;
-    }
-
-
-    /*
-     * Этим методом можно получить необработанные данные из таблицы s_options
-     * Используется для получения входных данных для метода get_options_mix()
-     * @param array $filter
-     * @return array|bool
-     */
-    public function get_options_raw_cached($filter = array())
-    {
-        //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
-        dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
-        $filter = array_intersect_key($filter, array_flip($this->tokeep));
-        dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
-        $filter_ = $filter;
-
-        if (!empty($filter_['force_no_cache'])) {
-            $force_no_cache = true;
-            unset($filter_['force_no_cache']);
-        } else {
-            $force_no_cache = false;
-        }
-
-
-        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
-        ksort($filter_);
-        $filter_string = var_export($filter_, true);
-        $keyhash = md5(__METHOD__ . $filter_string);
-
-        //если запуск был не из очереди - пробуем получить из кеша
-        if (!$force_no_cache) {
-            dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->redis_get_serial($keyhash);
-
-
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log(__METHOD__ . " add task force_no_cache keyhash: $keyhash");
-
-            $task = '$this->features->get_options_raw(';
-            $task .= $filter_string;
-            $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
-
-        if (isset($res) && !empty_($res)) {
-            dtimer::log(__METHOD__ . " return cache res count: " . count($res));
-            return $res;
-        }
-
-
-        $product_id_filter = '';
-        $category_id_filter = '';
-        $visible_filter = '';
-        $brand_id_filter = '';
-        $features_filter = '';
-        $products_join = '';
-        $products_join_flag = false;
-        $res = array();
-
-        //если у нас не заданы фильтры опций и не запрошены сами опции, будем брать все.
-        if (!isset($filter['feature_id']) || count($filter['feature_id']) === 0) {
-            $f = $this->get_features_ids(array('in_filter' => 1, 'return' => array('key' => 'id', 'col' => 'id')));
-            if ($f !== false) {
-                $filter['feature_id'] = $f;
-            } else {
-                //если у нас нет свойств в фильтре, значит и выбирать нечего
-                return false;
-            }
-        }
-
-        if (!empty($filter['features']) && is_array($filter['features'])) {
-            $features_ids = array_keys($filter['features']);
-            //если в фильтрах свойств что-то задано, но этого нет в запрошенных фильтрах, добавляем.
-            foreach ($features_ids as $fid) {
-                if (!in_array($fid, $filter['feature_id'])) {
-                    $filter['feature_id'][] = $fid;
-                }
-            }
-        }
-
-
-        //собираем столбцы, которые нам понадобятся для select
-        if (isset($filter['brand_id'])) {
-            //если задан бренд, то соберем все в 1 массив со свойствами
-            $select_array = $filter['feature_id'];
-            $select_array[] = 'brand_id';
-            //флаг присоединения таблицы товаров
-            $products_join_flag = true;
-        } else {
-            //иначе просто возьмем свойства
-            $select_array = $filter['feature_id'];
-        }
-        $select = "SELECT " . implode(', ', array_map(function ($a) {
-                return '`' . $a . '`';
-            }, $select_array));
-
-
-        if (!empty($filter['category_id'])) {
-            $category_id_filter = $this->db2->placehold(' AND o.product_id in(SELECT DISTINCT product_id from s_products_categories where category_id in (?@))', (array)$filter['category_id']);
-        }
-
-        if (!empty($filter['product_id'])) {
-            $product_id_filter = $this->db2->placehold(' AND o.product_id in (?@)', (array)$filter['product_id']);
-        }
-
-        if (!empty($filter['brand_id'])) {
-            $products_join_flag = true;
-            $brand_id_filter = $this->db2->placehold(' AND p.brand_id in (?@)', (array)$filter['brand_id']);
-        }
-
-        if (!empty($filter['visible'])) {
-            $products_join_flag = true;
-            $visible_filter = $this->db2->placehold(' AND p.visible=?', (int)$filter['visible']);
-        }
-
-        //фильтрация по свойствам товаров
-        if (!empty($filter['features'])) {
-            foreach ($filter['features'] as $fid => $vids) {
-                if (is_array($vids)) {
-                    $features_filter .= $this->db->placehold(" AND `$fid` in (?@)", $vids);
-                }
-            }
-        }
-
-        if ($products_join_flag === true) {
-            $products_join = "INNER JOIN __products p on p.id = o.product_id";
-        }
-
-        $query = $this->db2->placehold("$select
-		    FROM __options o
-		    $products_join
-			WHERE 1 
-			$product_id_filter 
-			$brand_id_filter 
-			$features_filter 
-		    $visible_filter
-			$category_id_filter
-			");
-
-        if (!$this->db2->query($query)) {
-            dtimer::log(__METHOD__ . " query error: $query", 1);
-            return false;
-        }
-        if ($this->db2->num_rows() < 1) {
-            dtimer::log(__METHOD__ . " empty result", 2);
-        }
-
-
-        //вывод обрабатываем построчно
-        while (1) {
-            $row = $this->db2->result_array(null, 'pid', true);
-            if ($row === false) {
-                break;
-            }
-            //~ $res['pid'][] = $row['pid'];
-            //~ unset($row['pid']);
-
-            foreach ($row as $fid => $vid) {
-                ($fid !== 'brand_id') ? $fid = (int)$fid : null;
-                $vid = (int)$vid;
-                if ($vid !== 0 && !isset($res[$fid][$vid])) {
-                    $res[$fid][$vid] = '';
-                }
-            }
-        }
-
-        dtimer::log("redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, 2592000); //2592000 is a 1 month
-        dtimer::log(__METHOD__ . ' return db');
-        return $res;
     }
 
 
