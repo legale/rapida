@@ -310,6 +310,7 @@ class ProductsView extends View
             $pairs = array(
                 '{$meta_filter}' => $meta_filter,
                 '{$category}' => $cat['name'] ? $cat['name'] . ' ' : '',
+                '{$category_singular}' => $cat['name'] ? $cat['name'] . ' ' : '',
                 '{$products_count}' => $this->filter['products_count'] . ' ',
                 '{$sitename}' => $this->settings->site_name ? $this->settings->site_name . ' ' : '',
 //                '{$filter}' => $cat['meta_title'] ? $cat['meta_title'] .' ' : '' ,

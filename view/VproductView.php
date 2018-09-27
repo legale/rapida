@@ -200,6 +200,7 @@ class VproductView extends View
         }
         //добавляем переменную {$category}
         $pairs['{$category}'] = $cat['name'];
+        $pairs['{$category_singular}'] = $cat['name_singular'];
         $pairs['{$brand}'] = $brand['name'];
 
 
