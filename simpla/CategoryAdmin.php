@@ -92,6 +92,9 @@ class CategoryAdmin extends Simpla
 			$this->upload_images($cid, $save['new_images']);
 		}
 
+		//инициализируем категории заново
+        $this->categories->init_categories(true);
+
 		$this->status[] = array(
 			'status' => 3,
 			'message' => 'Изменения сохранены',

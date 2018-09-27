@@ -351,7 +351,7 @@ class ProductsView extends View
 
         //передаем данные в шаблоны
         if (isset($cat['id'])) {
-            $this->design->assign('category', $cat);
+            $this->design->assign('cat', $cat);
             $this->design->assign('meta_filter', $meta_filter);
             $this->design->assign('meta_title', $auto_meta_title);
             $this->design->assign('meta_keywords', $auto_meta_keywords);

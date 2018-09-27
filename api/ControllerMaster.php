@@ -24,6 +24,7 @@ class ControllerMaster extends Simpla
         'page' => 'coSimpla',
         'catalog' => 'coSimpla',
         'products' => 'coSimpla',
+        'vproducts' => 'coSimpla',
         'search' => 'coSimpla',
         'brands' => 'coSimpla',
         'contact' => 'coSimpla',
@@ -339,6 +340,8 @@ class ControllerMaster extends Simpla
                     break;
                 }
 
+
+
                 //иначе продолжаем делить части массива
                 $explode = explode('-', $a[0], 2);
                 $cnt = count($explode);
@@ -351,7 +354,20 @@ class ControllerMaster extends Simpla
                     return false;
                 }
 
-                if ($f === 'brand') {
+                //если у нас первое слово buy, значит это товар
+                if($f === "buy"){
+                    $res["module"] = "vproducts";
+                    $res["product_url"] = $o;
+                    array_shift($a);
+                    //Если больше ничего не осталось, останавливаемся
+                    if (count($a) < 1) {
+                        break;
+                    }
+                }
+
+
+
+                    if ($f === 'brand') {
                     $res['brand'] = array_flip(explode('-', $o));
                     //убираем использованный элемент
                     array_shift($a);

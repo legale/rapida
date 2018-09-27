@@ -18,6 +18,7 @@ class IndexView extends View
         'catalog' => 'ProductsView',
         'search' => 'ProductsView',
         'products' => 'ProductView',
+        'vproducts' => 'VproductView',
         'brands' => 'BrandsView',
         'contact' => 'FeedbackView',
         'user' => 'UserView',
