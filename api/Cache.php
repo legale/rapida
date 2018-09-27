@@ -110,6 +110,7 @@ class Cache extends Simpla
             dtimer::log(__METHOD__ . " current time: ". date("d-m-y H:m:s",time()) . " key created: ".date("d-m-y H:m:s", $diff));
             return $diff;
         } else{
+            dtimer::log(__METHOD__." redis key expired! ".var_export($ttl, true));
             return null;
         }
     }
