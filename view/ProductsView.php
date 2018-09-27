@@ -479,6 +479,9 @@ class ProductsView extends View
 
             //тут проверим количество переданных значений опций и количество полученных из базы,
             //если не совпадает - return false
+            if (!is_iterable($ids)) {
+                dtimer::log(" ids is not countable. " . var_export($ids, true), 2);
+            }
             if ($ids === false || count($ids) !== count($vals)) {
                 dtimer::log(__METHOD__ . ' given names and founded ids not equal. return false ' . var_export($ids, true) . var_export($vals, true), 2);
                 //запускаем снова, если это был первый запуск
