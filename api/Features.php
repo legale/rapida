@@ -88,27 +88,25 @@ class Features extends Simpla
             $res = $this->cache->redis_get_serial($keyhash);
 
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
-                return $res;
-            }
-
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
-
-            $task = '$this->features->get_features(';
-            $task .= $filter_string;
-            $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-
-
             if ($res !== null) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                    return $res;
+                }
+
+                //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+                //функция выполнялась полностью
+                $filter_['force_no_cache'] = true;
+                $filter_string = var_export($filter_, true);
+                dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+
+                $task = '$this->features->get_features(';
+                $task .= $filter_string;
+                $task .= ');';
+                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+
                 dtimer::log(__METHOD__ . " return cache res count: " . count($res));
                 return $res;
             }
-
         }
 
 
@@ -682,7 +680,7 @@ class Features extends Simpla
         if (!empty($filter_['force_no_cache'])) {
             $force_no_cache = true;
             unset($filter_['force_no_cache']);
-        }else{
+        } else {
             $force_no_cache = false;
         }
         $res = [];
@@ -697,30 +695,29 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+            if ($res !== null) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                    return $res;
+                }
+                //Если у нас был запуск без параметров, сохраним результат в переменную класса.
+                if (!isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
+                    $this->options[$key . "_" . $col] = $res;
+                }
+
+                //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+                //функция выполнялась полностью
+                $filter_['force_no_cache'] = true;
+                $filter_string = var_export($filter_, true);
+                dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+
+                $task = '$this->features->get_options_ids(';
+                $task .= $filter_string;
+                $task .= ');';
+                $var = $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+
+                dtimer::log(__METHOD__ . " return cache res count: " . count($res));
                 return $res;
             }
-            //Если у нас был запуск без параметров, сохраним результат в переменную класса.
-            if (!isset($filter['id']) && !isset($filter['trans']) && !isset($filter['trans2'])) {
-                $this->options[$key . "_" . $col] = $res;
-            }
-
-
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
-
-            $task = '$this->features->get_options_ids(';
-            $task .= $filter_string;
-            $task .= ');';
-            $var = $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-        }
-
-        if (isset($res) && !empty_($res)) {
-            dtimer::log(__METHOD__ . " return cache res count: " . count($res));
-            return $res;
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -808,27 +805,24 @@ class Features extends Simpla
             dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
-                return $res;
-            }
+            if ($res !== null) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                    return $res;
+                }
+                //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+                //функция выполнялась полностью
+                $filter_['force_no_cache'] = true;
+                $filter_string = var_export($filter_, true);
+                dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
 
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
+                $task = '$this->features->get_options_mix(';
+                $task .= $filter_string;
+                $task .= ');';
+                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
-            $task = '$this->features->get_options_mix(';
-            $task .= $filter_string;
-            $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-
-
-            if (isset($res) && !empty_($res)) {
                 dtimer::log(__METHOD__ . " return cache res count: " . count($res));
                 return $res;
             }
-
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

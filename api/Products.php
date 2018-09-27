@@ -75,7 +75,7 @@ class Products extends Simpla
             'votes' => $p['votes'],
             'rating' => $p['rating'],
         );
-        return $this->update_product($pid, $update) ? array('votes' => $p['votes'], 'rating' => $p['rating'] ) : false;
+        return $this->update_product($pid, $update) ? array('votes' => $p['votes'], 'rating' => $p['rating']) : false;
     }
 
     /**
@@ -290,24 +290,23 @@ class Products extends Simpla
         if (!$force_no_cache) {
             dtimer::log("count_products normal run keyhash: $keyhash");
             $res = $this->cache->redis_get($keyhash);
-            if ($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
-                return $res;
-            }
+            if ($res !== null) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                    return $res;
+                }
 
-            //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-            //функция выполнялась полностью
-            $filter_['force_no_cache'] = true;
-            $filter_string = var_export($filter_, true);
-            dtimer::log("count_products add task force_no_cache keyhash: $keyhash");
+                //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
+                //функция выполнялась полностью
+                $filter_['force_no_cache'] = true;
+                $filter_string = var_export($filter_, true);
+                dtimer::log("count_products add task force_no_cache keyhash: $keyhash");
 
-            $task = '$this->products->count_products(';
-            $task .= $filter_string;
-            $task .= ');';
-            //~ dtimer::log("count_products add task: $keyhash " . $filter['method']);
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+                $task = '$this->products->count_products(';
+                $task .= $filter_string;
+                $task .= ');';
+                //~ dtimer::log("count_products add task: $keyhash " . $filter['method']);
+                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
-
-            if (isset($res) && !empty_($res)) {
                 dtimer::log("get_cache count_products HIT! value: '$res'");
                 return (int)$res;
             }
@@ -470,17 +469,17 @@ class Products extends Simpla
         foreach ($product as $k => $e) {
             $product[$k] = trim($e);
         }
-        if(empty($product['views'])){
-			$product['views'] = 0;
-		}
-        if(empty($product['rating'])){
-			$product['rating'] = 0;
-		}
-        if(empty($product['votes'])){
-			$product['votes'] = 0;
-		}		
-        
-        
+        if (empty($product['views'])) {
+            $product['views'] = 0;
+        }
+        if (empty($product['rating'])) {
+            $product['rating'] = 0;
+        }
+        if (empty($product['votes'])) {
+            $product['votes'] = 0;
+        }
+
+
         //если имя не задано - останавливаемся
         if (!isset($product['name'])) {
             dtimer::log(__METHOD__ . " name is not set! abort. ", 1);
