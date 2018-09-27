@@ -163,6 +163,9 @@ class Cache extends Simpla
             return false;
         }
         $value = $redis->get($key);
+        if($value === false){
+            return false;
+        }
 
         switch (self::$config['method']) {
             case 'json':
