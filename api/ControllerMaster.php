@@ -253,7 +253,7 @@ class ControllerMaster extends Simpla
     {
         $len = strlen($uri);
         dtimer::log(__METHOD__ . " uri ($len): $uri");
-        if(substr($uri, -1, 1) !== '/'){ //если дроби в конце нет
+        if(substr($uri, -1, 1) !== '/' && !strpos($uri, '?')){ //если дроби в конце нет
             header("Location: $uri/", TRUE, 301);
             exit();
         } else if(substr($uri, -2, 2) === '//'){ //если есть хотя бы две дроби в конце, исправим это
