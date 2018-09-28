@@ -62,6 +62,7 @@ class ProductsView extends View
             $arr['url'] = $cat['trans'];
             $url = $this->root->gen_uri($arr);
             header("Location: $url", TRUE, 301);
+            exit();
         }
 
         //преобразуем и запишем себе разобранную адресную строку в виде фильтра, пригодного для api
@@ -99,14 +100,17 @@ class ProductsView extends View
         if (isset($this->filter['redirect'])) {
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
+            exit();
         } else if ($this->filter['page'] > $this->filter['pages']) {
             $this->filter['page'] = $this->filter['pages'];
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
+            exit();
         } else if ($this->filter['page'] < 1 || (isset($this->root->uri_arr['path']['page']) && $this->root->uri_arr['path']['page'] == 1)) {
             $this->filter['page'] = 1;
             $uri = $this->root->gen_uri_from_filter($this->root->uri_arr, $this->filter);
             header("Location: $uri", TRUE, 301);
+            exit();
         }
 
 

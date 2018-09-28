@@ -128,7 +128,7 @@ class ControllerMaster extends Simpla
         if (isset($filter['page']) && $filter['page'] > 1) {
             $res .= '/' . 'page-' . $filter['page'];
         }
-        return $res;
+        return $res."/";
     }
 
 
@@ -222,7 +222,7 @@ class ControllerMaster extends Simpla
             $res .= '/page-' . $arr['page'];
         }
 
-        return $res;
+        return $res."/";
 
     }
 
@@ -253,6 +253,17 @@ class ControllerMaster extends Simpla
     {
         $len = strlen($uri);
         dtimer::log(__METHOD__ . " uri ($len): $uri");
+        if(substr($uri, -1, 1) !== '/'){ //если дроби в конце нет
+            header("Location: $uri/", TRUE, 301);
+            exit();
+        } else if(substr($uri, -2, 2) === '//'){ //если есть хотя бы две дроби в конце, исправим это
+            while(substr($uri, -2, 2) === '//') {
+                $uri = substr($uri, 0, -1);
+            }
+            header("Location: $uri", TRUE, 301);
+            exit();
+        }
+
         $ar = parse_url($uri);
         dtimer::log(__METHOD__ . " after parse_url array: " . var_export($ar, true));
 
