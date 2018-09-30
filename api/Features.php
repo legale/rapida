@@ -9,6 +9,7 @@ class Features extends Simpla
 {
     private $tokeep = array(
         'id',
+        'gid',
         'category_id',
         'feature_id',
         'features',
@@ -20,12 +21,117 @@ class Features extends Simpla
     );
     //тут будут хранится значения опций
     public $options;
-    //тут будут хранится сами опции
+
+    //тут будут хранится опции по id
     public $features;
+
+    //тут будут хранится опции по имени транслитом
+    public $ftrans;
+
+    //тут будут хранится опции по имени альтернативные транслитом
+    public $ftrans2;
+
+    //тут будут хранится опции по группам
+    public $fgroups;
+
 
     //
     public $ttl = 2529000; //25209000 = 1 месяц время жизни кеша. по истечении времени, задания на обновления будут добавляться в очередь
 
+
+    public function __construct()
+    {
+        $this->init_features();
+    }
+
+    public function init_features($reinit = false): void
+    {
+        if ($reinit === false) {
+            //если свойства уже инициализированы
+            if($this->features !== null){
+                return;
+            }
+            if (function_exists('apcu_fetch')) {
+                dtimer::log(__METHOD__ . " ACPU CACHE FEATURES READ ");
+                if (apcu_exists($this->config->host . 'features')) {
+                    $features = apcu_fetch($this->config->host . 'features');
+                    $this->features = &$features[0];
+                    $this->fgroups = &$features[1];
+                    $this->ftrans = &$features[2];
+                    $this->ftrans2 = &$features[3];
+                    dtimer::log(__METHOD__ . " ACPU CACHE FEATURES LOADED");
+                    return;
+                } else {
+                    dtimer::log(__METHOD__ . " ACPU CACHE FEATURES NOT FOUND");
+                }
+            }
+        }
+
+
+        $features = $this->db3->getInd("id", "SELECT * FROM s_features ORDER BY pos");
+        $fgroups = $this->db3->getInd("id", "SELECT * FROM s_options_groups ORDER BY pos");
+        $ftrans = $ftrans2 = [];
+        //добавим все свойства в свои группы
+        foreach ($features as $fid => &$feature) {
+            $fgroups["features"][] = $feature;
+            $ftrans[$feature["trans"]] = $feature;
+            if($feature["trans2"] !== ""){
+                $ftrans2[$feature["trans2"]] = $feature;
+            }
+        }
+
+        $this->features = &$features;
+        $this->fgroups = &$fgroups;
+        $this->ftrans = &$ftrans;
+        $this->ftrans2 = &$ftrans2;
+
+        if (function_exists('apcu_store')) {
+            apcu_store($this->config->host . 'features', [&$features, &$fgroups,  &$ftrans,  &$ftrans2] , 14400);
+            dtimer::log(__METHOD__ . " ACPU CACHE FEATURES STORED");
+        }
+        return;
+    }
+
+    
+    public function id2trans($filter_features): ?array
+    {
+        //массив для результата
+        $res = [];
+
+        foreach($filter_features as $fid => $vids) {
+            $res[$this->features[$fid]["trans"]] = $this->db3->getIndCol("id", "SELECT id, trans FROM s_options_uniq WHERE id IN (?a)", $vids);
+        }
+        return $res;
+    }
+
+    public function trans2id($uri_features): ?array
+    {
+        //массив для результата
+        $res = [];
+        //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
+        $ftrans = &$this->ftrans;
+        $ftrans2 = &$this->ftrans2;
+        foreach($uri_features as $name => $vals){
+            //если такое свойство есть у нас в массивах с именами
+            if(key_exists($name, $ftrans)){
+                $fid = $ftrans[$name]["id"];
+            } else if(key_exists($name, $ftrans2)) {
+                $fid = $ftrans2[$name]["id"];
+            }else{
+                return null;
+            }
+
+            //преобразуем значения опций в их id (vid)
+            $parsed = $this->db3->parse("?a", $vals);
+            $vids = $this->db3->getIndCol("id", "SELECT id, id as val FROM s_options_uniq WHERE trans IN (?p) OR trans2 in (?p)", $parsed, $parsed);
+            if(count($vids) === count($vals)){
+                $res[$fid] = $vids;
+            }else{
+                return null;
+            }
+        }
+        return $res;
+    }
 
     /**
      * @param array $filter
@@ -213,21 +319,17 @@ class Features extends Simpla
     /**
      * @return mixed
      */
-    public function get_options_groups()
+    public function get_options_groups(): array
     {
         dtimer::log(__METHOD__ . " start");
-        $q = "SELECT * FROM __options_groups ORDER BY pos";
-        $this->db->query($q);
-        $res = $this->db->results_array(null, 'id');
-        return $res;
+        return $this->db3->getInd("id", "SELECT * FROM s_options_groups ORDER BY pos");
     }
 
     /**
      * @param $name
      * @return mixed
      */
-    public
-    function add_option_group($name)
+    public function add_option_group($name)
     {
         dtimer::log(__METHOD__ . " start");
         $this->db->query("SELECT MAX(`pos`) as `pos` FROM __options_groups");

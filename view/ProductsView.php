@@ -390,8 +390,8 @@ class ProductsView extends View
         //если задан фильтр по свойствам
         if (isset($uri_path['features'])) {
             //если не получается преобразовать обычные имена - пробуем альтернативные (повторная попытка происходит внутри функции)
-            $filter = $this->uri_to_ids_filter($uri_path['features'], $filter);
-            if (!$filter) {
+            $filter["features"] = $this->features->trans2id($uri_path['features']);
+            if (!$filter["features"]) {
                 return false;
             }
         }
@@ -409,7 +409,7 @@ class ProductsView extends View
 
         //Если есть цена
         if (isset($uri_path['price'])) {
-            $filter['price'] = array_flip($uri_path['price']);
+            $filter['price'] = $uri_path['price'];
         }
 
 
@@ -435,7 +435,7 @@ class ProductsView extends View
         }
 
         //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
-        $brands_trans = $this->brands->get_brands_ids(array($key => array_keys($uri_brand), 'in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
+        $brands_trans = $this->brands->get_brands_ids(array($key => $uri_brand, 'in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
         if (!empty($brands_trans)) {
             $ids = array_values($brands_trans);
             $filter['brand_id'] = array_combine($ids, $ids);
@@ -445,65 +445,6 @@ class ProductsView extends View
             return $flag ? false : $this->uri_brand_to_ids_filter($uri_brand, $filter, true);
         }
         dtimer::log(__METHOD__ . ' return filter["brand_id"]:' . var_export($filter['brand_id'], true));
-        return $filter;
-    }
-
-
-//функция для преобразования ЧПУ части uri с фильтрами по свойствам $uri_path['features']
-//флаг служит для задания преобразования по альтернативным названиям параметров trans2
-    private function uri_to_ids_filter($uri_features, $filter, $flag = false)
-    {
-        dtimer::log(__METHOD__ . " start " . var_export($uri_features, true));
-        dtimer::log(__METHOD__ . " filter array: " . var_export($filter, true));
-        //обычный поиск просходит по полям trans в таблице features и md4 в таблице options_uniq
-        //альтернативный поиск - по полям trans2 и md42 соответственно.
-        $key = $flag ? 'trans2' : 'trans';
-
-
-        //массив для результата
-        $filter['features'] = array();
-
-        //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
-        $features_trans = $this->features->get_features_ids(array('in_filter' => 1, 'return' => array('key' => $key, 'col' => 'id')));
-
-        //перебираем массив фильтра из адресной строки
-        foreach ($uri_features as $name => $vals) {
-
-            //если ничего не нашлось - останавливаемся
-            if (!isset($features_trans[$name])) {
-                dtimer::log(__METHOD__ . " feature '$name' not found! return false ", 2);
-                //запускаем снова, если это был первый запуск
-                return $flag ? false : $this->uri_to_ids_filter($uri_features, $filter, true);
-            }
-            //переворачиваем массив, потому что значения у нас идут в ключах, а нам нужно наоборот
-            $vals = array_flip($vals);
-
-            //получим id уникальных значений по их хешам
-            $ids = $this->features->get_options_ids(array($key => $vals, 'return' => array('key' => 'id', 'col' => 'id')));
-
-
-            //тут проверим количество переданных значений опций и количество полученных из базы,
-            //если не совпадает - return false
-            if ($ids === null || count($ids) !== count($vals)) {
-                dtimer::log(__METHOD__ . ' given names and founded ids not equal. return false ' . var_export($ids, true) . var_export($vals, true), 2);
-                //запускаем снова, если это был первый запуск
-                return $flag ? false : $this->uri_to_ids_filter($uri_features, $filter, true);
-            } else {
-                //добавим в фильтр по свойствам массив с id значений опций
-                //а также правильные названия транслитом
-                if ($flag) {
-                    $features_trans2 = $this->features->get_features_ids(array('in_filter' => 1, 'return' => array('key' => 'id', 'col' => 'trans2')));
-                } else {
-                    $features_trans2 = $this->features->get_features_ids(array('in_filter' => 1, 'return' => array('key' => 'id', 'col' => 'trans')));
-                }
-                $filter['translit'][$features_trans2[$features_trans[$name]]] = $this->features->get_options_ids(array('id' => $ids, 'return' => array('key' => 'trans', 'col' => 'id')));
-                $filter['features'][$features_trans[$name]] = $ids;
-            }
-        }
-        if ($flag) {
-            $filter['redirect'] = true;
-        }
-        dtimer::log(__METHOD__ . ' return filter["features"]:' . var_export($filter['features'], true));
         return $filter;
     }
 

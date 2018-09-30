@@ -41,6 +41,7 @@ class FeatureAdmin extends Simpla
 				$feature_categories = array();
 			}
 		}
+		$this->features->init_features(true); //грузим опции заново
 		$ogroups = $this->features->get_options_groups();
 
 

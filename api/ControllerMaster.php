@@ -95,44 +95,32 @@ class ControllerMaster extends Simpla
         }
         //теперь цена если есть
         if (isset($filter['price'])) {
-            $res .= '/price-'.implode('-', $filter['price']);
+            $res .= '/price-' . implode('-', $filter['price']);
         }
 
         //теперь опции, если они есть
         if (isset($filter['features']) && is_array($filter['features']) && count($filter['features']) > 0) {
-            $features_trans = $this->features->get_features_ids(array('return' => array('key' => 'id', 'col' => 'trans')));
+            $trans = $this->features->id2trans($filter['features']);
 
-
-            foreach ($filter['features'] as $fid => $v) {
-                if (isset($features_trans[$fid])) {
-                    if (is_array($v) && count($v) > 0) {
-                        $options_trans = $this->features->get_options_ids(array('id' => $v, 'return' => array('key' => 'id', 'col' => 'trans')));
-                        $s = '';
-                        $last = end($v);
-                        foreach ($v as $vid) {
-                            $s .= $options_trans[$vid];
-                            if ($vid !== $last) {
-                                $s .= '-';
-                            }
-                        }
-                        $res .= "/" . $features_trans[$fid] . "-" . $s;
-                    }
-                }
+            foreach ($trans as $name => &$vals) {
+                $res .= "/" . $name . "-" . implode('-', $vals);
             }
+
         }
         //сортировка
         if (isset($filter['sort'])) {
             $res .= '/' . 'sort-' . $filter['sort'];
         }
+
         //страница
         if (isset($filter['page']) && $filter['page'] > 1) {
             $res .= '/' . 'page-' . $filter['page'];
         }
-        return $res."/";
+        return $res . "/";
     }
 
 
-    //генерируем uri из массива параметров
+//генерируем uri из массива параметров
     public function gen_uri($arr = null, $filter = null)
     {
         dtimer::log(__METHOD__ . ' start arr: ' . var_export($arr, true));
@@ -152,32 +140,14 @@ class ControllerMaster extends Simpla
         if (isset($filter['price'], $arr['price'])) {
             unset($arr['price']);
         }
-        //если фильтр цена есть в массиве адресной строки - переворачиваем массив, потому что данные в нем хранятся в ключах массива, а не в значениями
-        if (isset($arr['price'])) {
-            $arr['price'] = array_flip($arr['price']);
-        }
 
 
-        if (isset($filter['brand'])) {
-            $filter['brand'] = is_array($filter['brand']) ? array_flip($filter['brand']) : array((string)$filter['brand'] => 0);
-        }
-
-
-        if (isset($filter['features']) && is_array($filter['features'])) {
-            foreach ($filter['features'] as $fname => $vals) {
-                $filter['features'][$fname] = is_array($vals) ? array_flip($vals) : array((string)$vals => 0);
-            }
-        }
-
-
-        dtimer::log(__METHOD__ . ' filter before merge: ' . var_export($filter, true));
-
-
+        //тут соединяем два массива, чтобы получить результирующий из которого и будет состоять url
         if (isset($filter)) {
-            $arr = $this->merge_arrays_keys($arr, $filter);
+            $arr = $this->merge_arrays($arr, $filter);
         }
-        dtimer::log(__METHOD__ . ' compiled: ' . print_r($arr, true));
 
+        dtimer::log(__METHOD__ . ' compiled: ' . print_r($arr, true));
         $res = '';
 
         //Если у нас нет модуля - останавливаемся
@@ -196,19 +166,23 @@ class ControllerMaster extends Simpla
 
 
         //теперь бренды, если они есть
-        if (isset($arr['brand']) && is_array($arr['brand']) && count($arr['brand']) > 0) {
-            $res .= '/brand-' . implode('-', array_keys($arr['brand']));
+        if (isset($arr['brand'])){
+            if(is_array($arr['brand'])) {
+                $res .= '/brand-' . implode('-', $arr['brand']);
+            } else {
+                $res .= '/brand-' .  $arr['brand'];
+            }
         }
 
         if (isset($arr['price'])) {
-            $res .= '/price-'.implode('-', $arr['price']);
+            $res .= '/price-' . implode('-', $arr['price']);
         }
 
         //теперь опции, если они есть
-        if (isset($arr['features']) && is_array($arr['features']) && count($arr['features']) > 0) {
-            foreach ($arr['features'] as $name => $v) {
-                if (is_array($v) && count($v) > 0) {
-                    $res .= "/$name-" . implode('-', array_keys($v));
+        if (isset($arr['features']) && is_array($arr['features'])) {
+            foreach ($arr['features'] as $name => $vals) {
+                if (is_array($vals) && count($vals) > 0) {
+                    $res .= "/$name-" . implode('-', $vals);
                 }
             }
         }
@@ -221,14 +195,14 @@ class ControllerMaster extends Simpla
         if (isset($arr['page']) && $arr['page'] > 1) {
             $res .= '/page-' . $arr['page'];
         }
-
-        return $res."/";
+        dtimer::log(__METHOD__." return");
+        return $res . "/";
 
     }
 
 
-    //соединяем рекурсивно 2 массива между собой по ключам, убирая полные совпадения
-    private function merge_arrays_keys($a, $b)
+//соединяем рекурсивно 2 массива между собой по ключам, убирая полные совпадения
+    public function merge_arrays_keys($a, $b)
     {
         if (!is_array($a) || !is_array($b)) {
             return false;
@@ -248,16 +222,35 @@ class ControllerMaster extends Simpla
         return $a + $b;
     }
 
+    //соединяем рекурсивно 2 массива между собой, убирая полные совпадения значений
+    public function merge_arrays(array $a, array $b): array
+    {
+        foreach ($a as $a_key => $a_val) {
+            //если массив и такой элемент есть в массиве b запускаем рекурсию
+            if (is_array($a_val) && isset($b[$a_key]) && is_array($b[$a_key])) {
+                $a[$a_key] = $this->merge_arrays($a_val, $b[$a_key]);
+                unset($b[$a_key]);
+            } else {
+                //иначе проверяем если в массиве b есть такое значение, убираем его из обоих массивов
+                $b_key = array_search($a_val, $b);
+                if ($b_key !== false) {
+                    unset($a[$a_key], $b[$b_key]);
+                }
+            }
+        }
+        return array_merge($a,$b);
+    }
+
 
     public function parse_uri($uri)
     {
         $len = strlen($uri);
         dtimer::log(__METHOD__ . " uri ($len): $uri");
-        if(substr($uri, -1, 1) !== '/' && !strpos($uri, '?')){ //если дроби в конце нет
+        if (substr($uri, -1, 1) !== '/' && !strpos($uri, '?')) { //если дроби в конце нет
             header("Location: $uri/", TRUE, 301);
             exit();
-        } else if(substr($uri, -2, 2) === '//'){ //если есть хотя бы две дроби в конце, исправим это
-            while(substr($uri, -2, 2) === '//') {
+        } else if (substr($uri, -2, 2) === '//') { //если есть хотя бы две дроби в конце, исправим это
+            while (substr($uri, -2, 2) === '//') {
                 $uri = substr($uri, 0, -1);
             }
             header("Location: $uri", TRUE, 301);
@@ -290,7 +283,8 @@ class ControllerMaster extends Simpla
         return $res;
     }
 
-    private function parse_uri_path($path)
+    private
+    function parse_uri_path($path)
     {
         $len = strlen($path);
         dtimer::log(__METHOD__ . " path ($len): $path");
@@ -352,7 +346,6 @@ class ControllerMaster extends Simpla
                 }
 
 
-
                 //иначе продолжаем делить части массива
                 $explode = explode('-', $a[0], 2);
                 $cnt = count($explode);
@@ -366,7 +359,7 @@ class ControllerMaster extends Simpla
                 }
 
                 //если у нас первое слово buy, значит это товар
-                if($f === "buy"){
+                if ($f === "buy") {
                     $res["module"] = "vproducts";
                     $res["product_url"] = $o;
                     array_shift($a);
@@ -377,9 +370,8 @@ class ControllerMaster extends Simpla
                 }
 
 
-
-                    if ($f === 'brand') {
-                    $res['brand'] = array_flip(explode('-', $o));
+                if ($f === 'brand') {
+                    $res['brand'] = explode('-', $o);
                     //убираем использованный элемент
                     array_shift($a);
                     //Если больше ничего не осталось, останавливаемся
@@ -411,10 +403,11 @@ class ControllerMaster extends Simpla
                     }
                     if (in_array($f, array('sort', 'page'))) {
                         $res[$f] = $o;
-                    } else if($f === 'price'){
-                        $res[$f] = array_flip(explode('-', $o));
+                    } else if ($f === 'price') {
+                        $res[$f] = explode('-', $o);
                     } else {
-                        $res['features'][$f] = array_flip(explode('-', $o));
+                        $array = explode('-', $o);
+                        $res['features'][$f] = $array;
                     }
                 }
                 break;
@@ -423,7 +416,8 @@ class ControllerMaster extends Simpla
     }
 
 
-    private function parse_uri_query($query)
+    private
+    function parse_uri_query($query)
     {
         $a = explode('&', $query);
         $c = array();
@@ -438,7 +432,8 @@ class ControllerMaster extends Simpla
         return $c;
     }
 
-    private function get_uri()
+    private
+    function get_uri()
     {
         if (!isset($_SERVER)) {
             return false;

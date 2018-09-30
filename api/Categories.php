@@ -193,14 +193,20 @@ class Categories extends Simpla
     public function init_categories($reinit = false): void
     {
         dtimer::log(__METHOD__ . " start reinit flag: " . var_export($reinit, true));
-        if ($reinit === false && function_exists('apcu_fetch')) {
-            dtimer::log(__METHOD__ . " ACPU CACHE CATEGORIES READ ");
-            $this->all_categories = apcu_exists($this->config->host . 'all_categories') ? apcu_fetch($this->config->host . 'all_categories') : null;
-            $this->categories_tree = &$this->all_categories[0]['subcategories'];
-            $this->categories_uri = &$this->all_categories[0]['uri'];
-            unset($this->all_categories[0]); //remove root element
-            if ($this->all_categories) {
+        if ($reinit === false ) {
+            //если категории уже инициализированы
+            if($this->all_categories !== null){
                 return;
+            }
+            if (function_exists('apcu_fetch')) {
+                dtimer::log(__METHOD__ . " ACPU CACHE CATEGORIES READ ");
+                $this->all_categories = apcu_exists($this->config->host . 'all_categories') ? apcu_fetch($this->config->host . 'all_categories') : null;
+                $this->categories_tree = &$this->all_categories[0]['subcategories'];
+                $this->categories_uri = &$this->all_categories[0]['uri'];
+                unset($this->all_categories[0]); //remove root element
+                if ($this->all_categories) {
+                    return;
+                }
             }
         }
 

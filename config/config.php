@@ -38,7 +38,7 @@ return array (
   ),
   'cache' => 
   array (
-    'enabled' => true,
+    'enabled' => false,
     'method' => 'msgpack',
     'default_chmod' => '775',
     'securityKey' => 'mysite',
@@ -49,7 +49,7 @@ return array (
     'skip_queue_full' => true,
   ),
   'debug' => true,
-  'captcha' => false,
+  'captcha' => true,
   'max_upload_filesize' => '',
   'last_import' => '1537806315',
 );

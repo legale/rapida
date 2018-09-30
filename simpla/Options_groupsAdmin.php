@@ -8,6 +8,9 @@ class Options_groupsAdmin extends Simpla
 
 	public function fetch()
 	{
+		//заново инициализируем опции
+		$this->features->init_features(true);
+
 		// Группы свойств
 		$ogroups = $this->features->get_options_groups();
 		$this->design->assign('ogroups', $ogroups);
@@ -45,12 +48,10 @@ class Options_groupsAdmin extends Simpla
   
 
 		// Отображение
-		$opts = $this->features->get_features(array('gid' => $gid));
+		$opts = $this->features->get_features(array('gid' => $gid, "force_no_cache"=> 1));
 		
 		
 		$this->design->assign('opts', $opts);
 		return $this->design->fetch('options_groups.tpl');
 	}
 }
-
-?>
