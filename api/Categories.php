@@ -137,6 +137,15 @@ class Categories extends Simpla
         if (isset($cat['id'])) {
             unset($cat['id']);
         }
+
+        if (!empty($cat['vcat1'])) {
+            $cat['vcat1'] = implode(',', $cat['vcat1']);
+        }
+
+        if (!empty($cat['vcat2'])) {
+            $cat['vcat2'] = implode(',', $cat['vcat2']);
+        }
+
         if (count($cat) === 0) {
             dtimer::log(__METHOD__ . " cat is empty! abort. ", 1);
             return false;
@@ -237,6 +246,8 @@ class Categories extends Simpla
                 $cat['id'] = (int)$cid;
                 $cat['parent_id'] = (int)$cat['parent_id'];
                 $cat['vparent_id'] = (int)$cat['vparent_id'];
+                $cat['vcat1'] = explode(',', $cat['vcat1']);
+                $cat['vcat2'] = explode(',', $cat['vcat2']);
                 $cat['enabled'] = (bool)$cat['enabled'];
                 $cat['visible'] = (bool)$cat['visible'];
                 $cat['path'] = [];

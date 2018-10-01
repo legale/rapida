@@ -235,6 +235,7 @@
             </select>
         </div>
 
+        {*
         <label class=property>Виртуальная родительская категория</label>
         <div сlass="product_categories">
             <select name="save[category][vparent_id]">
@@ -242,6 +243,44 @@
                 {category_select selected=$category['vparent_id'] cats=$cats}
             </select>
         </div>
+        *}
+
+        <label class=property>Вирт. кат. верх. 0</label>
+        <div сlass="product_categories">
+            <select name="save[category][vcat1][0]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['vcat1'][0] cats=$cats}
+            </select>
+        </div>
+
+
+        <label class=property>Вирт. кат. верх. 1</label>
+        <div сlass="product_categories">
+            <select name="save[category][vcat1][1]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['vcat1'][1] cats=$cats}
+            </select>
+        </div>
+
+        <label class=property>Вирт. кат. ниж. 0</label>
+        <div сlass="product_categories">
+            <select name="save[category][vcat2][0]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['vcat2'][0] cats=$cats}
+            </select>
+        </div>
+
+
+        <label class=property>Вирт. кат. ниж. 1</label>
+        <div сlass="product_categories">
+            <select name="save[category][vcat2][1]">
+                <option value='0'>Корневая категория</option>
+                {category_select selected=$category['vcat2'][1] cats=$cats}
+            </select>
+        </div>
+
+
+
 
         <!-- Авто теги для товаров данной категории -->
         <div class="block layer">
