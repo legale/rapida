@@ -92,7 +92,7 @@ class Features extends Simpla
         return;
     }
 
-    
+
     public function id2trans($filter_features): ?array
     {
         //массив для результата

@@ -460,7 +460,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
 //товары
 
-function &products_gen(array &$params, &$rapida)
+function &products_gen_(array &$params, &$rapida)
 {
     $buffer = "";
     open_close($params);
@@ -480,6 +480,40 @@ function &products_gen(array &$params, &$rapida)
             $counter = 0;
         }
     }
+    return open_close($params, $buffer);
+
+}
+
+function &products_gen(array &$params, &$rapida)
+{
+    $buffer = "";
+    open_close($params);
+    $counter = $params['counter'] % 50000;
+
+    $cats = $rapida->categories->get_categories();
+    foreach($cats as &$c){
+        if (!$c['enabled']){
+            continue;
+        }
+
+        $products = $rapida->db3->getAll("SELECT trans FROM s_products WHERE 1 
+        AND visible=1 AND id IN (SELECT product_id FROM s_products_categories WHERE category_id IN (?a))", $c['children']);
+        if (!$products) {
+            return $params;
+        }
+
+        foreach ($products as &$p) {
+            $buffer .= gen_url_string(HOSTNAME . "catalog/". $c["trans"] . "/buy-" . $p['trans']);
+            ++$params['counter'];
+            if (++$counter === 50000) {
+                $params = open_close($params, $buffer);
+                $buffer = "";
+                $counter = 0;
+            }
+        }
+
+    }
+
     return open_close($params, $buffer);
 
 }
