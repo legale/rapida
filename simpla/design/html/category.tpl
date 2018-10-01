@@ -135,7 +135,7 @@
             <div class="name">
                 <label>Название</label>
                 <input class="name" name='save[category][name]' type="text"
-                                              value="{$category['name']|escape}"/>
+                       value="{$category['name']|escape}"/>
             </div>
         </div>
         <div class="column">
@@ -156,26 +156,24 @@
         <div class="column">
             <div class="checkbox">
                 <input name='save[category][visible]' value='0' type="hidden">
-                <input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox" {if $category['visible']}checked{/if}/>
+                <input name='save[category][visible]' value='1' type="checkbox" id="active_checkbox"
+                       {if $category['visible']}checked{/if}/>
                 <label for="active_checkbox">Видимость</label>
             </div>
         </div>
 
     </div>
 
-	{function name=category_select level=0}
-		{foreach $cats as $cat}
-			{if $category['id'] == $cat['id']}{continue}{/if}
-				<option value="{$cat['id']}"
-				{if $selected == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;{/section}{$cat['name']}</option>
-				{if isset($cat['subcategories'])}
-					{category_select cats=$cat['subcategories'] level=$level+1}
-				{/if}
-		{/foreach}
-	{/function}
-
-
-
+    {function name=category_select level=0}
+        {foreach $cats as $cat}
+            {if $category['id'] == $cat['id']}{continue}{/if}
+            <option value="{$cat['id']}"
+                    {if $selected == $cat['id']}selected{/if}>{section name=sp loop=$level}&nbsp;&nbsp;{/section}{$cat['name']}</option>
+            {if isset($cat['subcategories'])}
+                {category_select cats=$cat['subcategories'] level=$level+1}
+            {/if}
+        {/foreach}
+    {/function}
 
 
     <!-- Левая колонка -->
@@ -183,9 +181,10 @@
 
         <label>Дочерние виртуальные категории</label>
         {if !empty($category['vchildren'])}
-        <ol style="list-style: decimal">
-            {foreach $category['vchildren'] as $cid}<li cid="{$cid}">{$cats[$cid]['name']}</li>{/foreach}
-        </ol>
+            <ol style="list-style: decimal">
+                {foreach $category['vchildren'] as $cid}
+                    <li cid="{$cid}">{$cats[$cid]['name']}</li>{/foreach}
+            </ol>
         {/if}
 
         <!-- Параметры страницы -->
@@ -204,11 +203,13 @@
 
                 <li>
                     <label class=property>Title</label>
-                    <textarea name="save[category][meta_title]" class="simpla_inp" type="text">{$category['meta_title']|escape}</textarea>
+                    <textarea name="save[category][meta_title]" class="simpla_inp"
+                              type="text">{$category['meta_title']|escape}</textarea>
                 </li>
                 <li>
                     <label class=property>meta keywords</label>
-                    <textarea name="save[category][meta_keywords]" class="simpla_inp" type="text">{$category['meta_keywords']|escape}</textarea>
+                    <textarea name="save[category][meta_keywords]" class="simpla_inp"
+                              type="text">{$category['meta_keywords']|escape}</textarea>
                 </li>
                 <li>
                     <label class=property>meta description</label>
@@ -225,61 +226,53 @@
     <!-- Правая колонка -->
     <div class="column_right">
 
-
-
-        <label class=property>Родительская категория</label>
-        <div сlass="product_categories">
-            <select name="save[category][parent_id]">
-                <option value='0'>Корневая категория</option>
-                {category_select selected=$category['parent_id'] cats=$cats}
-            </select>
+        <div class="block layer">
+            <label class=property>Родительская категория</label>
+            <div class="product_categories">
+                <select name="save[category][parent_id]">
+                    <option value='0'>Корневая категория</option>
+                    {category_select selected=$category['parent_id'] cats=$cats}
+                </select>
+            </div>
         </div>
-
         {*
         <label class=property>Виртуальная родительская категория</label>
-        <div сlass="product_categories">
+        <div class="product_categories">
             <select name="save[category][vparent_id]">
                 <option value='0'>Корневая категория</option>
                 {category_select selected=$category['vparent_id'] cats=$cats}
             </select>
         </div>
         *}
-
-        <label class=property>Вирт. кат. верх. 0</label>
-        <div сlass="product_categories">
-            <select name="save[category][vcat1][0]">
-                <option value='0'>Корневая категория</option>
-                {category_select selected=$category['vcat1'][0] cats=$cats}
-            </select>
+        <div class="block layer">
+            <label class=property>Вирт. кат. верх.</label>
+            <span><i onclick="add_new('vcat1');" class="dash_link">Дополнительная категория</i></span>
+            {foreach $category['vcat1'] as $i=>$vcat1}
+                <div class="vcat1">
+                    <select name="save[category][vcat1][]">
+                        <option value='0'>Корневая категория</option>
+                        {category_select selected=$category['vcat1'][{$i}] cats=$cats}
+                    </select>
+                    <div class="icons" style="float:right;"><a  onclick="remove_closest(event, '.vcat1');" class="delete" title="Удалить" href="#"></a>
+                </div>
+                </div>
+            {/foreach}
         </div>
 
-
-        <label class=property>Вирт. кат. верх. 1</label>
-        <div сlass="product_categories">
-            <select name="save[category][vcat1][1]">
-                <option value='0'>Корневая категория</option>
-                {category_select selected=$category['vcat1'][1] cats=$cats}
-            </select>
+        <div class="block layer">
+            <label class="property">Вирт. кат. нижн.</label>
+            <span><i onclick="add_new('vcat2');" class="dash_link">Дополнительная категория</i></span>
+            {foreach $category['vcat2'] as $i=>$vcat2}
+                <div class="vcat2">
+                    <select name="save[category][vcat2][]">
+                        <option value='0'>Корневая категория</option>
+                        {category_select selected=$category['vcat2'][{$i}] cats=$cats}
+                    </select>
+                    <div class="icons" style="float:right;"><a  onclick="remove_closest(event, '.vcat2');" class="delete" title="Удалить" href="#"></a>
+                </div>
+                </div>
+            {/foreach}
         </div>
-
-        <label class=property>Вирт. кат. ниж. 0</label>
-        <div сlass="product_categories">
-            <select name="save[category][vcat2][0]">
-                <option value='0'>Корневая категория</option>
-                {category_select selected=$category['vcat2'][0] cats=$cats}
-            </select>
-        </div>
-
-
-        <label class=property>Вирт. кат. ниж. 1</label>
-        <div сlass="product_categories">
-            <select name="save[category][vcat2][1]">
-                <option value='0'>Корневая категория</option>
-                {category_select selected=$category['vcat2'][1] cats=$cats}
-            </select>
-        </div>
-
-
 
 
         <!-- Авто теги для товаров данной категории -->
@@ -380,3 +373,22 @@
 </form>
 <!-- Основная форма (The End) -->
 
+{* тут заводим скрипт для автозаполнения связанных товаров *}
+{literal}
+    <script>
+        "use strict";
+
+        function add_new(_class) {
+            "use strict";
+            let e = document.getElementsByClassName(_class)[0];
+            let copy = e.cloneNode(true);
+            e.parentNode.appendChild(copy);
+        }
+        function remove_closest(e, closest) {
+            "use strict";
+            e.preventDefault();
+            console.log(e.target.closest(closest));
+            e.target.closest(closest).remove();
+        }
+    </script>
+{/literal}
