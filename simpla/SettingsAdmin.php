@@ -7,6 +7,7 @@ class SettingsAdmin extends Simpla
 
     public function fetch()
     {
+
         $this->passwd_file = $this->config->root_dir . '/simpla/.passwd';
         $this->htaccess_file = $this->config->root_dir . '/simpla/.htaccess';
 
@@ -15,6 +16,11 @@ class SettingsAdmin extends Simpla
         $this->design->assign('managers', $managers);
 
         if ($this->request->method('POST')) {
+            //обновление даты кеша
+            if($this->request->post('update_cache_date')){
+                $this->config->cache_date = time();
+            }
+
             $this->settings->yandex_metric = $this->request->post('yandex_metric');
 
             $this->settings->site_name = $this->request->post('site_name');

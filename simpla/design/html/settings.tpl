@@ -76,8 +76,9 @@
                        {if $config->captcha}checked{/if}>
             </li>
             <li>
-                <label class="property">Время последнего импорта</label>
-                <textarea disabled name="last_import" class="simpla_inp">{date("d-m-y H:m:s",$config->last_import)}</textarea>
+                <label class="property">Дата, начиная с которой кеш не обновляется</label>
+                <textarea disabled class="simpla_inp">{date("d-m-y H:m:s",$config->cache_date)}</textarea>
+                <button type="submit" name="update_cache_date" class="simpla_inp" value="1">Обновить дату</button>
             </li>
         </ul>
     </div>

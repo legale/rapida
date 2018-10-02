@@ -76,7 +76,7 @@ class Pages extends Simpla
             dtimer::log("get_pages normal run keyhash: $keyhash");
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+            if($res !== null && $this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
                 return $res;
             }
 

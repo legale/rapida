@@ -195,7 +195,7 @@ class Features extends Simpla
 
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
             if ($res !== false) {
-                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
                     return $res;
                 }
 
@@ -797,7 +797,7 @@ class Features extends Simpla
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
             if ($res !== false) {
-                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
                     return $res;
                 }
                 //Если у нас был запуск без параметров, сохраним результат в переменную класса.
@@ -907,7 +907,7 @@ class Features extends Simpla
             $res = $this->cache->redis_get_serial($keyhash);
             //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
             if ($res !== false) {
-                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
                     return $res;
                 }
                 //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь

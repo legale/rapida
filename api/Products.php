@@ -291,7 +291,7 @@ class Products extends Simpla
             dtimer::log("count_products normal run keyhash: $keyhash");
             $res = $this->cache->redis_get($keyhash);
             if ($res !== false) {
-                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->last_import) {
+                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
                     return $res;
                 }
 
