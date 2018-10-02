@@ -503,7 +503,7 @@ function &products_gen(array &$params, &$rapida)
         }
 
         foreach ($products as &$p) {
-            $buffer .= gen_url_string(HOSTNAME . "catalog/". $c["trans"] . "/buy-" . $p['trans']);
+            $buffer .= gen_url_string(HOSTNAME . "vproducts/". $c["trans"] . "/buy-" . $p['trans']);
             ++$params['counter'];
             if (++$counter === 50000) {
                 $params = open_close($params, $buffer);
