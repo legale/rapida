@@ -246,6 +246,9 @@
         <div class="block layer">
             <label class="property">Вирт. кат. верхн.</label>
             <span><i onclick="add_new('vcat1');" class="dash_link">Дополнительная категория</i></span>
+            {if empty($category['vcat1'])}
+                {$category['vcat1'] = [0]}
+            {/if}
             {foreach $category['vcat1'] as $i=>$vcid}
                 <div class="vcat1">
                     <input style="width: 95%;" class="input_search" value="{$cats[$vcid]['name']}"/>
@@ -260,6 +263,9 @@
         <div class="block layer">
             <label class="property">Вирт. кат. нижн.</label>
             <span><i onclick="add_new('vcat2');" class="dash_link">Дополнительная категория</i></span>
+            {if empty($category['vcat2'])}
+            {$category['vcat2'] = [0]}
+            {/if}
             {foreach $category['vcat2'] as $i=>$vcid}
                 <div class="vcat2">
                     <input style="width: 95%;" data-id="{$vcid}" class="input_search" value="{$cats[$vcid]['name']}"/>
