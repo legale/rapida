@@ -166,11 +166,11 @@ class ControllerMaster extends Simpla
 
 
         //теперь бренды, если они есть
-        if (isset($arr['brand'])){
-            if(is_array($arr['brand'])) {
+        if (isset($arr['brand'])) {
+            if (is_array($arr['brand'])) {
                 $res .= '/brand-' . implode('-', $arr['brand']);
             } else {
-                $res .= '/brand-' .  $arr['brand'];
+                $res .= '/brand-' . $arr['brand'];
             }
         }
 
@@ -195,7 +195,7 @@ class ControllerMaster extends Simpla
         if (isset($arr['page']) && $arr['page'] > 1) {
             $res .= '/page-' . $arr['page'];
         }
-        dtimer::log(__METHOD__." return");
+        dtimer::log(__METHOD__ . " return");
         return $res . "/";
 
     }
@@ -238,7 +238,7 @@ class ControllerMaster extends Simpla
                 }
             }
         }
-        return array_merge($a,$b);
+        return array_merge($a, $b);
     }
 
 
@@ -283,8 +283,7 @@ class ControllerMaster extends Simpla
         return $res;
     }
 
-    private
-    function parse_uri_path($path)
+    private function parse_uri_path($path)
     {
         $len = strlen($path);
         dtimer::log(__METHOD__ . " path ($len): $path");
@@ -360,7 +359,9 @@ class ControllerMaster extends Simpla
 
                 //если у нас первое слово buy, значит это товар
                 if ($f === "buy") {
-                    $res["module"] = "vproducts";
+                    if ($res["module"] !== "vproducts") {
+                        return false;
+                    }
                     $res["product_url"] = $o;
                     array_shift($a);
                     //Если больше ничего не осталось, останавливаемся

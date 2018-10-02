@@ -38,7 +38,7 @@ return array (
   ),
   'cache' => 
   array (
-    'enabled' => true,
+    'enabled' => false,
     'method' => 'msgpack',
     'default_chmod' => '775',
     'securityKey' => 'mysite',
@@ -51,5 +51,5 @@ return array (
   'debug' => true,
   'captcha' => false,
   'max_upload_filesize' => '',
-  'cache_date' => 1538479704,
+  'cache_date' => 1538508186,
 );
