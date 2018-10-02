@@ -1,7 +1,7 @@
 <?php
 $time_start = microtime(true);
 
-echo "Rapida sitemap generator v0.0.6 \r\n";
+echo "Rapida sitemap generator v0.0.7 \r\n";
 
 
 require_once(dirname(__FILE__) . '/../api/Simpla.php');
@@ -118,7 +118,7 @@ function &pages_gen(array &$params, &$rapida): array
         return $params;
     }
     foreach ($pages as $p) {
-        $buffer .= gen_url_string(HOSTNAME . $p['trans']);
+        $buffer .= gen_url_string(HOSTNAME . $p['trans'].'/');
         ++$params['counter'];
         if (++$counter === 50000) {
             $params = open_close($params, $buffer);
@@ -147,7 +147,7 @@ function &brands_gen(array &$params, &$rapida): array
         $brand = $b['trans'];
 
         if ($p_count) {
-            $url = HOSTNAME . 'catalog/' . $brand;
+            $url = HOSTNAME . 'catalog/' . $brand.'/';
             $buffer .= gen_url_string($url);
             ++$params['counter'];
             if (++$counter === 50000) {
@@ -184,7 +184,7 @@ function &categories_gen(array &$params, &$rapida): array
             die;
         }
         if ($p_count) {
-            $url = HOSTNAME . 'catalog/' . $cat;
+            $url = HOSTNAME . 'catalog/' . $cat.'/';
             $buffer .= gen_url_string($url);
             ++$params['counter'];
             if (++$counter === 50000) {
@@ -226,7 +226,7 @@ function &categories_brands_gen(array &$params, &$rapida): array
             $brand = $b['trans'];
 
             if ($p_count) {
-                $url = HOSTNAME . 'catalog/' . $cat . '/brand-' . $brand;
+                $url = HOSTNAME . 'catalog/' . $cat . '/brand-' . $brand.'/';
                 $buffer .= gen_url_string($url);
                 ++$params['counter'];
                 if (++$counter === 50000) {
@@ -283,7 +283,7 @@ function &categories_features_gen(array &$params, &$rapida): array
                 //$pages = (int)ceil($p_count / ITEMS);
 
                 if ($p_count) {
-                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
+                    $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid].'/';
                     $buffer .= gen_url_string($url);
                     ++$params['counter'];
                     if (++$counter === 50000) {
@@ -348,7 +348,7 @@ function &categories_features2_gen(array &$params, &$rapida): array
             if ($p_count) {
                 $part1 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
                 $part2 = $features[$fid2]['trans'] . "-" . $options['full'][$fid2]['trans'][$vid2];
-                $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
+                $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2.'/';
 
 
                 $buffer .= gen_url_string($url);
@@ -439,7 +439,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
                     if ($p_count) {
 
                         $part2 = $features[$fid]['trans'] . "-" . $options['full'][$fid]['trans'][$vid];
-                        $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2;
+                        $url = HOSTNAME . 'catalog/' . $c['trans'] . "/" . $part1 . "/" . $part2.'/';
                         $buffer .= gen_url_string($url);
                         ++$params['counter'];
                         if (++$counter === 50000) {
@@ -460,7 +460,7 @@ function &categories_brands_features_gen(array &$params, &$rapida): array
 
 //товары
 
-function &products_gen_(array &$params, &$rapida)
+function &products_gen_static(array &$params, &$rapida)
 {
     $buffer = "";
     open_close($params);
@@ -472,7 +472,7 @@ function &products_gen_(array &$params, &$rapida)
     }
 
     foreach ($products as &$p) {
-        $buffer .= gen_url_string(HOSTNAME . "products/" . $p['trans']);
+        $buffer .= gen_url_string(HOSTNAME . "products/" . $p['trans'].'/');
         ++$params['counter'];
         if (++$counter === 50000) {
             $params = open_close($params, $buffer);
@@ -503,7 +503,7 @@ function &products_gen(array &$params, &$rapida)
         }
 
         foreach ($products as &$p) {
-            $buffer .= gen_url_string(HOSTNAME . "vproducts/". $c["trans"] . "/buy-" . $p['trans']);
+            $buffer .= gen_url_string(HOSTNAME . "vproducts/". $c["trans"] . "/buy-" . $p['trans'].'/');
             ++$params['counter'];
             if (++$counter === 50000) {
                 $params = open_close($params, $buffer);
