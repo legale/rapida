@@ -1,3 +1,4 @@
+
 {* Вкладки *}
 {capture name=tabs}
     {if isset($userperm['products'])}
@@ -89,7 +90,6 @@
         // ссылка на добавление
         function add_link(e) {
             "use strict";
-            console.log(e.target);
             let link_id = e.target.getAttribute('link_id');
             console.log(link_id);
             let t = document.querySelector('[container=true][container_id=' + link_id + ']');
@@ -102,7 +102,6 @@
         //функция для удаления
         function delete_link(e) {
             "use strict";
-            console.log(e.target);
             ra.search_tree('attribute', 'container', e.target).then(function (v) {
                 console.log(v);
                 v.remove()
@@ -245,16 +244,15 @@
         </div>
         *}
         <div class="block layer">
-            <label class=property>Вирт. кат. верх.</label>
+            <label class="property">Вирт. кат. верхн.</label>
             <span><i onclick="add_new('vcat1');" class="dash_link">Дополнительная категория</i></span>
-            {foreach $category['vcat1'] as $i=>$vcat1}
+            {foreach $category['vcat1'] as $i=>$vcid}
                 <div class="vcat1">
-                    <select name="save[category][vcat1][]">
-                        <option value='0'>Корневая категория</option>
-                        {category_select selected=$category['vcat1'][{$i}] cats=$cats}
-                    </select>
-                    <div class="icons" style="float:right;"><a  onclick="remove_closest(event, '.vcat1');" class="delete" title="Удалить" href="#"></a>
-                </div>
+                    <input style="width: 95%;" class="input_search" value="{$cats[$vcid]['name']}"/>
+                    <input type="hidden" name="save[category][vcat1][]" value="{$vcid}"/>
+                    <div class="icons" style="float:right;"><a onclick="remove_closest(event, '.vcat1');" class="delete"
+                                                               title="Удалить" href="#"></a>
+                    </div>
                 </div>
             {/foreach}
         </div>
@@ -262,14 +260,13 @@
         <div class="block layer">
             <label class="property">Вирт. кат. нижн.</label>
             <span><i onclick="add_new('vcat2');" class="dash_link">Дополнительная категория</i></span>
-            {foreach $category['vcat2'] as $i=>$vcat2}
+            {foreach $category['vcat2'] as $i=>$vcid}
                 <div class="vcat2">
-                    <select name="save[category][vcat2][]">
-                        <option value='0'>Корневая категория</option>
-                        {category_select selected=$category['vcat2'][{$i}] cats=$cats}
-                    </select>
-                    <div class="icons" style="float:right;"><a  onclick="remove_closest(event, '.vcat2');" class="delete" title="Удалить" href="#"></a>
-                </div>
+                    <input style="width: 95%;" data-id="{$vcid}" class="input_search" value="{$cats[$vcid]['name']}"/>
+                    <input type="hidden" name="save[category][vcat2][]" value="{$vcid}"/>
+                    <div class="icons" style="float:right;"><a onclick="remove_closest(event, '.vcat2');" class="delete"
+                                                               title="Удалить" href="#"></a>
+                    </div>
                 </div>
             {/foreach}
         </div>
@@ -375,20 +372,62 @@
 
 {* тут заводим скрипт для автозаполнения связанных товаров *}
 {literal}
-    <script>
-        "use strict";
+<script>
+    "use strict";
 
-        function add_new(_class) {
-            "use strict";
-            let e = document.getElementsByClassName(_class)[0];
-            let copy = e.cloneNode(true);
-            e.parentNode.appendChild(copy);
-        }
-        function remove_closest(e, closest) {
-            "use strict";
-            e.preventDefault();
-            console.log(e.target.closest(closest));
-            e.target.closest(closest).remove();
-        }
-    </script>
+    function add_new(_class) {
+        "use strict";
+        let e = document.getElementsByClassName(_class)[0];
+        let copy = e.cloneNode(true);
+        e.parentNode.appendChild(copy);
+        suggest(copy.getElementsByClassName("input_search"));
+
+    }
+
+    function remove_closest(e, closest) {
+        "use strict";
+        e.preventDefault();
+        console.log(e.target.closest(closest));
+        e.target.closest(closest).remove();
+    }
+
+    function suggest(selector) {
+        new autoComplete({
+            selector: selector,
+            minChars: 1,
+            source: function (term, suggest) {
+                term = term.toLowerCase();
+                var choices = categories_list;
+                var matches = [];
+                for (let i = 0; i < choices.length; i++)
+                    if (~choices[i][0].toLowerCase().indexOf(term)) matches.push(choices[i]);
+                suggest(matches);
+            },
+            renderItem: function (item, search) {
+                // escape special characters
+                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+                return '<div class="autocomplete-suggestion" data-id="' + item[1] + '" data-val="' + item[0] + '">' + item[0].replace(re, "<b>$1</b>") + '</div>';
+            },
+            onSelect: function (input, term, item) {
+                let el = input.nextElementSibling;
+                el.value = item.getAttribute('data-id');
+            },
+
+        });
+    }
+
+
+    window.categories_list = {/literal}[{foreach $cats as $cat}['{$cat['name']}',{$cat['id']}],{/foreach}];{literal}
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        "use strict";
+        let xhr;
+        suggest(document.getElementsByClassName('input_search'));
+
+
+    });
+</script>
 {/literal}

@@ -14,7 +14,7 @@
 <script src="design/js/jquery/jquery-ui.min.js"></script>
 
 	{* функции для работы с api системы *}
-	<script type="text/javascript" src="/js/main.js"></script>   
+	<script type="text/javascript" src="/js/main.js"></script>
 
 	{* Тут библиотека для autocomplete *}
 	<script type="text/javascript" src="/js/auto-complete/auto-complete.js"></script>   

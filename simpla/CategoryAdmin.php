@@ -125,6 +125,12 @@ class CategoryAdmin extends Simpla
 
 		if( !empty_(@$c['id']) ){
 			dtimer::log(__METHOD__ . " update");
+			if(empty($c['vcat1'])){
+			    $c['vcat1'] = '';
+            }
+            if(empty($c['vcat2'])){
+                $c['vcat2'] = '';
+            }
 			$cid = $this->categories->update_category($c['id'], $c);
 			if($cid === false){
 				$this->status[] = array(
