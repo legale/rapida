@@ -18,7 +18,7 @@ class Categories extends Simpla
     }
 
     // Функция возвращает массив категорий
-    public function &get_categories()
+    public function get_categories()
     {
         if (!$this->all_categories) {
             $this->init_categories();
@@ -54,9 +54,9 @@ class Categories extends Simpla
         }
 
 
-        if (is_int($id) && array_key_exists($id, $this->all_categories)) {
+        if (is_int($id) && is_array($this->all_categories) && array_key_exists($id, $this->all_categories)) {
             return $this->all_categories[$id];
-        }else if (is_string($id) && array_key_exists($id, $this->categories_uri)) {
+        }else if (is_string($id) && is_array($this->categories_uri) && array_key_exists($id, $this->categories_uri)) {
             return $this->all_categories[$this->categories_uri[$id]];
         }
         $null = null;
@@ -169,7 +169,7 @@ class Categories extends Simpla
         $ids = (array)$ids;
         foreach ($ids as $id) {
             if ($category = $this->get_category(intval($id)))
-                $this->delete_image($category['children']);
+                //$this->delete_image($category['children']);
             if (!empty($category['children'])) {
                 $query = $this->db->placehold("DELETE FROM __categories WHERE id in(?@)", $category['children']);
                 $this->db->query($query);

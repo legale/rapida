@@ -264,7 +264,7 @@
             <label class="property">Вирт. кат. нижн.</label>
             <span><i onclick="add_new('vcat2');" class="dash_link">Дополнительная категория</i></span>
             {if empty($category['vcat2'])}
-            {$category['vcat2'] = [0]}
+            {$category['vcat2'] = []}
             {/if}
             {foreach $category['vcat2'] as $i=>$vcid}
                 <div class="vcat2">

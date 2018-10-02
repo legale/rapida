@@ -92,8 +92,6 @@ class CategoryAdmin extends Simpla
 			$this->upload_images($cid, $save['new_images']);
 		}
 
-		//инициализируем категории заново
-        $this->categories->init_categories(true);
 
 		$this->status[] = array(
 			'status' => 3,
@@ -131,7 +129,11 @@ class CategoryAdmin extends Simpla
             if(empty($c['vcat2'])){
                 $c['vcat2'] = '';
             }
+            //инициализируем категории заново
+            $this->categories->init_categories(true);
 			$cid = $this->categories->update_category($c['id'], $c);
+
+
 			if($cid === false){
 				$this->status[] = array(
 					'status' => 1,
