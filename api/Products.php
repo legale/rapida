@@ -202,7 +202,7 @@ class Products extends Simpla
                     break;
                 case 'price':
                     //$order = 'pv.price IS NULL, pv.price=0, pv.price';
-                    $order = "";
+                    $order = "p.id";
                     break;
             }
 

@@ -38,7 +38,7 @@ return array (
   ),
   'cache' => 
   array (
-    'enabled' => true,
+    'enabled' => false,
     'method' => 'msgpack',
     'default_chmod' => '775',
     'securityKey' => 'mysite',
