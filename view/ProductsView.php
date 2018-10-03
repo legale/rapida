@@ -35,7 +35,7 @@ class ProductsView extends View
         } else {
             dtimer::log(__METHOD__ . " category url is not set! aborting.", 1);
             header("Location: /", TRUE, 302);
-            return false;
+            exit();
         }
 
         //получаем категорию
