@@ -499,7 +499,7 @@ function &products_gen(array &$params, &$rapida)
         $products = $rapida->db3->getAll("SELECT trans FROM s_products WHERE 1 
         AND visible=1 AND id IN (SELECT product_id FROM s_products_categories WHERE category_id IN (?a))", $c['children']);
         if (!$products) {
-            return $params;
+            continue;
         }
 
         foreach ($products as &$p) {
