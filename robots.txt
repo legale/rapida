@@ -10,17 +10,6 @@ Disallow: /Smarty/
 Disallow: /api/
 Disallow: /compiled/
 Disallow: /cart/
+Disallow: /cart?
 Disallow: /resize/
 Disallow: /password.php
-
-User-agent: AhrefsBot
-Disallow: /
-
-User-agent: MJ12bot
-Disallow: /
-
-User-agent: BLEXBot
-Disallow: /
-
-User-agent: MauiBot
-Disallow: /
