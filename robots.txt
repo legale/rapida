@@ -13,3 +13,6 @@ Disallow: /cart/
 Disallow: /cart?
 Disallow: /resize/
 Disallow: /password.php
+
+# мера для ускорения удаления из индекса этих ссылок
+Disallow: /brands/
