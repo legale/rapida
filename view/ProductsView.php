@@ -222,6 +222,9 @@ class ProductsView extends View
                     $noindex = true;
                     $canonical = true;
                 }
+                if(!empty($features[$fid]["noindex"])){
+                    $noindex = true;
+                }
 
 
                 if (isset($features[$fid]['name']) && isset($options['full'][$fid]['vals'])) {
@@ -295,7 +298,6 @@ class ProductsView extends View
                     break;
             }
         }
-
         $this->design->assign('robots', $robots);
         $this->design->assign('canonical', $canonical);
 
@@ -336,6 +338,8 @@ class ProductsView extends View
                         $pairs['{$' . $f['trans'] . '}'] = array_shift($options['full'][$fid]['vals']);
                         if (count($options['full'][$fid]['vals']) > 1) {
                             $pairs['{$' . $f['trans'] . '_2r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 2))));
+                            $pairs['{$' . $f['trans'] . '_3r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 3))));
+                            $pairs['{$' . $f['trans'] . '_4r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 4))));
                         }
                     }
                 }
