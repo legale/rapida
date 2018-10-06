@@ -336,11 +336,20 @@ class ProductsView extends View
                     if (isset($options['full'][$fid]['vals']) && is_array($options['full'][$fid]['vals'])) {
                         $pairs['{$' . $f['trans'] . '_list}'] = " " . implode(", ", array_slice($options['full'][$fid]['vals'], 0, 3));
                         $pairs['{$' . $f['trans'] . '}'] = array_shift($options['full'][$fid]['vals']);
-                        if (count($options['full'][$fid]['vals']) > 1) {
-                            $pairs['{$' . $f['trans'] . '_2r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 2))));
-                            $pairs['{$' . $f['trans'] . '_3r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 3))));
-                            $pairs['{$' . $f['trans'] . '_4r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 4))));
+
+
+                        switch(count($options['full'][$fid]['vals'])) {
+                            case 4:
+                                $pairs['{$' . $f['trans'] . '_4r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 4))));
+                            case 3:
+                                $pairs['{$' . $f['trans'] . '_4r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 3))));
+                            case 2:
+                                $pairs['{$' . $f['trans'] . '_2r}'] = " " . implode(", ", array_intersect_key($options['full'][$fid]['vals'], array_flip(array_rand($options['full'][$fid]['vals'], 2))));
+                            default:
+                                break;
                         }
+
+
                     }
                 }
             }
