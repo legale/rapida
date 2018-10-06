@@ -22,13 +22,13 @@
 		{$image_id = $purchase['product']['image_id']}
 		{$pname = $purchase['product']['name']}
 		{if $image}
-		<a href="products/{$url}"><img src="{$image|resize:products:image_id:50:50}" alt="{$pname|escape}"></a>
+		<a href="/products/{$url}"><img src="{$image|resize:products:image_id:50:50}" alt="{$pname|escape}"></a>
 		{/if}
 	</td>
 	
 	{* Название товара *}
 	<td class="name">
-		<a href="products/{$url}">{$pname|escape}</a>
+		<a href="/products/{$url}">{$pname|escape}</a>
 		{$purchase['variants'][0]['name']|escape}
 	</td>
 
@@ -160,7 +160,7 @@ $("input[name='coupon_code']").keypress(function(event){
 					<span class="price">{$v['price']|convert} <span class="currency">{$currency['sign']|escape}</span></span>
 				</td>
 				<td>
-					<a href="cart?variant={$v['id']}">в корзину</a>
+					<a href="#">в корзину</a>
 				</td>
 			</tr>
 			{/foreach}

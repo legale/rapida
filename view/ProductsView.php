@@ -17,7 +17,7 @@ class ProductsView extends View
     }
 
 
-    //метод для получения страницы
+    //метод для получения страницы каталога товаров
     public function fetch()
     {
         $canonical = null;
@@ -212,6 +212,9 @@ class ProductsView extends View
 
         //теперь свойства
         if (isset($this->filter['features'])) {
+            //убираем описания для категории, когда включен фильтр
+            unset($cat["description"]);
+
             $selected_count += count($this->filter['features']);
 
             foreach ($this->filter['features'] as $fid => $vids) {

@@ -7,7 +7,7 @@ $simpla = new Simpla();
 require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
 
-$dst = realpath(dirname(__FILE__) . '/../sandbox/xmlfile.xml');
+$dst = dirname(__FILE__) . '/../sandbox/xmlfile.xml'зрз;
 
 $src = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : null;
 
@@ -21,8 +21,8 @@ if ($src !== null && (substr(strtolower($src), 0, 7) === 'http://' || substr(str
 
     if (file_exists($dst)) {
         unlink($dst);
-        rename($dst . '_', $dst);
     }
+    rename($dst . '_', $dst);
 }
 
 
