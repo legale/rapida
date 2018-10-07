@@ -73,27 +73,10 @@
 	Нет свойств
 {/if}
  
- <!-- Меню -->
+ <!-- Правое Меню -->
 <div id="right_menu">
 	
-	<!-- Категории товаров -->
-	{function name=categories_tree}
-	{if $categories}
-	<ul>
-		{if $categories[0]['parent_id'] == 0}
-		<li {if !$category['id']}class="selected"{/if}><a href="{url category_id=null}">Все категории</a></li>	
-		{/if}
-		{foreach $categories as $c}
-		<li {if $category['id'] == $c['id']}class="selected"{/if}><a href="?module=FeaturesAdmin&category_id={$c['id']}">{$c['name']}</a></li>
-		{if isset($c['subcategories'])}
-			{categories_tree categories=$c['subcategories']}
-		{/if}
-		{/foreach}
-	</ul>
-	{/if}
-	{/function}
-	{categories_tree categories=$categories}
-	<!-- Категории товаров (The End)-->
+
 		
 </div>
 <!-- Левое меню  (The End) -->

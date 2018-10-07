@@ -70,9 +70,10 @@ class FeaturesAdmin extends Simpla
 
 		}
 
-		$this->features->init_features(true);
-		$features = $this->features->get_features();
 
+
+		$this->features->init_features(true);
+		$features = $this->features->get_features($filter);
 
 		$this->design->assign('features', $features);
 		return $this->body = $this->design->fetch('features.tpl');
