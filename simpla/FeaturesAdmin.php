@@ -70,18 +70,8 @@ class FeaturesAdmin extends Simpla
 
 		}
 
-		$categories = $this->categories->categories_tree;
-		$category = null;
-
-		$filter = array();
-		$category_id = $this->request->get('category_id', 'integer');
-		if ($category_id)
-			{
-			$category = $this->categories->get_category($category_id);
-			$filter['category_id'] = $category->id;
-		}
-
-		$features = $this->features->get_features($filter);
+		$this->features->init_features(true);
+		$features = $this->features->get_features();
 
 		$this->design->assign('categories', $categories);
 		$this->design->assign('category', $category);

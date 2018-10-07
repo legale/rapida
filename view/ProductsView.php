@@ -298,6 +298,7 @@ class ProductsView extends View
                     break;
             }
         }
+
         $this->design->assign('robots', $robots);
         $this->design->assign('canonical', $canonical);
 

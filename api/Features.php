@@ -34,8 +34,17 @@ class Features extends Simpla
     //тут будут хранится опции по группам
     public $fgroups;
 
+    //тут будут хранится опции по категориям
+    public $fcats;
 
-    //
+    //тут будет массив свойств в фильтре
+    public $in_filter;
+
+    //тут будет массив свойств
+    public $visible;
+
+
+    //время жизни для кеша
     public $ttl = 2529000; //25209000 = 1 месяц время жизни кеша. по истечении времени, задания на обновления будут добавляться в очередь
 
 
@@ -44,21 +53,29 @@ class Features extends Simpla
         $this->init_features();
     }
 
+    /**
+     * @param bool $reinit
+     */
     public function init_features($reinit = false): void
     {
+        dtimer::log(__METHOD__ . " start reinit: $reinit");
         if ($reinit === false) {
             //если свойства уже инициализированы
-            if($this->features !== null){
+            if ($this->features !== null) {
                 return;
             }
             if (function_exists('apcu_fetch')) {
                 dtimer::log(__METHOD__ . " ACPU CACHE FEATURES READ ");
                 if (apcu_exists($this->config->host . 'features')) {
                     $features = apcu_fetch($this->config->host . 'features');
+                    dtimer::log(__METHOD__ . " ACPU CACHE FEATURES FETCHED ");
                     $this->features = &$features[0];
                     $this->fgroups = &$features[1];
                     $this->ftrans = &$features[2];
                     $this->ftrans2 = &$features[3];
+                    $this->fcats = &$features[4];
+                    $this->in_filter = &$features[5];
+                    $this->visible = &$features[6];
                     dtimer::log(__METHOD__ . " ACPU CACHE FEATURES LOADED");
                     return;
                 } else {
@@ -69,24 +86,52 @@ class Features extends Simpla
 
 
         $features = $this->db3->getInd("id", "SELECT * FROM s_features ORDER BY pos");
-        $fgroups = $this->db3->getInd("id", "SELECT * FROM s_options_groups ORDER BY pos");
-        $ftrans = $ftrans2 = [];
-        //добавим все свойства в свои группы
+        $fgroups = $this->db3->getInd("id", "SELECT *, NULL as features FROM s_options_groups ORDER BY pos");
+
+
+        $in_filter = $visible = $ftrans = $ftrans2 = [];
+        //добавим все свойства в свои группы, а также в массивы in_filter и visible
         foreach ($features as $fid => &$feature) {
-            $fgroups["features"][] = $feature;
+            if ($feature["in_filter"]) {
+                $in_filter[$feature["id"]] = $feature;
+            }
+            if ($feature["visible"]) {
+                $visible[$feature["id"]] = $feature;
+            }
+
+            $fgroups[$feature["gid"]]["features"][$feature["id"]] = $feature;
             $ftrans[$feature["trans"]] = $feature;
-            if($feature["trans2"] !== ""){
+            if ($feature["trans2"] !== "") {
                 $ftrans2[$feature["trans2"]] = $feature;
             }
         }
 
-        $this->features = &$features;
+        $fcats = [];
+        $features_categories = $this->db3->getAll("SELECT * FROM s_categories_features");
+        foreach ($features_categories as $row) {
+            $fcats[(int)$row["category_id"]][$row["feature_id"]] = &$features[(int)$row["feature_id"]];
+        }
+
+
+        $this->features =  &$features;
         $this->fgroups = &$fgroups;
         $this->ftrans = &$ftrans;
         $this->ftrans2 = &$ftrans2;
+        $this->fcats =  SplFixedArray::fromArray($fcats);
+        $this->in_filter = &$in_filter;
+        $this->visible = &$visible;
 
         if (function_exists('apcu_store')) {
-            apcu_store($this->config->host . 'features', [&$features, &$fgroups,  &$ftrans,  &$ftrans2] , 14400);
+            apcu_store($this->config->host . 'features',
+                [
+                    &$this->features,
+                    &$this->fgroups,
+                    &$this->ftrans,
+                    &$this->ftrans2,
+                    &$this->fcats,
+                    &$this->in_filter,
+                    &$this->visible,
+                ], 14400);
             dtimer::log(__METHOD__ . " ACPU CACHE FEATURES STORED");
         }
         return;
@@ -98,7 +143,7 @@ class Features extends Simpla
         //массив для результата
         $res = [];
 
-        foreach($filter_features as $fid => $vids) {
+        foreach ($filter_features as $fid => $vids) {
             $res[$this->features[$fid]["trans"]] = $this->db3->getIndCol("id", "SELECT id, trans FROM s_options_uniq WHERE id IN (?a)", $vids);
         }
         return $res;
@@ -111,22 +156,22 @@ class Features extends Simpla
         //тут получим имена транслитом и id для преобразования параметров заданных в адресной строке
         $ftrans = &$this->ftrans;
         $ftrans2 = &$this->ftrans2;
-        foreach($uri_features as $name => $vals){
+        foreach ($uri_features as $name => $vals) {
             //если такое свойство есть у нас в массивах с именами
-            if(key_exists($name, $ftrans)){
+            if (key_exists($name, $ftrans)) {
                 $fid = $ftrans[$name]["id"];
-            } else if(key_exists($name, $ftrans2)) {
+            } else if (key_exists($name, $ftrans2)) {
                 $fid = $ftrans2[$name]["id"];
-            }else{
+            } else {
                 return null;
             }
 
             //преобразуем значения опций в их id (vid)
             $parsed = $this->db3->parse("?a", $vals);
             $vids = $this->db3->getIndCol("id", "SELECT id, id as val FROM s_options_uniq WHERE trans IN (?p) OR trans2 in (?p)", $parsed, $parsed);
-            if(count($vids) === count($vals)){
+            if (count($vids) === count($vals)) {
                 $res[$fid] = $vids;
-            }else{
+            } else {
                 return null;
             }
         }
@@ -175,83 +220,35 @@ class Features extends Simpla
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
         $filter = array_intersect_key($filter, array_flip($this->tokeep));
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
-        $filter_ = $filter;
-        if (!empty($filter_['force_no_cache'])) {
-            $force_no_cache = true;
-            unset($filter_['force_no_cache']);
+
+        $res = [];
+        if (!empty($filter['category_id'])) {
+            foreach ((array)$filter['category_id'] as $cid) {
+                if (isset($this->fcats[$cid])) {
+                    $res = $res + $this->fcats[$cid];
+                }
+            }
         } else {
-            $force_no_cache = false;
+            $res = $this->features;
         }
 
-        //сортируем фильтр, чтобы порядок данных в нем не влиял на хэш
-        ksort($filter_);
-        $filter_string = var_export($filter_, true);
-        $keyhash = md5(__METHOD__ . $filter_string);
-
-        //если запуск был не из очереди - пробуем получить из кеша
-        if (!$force_no_cache) {
-            dtimer::log(__METHOD__ . " normal run keyhash: $keyhash");
-            $res = $this->cache->redis_get_serial($keyhash);
-
-            //если дата создания записи в кеше больше даты последнего импорта, то не будем добавлять задание в очередь на обновление
-            if ($res !== false) {
-                if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
-                    return $res;
-                }
-
-                //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
-                //функция выполнялась полностью
-                $filter_['force_no_cache'] = true;
-                $filter_string = var_export($filter_, true);
-                dtimer::log(__METHOD__ . " force_no_cache keyhash: $keyhash");
-
-                $task = '$this->features->get_features(';
-                $task .= $filter_string;
-                $task .= ');';
-                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
-
-                return $res;
+        if (!empty($filter["gid"])) {
+            foreach ((array)$filter["gid"] as $gid) {
+                $res = array_intersect_key($res, $this->fgroups[$gid]["features"]);
             }
         }
 
-
-        //===========================================================================
-        $gid_filter = '';
-        $category_id_filter = '';
-        if (isset($filter['category_id'])) {
-            $category_id_filter = $this->db->placehold('AND id in(SELECT feature_id FROM __categories_features AS cf WHERE cf.category_id in(?@))', (array)$filter['category_id']);
+        if (!empty($filter["in_filter"])) {
+            $res = array_intersect_key($res, $this->in_filter);
         }
 
-        $in_filter_filter = '';
-        if (isset($filter['in_filter'])) {
-            $in_filter_filter = $this->db->placehold('AND f.in_filter=?', intval($filter['in_filter']));
+        if (!empty($filter["visible"])) {
+            $res = array_intersect_key($res, $this->visible);
         }
 
-        if (isset($filter['gid'])) {
-            $gid_filter = $this->db->placehold('AND gid in (?@)', (array)$filter['gid']);
-        }
-
-        $id_filter = '';
-        if (!empty($filter['id'])) {
-            $id_filter = $this->db->placehold('AND f.id in(?@)', (array)$filter['id']);
-        }
-
-        $visible_filter = '';
-        if (!empty($filter['visible'])) {
-            $visible_filter = $this->db->placehold('AND f.visible = ?', (bool)$filter['visible']);
-        }
-
-        // Выбираем свойства
-        $q = $this->db->placehold("SELECT * FROM __features AS f
-			WHERE 1
-			$category_id_filter $in_filter_filter $id_filter $gid_filter $visible_filter ORDER BY f.pos");
-        $this->db->query($q);
-        $res = $this->db->results_array(null, 'id');
-
-        dtimer::log(__METHOD__ . " redis set key: $keyhash");
-        $this->cache->redis_set_serial($keyhash, $res, $this->ttl); // 2592000 is a 1 month in seconds
         dtimer::log(__METHOD__ . " return");
         return $res;
+
     }
 
     /**
