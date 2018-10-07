@@ -1,4 +1,4 @@
-z<?PHP
+<?PHP
 
 /**
  *
@@ -190,7 +190,7 @@ class VproductView extends View
         //авто теги
         $fids = array_keys($product['options']);
         if (!empty($fids)) {
-            $features = $this->features->get_features(array('id' => $fids));
+            $features = $this->features->get_features(['id' => $fids]);
         }
 
         foreach ($features as $fid => $f) {
