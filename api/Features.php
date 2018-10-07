@@ -220,16 +220,20 @@ class Features extends Simpla
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
         $filter = array_intersect_key($filter, array_flip($this->tokeep));
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
+        
 
-        $res = [];
+        if (!empty($filter['id'])) {
+            $res = array_intersect_key($this->features, (array)$filter['id']);
+        } else{
+            $res = $this->features;
+        }
+
         if (!empty($filter['category_id'])) {
             foreach ((array)$filter['category_id'] as $cid) {
                 if (isset($this->fcats[$cid])) {
                     $res = $res + $this->fcats[$cid];
                 }
             }
-        } else {
-            $res = $this->features;
         }
 
         if (!empty($filter["gid"])) {
