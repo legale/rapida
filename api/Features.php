@@ -517,6 +517,7 @@ class Features extends Simpla
                 }
             }
         }
+
         return $id;
     }
 

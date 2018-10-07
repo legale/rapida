@@ -15,7 +15,7 @@ class FeatureAdmin extends Simpla
 			$feature['in_filter'] = intval($this->request->post('in_filter'));
 			$feature['tpl'] = intval($this->request->post('tpl'));
 			$feature['visible'] = intval($this->request->post('visible'));
-			$feature['noindex'] = intval($this->request->post('noindex'));
+			$feature["noindex"] = intval($this->request->post('noindex'));
 			$feature['isrange'] = intval($this->request->post('isrange'));
 			$feature['gid'] = (int)$_POST['gid'];
 			$feature_categories = $this->request->post('feature_categories');
@@ -27,6 +27,7 @@ class FeatureAdmin extends Simpla
 				$this->design->assign('message_success', 'added');
 			}else{
 				$this->features->update_feature($feature['id'], $feature);
+                $this->features->init_features(true); //reinit features
 				$feature = $this->features->get_feature($feature['id']);
 				$this->design->assign('message_success', 'updated');
 			}
@@ -50,6 +51,7 @@ class FeatureAdmin extends Simpla
 		$this->design->assign('ogroups', $ogroups);
 		$this->design->assign('feature', $feature);
 		$this->design->assign('feature_categories', $feature_categories);
+
 		return $this->body = $this->design->fetch('feature.tpl');
 	}
 }
