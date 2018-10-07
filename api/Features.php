@@ -234,16 +234,16 @@ class Features extends Simpla
 
         if (!empty($filter["gid"])) {
             foreach ((array)$filter["gid"] as $gid) {
-                $res = array_intersect_key($res, $this->fgroups[$gid]["features"]);
+                $res = array_intersect_key($res, (array)$this->fgroups[$gid]["features"]);
             }
         }
 
         if (!empty($filter["in_filter"])) {
-            $res = array_intersect_key($res, $this->in_filter);
+            $res = array_intersect_key($res, (array)$this->in_filter);
         }
 
         if (!empty($filter["visible"])) {
-            $res = array_intersect_key($res, $this->visible);
+            $res = array_intersect_key($res, (array)$this->visible);
         }
 
         dtimer::log(__METHOD__ . " return");
