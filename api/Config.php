@@ -33,11 +33,6 @@ class Config extends Simpla
     private $config_length;
     private $vars = array();
 
-    public function __destruct()
-    {
-        // сохраним конфиг
-        $this->save();
-    }
 
     public function __construct()
     {
@@ -100,21 +95,17 @@ class Config extends Simpla
     {
         // Запишем конфиги
         $this->vars[$name] = $value;
+        $this->save();
     }
 
-    private function save()
+    public function save()
     {
         dtimer::log(__METHOD__ . " start");
         $content = 'return ' . var_export($this->vars, true) . ';';
 
-        if ($this->config_length === strlen($content)) {
-            dtimer::log(__METHOD__ . " generated config equals saved. Nothing to save.");
-            return true;
-        }
 
-
-        error_log("saving config...");
-        return file_put_contents($this->config_path, $content);
+        dtimer::log(__METHOD__ . " return");
+        return file_put_contents($this->config_path, $content, LOCK_EX);
     }
 
 }
