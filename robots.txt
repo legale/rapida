@@ -6,7 +6,7 @@ Disallow: /simpla/
 Disallow: /order/
 Disallow: /user/
 Disallow: /captcha/
-Disallow: /Smarty/
+Disallow: /smarty/
 Disallow: /api/
 Disallow: /compiled/
 Disallow: /cart/
