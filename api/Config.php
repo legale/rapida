@@ -30,7 +30,6 @@ class Config extends Simpla
     // Файл для хранения настроек
     private $config_filename = 'config.php';
     private $config_path;
-    private $config_length;
     private $vars = array();
 
 
@@ -43,17 +42,14 @@ class Config extends Simpla
 
         $this->config_path = dirname(dirname(__FILE__)) . '/config/' . $this->config_filename;
         // Читаем настройки из дефолтного файла
-        $config_content = file_get_contents($this->config_path);
-        $this->config_length = strlen($config_content);
-        $this->vars = eval($config_content);
-        unset($config_content);
-
+        $this->vars = include($this->config_path);
 
         // Определяем адрес (требуется для отправки почтовых уведомлений)
         if (isset($_SERVER['HTTP_HOST'])) {
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http';
             //~ print_r($_SERVER);
             $this->root_url = $scheme . '://' . $_SERVER['HTTP_HOST'];
+
             if (!isset($this->vars['host']) || $_SERVER['HTTP_HOST'] !== $this->vars['host']) {
                 $this->__set('host', $_SERVER['HTTP_HOST']);
             }
@@ -101,11 +97,11 @@ class Config extends Simpla
     public function save()
     {
         dtimer::log(__METHOD__ . " start");
-        $content = 'return ' . var_export($this->vars, true) . ';';
+        $content = '<?php return ' . var_export($this->vars, true) . ';';
 
 
         dtimer::log(__METHOD__ . " return");
-        return file_put_contents($this->config_path, $content, LOCK_EX);
+        return file_put_contents($this->config_path, $content);
     }
 
 }
