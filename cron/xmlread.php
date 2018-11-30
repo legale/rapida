@@ -7,7 +7,7 @@ $simpla = new Simpla();
 require_once(dirname(__FILE__) . '/../api/Xmlparse.php');
 $xml = new Xmlparse();
 
-$dst = dirname(__FILE__) . '/../sandbox/xmlfile.xml'зрз;
+$dst = dirname(__FILE__) . '/../sandbox/xmlfile.xml';
 
 $src = isset($argv[1]) && $argv[1] !== 'null' ? $argv[1] : null;
 

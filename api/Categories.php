@@ -230,6 +230,7 @@ class Categories extends Simpla
         $tree['children'] = [0];
         $tree['path'] = [];
         $tree['uri'] = [];
+        $tree['total'] = 0;
 
         //указатели на узлы дерева
         $ptr[0] = &$tree; //корневой элемент
@@ -254,6 +255,7 @@ class Categories extends Simpla
                 $cat['vchildren'] = [];
                 $cat['children'] = [];
                 $cat['subcategories'] = [];
+                $cat['total'] = 0;
                 //сначала часть родительского пути
                 $cat['path'] = $ptr[$cat['parent_id']]['path'];
                 //саму себя в конце
@@ -263,6 +265,8 @@ class Categories extends Simpla
                 $ptr[$cid] = &$cat;
                 //добавимся в дочерние к родительской категории
                 $ptr[$cat['parent_id']]['subcategories'][] = &$ptr[$cid];
+                if($cat['visible']) $ptr[$cat['parent_id']]['total'] += 1;
+
                 // Уровень вложенности категории
                 $cat['level'] = 1 + $ptr[$cat['parent_id']]['level'];
 
@@ -282,6 +286,25 @@ class Categories extends Simpla
         $ids = array_reverse($ids); //обратный порядок важен чтобы матрешка собралась правильно
         foreach ($ids as $cid) {
             $cat = &$ptr[$cid];
+
+            //отмечаем первый и последний элемент (используется в меню)
+            $i = 0;
+            while(!empty($cat['subcategories'][$i])){
+                if($cat['subcategories'][$i]['visible']){
+                    $cat['subcategories'][$i]['first'] = true;
+                    break(1);
+                }
+                ++$i;
+            }
+            $j = count($cat['subcategories']) - 1;
+            while(!empty($cat['subcategories'][$i])){
+                if($cat['subcategories'][$j]['visible']){
+                    $cat['subcategories'][$j]['last'] = true;
+                    break(1);
+                }
+                --$j;
+            }
+
             //сначала добавим саму себя
             $cat['children'][] = $cid;
             //теперь прибавим к родительскому разделу свои

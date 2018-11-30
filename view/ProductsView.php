@@ -433,9 +433,7 @@ class ProductsView extends View
 
 
         //сортировка
-        if (isset($uri_path['sort'])) {
-            $filter['sort'] = $uri_path['sort'];
-        }
+        $filter['sort'] =  isset($uri_path['sort']) ? $uri_path['sort'] : null;
         dtimer::log(__METHOD__ . " return: " . var_export($filter, true));
         return $filter;
     }

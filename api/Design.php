@@ -2,7 +2,7 @@
 
 
 require_once(dirname(__FILE__) . '/' . 'Simpla.php');
-require_once(dirname(dirname(__FILE__)) . '/Smarty/libs/Smarty.class.php');
+require_once(dirname(dirname(__FILE__)) . '/smarty/libs/Smarty.class.php');
 
 class Design extends Simpla
 {
