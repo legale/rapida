@@ -18,7 +18,7 @@ class Config extends Simpla
 {
 
 
-    public $version = 'rapida v0.0.17';
+    public $version = 'rapida v0.0.18';
 
     public $root_dir;
     public $root_url;

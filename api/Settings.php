@@ -14,15 +14,19 @@ class Settings extends Simpla
 
 	function __construct()
 	{
-		parent::__construct();
-	dtimer::log(__METHOD__ . " start ");
-		// Выбираем из базы настройки
-		$this->db->query('SELECT name, value FROM __settings');
+		parent::__construct($force_load = false);
+	    dtimer::log(__METHOD__ . " start ");
+		// Выбираем из базы
+        if(function_exists('apcu_fetch') && apcu_exists($this->config->host . __CLASS__)) {
+            $this->vars = apcu_fetch($this->config->host . 'all_categories');
+        } else{
+            $this->db->query('SELECT name, value FROM __settings');
+            foreach($this->db->results_array() as $row){
+                $this->vars[$row["name"]] = $row["value"];
+            }
+            if(function_exists('apcu_fetch')) apcu_store($this->config->host . __CLASS__, $this->vars);
+        }
 
-		// и записываем их в переменную		
-		foreach ($this->db->results_array() as $result)
-			if (! ($this->vars[$result['name']] = @unserialize($result['value'])))
-			$this->vars[$result['name']] = $result['value'];
 	}
 
 	public function __get($name)
