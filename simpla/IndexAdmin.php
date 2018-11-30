@@ -71,7 +71,7 @@ class IndexAdmin extends Simpla
 		$this->design->assign('config', $this->config);
 		
 		// Администратор
-		$user = $_SESSION['user_id'] ?? $this->users->get_user($_SESSION['user_id']);
+		$user = $this->users->get_user($_SESSION['user_id']);
 		//~ print_r($user);
 		$this->design->assign('user', $user);
 
