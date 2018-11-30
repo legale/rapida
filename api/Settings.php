@@ -18,7 +18,7 @@ class Settings extends Simpla
 	    dtimer::log(__METHOD__ . " start ");
 		// Выбираем из базы
         if(function_exists('apcu_fetch') && apcu_exists($this->config->host . __CLASS__)) {
-            $this->vars = apcu_fetch($this->config->host . 'all_categories');
+            $this->vars = apcu_fetch($this->config->host . __CLASS__);
         } else{
             $this->db->query('SELECT name, value FROM __settings');
             foreach($this->db->results_array() as $row){
