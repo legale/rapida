@@ -241,7 +241,7 @@ class ProductsView extends View
         $meta_filter = implode(' - ', $meta_filter);
 
         //посчитаем выбранные в фильтре параметры и сделаем nofollow, если нужно
-        if (!$noindex && $selected_count > 3) {
+        if (!$noindex && $selected_count > 2) {
             $noindex = true;
             $canonical = true;
         }
