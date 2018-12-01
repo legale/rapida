@@ -14,7 +14,7 @@ require_once ('Simpla.php');
 
 class Money extends Simpla
 {
-	private $currencies = array();
+	private $currencies;
 	private $currency;
 
 	public function __construct()
@@ -32,20 +32,23 @@ class Money extends Simpla
 		$this->init_currencies();
 	}
 
-	private function init_currencies()
+	private function init_currencies($reinit = false):void
 	{
-		$this->currencies = array();
-		// Выбираем из базы валюты
-		$q = "SELECT * FROM __currencies ORDER BY `pos` ASC";
-		$this->db->query($q);
-
-		if($this->currencies = $this->db->results_array(null, 'id')){
-			$this->currency = reset($this->currencies);
-			return true;
-		} else {
-			return false;
-		}
-
+        if ($reinit === false ) {
+            //если валюты уже инициализированы
+            if ($this->currencies !== null) {
+                return;
+            }
+            if (function_exists('apcu_fetch') &&
+                apcu_exists($this->config->host . __METHOD__)) {
+                $this->currencies = apcu_fetch($this->config->host . __METHOD__);
+                $this->currency = reset($this->currencies);
+                return;
+            }
+        }
+        $this->db->query("SELECT * FROM __currencies ORDER BY `pos` ASC");
+        $this->currencies = $this->db->results_array(null, 'id');
+        $this->currency = reset($this->currencies);
 	}
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # version changing script
 NAME=rapida
-VERSION=0.0.18
+VERSION=0.0.19
 
 FROM="$NAME v[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}"
 TO="$NAME v$VERSION"

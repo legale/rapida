@@ -18,7 +18,7 @@ class Config extends Simpla
 {
 
 
-    public $version = 'rapida v0.0.18';
+    public $version = 'rapida v0.0.19';
 
     public $root_dir;
     public $root_url;
@@ -43,7 +43,29 @@ class Config extends Simpla
 
         $this->config_path = $this->root_dir . 'config/' . $this->config_filename;
         // Читаем настройки из дефолтного файла
-        $this->vars = include($this->config_path);
+        if(function_exists("apcu_fetch")) {
+            $this->vars = apcu_fetch($this->host."config");
+        }else {
+            $flock = false;
+            $retries = 0;
+            $max_retries = 20;
+
+            $fp = fopen($this->config_path, 'r');
+            while(!$flock && $retries <= $max_retries) {
+                $flock = flock($fp, LOCK_SH);
+                ++$retries;
+                usleep(rand(1, 500));
+            }
+
+            // couldn't get the lock, give up
+            if ($retries == $max_retries) {
+                fclose($fp);
+                return false;
+            }
+            $this->vars = include($this->config_path);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+        }
 
         // Определяем адрес (требуется для отправки почтовых уведомлений)
         if (isset($_SERVER['HTTP_HOST'])) {
@@ -99,11 +121,33 @@ class Config extends Simpla
 
     public function save()
     {
-        if(empty($this->vars)){
+        $flock = false;
+        $content = '<?php return ' . var_export($this->vars, true) . ';';
+        if(function_exists("apcu_store")) {
+            apcu_store($this->host."config", $this->vars);
+        }
+        $retries = 0;
+        $max_retries = 20;
+
+        $fp = fopen($this->config_path, 'w');
+        while(!$flock && $retries <= $max_retries) {
+            $flock = flock($fp, LOCK_EX);
+            ++$retries;
+            usleep(rand(1, 500));
+        }
+
+        // couldn't get the lock, give up
+        if ($retries == $max_retries) {
+            fclose($fp);
             return false;
         }
-        $content = '<?php return ' . var_export($this->vars, true) . ';';
-        return file_put_contents($this->config_path, $content);
+
+
+        $res = file_put_contents($this->config_path, $content);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+        return $res;
+
     }
 
 
