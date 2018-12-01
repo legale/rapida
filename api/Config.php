@@ -92,7 +92,7 @@ class Config extends Simpla
         $this->modified = true;
     }
 
-    private function __destruct()
+    public function __destruct()
     {
         if($this->modified) $this->save();
     }
