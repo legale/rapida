@@ -43,7 +43,8 @@ class Config extends Simpla
 
         $this->config_path = $this->root_dir . 'config/' . $this->config_filename;
         // Читаем настройки из дефолтного файла
-        if(function_exists("apcu_fetch")) {
+        if(function_exists("apcu_fetch") &&
+            apcu_exists($this->host."config")) {
             $this->vars = apcu_fetch($this->host."config");
         }else {
             $flock = false;
@@ -143,7 +144,7 @@ class Config extends Simpla
         }
 
 
-        $res = file_put_contents($this->config_path, $content);
+        $res = fwrite($fp, $content);
         flock($fp, LOCK_UN);
         fclose($fp);
         return $res;
