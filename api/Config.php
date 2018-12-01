@@ -31,6 +31,7 @@ class Config extends Simpla
     private $config_filename = 'config.php';
     private $config_path;
     private $vars = array();
+    private $modified = false;
 
 
     public function __construct()
@@ -40,7 +41,7 @@ class Config extends Simpla
         // Определяем корневую директорию сайта
         $this->root_dir = dirname(dirname(__FILE__)) . '/';
 
-        $this->config_path = dirname(dirname(__FILE__)) . '/config/' . $this->config_filename;
+        $this->config_path = $this->root_dir . 'config/' . $this->config_filename;
         // Читаем настройки из дефолтного файла
         $this->vars = include($this->config_path);
 
@@ -67,7 +68,7 @@ class Config extends Simpla
     public function max_upload_filesize()
     {
 
-        // Максимальный размер загружаемых файлов1
+        // Максимальный размер загружаемых файлов
         $max_upload = (int)(ini_get('upload_max_filesize'));
         $max_post = (int)(ini_get('post_max_size'));
         $memory_limit = (int)(ini_get('memory_limit'));
@@ -76,22 +77,24 @@ class Config extends Simpla
 
     }
 
-    // Магическим методов возвращаем нужную переменную
     public function &__get($name)
     {
-        //dtimer::log(__METHOD__ . "get $name");
         if (!array_key_exists($name, $this->vars)) {
             $this->vars[$name] = '';
         }
         return $this->vars[$name];
     }
 
-    // Магическим методов задаём нужную переменную
     public function __set($name, $value)
     {
         // Запишем конфиги
         $this->vars[$name] = $value;
-        $this->save();
+        $this->modified = true;
+    }
+
+    private function __destruct()
+    {
+        if($this->modified) $this->save();
     }
 
     public function save()
@@ -99,11 +102,11 @@ class Config extends Simpla
         if(empty($this->vars)){
             return false;
         }
-        dtimer::log(__METHOD__ . " start");
         $content = '<?php return ' . var_export($this->vars, true) . ';';
-        dtimer::log(__METHOD__ . " return");
         return file_put_contents($this->config_path, $content);
     }
+
+
 
 }
 
