@@ -49,6 +49,9 @@ class Money extends Simpla
         $this->db->query("SELECT * FROM __currencies ORDER BY `pos` ASC");
         $this->currencies = $this->db->results_array(null, 'id');
         $this->currency = reset($this->currencies);
+        if(function_exists("apcu_store")){
+            apcu_store($this->config->host . __METHOD__, $this->currencies);
+        }
 	}
 
 
