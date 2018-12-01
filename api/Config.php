@@ -96,10 +96,11 @@ class Config extends Simpla
 
     public function save()
     {
+        if(empty($this->vars)){
+            return false;
+        }
         dtimer::log(__METHOD__ . " start");
         $content = '<?php return ' . var_export($this->vars, true) . ';';
-
-
         dtimer::log(__METHOD__ . " return");
         return file_put_contents($this->config_path, $content);
     }
