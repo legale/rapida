@@ -90,8 +90,7 @@ class ProductsView extends View
         dtimer::log("count products result: " . $this->filter['products_count']);
         if ($this->filter['products_count'] === 0) {
             dtimer::log("0 products found. 404", 2);
-            header("Location: /", TRUE, 404);
-            exit();
+            return false;
         }
 
         //если товаров в разделе нет, сделаем кол-во страниц 1, иначе будет 0
