@@ -292,7 +292,7 @@ class Products extends Simpla
             $res = $this->cache->redis_get($keyhash);
             if ($res !== false) {
                 if ($this->cache->redis_created($keyhash, $this->ttl) > $this->config->cache_date) {
-                    return $res;
+                    return (int)$res;
                 }
 
                 //запишем в фильтр параметр force_no_cache, чтобы при записи задания в очередь
@@ -402,7 +402,7 @@ class Products extends Simpla
         $res = (int)$this->db->result_array('count');
         dtimer::log("set_cache_integer key: $keyhash");
         $this->cache->redis_set($keyhash, $res, $this->ttl);
-        return $res;
+        return (int)$res;
 
     }
 
