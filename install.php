@@ -223,7 +223,7 @@ function dbconfig()
 
         if(empty($error))
         {
-            mysqlrestore($mysqli, 'simpla.sql');
+            mysqlrestore($mysqli, 'rapida.sql');
 
 
             $conf = include('config/db.php');
