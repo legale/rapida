@@ -215,15 +215,15 @@ function dbconfig()
         if(!@$mysqli->query('SET NAMES utf8'))
             $error = 'Не могу соединиться с базой. Проверьте логин и пароль';
 
-        if(!is_readable('simpla.sql'))
-            $error = 'Файл simpla.sql не найден';
+        if(!is_readable('rapida.sql'))
+            $error = 'Файл rapida.sql не найден';
 
         if(!is_writable('config/config.php'))
             $error = 'Поставьте права на запись для файла config/config.php';
 
         if(empty($error))
         {
-            mysqlrestore($mysqli, 'simpla.sql');
+            mysqlrestore($mysqli, 'rapida.sql');
 
 
             $conf = include('config/db.php');
