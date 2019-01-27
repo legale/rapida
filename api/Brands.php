@@ -291,7 +291,6 @@ class Brands extends Simpla
     public function delete_brand($id)
     {
         if (!empty($id)) {
-            $this->delete_image($id);
             $query = $this->db->placehold("DELETE FROM __brands WHERE id=? LIMIT 1", $id);
             $this->db->query($query);
             $query = $this->db->placehold("UPDATE __products SET brand_id=NULL WHERE brand_id=?", $id);

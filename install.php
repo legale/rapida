@@ -215,18 +215,23 @@ function dbconfig()
         if(!@$mysqli->query('SET NAMES utf8'))
             $error = 'Не могу соединиться с базой. Проверьте логин и пароль';
 
-        if(!is_readable('simpla.sql'))
-            $error = 'Файл simpla.sql не найден';
+        if(!is_readable('rapida.sql'))
+            $error = 'Файл rapida.sql не найден';
 
         if(!is_writable('config/config.php'))
             $error = 'Поставьте права на запись для файла config/config.php';
 
         if(empty($error))
         {
-            mysqlrestore($mysqli, 'simpla.sql');
-
-
-            $conf = include('config/db.php');
+            mysqlrestore($mysqli, 'rapida.sql');
+			
+			$file = 'config/db.php';
+			
+			$conf = file_exists($file) ? include($file) : [];
+			if(!is_array($conf)){
+				$conf =  [];
+			} 
+			
             # Запишем конфиги с базой
             $dbconf = array(
                 'host' => $dbhost,
@@ -355,10 +360,9 @@ function add_user($user)
 {
     //сначала загрузим конфиг с базой
     $salt = 'sale marino. il sale iodato. il sale e il pepe. solo il sale.';
-    $file = 'config/db.ini';
-    $config = parse_ini_file($file);
-    $db_prefix = $config['db_prefix'];
-    $tbl = $db_prefix . 'users';
+    $file = 'config/db.php';
+    $config = include($file);
+    $tbl = 's_users';
 
     //сначала соединимся с базой
     @$mysqli = new mysqli($config['host'], $config['user'], $config['pass']);

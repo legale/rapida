@@ -25,6 +25,7 @@ simpla/log.txt
 ###################
 #Это каталог шаблона
 !design/default/**
+!design/luxury_candidate_v2/**
 
 #Это бекап пустой базы
 !simpla/files/backup/empty.zip

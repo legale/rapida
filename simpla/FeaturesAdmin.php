@@ -65,15 +65,15 @@ class FeaturesAdmin extends Simpla
 			$poss = $this->request->post('poss');
 			$ids = array_keys($poss);
 			sort($poss);
-			foreach ($poss as $i => $pos)
+			foreach ($poss as $i => $pos){
 				$this->features->update_feature($ids[$i], array('pos' => $pos));
-
+			}
 		}
 
 
 
 		$this->features->init_features(true);
-		$features = $this->features->get_features($filter);
+		$features = $this->features->get_features();
 
 		$this->design->assign('features', $features);
 		return $this->body = $this->design->fetch('features.tpl');

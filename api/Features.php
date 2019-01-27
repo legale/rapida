@@ -218,7 +218,9 @@ class Features extends Simpla
     {
         //сначала уберем из фильтра лишние параметры, которые не влияют на результат, но влияют на хэширование
         dtimer::log(__METHOD__ . " start filter: " . var_export($filter, true));
-        $filter = array_intersect_key($filter, array_flip($this->tokeep));
+        if(!empty($filter)){
+			$filter = array_intersect_key($filter, array_flip($this->tokeep));
+		}
         dtimer::log(__METHOD__ . " filtered filter: " . var_export($filter, true));
 
 
