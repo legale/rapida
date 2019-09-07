@@ -18,7 +18,7 @@ class Config extends Simpla
 {
 
 
-    public $version = 'rapida v0.0.21';
+    public $version = 'rapida v0.0.23';
 
     public $root_dir;
     public $root_url;
@@ -40,43 +40,16 @@ class Config extends Simpla
         $this->cli = (php_sapi_name() === 'cli') ? true : false;
         // Определяем корневую директорию сайта
         $this->root_dir = dirname(dirname(__FILE__)) . '/';
-
         $this->config_path = $this->root_dir . 'config/' . $this->config_filename;
-        // Читаем настройки из дефолтного файла
-        if(function_exists("apcu_fetch") &&
-            apcu_exists($this->host."config")) {
-            $this->vars = apcu_fetch($this->host."config");
-        }else {
-            $flock = false;
-            $retries = 0;
-            $max_retries = 20;
-
-            $fp = fopen($this->config_path, 'r');
-            while(!$flock && $retries <= $max_retries) {
-                $flock = flock($fp, LOCK_SH);
-                ++$retries;
-                usleep(rand(1, 500));
-            }
-
-            // couldn't get the lock, give up
-            if ($retries == $max_retries) {
-                fclose($fp);
-                return false;
-            }
-            $this->vars = include($this->config_path);
-            flock($fp, LOCK_UN);
-            fclose($fp);
-        }
+        
+        $this->vars = $this->read();
+        
 
         // Определяем адрес (требуется для отправки почтовых уведомлений)
         if (isset($_SERVER['HTTP_HOST'])) {
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http';
-            //~ print_r($_SERVER);
-            $this->root_url = $scheme . '://' . $_SERVER['HTTP_HOST'];
 
-            if (!isset($this->vars['host']) || $_SERVER['HTTP_HOST'] !== $this->vars['host']) {
-                $this->__set('host', $_SERVER['HTTP_HOST']);
-            }
+            $this->root_url = $scheme . '://' . $_SERVER['HTTP_HOST'];
         }
 
         // Часовой пояс
@@ -112,25 +85,92 @@ class Config extends Simpla
     {
         // Запишем конфиги
         $this->vars[$name] = $value;
+        dtimer::log( __METHOD__ , 2);
         $this->modified = true;
     }
+
+
+    //для вывода следа в журнал
+
+    /**
+     * @param $bt
+     * @return bool
+     */
+    public function debug_backtrace($bt)
+    {
+        $bt = array_column(array_slice($bt, 0, 2), 'function', 'class');
+        if (!empty($bt)) {
+            $bt = var_export($bt, true);
+            dtimer::log(" backtrace: $bt", 1);
+        }
+        return false;
+    }
+
 
     public function __destruct()
     {
         if($this->modified) $this->save();
     }
 
-    public function save()
+	public function read(): ?array
+	{
+		dtimer::log(__METHOD__ . " start");
+		//$this->debug_backtrace(debug_backtrace());
+        // Читаем настройки из дефолтного файла
+        if(function_exists("apcu_fetch")) {
+			dtimer::log(__METHOD__ . " apcu check. apcu is installed");
+            if(!apcu_exists(__FILE__)){
+				dtimer::log(__METHOD__ . " " . __FILE__ . " not in apcu cache");
+			} else {
+				$res = apcu_fetch(__FILE__);
+
+				dtimer::log(__METHOD__ . " cache data is fetched");	
+				return is_array($res) ? $res : null;			
+			}
+		}	
+	
+		$flock = false;
+		$retries = 0;
+		$max_retries = 20;
+
+		$fp = fopen($this->config_path, 'r');
+		while(!$flock && $retries <= $max_retries) {
+			$flock = flock($fp, LOCK_SH);
+			++$retries;
+			usleep(rand(1, 500));
+		}
+
+		if (!$flock) {
+			fclose($fp);
+			return null;
+		}
+		@eval('$res = ' . fread($fp, 99999) . ';');
+		dtimer::log(__METHOD__ . " after fread and eval");
+		
+		flock($fp, LOCK_UN);
+		fclose($fp);
+
+        if(function_exists("apcu_store")) {
+            apcu_store(__FILE__, $res);
+			dtimer::log(__METHOD__ . " apcu cache saved");
+        }
+	
+		dtimer::log(__METHOD__ . " end");
+		return is_array($res) ? $res : null; 
+	}
+
+    public function save(): bool
     {
         $flock = false;
-        $content = '<?php return ' . var_export($this->vars, true) . ';';
+        $content = var_export($this->vars, true);
         if(function_exists("apcu_store")) {
-            apcu_store($this->host."config", $this->vars);
+            apcu_store(__FILE__, $this->vars);
         }
         $retries = 0;
         $max_retries = 20;
 
         $fp = fopen($this->config_path, 'w');
+		if(!$fp) return false;
         while(!$flock && $retries <= $max_retries) {
             $flock = flock($fp, LOCK_EX);
             ++$retries;
@@ -138,20 +178,20 @@ class Config extends Simpla
         }
 
         // couldn't get the lock, give up
-        if ($retries == $max_retries) {
+        if (!$flock) {
             fclose($fp);
             return false;
         }
 
-
         $res = fwrite($fp, $content);
         flock($fp, LOCK_UN);
         fclose($fp);
-        return $res;
+        
+        $test = $this->read();
+        
+        return  $res && $content == $test ? $res : false;
 
     }
-
-
 
 }
 

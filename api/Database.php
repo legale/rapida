@@ -149,21 +149,8 @@ class Database extends Simpla
         }
     }
 
-    //для вывода следа в журнал
 
-    /**
-     * @param $bt
-     * @return bool
-     */
-    private function debug_backtrace($bt)
-    {
-        $bt = array_column(array_slice($bt, 0, 2), 'function', 'class');
-        if (!empty($bt)) {
-            $bt = var_export($bt, true);
-            dtimer::log(" backtrace: $bt", 1);
-        }
-        return false;
-    }
+
 
     /**
      * Плейсхолдер для запросов. Пример работы: $query = $db->placehold('SELECT name FROM products WHERE id=?', $id);
