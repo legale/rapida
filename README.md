@@ -1,4 +1,4 @@
-# rapida v0.0.23
+# rapida v0.0.24
 ## RAPIDA Ecommerce CMS 
 ## SimplaCMS 2.3.8 fork
  
