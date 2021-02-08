@@ -71,6 +71,7 @@ class ProductsView extends View
         if (!$this->filter) {
             return false;
         }
+        dtimer::log(__METHOD__ . var_export($this->filter, true));
 
 
         if (isset($this->filter['keyword'])) {

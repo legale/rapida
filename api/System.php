@@ -120,7 +120,7 @@ class System extends Simpla
                 foreach ($ids as $id) {
                     $task = '$this->image->download("products",' . $id . ');';
                     $keyhash = md5($task);
-                    $this->queue->addtask($keyhash, __METHOD__, $task);
+                    $this->queue->redis_addtask($keyhash, __METHOD__, $task);
                 }
             }
             return true;

@@ -536,7 +536,6 @@ class Features extends Simpla
     {
         $this->db->query("DELETE FROM __features WHERE id=? LIMIT 1", intval($id));
         $this->db->query("ALTER TABLE __options DROP ?!", (int)$id);
-        $this->db->query("ALTER TABLE __options DROP INDEX ?!", (int)$id);
         $this->db->query("DELETE FROM __categories_features WHERE feature_id=?", (int)$id);
     }
 
@@ -818,7 +817,7 @@ class Features extends Simpla
                 $task = '$this->features->get_options_ids(';
                 $task .= $filter_string;
                 $task .= ');';
-                $var = $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+                $var = $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
 
                 return $res;
@@ -923,7 +922,7 @@ class Features extends Simpla
                 $task = '$this->features->get_options_mix(';
                 $task .= $filter_string;
                 $task .= ');';
-                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+                $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
                 return $res;
             }

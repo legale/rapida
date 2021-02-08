@@ -112,7 +112,6 @@ class Database extends Simpla
         $cnt = count($args);
         if ($cnt < 1 || !is_string($args[0])) {
             dtimer::log(__METHOD__ . " Error - empty query", 1);
-            $this->debug_backtrace(debug_backtrace());
             return false;
         } elseif ($cnt > 1) {
             $q = call_user_func_array(array($this, 'placehold'), $args);
@@ -141,7 +140,6 @@ class Database extends Simpla
             dtimer::log(__METHOD__ . " Error: $q ", 1);
             
             dtimer::log($this->mysqli->error, 1);
-            $this->debug_backtrace(debug_backtrace());
             return false;
         } else {
             dtimer::log(__METHOD__ . " Completed: $q ");

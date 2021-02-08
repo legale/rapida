@@ -6,7 +6,7 @@ class Queue extends Simpla
 
     public static $skip_queue_full = true;
 
-    public function redis_adddask(string $keyhash, string $method, string $task): ?bool
+    public function redis_addtask(string $keyhash, string $method, string $task): ?bool
     {
         dtimer::log(__METHOD__. "start keyhash: $keyhash");
         $redis = $this->cache->redis_init();
@@ -40,7 +40,7 @@ class Queue extends Simpla
     public function redis_count(): ?int
     {
         $redis = $this->cache->redis_init();
-        return $redis ? $redis->lSize($this->config->host . "_queue") : null;
+        return $redis ? $redis->lLen($this->config->host . "_queue") : null;
     }
 
     public function redis_qreset(): bool

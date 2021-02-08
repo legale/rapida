@@ -1,7 +1,4 @@
 <?php
-if (defined('PHP7')) {
-    eval("declare(strict_types=1);");
-}
 
 /**
  * Class Xmlparse
@@ -46,7 +43,5 @@ class Xmlparse
     {
         return $this->zed->readOuterXML();
     }
-
-
 
 }

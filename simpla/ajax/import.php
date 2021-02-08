@@ -16,10 +16,10 @@ class ImportAjax extends Simpla
     private $columns_names = array(
         'name' => array('product', 'name', 'товар', 'название', 'наименование'),
         'url' => array('url', 'адрес'),
-        'visible' => array('visible'),
+        'visible' => array('visible','видим'),
         'featured' => array('featured', 'рекомендуемый'),
         'category' => array('category', 'категория'),
-        'vendor' => array('vendor', 'brand'),
+        'vendor' => array('vendor', 'brand', 'бренд'),
         'variant' => array('variant', 'вариант'),
         'price' => array('price', 'цена'),
         'old_price' => array('compare price', 'старая цена'),

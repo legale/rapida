@@ -1,7 +1,4 @@
 <?php
-if (defined('PHP7')) {
-    eval("declare(strict_types=1);");
-}
 
 /**
  * Класс-обертка для конфигурационного файла с настройками магазина
@@ -18,7 +15,7 @@ class Config extends Simpla
 {
 
 
-    public $version = 'rapida v0.0.24';
+    public $version = 'rapida v0.0.25';
 
     public $root_dir;
     public $root_url;
@@ -48,8 +45,11 @@ class Config extends Simpla
         // Определяем адрес (требуется для отправки почтовых уведомлений)
         if (isset($_SERVER['HTTP_HOST'])) {
             $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 'https' : 'http';
-
             $this->root_url = $scheme . '://' . $_SERVER['HTTP_HOST'];
+            
+			if (!isset($this->vars['host']) || $_SERVER['HTTP_HOST'] !== $this->vars['host']) {
+                $this->host = $_SERVER['HTTP_HOST'];
+            }
         }
 
         // Часовой пояс
@@ -62,15 +62,12 @@ class Config extends Simpla
 
 
     public function max_upload_filesize()
-    {
-
+    {	
         // Максимальный размер загружаемых файлов
-        $max_upload = (int)(ini_get('upload_max_filesize'));
-        $max_post = (int)(ini_get('post_max_size'));
-        $memory_limit = (int)(ini_get('memory_limit'));
-        $max_upload_filesize = min($max_upload, $max_post, $memory_limit) * 1024 * 1024;
-        return $max_upload_filesize;
-
+        $max_upload = return_bytes(ini_get('upload_max_filesize'));
+        $max_post = return_bytes(ini_get('post_max_size'));
+        $memory_limit = return_bytes(ini_get('memory_limit'));
+        return convert(min($max_upload, $max_post, $memory_limit));
     }
 
     public function &__get($name)
@@ -146,6 +143,7 @@ class Config extends Simpla
 		}
 		@eval('$res = ' . fread($fp, 99999) . ';');
 		dtimer::log(__METHOD__ . " after fread and eval");
+		
 		
 		flock($fp, LOCK_UN);
 		fclose($fp);

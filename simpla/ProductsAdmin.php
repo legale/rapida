@@ -84,8 +84,8 @@ class ProductsAdmin extends Simpla
             sort($cur_poss);
             $min_pos = reset($cur_poss);
             $poss = array_reverse($poss);
-            foreach ($poss as $pos => $id) {
-                $this->products->update_product($pid, array('pos' => $min_pos + $pos));
+            foreach ($poss as $pos => $pid) {
+                $this->products->update_product($pid, array('pos' => (int)$min_pos + (int)$pos));
             }
 
 

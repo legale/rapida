@@ -123,7 +123,7 @@ class Products extends Simpla
             $task = '$this->products->get_products(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
 
             if (isset($res) && !empty_($res)) {
@@ -305,7 +305,7 @@ class Products extends Simpla
                 $task .= $filter_string;
                 $task .= ');';
                 //~ dtimer::log("count_products add task: $keyhash " . $filter['method']);
-                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+                $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
                 dtimer::log("get_cache count_products HIT! value: '$res'");
                 return (int)$res;

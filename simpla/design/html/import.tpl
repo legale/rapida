@@ -104,7 +104,7 @@
 			<input name="file" class="import_file" type="file" value="" />
 			<input class="button_green" type="submit" name="" value="Загрузить" />
 			<p>
-				(максимальный размер файла &mdash; {if $config->max_upload_filesize>1024*1024}{$config->max_upload_filesize/1024/1024|round:'2'} МБ{else}{$config->max_upload_filesize/1024|round:'2'} КБ{/if})
+				(максимальный размер файла &mdash; {$config->max_upload_filesize()})
 			</p>
 
 			
@@ -112,7 +112,7 @@
 		</div>		
 	
 		<div class="block block_help">
-		<p>
+		<p> 
 			Создайте бекап на случай неудачного импорта. 
 		</p>
 		<p>

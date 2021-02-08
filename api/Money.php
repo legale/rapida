@@ -40,7 +40,7 @@ class Money extends Simpla
                 return;
             }
             if (function_exists('apcu_fetch') &&
-                apcu_exists($this->config->host . __METHOD__)) {
+                apcu_exists($this->config->host . __METHOD__) && is_array($this->currencies)) {
                 $this->currencies = apcu_fetch($this->config->host . __METHOD__);
                 $this->currency = reset($this->currencies);
                 return;

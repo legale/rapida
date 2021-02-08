@@ -89,7 +89,7 @@ class Pages extends Simpla
             $task = '$this->pages->get_pages(';
             $task .= $filter_string;
             $task .= ');';
-            $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+            $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
             return $res;
         }
 

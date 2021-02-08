@@ -49,7 +49,8 @@ array (
     'skip_queue_full' => true,
   ),
   'debug' => true,
-  'captcha' => false,
+  'captcha' => true,
   'max_upload_filesize' => '',
-  'cache_date' => 1538508186,
+  'cache_date' => 1580504796,
+  'captcha_order' => false,
 )

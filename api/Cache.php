@@ -45,7 +45,7 @@ class Cache extends Simpla
         dtimer::log(__METHOD__." start");
         if (self::$redis === null) {
             if (!class_exists('Redis')) {
-                dtimer::log("Redis support is not installed, abort", 1);
+                dtimer::log("Redis support is not installed, abort " . var_export(class_exists('redis'), true), 1);
                 return null;
             }
             self::$redis = new Redis();

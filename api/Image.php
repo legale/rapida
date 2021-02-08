@@ -121,7 +121,7 @@ class Image extends Simpla
         $table = $this->config->db['db_prefix'] . 'img_' . $type;
 		$where = !empty($filter) ? $this->db->placehold("AND ?&", $filter) : '';
         $res = $this->db->query("SELECT * FROM `$table` WHERE 1 $where ORDER BY `pos` ASC", $filter);
-        if ($res) {
+        if ($this->db->num_rows() > 0) {
             return $this->db->results_array(null, 'id');
         } else {
             return false;

@@ -62,7 +62,7 @@ function gzconvert(string $src): ?string
 
 function &open_close(array &$params, string &$buffer = null): array
 {
-    echo $params['counter'] . "\n";
+    echo "counter: ". $params['counter'] . "\n";
     if (!empty($params["fopen"]) && $buffer !== null) {
         fwrite($params["fopen"], $buffer);
     }
@@ -529,7 +529,7 @@ function &sitemap_gen(array &$params)
     $last_modify = date("Y-m-d");
     $dirpath = dirname(__FILE__) . "/../";
     $tmpfullpath_sitemap = $dirpath . "_" . $params["name_tpl"] . ".xml";
-    $newfullpath_sitemap = $dirpath . $params["name_tpl"] . ".xml";
+    $newfullpath_sitemap = $dirpath . "sitemap" . ".xml";
     $params['fopen'] = fopen($tmpfullpath_sitemap, 'w');
 
     fwrite($params['fopen'], '<?xml version="1.0" encoding="UTF-8"?>' . "\n");
@@ -562,10 +562,10 @@ main_page_gen($params, $rapida);
 pages_gen($params, $rapida);
 brands_gen($params, $rapida);
 categories_gen($params, $rapida);
-categories_brands_gen($params, $rapida);
-categories_brands_features_gen($params, $rapida);
+//categories_brands_gen($params, $rapida);
+//categories_brands_features_gen($params, $rapida);
 categories_features_gen($params, $rapida);
-categories_features2_gen($params, $rapida);
+//categories_features2_gen($params, $rapida);
 products_gen($params, $rapida);
 sitemap_gen($params, $rapida);
 

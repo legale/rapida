@@ -51,8 +51,12 @@ class SettingsAdmin extends Simpla
             $this->config->cache['method'] = $this->request->post('method');
             //отладчик
             $this->config->debug = (bool)$this->request->post('debug');
-            //капча
+            
+            //капча общая
             $this->config->captcha = (bool)$this->request->post('captcha');
+
+            //капча в заказах
+            $this->config->captcha_order = (bool)$this->request->post('captcha_order');
 
 
             // Водяной знак

@@ -2,30 +2,50 @@
 #Это мы не включаем в GIT
 #########################
 
-*.html
+/*.html
+/*.php
+/*.conf
+
 compiled/**
+simpla/design/compiled/**
+
 cache/**
 design/**
 .vscode/**
 sandbox/**
 dist/**
 .idea/**
-*.xml
-*.xml.gz
+/*.xml
+/*.xml.gz
+/*.sqlite
 
-/simpla/design/compiled/**
+cron/**
+# изображения
 img/**
 
+# настройки базы
 config/db.ini
 
+# log файл
 simpla/log.txt
 
 ###################
 #А это мы включаем
 ###################
+!index.php
+!/install.php
+# файлы для работы очереди
+!cron/queue_exec.php
+!cron/queue_stat.php
+!cron/queue_execlast.php
+!cron/qcount.php
+!cron/qreset.php
+!cron/yandex*.php
+!cron/sitemap.php
+
 #Это каталог шаблона
-!design/default/**
-!design/luxury_candidate_v2/**
+!design/default/
+!design/default/**/*
 
 #Это бекап пустой базы
 !simpla/files/backup/empty.zip
@@ -46,3 +66,4 @@ simpla/log.txt
 !img/uploads/.htaccess
 !img/downloads/.htaccess
 !cache/.htaccess
+

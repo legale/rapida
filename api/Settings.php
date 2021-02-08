@@ -19,12 +19,15 @@ class Settings extends Simpla
 		// Выбираем из базы
         if(function_exists('apcu_fetch') && apcu_exists($this->config->host . __CLASS__)) {
             $this->vars = apcu_fetch($this->config->host . __CLASS__);
+			if(!is_array($this->vars)){
+				apcu_delete($this->config->host . __CLASS__);
+			}
         } else{
             $this->db->query('SELECT name, value FROM __settings');
             foreach($this->db->results_array() as $row){
                 $this->vars[$row["name"]] = $row["value"];
             }
-            if(function_exists('apcu_fetch')) apcu_store($this->config->host . __CLASS__, $this->vars);
+            if(is_array($this->vars) && function_exists('apcu_store')) apcu_store($this->config->host . __CLASS__, $this->vars);
         }
 
 	}
@@ -50,9 +53,17 @@ class Settings extends Simpla
 			$value = (string)$value;
 
 		$this->db->query('SELECT count(*) as count FROM __settings WHERE name=?', $name);
-		if ($this->db->result_array('count') > 0)
+		if ($this->db->result_array('count') > 0){
 			$this->db->query('UPDATE __settings SET value=? WHERE name=?', $value, $name);
-		else
+		}else{
 			$this->db->query('INSERT INTO __settings SET value=?, name=?', $value, $name);
+		}
+		
+		$this->db->query('SELECT name, value FROM __settings');
+		foreach($this->db->results_array() as $row){
+			$this->vars[$row["name"]] = $row["value"];
+		}
+		if(is_array($this->vars) && function_exists('apcu_store')) apcu_store($this->config->host . __CLASS__, $this->vars);
+		
 	}
 }

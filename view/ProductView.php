@@ -152,8 +152,8 @@ class ProductView extends View
         $this->design->assign('comments', $comments);
 
         // Категория и бренд товара
-        $cat = $this->categories->get_category((int)$product['cat_id']);
-        $brand = $this->brands->get_brand((int)$product['brand_id']);
+        $cat = $this->categories->get_category((int)$product['cat_id']) ?? [];
+        $brand = $this->brands->get_brand((int)$product['brand_id']) ?? [];
         $this->design->assign('brand', $brand);
         $this->design->assign('cat', $cat);
 
@@ -191,16 +191,16 @@ class ProductView extends View
             }
         }
         //добавляем переменную {$category}
-        $pairs['{$category}'] = $cat['name'];
-        $pairs['{$brand}'] = $brand['name'];
+        $pairs['{$category}'] = $cat['name'] ?? '';
+        $pairs['{$brand}'] = $brand['name'] ?? '';
 
 
         //берем шаблон для тега из категории, если есть, или сразу готовый текст из товара
-        $meta_title = $cat['auto_meta_title'] ? $cat['auto_meta_title'] : $product['meta_title'];
-        $meta_keywords = $cat['auto_meta_keywords'] ? $cat['auto_meta_keywords'] : $product['meta_keywords'];
-        $meta_description = $cat['auto_meta_description'] ? $cat['auto_meta_description'] : $product['meta_description'];
-        $annotation = $cat['auto_annotation'] ? $cat['auto_annotation'] : $product['annotation'];
-        $description = $cat['auto_description'] ? $cat['auto_description'] : $product['description'];
+        $meta_title = $cat['auto_meta_title'] ?? $product['meta_title'];
+        $meta_keywords = $cat['auto_meta_keywords'] ?? $product['meta_keywords'];
+        $meta_description = $cat['auto_meta_description'] ?? $product['meta_description'];
+        $annotation = $cat['auto_annotation'] ?? $product['annotation'];
+        $description = $cat['auto_description'] ?? $product['description'];
 
         //производим замену
 

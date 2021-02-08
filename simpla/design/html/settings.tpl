@@ -71,9 +71,14 @@
                        {if $config->debug}checked{/if}>
             </li>
             <li>
-                <label class="property">Капча</label>
-                <input class="switcher__input" value="true" type="checkbox" name="captcha" id="captcha_switch"
+                <label class="property">Капча общая</label>
+                <input class="switcher__input" value="true" type="checkbox" name="captcha" 
                        {if $config->captcha}checked{/if}>
+            </li>
+            <li>
+                <label class="property">Капча в заказах</label>
+                <input class="switcher__input" value="true" type="checkbox" name="captcha_order" 
+                       {if $config->captcha_order}checked{/if}>
             </li>
             <li>
                 <label class="property">Дата, начиная с которой кеш не обновляется</label>

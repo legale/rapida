@@ -133,19 +133,31 @@ function unparse_url($parsed_url)
 }
 
 //функция для конвертации величин измерения информации
-/**
- * @param $size
- * @return int|string
- */
-function convert($size)
+function convert(int $size, string $unit = null): ?string
 {
-    if ($size == 0) {
-        return 0;
+    $units = ['b', 'kb', 'mb', 'gb', 'tb', 'pb']; 
+
+    if($unit && $i = array_flip($units)[$unit]){}
+    else{
+		$i = (int)floor(log($size, 1024));
+	}
+    return round($size / pow(1024, $i), 2) . $units[$i];
+}
+
+
+function return_bytes($val) {
+    $val = trim($val);
+    $last = strtolower($val[strlen($val)-1]);
+    switch($last) {
+        case 'g':
+            $val *= 1024;
+        case 'm':
+            $val *= 1024;
+        case 'k':
+            $val *= 1024;
     }
-    $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
-    $i = (int)floor(log($size, 1024));
-    /** @noinspection PhpIllegalArrayKeyTypeInspection */
-    return round($size / pow(1024, $i), 1) . $unit[$i];
+
+    return $val;
 }
 
 //функция для конвертации времени, принимает значения в секундах

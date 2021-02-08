@@ -123,7 +123,7 @@ class Brands extends Simpla
                 $task = '$this->brands->get_brands(';
                 $task .= $filter_string;
                 $task .= ');';
-                $this->queue->redis_adddask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
+                $this->queue->redis_addtask($keyhash, isset($filter['method']) ? $filter['method'] : '', $task);
 
 
                 dtimer::log(__METHOD__ . " return cache res count: " . count($res));
