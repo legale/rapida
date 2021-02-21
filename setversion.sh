@@ -1,7 +1,7 @@
 #!/bin/bash
 # version changing script
 NAME=rapida
-VERSION=0.0.24
+VERSION=0.0.26
 
 if [[ ! -z "$1" ]]; then
 NEW_VERSION=$1

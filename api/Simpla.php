@@ -1,10 +1,4 @@
 <?php
-if (PHP_VERSION_ID >= 70000) {
-    define('PHP7', true);
-}
-if (defined("PHP7")) {
-    eval("declare(strict_types=1);");
-}
 
 
 /**

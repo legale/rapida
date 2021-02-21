@@ -9,8 +9,8 @@ class Bender
 {
 	// CSS minifier
 	public $cssmin = "cssmin";
-	// JS minifier, can be "packer" or "jshrink"
-	public $jsmin = "packer";
+	// JS minifier
+	public $jsmin = "jshrink";
 	// Project's root dir
 	public $root_dir;
 	
@@ -64,11 +64,14 @@ class Bender
 		//Check src files modify time
 		//if check_recombine returns false - skip recombine
 		$srchash = $this->check_recombine( $output_array, $scripts ) ;
+		
 		$this->srchash = $srchash ;
 		if( $this->recombine === false ){
 			return true;
 		}
+		
 
+		
 		$root = $this->root_dir;
 		
 		$filename = $output_array['filename'];
@@ -77,38 +80,35 @@ class Bender
 		$outputfile = "$root$dirname/{$filename}_{$srchash}.$ext"; 
 
 		$str = $this->join_files( $scripts );
-
+			
 		switch ( $ext )
 		{
 			case "css":
 				switch ( $this->cssmin )
 				{
 					case "cssmin":
-						require_once realpath( dirname( __file__ ) . "/Bender/cssmin.php" );
+						require_once realpath( __DIR__ ) . "/Bender/cssmin.php" ;
 						$packed = Cssmin::minify( $str );
 						break;
 					default:
 						$packed = $str;
+						break;
 				}
 				break;
 			case "js":
 				switch ( $this->jsmin )
 				{
-					case "packer":
-						require_once realpath( dirname( __file__ ) ) . "/Bender/class.JavaScriptPacker.php";
-						$packer = new JavaScriptPacker( $str, "Normal", true, false );
-						$packed = $packer->pack();
-						break;
 					case "jshrink":
-						require_once realpath( dirname( __file__ ) ) . "/Bender/JShrink.class.php";
-						$packed = Minifier::minify( $str );
+						require_once realpath( __DIR__ ) . "/Bender/Minifier.php";
+						$packed = \JShrink\Minifier::minify($str);
 						break;
 					default:
 						$packed = $str;
+						break;
 				}
 				break;
 		}
-
+		
 		file_put_contents( $outputfile , $packed );
 		return true;
 	}
@@ -122,10 +122,10 @@ class Bender
 	// Print output for CSS or Javascript
 	public function output( $output , $async = true)
 	{
-		
 
 		$output_array = pathinfo($output);
 		$output_array['extension'] = strtolower($output_array['extension']);
+
 		$this->minify( $output_array );
 
 		$srchash = $this->srchash;

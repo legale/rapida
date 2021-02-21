@@ -1,7 +1,8 @@
 <?php
-header("Content-type: application/xml; charset=UTF-8");
+//header("Content-type: application/xml; charset=UTF-8");
 //это BOM символ (не используем, остался на память) 
-//$string =  (pack('CCC', 0xef, 0xbb, 0xbf));
+$string = "";
+//$string .= (pack('CCC', 0xef, 0xbb, 0xbf));
 
 
 //название сайта
@@ -45,8 +46,7 @@ while ($row = $rapida->db->res->fetch_assoc()) {
 
 
 // Заголовок
-$string = 
-"<?xml version='1.0' encoding='UTF-8'?>
+$string .= "<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE yml_catalog SYSTEM 'shops.dtd'>
 <yml_catalog date='".date('Y-m-d H:i')."'>
 <shop>

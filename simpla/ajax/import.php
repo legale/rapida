@@ -31,10 +31,10 @@ class ImportAjax extends Simpla
         'annotation' => array('annotation', 'аннотация', 'краткое описание'),
         'description' => array('description', 'описание'),
         'images' => array('images', 'изображения')
-    );                       // Разделитель значений одной колонки
-    private $internal_columns_names = array();                    // Разделитель подкаегорий в файле
-    private $import_files_dir = '../files/import/';                   //Разделитель колонок
-    private $import_file = 'import.csv';                   //Контейнер колонки
+    );                      
+                     
+    private $import_files_dir = '../files/import/';               
+    private $import_file = 'import.csv';                   
     private $products_count = 10;
     private $columns = array();
     private $cats = array();
@@ -48,11 +48,6 @@ class ImportAjax extends Simpla
 
     public function import()
     {
-        if (!$this->users->check_access('import')) {
-			print "import is not allowed to this user!";
-            return false;
-        }
-
         //сюда будем писать результат импорта
         $result = array();
 
@@ -88,17 +83,23 @@ class ImportAjax extends Simpla
 			print "wrong csv file delimiter!\n";
 			return false;
 		}
+		
+		//Убираем BOM символ, если он есть в названии первой колонки
+		$bom = bin2hex($this->columns[0]);
+		if(strlen($bom) > 5 && substr($bom, 0, 6) === 'efbbbf') {
+			$this->columns[0] = substr($this->columns[0], 3);
+		}
 
         // Заменяем имена колонок из файла на внутренние имена колонок
         foreach ($this->columns as &$column) {
-            if ($internal_name = $this->internal_column_name($column)) {
-                $this->internal_columns_names[$column] = $internal_name;
-                $column = $internal_name;
-            }
+			$column = $this->internal_column_name($column);
         }
+        $this->columns_keys = array_flip($this->columns);
+        
+        dtimer::log("internal column names: " . var_export($this->columns, true));
 
         // Если нет названия товара - не будем импортировать
-        if (!in_array('name', $this->columns) && !in_array('sku', $this->columns)) {
+        if (!isset($this->columns_keys['name']) && !isset($this->columns_keys['sku'])) {
             print("error! name is empty!\n");
             return false;
         }
@@ -155,25 +156,20 @@ class ImportAjax extends Simpla
         return $result;
     }
 
-    // Импорт одного товара $item[column_name] = value;
-
     private function internal_column_name($name)
     {
-		$name = strtolower($name);
-        $name = str_replace('/', '', $name);
-        $name = str_replace('\/', '', $name);
-        foreach ($this->columns_names as $i => $names) {
+		$lower = mb_strtolower($name);
+        foreach ($this->columns_names as $internal => $names) {
             foreach ($names as $n) {
-                if (!empty_(@$name) && preg_match("/^" . preg_quote($name) . "$/ui", $n)) {
-                    return $i;
+                if ($n == $lower) {
+                    return $internal;
                 }
             }
         }
-        return false;
+        return $name;
     }
 
 
-    // Отдельная функция для импорта категории
 
     private function import_item($item)
     {
@@ -351,7 +347,7 @@ class ImportAjax extends Simpla
                 }
 
                 // Если нет такого названия колонки, значит это название свойства
-                if (!in_array($feature_name, $this->internal_columns_names)) {
+                if (!isset($this->columns_keys[$feature_name])) {
                     // Свойство добавляем только если для товара указана категория и непустое значение свойства
                     if ($feature_value !== '') {
                         //если у нас уже есть id свойства, просто берем это значение
@@ -407,7 +403,6 @@ class ImportAjax extends Simpla
     }
 
 
-// Фозвращает внутреннее название колонки по названию колонки в файле
 
     private
     function import_category($category)
@@ -442,6 +437,9 @@ class ImportAjax extends Simpla
         return $id;
     }
 }
+
+
+
 
 $import_ajax = new ImportAjax();
 
